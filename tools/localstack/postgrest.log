@@ -1,0 +1,7 @@
+02/Oct/2026:08:49:24 -0400: Starting PostgREST 12.2.3...
+02/Oct/2026:08:49:24 -0400: Listening on port 3000
+02/Oct/2026:08:49:24 -0400: Successfully connected to PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+02/Oct/2026:08:49:24 -0400: Listening for notifications on the "pgrst" channel
+02/Oct/2026:08:49:24 -0400: Config reloaded
+02/Oct/2026:08:49:24 -0400: Schema cache queried in 3.6 milliseconds
+02/Oct/2026:08:49:24 -0400: Schema cache loaded 18 Relations, 15 Relationships, 28 Functions, 0 Domain Representations, 4 Media Type Handlers, 499 Timezones

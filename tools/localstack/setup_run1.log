@@ -1,0 +1,40 @@
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:359: NOTICE:  trigger "ls_on_auth_user_created" for relation "auth.users" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:687: NOTICE:  trigger "ls_chat_mentions" for relation "public.chat_messages" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1623: NOTICE:  policy "ls_read" for relation "public.profiles" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1624: NOTICE:  policy "ls_read" for relation "public.daily_stats" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1625: NOTICE:  policy "ls_read" for relation "public.badges" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1626: NOTICE:  policy "ls_read" for relation "public.finalized_days" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1627: NOTICE:  policy "ls_read" for relation "public.games" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1628: NOTICE:  policy "ls_read" for relation "public.bets" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1629: NOTICE:  policy "ls_read" for relation "public.bet_legs" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1630: NOTICE:  policy "ls_read" for relation "public.sim_teams" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1631: NOTICE:  policy "ls_read" for relation "public.sim_players" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1632: NOTICE:  policy "ls_read" for relation "public.battles" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1633: NOTICE:  policy "ls_read" for relation "public.spectator_bets" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1634: NOTICE:  policy "ls_read" for relation "public.battle_stats" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1635: NOTICE:  policy "ls_read" for relation "public.chat_messages" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1636: NOTICE:  policy "ls_read" for relation "public.mentions" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1637: NOTICE:  policy "ls_read" for relation "public.ledger" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1639: NOTICE:  policy "ls_read" for relation "public.battle_parlays" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1643: NOTICE:  policy "ls_read" for relation "public.battle_events" does not exist, skipping
+psql:/tmp/claude-0/-home-claude/66038b4e-2399-53cf-a709-ca1192358d4d/scratchpad/site/supabase/setup.sql:1645: NOTICE:  policy "ls_read" for relation "public.battle_results" does not exist, skipping
+ schedule 
+----------
+        1
+(1 row)
+
+ schedule 
+----------
+        2
+(1 row)
+
+ schedule 
+----------
+        3
+(1 row)
+
+          status           
+---------------------------
+ Line Scout setup complete
+(1 row)
+
