@@ -1,0 +1,62 @@
+name: Refresh data
+
+on:
+  schedule:
+    - cron: "47 5,7,9,11,13 * * *"
+    - cron: "37 15 * * *"
+    - cron: "7,37 16-23,0-4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: line-scout-refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      PYTHONUNBUFFERED: "1"
+      LS_DEADLINE: "70"
+      LS_MIN_PUBLISH_GAP_MIN: ${{ vars.LS_MIN_PUBLISH_GAP_MIN || '0' }}
+      SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Restore ESPN scratch cache
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: ls-cache-${{ github.run_id }}
+          restore-keys: ls-cache-
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Refresh data
+        run: |
+          python refresh.py || echo "::warning::refresh.py reported a problem; the last good data was kept (see data/meta.json)"
+
+      - name: Commit data
+        run: |
+          git config user.name "line-scout-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p data store
+          git add -A data store
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          MSG="data: refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          if [ "$(git log -1 --format=%an)" = "line-scout-bot" ]; then
+            git commit --amend -m "$MSG"
+            git push --force-with-lease origin "HEAD:${GITHUB_REF_NAME}"
+          else
+            git commit -m "$MSG"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
