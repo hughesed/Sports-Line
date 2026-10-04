@@ -1,0 +1,20 @@
+/* safe slips, pick of the day, tracked calls */
+.safebtns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.safeb{appearance:none;border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;gap:2px;text-align:left;font:inherit;cursor:pointer;min-width:0}
+.safeb b{font-size:13px}
+.safeb span{font-size:11px;color:var(--muted);line-height:1.3}
+.safeb.on{border-color:var(--accent);background:var(--accent-soft)}
+.safeb:disabled{opacity:.55;cursor:default}
+@media(max-width:380px){.safebtns{grid-template-columns:1fr}}
+.potd{display:flex;flex-direction:column;gap:6px;width:100%;border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:12px;padding:10px 12px;margin-block:6px;text-align:left;font:inherit;min-width:0}
+button.potd{cursor:pointer}
+.potd.hit{border-color:var(--safe);background:var(--safe-soft)}
+.potd.on{outline:2px solid var(--accent)}
+.potd .ph{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.potd .pkrow{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.potd .pklab{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.potd .pkpr{text-align:right;white-space:nowrap}
+.potds .sec{display:flex;flex-direction:column;gap:4px}
+.vcw{font-size:11px;color:var(--muted);align-self:center;margin-inline-end:2px}
+.dcell{position:relative}
+.cdot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent)}

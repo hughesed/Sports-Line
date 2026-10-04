@@ -28,7 +28,7 @@ import games_all, learn, learn_export as LEX, build as B1, ctxfactors as CF
 from predlog import PredLog
 import slate as SL
 from pastp import build_pastp
-import simdata, social
+import simdata, social, odds as ODDS
 
 DATA = os.path.join(ROOT, "data")
 SCHEMA = 1
@@ -234,6 +234,9 @@ def main():
     pred.save(today)
     if espn.STATS["skipped"]:
         errors.append(f"time limit reached: {espn.STATS['skipped']} ESPN requests were skipped to stay inside the run budget; the next run catches up")
+    try: odds_status = ODDS.refresh(f"{DATA}/odds.json", log)
+    except Exception as ex: odds_status = "error"
+    log(f"  odds: {odds_status}")
     run_no = int(os.environ.get("GITHUB_RUN_NUMBER") or (prev_meta.get("runNumber") or 0) + 1)
     meta = dict(schema=SCHEMA, runNumber=run_no, deadlineHit=bool(espn.STATS["skipped"]), generatedAt=now.strftime("%Y-%m-%dT%H:%M:%SZ"), generatedAtET=now.astimezone(ET).strftime("%a %b %-d, %-I:%M %p ET"), today=str(today),
                 lastRunAt=now.strftime("%Y-%m-%dT%H:%M:%SZ"), lastRunError=None,
@@ -242,7 +245,7 @@ def main():
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),
-                social=social_info, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
+                social=social_info, odds=odds_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
     write_json(f"{DATA}/slate.json", slate)
     write_json(f"{DATA}/learn.json", learn_out)
     write_json(f"{DATA}/pastp.json", pastp)

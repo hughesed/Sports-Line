@@ -1,0 +1,15 @@
+# Netlify / Cloudflare-style static hosting: the repo root IS the website. No build step, nothing to install.
+[build]
+  publish = "."
+  command = ""
+
+# data files must never be served from a stale cache (the page also adds ?v=<time> itself)
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

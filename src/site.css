@@ -1,0 +1,13 @@
+/* data bar (src/loader.js): "Data updated ...", stale warning, error state */
+.lsbar{font:11.5px/1.35 var(--f-body,system-ui,sans-serif);padding:7px 14px;padding-top:calc(7px + env(safe-area-inset-top,0px));background:var(--surface2,#f3f6fb);color:var(--muted,#566880);border-bottom:1px solid var(--line,#dbe3ee);display:flex;gap:6px 10px;align-items:center;flex-wrap:wrap}
+.lsbar b{color:var(--ink,#0e1a2b);font-weight:600}
+.lsbar.stale{background:var(--warn-soft,#fbefd0);color:var(--warn,#9a6200)}
+.lsbar.stale b{color:inherit}
+.lsbar.err{background:var(--under-soft,#fbe1df);color:var(--under,#d6403a)}
+.lsbar.err b{color:inherit}
+.lsbar button{font:inherit;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;min-height:26px}
+.lsbar .sp{flex:1}
+.lserr{margin:24px 16px;padding:18px;border:1px solid var(--line,#dbe3ee);border-radius:12px;background:var(--surface,#fff);color:var(--ink,#0e1a2b);font:14px/1.5 var(--f-body,system-ui,sans-serif);max-width:560px;margin-inline:auto}
+.lserr h2{margin:0 0 6px;font-size:17px}
+.lserr button{margin-top:10px;font:inherit;font-weight:600;padding:8px 16px;border-radius:999px;border:0;background:var(--accent,#1766e6);color:var(--accent-ink,#fff);cursor:pointer}
+.lsload{margin:40px 16px;text-align:center;color:var(--muted,#566880);font:14px system-ui,sans-serif}
