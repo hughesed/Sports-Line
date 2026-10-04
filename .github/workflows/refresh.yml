@@ -43,7 +43,7 @@ jobs:
 
       - name: Refresh data
         run: |
-          python refresh.py || echo "::warning::refresh.py reported a problem; the last good data was kept (see data/meta.json)"
+          python refresh.py || echo "::warning::refresh.py reported a problem; the last good data was kept (see data/
 
       - name: Commit data
         run: |
@@ -52,11 +52,11 @@ jobs:
           mkdir -p data store
           git add -A data store
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
-          MSG="data: refresh $(date -u +%Y-%m-%dT%H:%MZ)"
-          if [ "$(git log -1 --format=%an)" = "line-scout-bot" ]; then
-            git commit --amend -m "$MSG"
-            git push --force-with-lease origin "HEAD:${GITHUB_REF_NAME}"
-          else
-            git commit -m "$MSG"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
-          fi
+          git commit -m "data: refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" \
+              && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep 3
+          done
+          exit 1
+
