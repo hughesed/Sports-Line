@@ -1,0 +1,40 @@
+/* ===== v5: football animation + big screen ===== */
+.fld .hm{stroke:rgba(255,255,255,.35);stroke-width:.18}
+.fld .shd{fill:#000}
+.fld .fxt{font-weight:900;font-family:var(--f-body);paint-order:stroke;stroke:rgba(0,0,0,.65);stroke-width:.9px;stroke-linejoin:round;letter-spacing:.04em}
+.fld.shake{animation:fshake .6s linear}
+@keyframes fshake{0%,100%{transform:none}15%{transform:translate(-2px,1px)}30%{transform:translate(2px,-1px)}45%{transform:translate(-1px,-1px)}60%{transform:translate(1px,1px)}80%{transform:translate(-1px,0)}}
+.viz[data-act=fs]{cursor:pointer}
+.fshint{position:absolute;top:8px;right:8px;background:rgba(6,16,31,.72);color:#fff;font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:999px;pointer-events:none;border:1px solid rgba(255,255,255,.3)}
+.playchip.big{border-left-color:#ffc83a;background:linear-gradient(90deg,rgba(255,200,58,.2),transparent)}
+.playchip.ko{border-left-color:#4d98ff}
+.cel .celt{max-width:96%;text-align:center}
+.fsb{font:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:7px 14px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;white-space:nowrap}
+.fsb[aria-pressed=true]{background:#1493ff;border-color:#1493ff}
+body.fsopen{overflow:hidden}
+body.fsopen .slipbar{bottom:env(safe-area-inset-bottom,0px);z-index:70}
+.fsov{position:fixed;inset:0;z-index:60;background:#06101f;color:#eaf1ff;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);--surface:#0f1d36;--surface2:#13233f;--ink:#eaf1ff;--muted:#9bb0cf;--line:#26344d}
+.fsbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #26344d}
+.fsscore{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.fsscore .fst{display:flex;align-items:baseline;gap:8px}.fsscore .fst.r{justify-content:flex-end}
+.fsscore .ab{font-weight:800;letter-spacing:.06em;font-size:13px}.fsscore b{font-size:26px;line-height:1}
+.fsscore .fsc{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px}.fsscore .fsc small{color:#9bb0cf;font-size:11px}
+.fsbody{flex:1;overflow-y:auto;padding:0 14px 240px;display:flex;flex-direction:column;gap:12px}
+.fsstage{position:sticky;top:0;z-index:5;background:#06101f;padding:12px 0 8px;box-shadow:0 10px 14px -8px rgba(0,0,0,.7)}
+.fsstage .viz{border:1px solid #26344d}
+.fsstage .fld{border-radius:12px}
+.fsstage .playchip{background:#0f1d36;border-color:#26344d;color:#eaf1ff}
+.fsside{display:flex;flex-direction:column;gap:12px;min-width:0}
+.fsvoice{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:12px}
+.fsvoice label{display:flex;gap:6px;align-items:center}
+.fsvoice select{background:#0f1d36;color:#eaf1ff;border:1px solid #26344d;border-radius:8px;padding:6px 8px;max-width:210px;font:inherit}
+.fsside .sec{background:#0b1830;border:1px solid #26344d;border-radius:14px;padding:12px}
+.fsside h3{margin:0 0 8px;font-size:14px}
+@media (orientation:landscape) and (max-height:560px),(min-width:900px){
+  .fsbody{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:start;gap:14px}
+  .fsside{max-height:calc(100dvh - 90px);overflow-y:auto}
+  .fsstage{top:0}
+}
+@media (prefers-reduced-motion: reduce){.fld.shake{animation:none}}
+.fsstage .playchip{min-height:0;padding:6px 10px}
+.fsstage .playchip span{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
