@@ -681,6 +681,44 @@ body.vchat .foot{display:none}
 .chatbox{max-height:none;height:calc(100vh - 360px);min-height:320px}
 [data-bt-cd]{color:#ffb62e}
 
+/* ===== smoother battle form: logo team pickers ===== */
+.tp{position:relative;margin:10px 0 4px}.tpl{font-size:12px;color:var(--muted);margin:0 0 4px 2px}
+.tpb{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:inherit;font:inherit;font-size:16px;text-align:left;transition:border-color .15s,box-shadow .15s}
+.tpb[aria-expanded=true],.tpb:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.tpn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tpc{opacity:.7}
+.tpm{position:absolute;z-index:20;left:0;right:0;top:100%;margin-top:6px;max-height:300px;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(0,0,0,.45);padding:4px}
+.tpo{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;border-radius:9px;background:none;color:inherit;font:inherit;text-align:left}
+.tpo:hover,.tpo.on{background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.tl{position:relative;display:inline-grid;place-items:center;flex:none;border-radius:50%;overflow:hidden;color:#fff;font-size:10px;font-weight:800}
+.tl .tlg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
+.fld .seg button{display:inline-flex;align-items:center;gap:6px}
+.fld .seg{border-radius:12px}.seg button{transition:background .15s,color .15s}
+
+/* ===== profile pictures + board look ===== */
+.ulw{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.av{position:relative;display:inline-grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;overflow:hidden;color:#fff;font-weight:800;font-size:13px;border:2px solid color-mix(in srgb,var(--accent) 60%,transparent);background:#3b4a6b}
+.av i{font-style:normal}.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.avatar.av{width:56px;height:56px;font-size:24px}
+.avwrap{position:relative;flex:none}.avup{position:absolute;right:-6px;bottom:-6px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink,#fff);font-size:13px;cursor:pointer}
+.lbrow{border-radius:14px;padding:10px 14px}.lbrow .ulw .av{width:40px;height:40px;font-size:16px}.lbrow .ulink{font-size:18px;font-weight:700}.lbrow .pf{font-size:22px}
+.ylist{display:grid;gap:10px}.yrow{display:grid;grid-template-columns:minmax(120px,38%) 1fr;border-radius:14px;overflow:hidden;background:color-mix(in srgb,var(--surface) 80%,#5a7bbf 20%)}
+.ylab{display:flex;align-items:center;gap:10px;padding:14px 12px;background:#5da4ff;color:#06152e;font-size:18px;font-weight:700;clip-path:polygon(0 0,100% 0,88% 100%,0 100%)}
+.y-trash .ylab{background:#aeb4c0}.ylab i{font-style:normal;font-size:22px}
+.ybody{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:10px 14px;flex-wrap:wrap}.yd{font-size:14px;color:var(--muted)}
+.attable .atr{align-items:center}.attable .atr .ulw .av{width:34px;height:34px}
+.yrow{grid-template-columns:minmax(132px,auto) 1fr}.ylab{font-size:16px;padding:14px 26px 14px 12px}.ylab b{white-space:nowrap}
+
+/* ===== "you have a match" pop-up ===== */
+#btpop{position:fixed;left:0;right:0;top:0;z-index:9999;display:none;padding:max(10px,env(safe-area-inset-top)) 12px 0;pointer-events:none}
+#btpop.on{display:block}
+#btpop .btp-i{pointer-events:auto;max-width:520px;margin:0 auto;background:var(--surface,#fff);color:var(--ink,#111);border:2px solid var(--accent,#1a73e8);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:12px 14px;animation:btpin .28s ease-out}
+#btpop .btp-t{font-weight:800;font-size:16px;margin-bottom:4px}
+#btpop .btp-b{font-size:14px;line-height:1.4}
+#btpop .btp-a{display:flex;gap:8px;margin-top:10px}
+@keyframes btpin{from{transform:translateY(-24px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){#btpop .btp-i{animation:none}}
+
+
 /* battle animations */
 .stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#1d3b2a;line-height:0}
 .stage[data-f="bk"]{background:#7a5428}.stage[data-f="bb"]{background:#1d3b2a}
@@ -762,7 +800,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="2c98444717">
+<body data-build="1681f1c882">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -3583,14 +3621,15 @@ function boardBodyHtml(){
   const rows=(arr,win)=>arr.length?arr.map((r,i)=>'<div class="lbrow'+(SOC.me&&r.id===SOC.me.id?' me':'')+'"><span class="rk">'+(i+1)+'</span>'+uLink(r.username)+'<span class="mono pf '+(win?'g':'r')+'">'+sgn(+r.net)+'</span></div>').join(''):'<div class="small muted">'+(win?'No winners yet today. Profit counts on the day a bet or battle settles.':'Nobody is down today yet.')+'</div>';
   const tab=SOC.boardTab;
   const y=lb.yesterday||{}; const yb=(y.badges||[]);
-  const yHtml=yb.length?'<div class="vcs">'+yb.map(b=>'<span class="ybadge">'+badgeChip(b.kind,1,b.sport)+' '+uLink(b.username)+(b.detail?' <span class="muted small">'+esc(b.detail)+'</span>':'')+(SOC.me&&b.username===SOC.me.username?' <button class="shbtn" data-act="sh-open" data-k="badge" data-b="'+esc(b.kind)+'" data-u="'+esc(b.username)+'" data-sp="'+esc(b.sport||'')+'">Share</button>':'')+'</span>').join('')+'</div>':'<div class="small muted">'+(y.final?'Nobody qualified yesterday.':'Yesterday is finalized shortly after midnight ET.')+'</div>';
+  const yOrder=['active','champion','trash','convo','king','hot'];
+  const yHtml=yb.length?'<div class="ylist">'+yb.slice().sort((a,b)=>yOrder.indexOf(a.kind)-yOrder.indexOf(b.kind)).map(b=>{ const B=BADGE[b.kind]||{e:'',n:b.kind}; return '<div class="yrow y-'+esc(b.kind)+'"><div class="ylab"><i aria-hidden="true">'+B.e+'</i><b>'+esc(B.n)+'</b></div><div class="ybody"><span class="yd">'+esc(b.detail||'')+'</span>'+uLink(b.username)+(SOC.me&&b.username===SOC.me.username?'<button class="shbtn" data-act="sh-open" data-k="badge" data-b="'+esc(b.kind)+'" data-u="'+esc(b.username)+'" data-sp="'+esc(b.sport||'')+'">Share</button>':'')+'</div></div>'; }).join('')+'</div>':'<div class="small muted">'+(y.final?'Nobody qualified yesterday.':'Yesterday is finalized shortly after midnight ET.')+'</div>';
   const at=(lb.alltime||[]);
   const atHtml=at.length?'<div class="attable" role="table" aria-label="All-time badges"><div class="atr ath" role="row"><span>Player</span>'+['champion','trash','active','convo','king','hot'].map(k=>'<span title="'+esc(BADGE[k].n)+'">'+BADGE[k].e+'</span>').join('')+'</div>'+
     at.map(r=>'<div class="atr" role="row">'+uLink(r.username)+['champion','trash','active','convo','king','hot'].map(k=>'<span class="mono">'+(r[k]||'·')+'</span>').join('')+'</div>').join('')+'</div>':'<div class="small muted">No badges awarded yet. The first ones are handed out at the first midnight ET after people start playing.</div>';
   return '<div class="small muted">'+esc(fmtDay(lb.day))+' · Eastern time · '+(lb.players||0)+' player'+(lb.players===1?'':'s')+' active today · resets at midnight ET</div>'+
     '<div class="seg" role="group" aria-label="Board"><button data-act="lbtab" data-t="win" aria-pressed="'+(tab==='win')+'">Top 10 winners</button><button data-act="lbtab" data-t="lose" aria-pressed="'+(tab==='lose')+'">Top 10 losers</button></div>'+
     '<div class="lblist">'+(tab==='win'?rows(lb.winners||[],true):rows(lb.losers||[],false))+'</div>'+
-    '<h4 class="sub">Yesterday</h4>'+yHtml+
+    '<h4 class="sub">Yesterday\'s champions</h4>'+yHtml+
     '<h4 class="sub">All-time badges</h4>'+atHtml+badgeLegend()+PRACTICE_NOTE;
 }
 function fmtDay(d){ if(!d) return ''; const t=new Date(d+'T12:00:00'); return t.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
@@ -3725,7 +3764,7 @@ function profileBodyHtml(name){
   const bats=(d.battles||[]).map(b=>{ const res=b.status==='final'?(b.result&&b.result.split?'Split':(b.winner===d.id?'Won':'Lost')):b.status==='live'?'Live':b.status==='cancelled'?'Cancelled':'Open';
     return '<button class="rlink" data-act="bt-open" data-id="'+b.id+'"><span><b>'+esc(SPN[b.sport]||b.sport)+'</b> '+esc(b.away)+' @ '+esc(b.home)+(b.vs?' vs '+esc(b.vs):'')+'</span><span class="badge '+(res==='Won'?'ok':res==='Lost'?'bad':'')+'">'+res+(b.result&&b.status==='final'?' · '+b.result.as+'-'+b.result.hs:'')+'</span></button>'; }).join('');
   const sl=d.slips||{}; const slips=(sl.recent||[]).map((s,ix)=>'<div class="bl">'+legStatusIcon({res:s.status==='won'?'W':s.status==='lost'?'L':s.status==='void'?'V':null})+'<span>'+esc((s.legs||[]).map(l=>l.label).join(' + '))+'<br><span class="muted small">'+cn(s.stake)+' coins · '+esc(s.status)+(s.status==='won'?' '+cn(s.payout):'')+'</span></span></div>').join('');
-  return '<div class="profh"><div class="avatar" aria-hidden="true">'+esc(d.username.slice(0,1).toUpperCase())+'</div><div><h2 class="pname">'+esc(d.username)+'</h2><div class="small muted">Joined '+esc(new Date(d.joined).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))+'</div></div></div>'+
+  return '<div class="profh"><div class="avwrap"><div class="avatar av" data-n="'+esc(d.username)+'" aria-hidden="true"><i>'+esc(d.username.slice(0,1).toUpperCase())+'</i></div>'+(SOC.me&&SOC.me.username===d.username?'<label class="avup" title="Change photo">&#128247;<input type="file" accept="image/*" data-in="avfile" hidden></label>':'')+'</div><div><h2 class="pname">'+esc(d.username)+'</h2><div class="small muted">Joined '+esc(new Date(d.joined).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))+'</div></div></div>'+
     '<div class="proj"><div class="kv"><div class="k">Coins</div><div class="v">'+COIN+' '+cn(d.balance)+'</div></div><div class="kv"><div class="k">Today</div><div class="v" style="color:var(--'+(d.today_net>=0?'over':'under')+')">'+sgn(+d.today_net)+'</div></div><div class="kv"><div class="k">All-time net</div><div class="v" style="color:var(--'+(d.alltime_net>=0?'over':'under')+')">'+sgn(+d.alltime_net)+'</div></div></div>'+
     '<h4 class="sub">Badges</h4>'+bh+(bl.length?'<div class="shrow"><span class="small muted">Share:</span>'+['champion','trash','active','convo','king','hot'].filter(k=>d.badges[k]).map(k=>'<button class="shbtn" data-act="sh-open" data-k="badge" data-b="'+k+'" data-u="'+esc(d.username)+'">'+BADGE[k].e+' '+esc(BADGE[k].n)+'</button>').join('')+'</div>':'')+badgeLegend()+
     '<h4 class="sub">Battle record</h4><div class="proj">'+recs+'</div>'+
@@ -3777,7 +3816,7 @@ document.addEventListener('change',async function(e){
    Flow: create (wager escrowed; format Parlay or Same Game Parlay) -> someone accepts (matching wager) -> both build + lock a parlay from the battle's markets
    -> the database simulates the whole game and reveals it play by play over ~3 minutes -> the slip that pays more wins the pot.
    Spectators can bet on the game lines and on who wins the battle until the game starts. Rosters and injuries are frozen into the battle when it is created. */
-const BT={lobby:null,id:null,det:null,timer:null,tick:null,sim:null,simTried:false,form:{sport:'nfl',home:'',away:'',wager:'50',side:'home',fmt:'parlay',q:''},
+const BT={lobby:null,id:null,det:null,timer:null,tick:null,sim:null,simTried:false,form:{sport:'nfl',home:'',pick:'',wager:'50',fmt:'parlay',q:''},
   draft:{},saveT:null,spec:{tok:'',stake:'25'},msg:'',busy:false,seen:{},html:{},lastTick:0,skew:0,quote:{},acc:{},all:{},sawLive:{},flashed:{}};
 const SPORTS3=[['nfl','NFL'],['nba','NBA'],['mlb','MLB'],['cfb','CFB'],['cbb','CBB']];
 const SPLONG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'College football',cbb:"Men's college basketball"};
@@ -3793,15 +3832,15 @@ function loadSim(){
 }
 function simTeams(sport){ return ((BT.sim&&BT.sim.sports[sport])||{teams:[]}).teams; }
 function teamOf(sport,ab){ return simTeams(sport).find(t=>t.abbr===ab)||{abbr:ab,name:ab,color:'#334155'}; }
-function btFormDefaults(){ const f=BT.form, ts=simTeams(f.sport); if(!ts.length) return; const pr=ts.filter(t=>t.props!==false); const pool=pr.length>=2?pr:ts;
-  if(!ts.some(t=>t.abbr===f.home)) f.home=pool[0].abbr; if(!ts.some(t=>t.abbr===f.away)||f.away===f.home) f.away=(pool.find(t=>t.abbr!==f.home)||ts.find(t=>t.abbr!==f.home)||ts[0]).abbr; }
+function btFormDefaults(){ const f=BT.form, ts=simTeams(f.sport); if(!ts.length) return; const pr=ts.filter(t=>t.props!==false); const pool=pr.length>=1?pr:ts;
+  if(!ts.some(t=>t.abbr===f.home)) f.home=pool[0].abbr; }
 function tchip(name,color){ return '<span class="tchip" style="background:'+esc(color||'#334155')+'">'+esc((name||'').slice(0,4))+'</span>'; }
 
 /* ---------- data ---------- */
 function loadLobby(){
   if(!SOC.sb) return;
   const now=Date.now(); if(now-BT.lastTick>30000){ BT.lastTick=now; SOC.sb.rpc('battle_tick').then(()=>{},()=>{}); }
-  SOC.sb.rpc('battle_lobby').then(r=>{ if(r.error){ BT.msg=r.error.message; btRender(); return; } BT.lobby=r.data; if(r.data&&r.data.now) BT.skew=Date.parse(r.data.now)-Date.now(); btRender(); navRefresh(); });
+  SOC.sb.rpc('battle_lobby').then(r=>{ if(r.error){ BT.msg=r.error.message; btRender(); return; } BT.lobby=r.data; if(r.data&&r.data.now) BT.skew=Date.parse(r.data.now)-Date.now(); btRender(); navRefresh(); btCheckAlerts(r.data); });
 }
 function loadDetail(){
   if(!SOC.sb||!BT.id) return;
@@ -3811,6 +3850,7 @@ function loadDetail(){
     if(r.error){ BT.msg=r.error.message; btRender(); return; }
     BT.det=r.data; if(r.data&&r.data.now) BT.skew=Date.parse(r.data.now)-Date.now();
     const b=r.data&&r.data.battle;
+    if(b&&b.status==='open'&&SOC.user&&b.creator===SOC.user.id) BT.alerts.until=Date.now()+30*60000;      // keep watching for a challenger from other screens
     if(b&&b.status==='live'&&Date.parse(b.ends_at)<=btNow()+500&&!BT.settling){ BT.settling=true; SOC.sb.rpc('settle_battle',{p_id:id}).then(()=>{ BT.settling=false; loadDetail(); refreshMe(); },()=>{ BT.settling=false; }); }
     if(b&&BT.draft[id]==null){ const mine=(r.data.parlays||[]).find(p=>SOC.user&&p.user_id===SOC.user.id); if(mine){ BT.draft[id]=(mine.legs||[]).map(l=>l.tok);
       if(b.status==='building'&&!mine.locked&&!BT.draft[id].length&&b.max_legs!==undefined){ const my=(SOC.user.id===b.creator)?b.creator_side:(b.creator_side==='home'?'away':'home'); BT.draft[id]=['ml:'+my]; setTimeout(()=>saveParlay(id),50); } } }
@@ -3855,56 +3895,59 @@ function injLine(T,ab){
   const part=(arr,lab)=>arr.length?'<b>'+lab+'</b> '+arr.slice(0,4).map(nm).join(', ')+(arr.length>4?' +'+(arr.length-4):''):'';
   return '<div class="small injl"><b>'+esc(ab)+'</b> '+[part(out,'Out:'),part(q,'Questionable:')].filter(Boolean).join(' · ')+'</div>';
 }
+function btFmtNote(fmt,legs){
+  if(fmt==='sgp') return legs===0
+    ? 'Same Game Parlay, unlimited legs: every option is open, including several picks from one market (a 200+ and a 250+ yard rung, both spreads\' alternates, spread + moneyline + total). The price is recalculated for the whole slip, so stacking more legs pays what the odds say. Picks that cannot both happen are refused.'
+    : 'Same Game Parlay: at least 2 legs (up to the legs allowed), one pick per market, and the price accounts for how the legs move together. A QB\'s passing yards and his team winning pay less than the two prices multiplied. Choose Unlimited legs to open every option.';
+  return 'Parlay: 1 to '+(legs?legs:'any number of')+' legs, prices multiply.';
+}
 function btCreateHtml(){
   const f=BT.form; const ts=simTeams(f.sport); const big=ts.length>40; const q=(f.q||'').trim().toLowerCase();
-  const lab=t=>(t.name||t.abbr)+(t.props===false?' (lines only)':'');
-  const opt=sel=>ts.filter(t=>t.abbr===sel||!q||(t.name||'').toLowerCase().indexOf(q)>=0||(t.abbr||'').toLowerCase().indexOf(q)>=0).map(t=>'<option value="'+esc(t.abbr)+'"'+(t.abbr===sel?' selected':'')+'>'+esc(lab(t))+'</option>').join('');
   const seg=SPORTS3.map(([k,l])=>'<button data-act="bt-sport" data-k="'+k+'" aria-pressed="'+(f.sport===k)+'" title="'+esc(SPLONG[k])+'">'+l+'</button>').join('');
   if(f.legs==null) f.legs=8; if(f.mins==null) f.mins=4;
-  const A=teamOf(f.sport,f.away), H=teamOf(f.sport,f.home);
+  const H=teamOf(f.sport,f.home);
   const wchips=[10,50,100,250].map(v=>'<button class="x2" data-act="bt-wager" data-v="'+v+'">'+v+'</button>').join('');
   const fseg='<div class="seg" role="group" aria-label="Battle format"><button data-act="bt-fmt" data-k="parlay" aria-pressed="'+(f.fmt==='parlay')+'">Parlay</button><button data-act="bt-fmt" data-k="sgp" aria-pressed="'+(f.fmt==='sgp')+'">Same Game Parlay <span class="sgpb">SGP</span></button></div>';
-  const fnote=f.fmt==='sgp'?'Same Game Parlay: 2 to 6 legs, and the price accounts for how the legs move together. A QB\'s passing yards and his team winning pay less than the two prices multiplied.':'Parlay: 1 to 6 legs, prices multiply.';
-  const noProps=ts.length&&(A.props===false||H.props===false);
+  const noProps=ts.length&&H.props===false;
   const sp=(BT.sim&&BT.sim.sports[f.sport])||{}; const off=(f.sport==='nba'||f.sport==='cbb')&&[6,7,8,9].indexOf(new Date().getMonth())>=0;
   return '<section class="game"><div class="sec"><h3>Start a battle <span class="hint">practice coins</span></h3>'+
     '<div class="seg" role="group" aria-label="Sport">'+seg+'</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
     (ts.length?(big?'<label class="fld">Find a team<input class="num wide" data-bt="q" value="'+esc(f.q||'')+'" placeholder="Type a school" aria-label="Find a team" autocomplete="off"></label>':'')+
-      '<div class="btteams"><label class="fld">Away<select class="num wide" data-bt="away" aria-label="Away team">'+opt(f.away)+'</select></label><span class="at">@</span><label class="fld">Home<select class="num wide" data-bt="home" aria-label="Home team">'+opt(f.home)+'</select></label></div>'+
-      (noProps?'<div class="small muted">'+(A.props===false?esc(A.short||A.abbr):esc(H.short||H.abbr))+' has no player data yet, so this battle would have team lines only (spread, total, moneyline).</div>':'<div class="small muted">Player props included: about 9 players per team, lines from current rosters.</div>')+
-      injLine(A,A.abbr)+injLine(H,H.abbr)+
-      '<div class="fld">Format'+fseg+'<div class="small muted">'+fnote+'</div></div>'+
+      tpHtml(f,'home',ts,q,'Your team',null)+
+      (noProps?'<div class="small muted">'+esc(H.short||H.abbr)+' has no player data yet, so this battle would have team lines only (spread, total, moneyline).</div>':'<div class="small muted">Player props included: about 9 players per team, lines from current rosters.</div>')+
+      injLine(H,H.abbr)+
+      '<div class="small muted">You only pick your team and the settings. Whoever accepts picks the opposing team, and then the lines are set.</div>'+
+      '<div class="fld">Format'+fseg+'<div class="small muted">'+btFmtNote(f.fmt,f.legs)+'</div></div>'+
       '<div class="fld">Legs allowed<div class="seg" role="group" aria-label="Legs allowed">'+[[4,'4'],[8,'8'],[12,'12'],[0,'Unlimited']].map(([k,l])=>'<button data-act="bt-legs" data-k="'+k+'" aria-pressed="'+(f.legs===k)+'">'+l+'</button>').join('')+'</div></div>'+
       '<div class="fld">Game length (minutes)<div class="seg" role="group" aria-label="Game length">'+[2,3,4,5,6,7,8].map(k=>'<button data-act="bt-mins" data-k="'+k+'" aria-pressed="'+(f.mins===k)+'">'+k+(k===4?' ·std':'')+'</button>').join('')+'</div></div>'+
-      '<div class="fld">You back<div class="seg" role="group" aria-label="Team you back"><button data-act="bt-side" data-k="away" aria-pressed="'+(f.side==='away')+'">'+esc(A.short||A.abbr)+'</button><button data-act="bt-side" data-k="home" aria-pressed="'+(f.side==='home')+'">'+esc(H.short||H.abbr)+'</button></div></div>'+
       '<div class="stakerow2"><label>Wager <input class="num" data-bt="wager" inputmode="decimal" value="'+esc(f.wager)+'" aria-label="Wager in coins"> coins</label><span class="chips2">'+wchips+'</span></div>'+
       '<div class="btnrow"><button class="btn solid" data-act="bt-create"'+(BT.busy?' disabled':'')+'>'+(SOC.user?'Create battle':'Sign in to battle')+'</button></div>'+
-      '<div class="small muted">Your wager is held until the battle ends. Rosters and injuries are frozen when you create the battle. If nobody accepts within 30 minutes, or the parlays are not locked within 15 minutes of accepting, everything is refunded.</div>'
+      '<div class="small muted">Your wager is held until the battle ends. Then you wait for a challenger. If you leave this screen you get a pop-up the moment someone accepts. If nobody accepts within 30 minutes, or the parlays are not locked within 15 minutes of accepting, everything is refunded.</div>'
     :'<div class="small muted">Loading teams…</div>')+
     (BT.msg?'<div class="slipnote warnt">'+esc(BT.msg)+'</div>':'')+'</div></section>';
 }
 function btRow(b,kind){
   const me=SOC.user&&SOC.user.id; const mine=me&&(b.creator===me||b.opponent===me);
-  const A=teamOf(b.sport,b.away), H=teamOf(b.sport,b.home);
+  const A=teamOf(b.sport,b.away), H=teamOf(b.sport,b.home); const wait=!b.away;
   const who=esc(b.creator_name||'?')+(b.opponent_name?' vs '+esc(b.opponent_name):'');
   let right='';
   if(kind==='open'){
-    if(b.status==='open'&&!mine) right='<span class="badge warn">open</span>';
+    if(b.status==='open'&&!mine) right='<span class="badge warn">'+(wait?'pick a team':'open')+'</span>';
     else if(b.status==='building') right='<span class="badge">building parlays</span>';
     else right='<span class="badge">waiting</span>';
   } else if(kind==='live'){ right='<span class="liveb"><i class="livedot"></i>'+(b.score?esc(b.score.as+'-'+b.score.hs):'LIVE')+'</span>'; }
   else { right=b.status==='cancelled'?'<span class="badge">refunded</span>':'<span class="badge '+(b.result&&b.result.split?'':'ok')+'">'+(b.result?esc(b.result.as+'-'+b.result.hs):'')+(b.result&&b.result.split?' split':'')+'</span>'; }
   const sub=kind==='recent'&&b.status==='final'&&!(b.result&&b.result.split)?'winner '+esc(b.winner===b.creator?b.creator_name:b.opponent_name):kind==='recent'&&b.cancel_reason?esc(b.cancel_reason):(b.nbets?b.nbets+' spectator bet'+(b.nbets>1?'s':''):'');
-  return '<button class="btrow'+(mine?' mine':'')+'" data-act="bt-open" data-id="'+b.id+'"><span class="btm">'+tchip(A.abbr,A.color)+tchip(H.abbr,H.color)+'</span><span class="btt"><b>'+esc(SPN[b.sport]||b.sport)+' · '+esc(b.away)+' @ '+esc(b.home)+(b.fmt==='sgp'?' <span class="sgpb">SGP</span>':'')+'</b><span class="small muted">'+who+' · pot '+cn(b.wager*(b.opponent?2:1))+(sub?' · '+sub:'')+'</span></span>'+right+'</button>';
+  return '<button class="btrow'+(mine?' mine':'')+'" data-act="bt-open" data-id="'+b.id+'"><span class="btm">'+(wait?'':tchip(A.abbr,A.color))+tchip(H.abbr,H.color)+'</span><span class="btt"><b>'+esc(SPN[b.sport]||b.sport)+' · '+(wait?esc(b.home)+' <span class="muted">waiting for a challenger</span>':esc(b.away)+' @ '+esc(b.home))+(b.fmt==='sgp'?' <span class="sgpb">SGP</span>':'')+'</b><span class="small muted">'+who+' · pot '+cn(b.wager*(b.opponent?2:1))+(sub?' · '+sub:'')+'</span></span>'+right+'</button>';
 }
 function btLobbyHtml(){
   const L=BT.lobby;
   const list=(arr,kind,empty)=>arr&&arr.length?arr.map(b=>btRow(b,kind)).join(''):'<div class="small muted">'+empty+'</div>';
   return btCreateHtml()+
-    '<section class="game"><div class="sec"><h3>Open battles <span class="hint">accept one or bet on it</span></h3>'+(L?list(L.open,'open','No open battles. Start one above.'):'<div class="small muted">Loading…</div>')+'</div></section>'+
+    '<section class="game"><div class="sec"><h3>Open battles <span class="hint">accept one and pick your team</span></h3>'+(L?list(L.open,'open','No open battles. Start one above.'):'<div class="small muted">Loading…</div>')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>Live now</h3>'+(L?list(L.live,'live','No battle is being played right now.'):'')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>Recent results</h3>'+(L?list(BT.moreRecent?L.recent:(L.recent||[]).slice(0,6),'recent','No finished battles yet.')+(!BT.moreRecent&&(L.recent||[]).length>6?'<div class="btnrow"><button class="btn" data-act="bt-more">More ('+((L.recent.length)-6)+')</button></div>':''):'')+'</div></section>'+
-    '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, MLB, college football or college basketball), two teams, a format (Parlay or Same Game Parlay), the team you back and a wager. 2. Another player accepts with the same wager. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record.</div>'+PRACTICE_NOTE+'</div></section>';
+    '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, MLB, college football or college basketball), your team, a format (Parlay or Same Game Parlay), the legs allowed and a wager, then wait. 2. Another player accepts with the same wager and picks the opposing team. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record.</div>'+PRACTICE_NOTE+'</div></section>';
 }
 const bgrp=tok=>{ const p=tok.split(':'); return p[0]==='p'||p[0]==='x'?'p:'+p[1]+':'+p[2]:p[0]; };
 function mktBtn(tok,top,price,on,dis,act,aria){ return '<button class="odd'+(on?' on':'')+'" data-act="'+(act||'bt-leg')+'" data-tok="'+esc(tok)+'" aria-pressed="'+!!on+'"'+(aria?' aria-label="'+esc(aria)+'"':'')+(dis?' disabled':'')+'><span class="o1">'+esc(top)+'</span><span class="o2 mono">'+fo(price)+'</span></button>'; }
@@ -4031,7 +4074,7 @@ function btSections(){
   const sec={};
   const timer=b.status==='open'?'<span class="small muted">expires in <b data-until="'+new Date(Date.parse(b.created_at)+30*60000).toISOString()+'"></b></span>':b.status==='building'?'<span class="small muted">lock within <b data-until="'+new Date(Date.parse(b.accepted_at)+15*60000).toISOString()+'"></b></span>':b.status==='live'?'<span class="liveb"><i class="livedot"></i>LIVE</span>':'';
   sec.head='<div class="sec"><div class="btnrow"><button class="btn" data-act="bt-back">‹ All battles</button></div><h3>'+esc(SPLONG[b.sport]||SPN[b.sport])+' battle #'+b.id+' '+(b.fmt==='sgp'?'<span class="sgpb">SGP</span> ':'')+timer+'</h3>'+
-    '<div class="vsrow"><div class="vsp">'+uLink(b.creator_name||'?')+'<span class="small muted">backs '+esc(sideName(b.creator_side))+'</span></div><div class="pot">'+COIN+' <b>'+cn(b.wager*(b.opponent?2:1))+'</b><span class="small muted">pot</span></div><div class="vsp">'+(b.opponent?uLink(b.opponent_name||'?')+'<span class="small muted">backs '+esc(sideName(b.opponent_side))+'</span>':'<span class="muted">waiting for an opponent</span>')+'</div></div>'+
+    '<div class="vsrow"><div class="vsp">'+uLink(b.creator_name||'?')+'<span class="small muted">'+(b.away?'backs ':'plays ')+esc(sideName(b.creator_side))+'</span></div><div class="pot">'+COIN+' <b>'+cn(b.wager*(b.opponent?2:1))+'</b><span class="small muted">pot</span></div><div class="vsp">'+(b.opponent?uLink(b.opponent_name||'?')+'<span class="small muted">plays '+esc(sideName(b.opponent_side))+'</span>':'<span class="muted">waiting for a challenger</span>')+'</div></div>'+
     (b.status==='cancelled'?'<div class="flash">Cancelled: '+esc(b.cancel_reason||'')+'. Wagers and spectator bets were refunded.</div>':'')+
     (BT.msg?'<div class="slipnote warnt">'+esc(BT.msg)+'</div>':'')+'</div>';
   if(b.status==='live'||fin){
@@ -4047,20 +4090,26 @@ function btSections(){
     let act='';
     if(b.status==='open'){
       if(!me) act='<div class="btnrow"><button class="btn solid" data-act="signin">Sign in to accept</button></div>';
-      else if(isC) act='<div class="small">Waiting for someone to accept. Share the Battle tab with a friend.</div><div class="btnrow"><button class="btn" data-act="bt-cancel">Cancel and refund</button></div>';
-      else { const oth=b.creator_side==='home'?'away':'home'; act='<div class="small"><b>'+esc(b.creator_name||'They')+'</b> backs <b>'+esc(sideName(b.creator_side))+'</b>. Accept the same wager ('+cn(b.wager)+' coins) and you get <b>'+esc(sideName(oth))+'</b>. Then you both build your parlays.</div><div class="btnrow"><button class="btn solid" data-act="bt-accept" data-k="'+oth+'">Accept · back '+esc(sideName(oth))+'</button></div>'; }
+      else if(isC) act='<div class="small">You picked <b>'+esc(b.home)+'</b>. Waiting for a challenger to pick the opposing team and accept. You can leave this screen: a pop-up will tell you the moment someone accepts.</div>'+btSettingsHtml(b)+'<div class="btnrow"><button class="btn" data-act="bt-cancel">Cancel and refund</button></div>';
+      else if(b.away){ const oth=b.creator_side==='home'?'away':'home'; act='<div class="small"><b>'+esc(b.creator_name||'They')+'</b> backs <b>'+esc(sideName(b.creator_side))+'</b>. Accept the same wager ('+cn(b.wager)+' coins) and you get <b>'+esc(sideName(oth))+'</b>. Then you both build your parlays.</div><div class="btnrow"><button class="btn solid" data-act="bt-accept" data-k="'+oth+'">Accept · back '+esc(sideName(oth))+'</button></div>'; }
+      else { const ts=simTeams(b.sport); const f2={sport:b.sport,pick:BT.form.pick,dd:BT.form.dd}; const qq=(BT.form.q||'').trim().toLowerCase(); const pk=teamOf(b.sport,BT.form.pick);
+        act='<div class="small"><b>'+esc(b.creator_name||'They')+'</b> is playing <b>'+esc(teamOf(b.sport,b.home).name||b.home)+'</b> and is waiting for a challenger. Pick the team you want to play, then accept the same wager ('+cn(b.wager)+' coins). Then you both build your parlays.</div>'+btSettingsHtml(b)+
+          (ts.length>40?'<label class="fld">Find a team<input class="num wide" data-bt="q" value="'+esc(BT.form.q||'')+'" placeholder="Type a school" aria-label="Find a team" autocomplete="off"></label>':'')+
+          tpHtml(f2,'pick',ts,qq,'Your team',b.home)+
+          (BT.form.pick&&pk.props===false?'<div class="small muted">'+esc(pk.short||pk.abbr)+' has no player data yet, so this battle would have team lines only.</div>':'')+
+          '<div class="btnrow"><button class="btn solid" data-act="bt-accept"'+(BT.form.pick?'':' disabled')+'>'+(BT.form.pick?'Accept · play as '+esc(pk.short||pk.abbr):'Pick your team to accept')+'</button></div>'; }
     } else if(part){
       const mine=(d.parlays||[]).find(p=>p.user_id===me); const other=b.creator===me?b.opponent_name:b.creator_name;
       const locked=mine&&mine.locked; const sel=BT.draft[b.id]||[];
       const min=b.fmt==='sgp'?2:1; const ok=sel.length>=min;
-      act='<div class="small">'+(locked?(b.both_locked_at?'<b data-bt-cd="'+(Date.parse(b.both_locked_at)+5000)+'">Both locked. Starting in 5s</b>. Tap Unlock to change something.':'Your parlay is locked. Waiting for '+esc(other)+'… You can unlock until both of you are locked in for 5 seconds.'):'Build your '+(b.fmt==='sgp'?'Same Game Parlay: ':'parlay: ')+capTxt(b,b.fmt==='sgp'?min:1)+' (one per market), then lock it. '+esc(other)+' cannot see it until the game starts.')+'</div>'+
+      act='<div class="small">'+(locked?(b.both_locked_at?'<b data-bt-cd="'+(Date.parse(b.both_locked_at)+5000)+'">Both locked. Starting in 5s</b>. Tap Unlock to change something.':'Your parlay is locked. Waiting for '+esc(other)+'… You can unlock until both of you are locked in for 5 seconds.'):'Build your '+(b.fmt==='sgp'?'Same Game Parlay: ':'parlay: ')+capTxt(b,b.fmt==='sgp'?min:1)+(btFree(b)?'':' (one per market)')+', then lock it. '+esc(other)+' cannot see it until the game starts.')+'</div>'+
         (sel.length?'<div class="mylegs">'+sel.map(t=>'<div class="myleg"><span>'+esc(legLabel(b,t))+' <span class="mono muted">'+fo(legPrice(b,t))+'</span></span>'+(locked?'':'<button class="x" data-act="bt-leg" data-tok="'+esc(t)+'" aria-label="Remove '+esc(legLabel(b,t))+'">Remove</button>')+'</div>').join('')+'</div>':'')+btPriceBox(b,sel)+
         '<div class="btnrow">'+(locked?'<button class="btn" data-act="bt-unlock">Unlock to change</button>':'')+'<button class="btn solid" data-act="bt-lock"'+(locked||!ok?' disabled':'')+'>'+(locked?'Locked':ok?'Lock my parlay ('+sel.length+')':'Pick '+(min-sel.length)+' more leg'+(min-sel.length>1?'s':''))+'</button><button class="btn" data-act="bt-cancel">Cancel battle</button></div>';
-      sec.mk='<div class="sec"><h3>Battle markets <span class="hint">'+(locked?'locked':'tap to add')+'</span></h3>'+(b.fmt==='sgp'?'<div class="sgptab"><span class="sgpb">SGP</span> Same Game Parlay: pick legs from any section. The price comes from the simulator and accounts for legs that move together.</div>':'')+btMarketsHtml(b,sel,locked?null:'bt-leg')+'</div>';
+      sec.mk='<div class="sec"><h3>Battle markets <span class="hint">'+(locked?'locked':'tap to add')+'</span></h3>'+(b.fmt==='sgp'?'<div class="sgptab"><span class="sgpb">SGP</span> Same Game Parlay: pick legs from any section. The price comes from the simulator and accounts for legs that move together.'+(btFree(b)?' Unlimited legs: every option is open, and you can take several picks from one market. The more you stack, the more the price adjusts.':'')+'</div>':'')+(BT.swapMsg?'<div class="slipnote">'+esc(BT.swapMsg)+'</div>':'')+btMarketsHtml(b,sel,locked?null:'bt-leg')+'</div>';
     } else act='<div class="small muted">'+esc(b.creator_name)+' and '+esc(b.opponent_name)+' are building their parlays. The game starts when both lock.</div>';
     sec.act='<div class="sec">'+act+'</div>';
-    if(!sec.mk) sec.mk='<div class="sec"><h3>Battle markets <span class="hint">fair-ish lines from the ratings</span></h3>'+btMarketsHtml(b,[],null)+'</div>';
-    if(me&&!part){
+    if(!sec.mk&&b.away) sec.mk='<div class="sec"><h3>Battle markets <span class="hint">fair-ish lines from the ratings</span></h3>'+btMarketsHtml(b,[],null)+'</div>';
+    if(me&&!part&&b.away){
       const tok=BT.spec.tok; const pr=tok?legPrice(b,tok):null;
       sec.spec='<div class="sec"><h3>Spectator bet <span class="hint">before the game starts</span></h3>'+btMarketsHtml(b,tok?[tok]:[],'bt-spec',{lines:true})+
         (b.markets.winner?btMarketsHtml(b,tok?[tok]:[],'bt-spec',{win:true}):'<div class="small muted">"Who wins the battle" opens once someone accepts.</div>')+
@@ -4071,6 +4120,9 @@ function btSections(){
   const bets=d.bets||[];
   if(bets.length) sec.bets='<div class="sec"><h3>Spectator bets <span class="hint">'+bets.length+'</span></h3>'+bets.map(s=>'<div class="bl">'+legStatusIcon({res:s.status==='won'?'W':s.status==='lost'?'L':s.status==='void'?'V':null})+'<span>'+uLink(s.username)+' '+esc(s.label)+' <span class="mono muted">'+fo(s.price)+'</span> · '+cn(s.stake)+(s.status==='won'?' → '+cn(s.payout):'')+'</span>'+(s.status==='won'&&SOC.me&&s.username===SOC.me.username?' <button class="shbtn" data-act="sh-open" data-k="slip" data-src="spec" data-id="'+esc(s.id)+'">Share</button>':'')+'</div>').join('')+'</div>';
   return sec;
+}
+function btSettingsHtml(b){
+  return '<div class="small muted">'+(b.fmt==='sgp'?'Same Game Parlay':'Parlay')+' · '+(b.max_legs===0?'unlimited legs':'up to '+(b.max_legs||6)+' legs')+' · '+(b.duration_min||4)+'-minute game · '+cn(b.wager)+' coin wager</div>';
 }
 function btWinnerHtml(b,d){
   const r=b.result||{}; if(!r.creator) return '<div class="small muted">Settling…</div>';
@@ -4122,7 +4174,7 @@ async function btCall(fn,args,ok){
   if(r.data&&r.data.balance!=null&&SOC.me){ SOC.me.balance=+r.data.balance; renderBank(); }
   if(ok) ok(r.data); else { refreshMe(); if(BT.id) loadDetail(); else loadLobby(); }
 }
-function btOpen(id){ BT.id=id; BT.det=null; BT.msg=''; BT.html={}; BT.spec={tok:'',stake:BT.spec.stake}; S.view='battle'; render(); window.scrollTo(0,0); }
+function btOpen(id){ if(BT.id!==id){ BT.form.pick=''; BT.form.dd=null; BT.swapMsg=''; } BT.id=id; BT.det=null; BT.msg=''; BT.html={}; BT.spec={tok:'',stake:BT.spec.stake}; S.view='battle'; render(); window.scrollTo(0,0); }
 function saveParlay(id){ clearTimeout(BT.saveT); BT.saveT=setTimeout(()=>{ const legs=(BT.draft[id]||[]).slice(); SOC.sb.rpc('set_battle_parlay',{p_id:id,p_legs:legs}).then(r=>{ if(r.error){ BT.msg=r.error.message; } else { BT.msg=''; if(r.data&&r.data.quote) BT.quote[id]=r.data.quote; } btRender(); loadDetail(); }); },350); }
 document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act]'); if(!t) return; const act=t.getAttribute('data-act'); if(act.indexOf('bt-')!==0) return;
@@ -4130,23 +4182,26 @@ document.addEventListener('click',function(e){
   const f=BT.form;
   if(act==='bt-sport'){ f.sport=t.getAttribute('data-k'); f.q=''; btFormDefaults(); btRender(); return; }
   if(act==='bt-more'){ BT.moreRecent=true; btRender(); return; }
+  if(act==='bt-tdd'){ const k=t.getAttribute('data-k'); BT.form.dd=(BT.form.dd===k?null:k); btRender(); return; }
+  if(act==='bt-tsel'){ BT.form[t.getAttribute('data-k')]=t.getAttribute('data-v'); BT.form.dd=null; btRender(); return; }
   if(act==='bt-legs'){ f.legs=parseInt(t.getAttribute('data-k'),10); btRender(); return; }
   if(act==='bt-mins'){ f.mins=parseInt(t.getAttribute('data-k'),10); btRender(); return; }
   if(act==='bt-fmt'){ f.fmt=t.getAttribute('data-k'); btRender(); return; }
-  if(act==='bt-side'){ f.side=t.getAttribute('data-k'); btRender(); return; }
   if(act==='bt-wager'){ f.wager=t.getAttribute('data-v'); btRender(); return; }
-  if(act==='bt-create'){ if(!SOC.user){ openModal('in'); return; } if(f.home===f.away){ BT.msg='Pick two different teams.'; btRender(); return; }
-    btCall('create_battle',{p_sport:f.sport,p_home:f.home,p_away:f.away,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_side:f.side,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ refreshMe(); btOpen(d.id); }); return; }
+  if(act==='bt-create'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
+    btCall('create_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ BT.alerts.until=Date.now()+30*60000; BT.alerts.last=0; refreshMe(); btOpen(d.id); }); return; }
   if(act==='bt-open'){ btOpen(+t.getAttribute('data-id')); return; }
+  if(act==='bt-popgo'){ const id=+t.getAttribute('data-id'); btPopHide(id); btOpen(id); return; }
+  if(act==='bt-popx'){ btPopHide(+t.getAttribute('data-id')); return; }
   if(act==='bt-back'){ BT.id=null; BT.det=null; BT.msg=''; BT.html={}; render(); return; }
   const b=BT.det&&BT.det.battle; if(!b) return;
-  if(act==='bt-accept'){ btCall('accept_battle',{p_id:b.id,p_side:t.getAttribute('data-k')}); return; }
+  if(act==='bt-accept'){ if(!b.away&&!BT.form.pick){ BT.msg='Pick your team first.'; btRender(); return; } btCall('accept_battle',{p_id:b.id,p_team:b.away?null:BT.form.pick}); return; }
   if(act==='bt-cancel'){ if(!confirm('Cancel this battle? Wagers and spectator bets are refunded.')) return; btCall('cancel_battle',{p_id:b.id}); return; }
   if(act==='bt-unlock'){ btCall('unlock_battle_parlay',{p_id:b.id},()=>btOpen(b.id)); return; }
   if(act==='bt-lock'){ clearTimeout(BT.saveT); SOC.sb.rpc('set_battle_parlay',{p_id:b.id,p_legs:BT.draft[b.id]||[]}).then(r=>{ if(r.error){ BT.msg=r.error.message; btRender(); return; } btCall('lock_battle_parlay',{p_id:b.id}); }); return; }
   if(act==='bt-leg'){ const tok=t.getAttribute('data-tok'); let sel=(BT.draft[b.id]||[]).slice(); const i=sel.indexOf(tok);
-    if(i>=0) sel.splice(i,1); else { sel=sel.filter(x=>bgrp(x)!==bgrp(tok)); if(sel.length>=capN(b)){ BT.msg='This battle allows at most '+capN(b)+' legs.'; btRender(); return; } sel.push(tok); }
-    BT.draft[b.id]=sel; BT.msg=''; btRender(); saveParlay(b.id); return; }
+    if(i>=0) sel.splice(i,1); else { if(btFree(b)){ const gone=sel.filter(x=>btClash(b,x,tok)); sel=sel.filter(x=>gone.indexOf(x)<0); BT.swapMsg=gone.length?'Swapped out '+gone.map(x=>legLabel(b,x)).join(', ')+' (it cannot happen with your new pick).':''; } else sel=sel.filter(x=>bgrp(x)!==bgrp(tok)); if(sel.length>=capN(b)){ BT.msg='This battle allows at most '+capN(b)+' legs.'; btRender(); return; } sel.push(tok); }
+    BT.draft[b.id]=sel; BT.msg=''; if(!btFree(b)||i>=0) BT.swapMsg=''; btRender(); saveParlay(b.id); return; }
   if(act==='bt-acc'){ const k=t.getAttribute('data-k'); const cur=BT.acc[k]!=null?BT.acc[k]:(k==='lines'); BT.acc[k]=!cur; BT.html={}; btRender(); return; }
   if(act==='bt-all'){ const k=t.getAttribute('data-k'); BT.all[k]=!BT.all[k]; BT.html={}; btRender(); return; }
   if(act==='bt-spec'){ const tok=t.getAttribute('data-tok'); BT.spec.tok=BT.spec.tok===tok?'':tok; btRender(); return; }
@@ -4169,6 +4224,13 @@ renderSlip=function(){ _renderSlip0.apply(this,arguments); const el=document.get
 })();
 
 /* ---------- battle v2 helpers: leg cap, nav counts, 5-second countdown ---------- */
+/* unlimited Same Game Parlay: every option is selectable; only picks that can never both happen replace each other */
+function btFree(b){ return b.fmt==='sgp'&&b.max_legs===0; }
+function btBand(b,tok){ const p=tok.split(':'); if(p[0]==='x') return {k:p[1]+':'+p[2],ge:+p[3]};
+  if(p[0]==='p'){ const pr=((b.markets&&b.markets.props)||[]).find(x=>x.pid===p[1]&&x.stat===p[2]); if(!pr) return null; const k=Math.floor(+pr.line)+1; return p[3]==='over'?{k:p[1]+':'+p[2],ge:k}:{k:p[1]+':'+p[2],lt:k}; } return null; }
+function btClash(b,a,c){ if(a===c) return true; const pa=a.split(':'), pc=c.split(':');
+  if(pa[0]===pc[0]&&(pa[0]==='ml'||pa[0]==='spr'||pa[0]==='tot')) return pa[1]!==pc[1];
+  const x=btBand(b,a), y=btBand(b,c); if(x&&y&&x.k===y.k) return (x.ge!=null&&y.lt!=null&&x.ge>=y.lt)||(y.ge!=null&&x.lt!=null&&y.ge>=x.lt); return false; }
 function capN(b){ return b.max_legs===0?40:(b.max_legs||6); }
 function capTxt(b,min){ return b.max_legs===0?'tap '+min+' or more legs (no limit)':'tap '+min+' to '+capN(b)+' legs'; }
 function btPending(){ const L=BT.lobby; return L&&L.open?L.open.length:0; }              // battles waiting for an opponent or for parlays
@@ -4186,6 +4248,79 @@ setInterval(()=>{ try{
     else { el.textContent='Starting…'; BT.cd=BT.cd||{}; if(!BT.cd[ts]){ BT.cd[ts]=1; SOC.sb.rpc('battle_tick').then(()=>{ if(BT.id) btOpen(BT.id); }); } } }
   BT.navN=(BT.navN||0)+1; if(BT.navN%4===0&&typeof navRefresh==='function'&&!(typeof isTypingNow==='function'&&isTypingNow())) navRefresh();
 }catch(e){} },1000);
+
+
+/* ---------- team logo dropdowns, profile pictures ---------- */
+const LOGO_LG={nfl:'nfl',nba:'nba',mlb:'mlb'};
+function tlogo(sport,t,sz){ sz=sz||30; if(!t) return ''; const lg=LOGO_LG[sport]; const ab=String(t.abbr||'');
+  return '<span class="tl" style="width:'+sz+'px;height:'+sz+'px;background:'+esc(t.color||'#3b4a6b')+'"><b>'+esc(ab.slice(0,3))+'</b>'+(lg?'<img class="tlg" alt="" loading="lazy" src="https://a.espncdn.com/i/teamlogos/'+lg+'/500/'+esc(ab.toLowerCase())+'.png" onerror="this.style.display=\'none\'">':'')+'</span>'; }
+function tpHtml(f,kind,ts,q,label,other){
+  const sel=ts.find(t=>t.abbr===f[kind])||(kind==='home'?ts[0]:null); const open=f.dd===kind;
+  const list=ts.filter(t=>t.abbr!==other&&(!q||(t.name||'').toLowerCase().indexOf(q)>=0||(t.abbr||'').toLowerCase().indexOf(q)>=0));
+  return '<div class="tp"><div class="tpl">'+esc(label||'Team')+'</div><button class="tpb" data-act="bt-tdd" data-k="'+kind+'" aria-haspopup="listbox" aria-expanded="'+open+'">'+(sel?tlogo(f.sport||BT.form.sport,sel):'')+'<span class="tpn">'+esc(sel?sel.name:'Choose your team')+'</span><span class="tpc" aria-hidden="true">&#9662;</span></button>'+
+    (open?'<div class="tpm" role="listbox">'+(list.length?list.map(t=>'<button class="tpo'+(t.abbr===f[kind]?' on':'')+'" role="option" data-act="bt-tsel" data-k="'+kind+'" data-v="'+esc(t.abbr)+'">'+tlogo(f.sport||BT.form.sport,t)+'<span>'+esc(t.name||t.abbr)+(t.props===false?' <i class="muted">(lines only)</i>':'')+'</span></button>').join(''):'<div class="small muted" style="padding:10px">No team matches.</div>')+'</div>':'')+'</div>';
+}
+document.addEventListener('click',function(e){ if(BT.form&&BT.form.dd&&!(e.target.closest&&e.target.closest('.tp'))){ BT.form.dd=null; btRender(); } },true);
+
+SOC.av=SOC.av||{}; let avQ={}, avT=null, avBusy=false;
+uLink=function(name,cls){ const n=String(name||''); return '<span class="ulw"><span class="av" data-n="'+esc(n)+'" aria-hidden="true"><i>'+esc(n.slice(0,1).toUpperCase())+'</i></span><button class="ulink'+(cls?' '+cls:'')+'" data-act="profile" data-u="'+esc(n)+'">'+esc(n)+'</button></span>'; };
+function paintAv(){
+  document.querySelectorAll('.av[data-n]:not([data-p])').forEach(el=>{
+    const n=(el.getAttribute('data-n')||'').toLowerCase(); const v=SOC.av[n];
+    if(v===undefined){ avQ[n]=1; el.style.background='hsl('+([...n].reduce((a,c)=>a+c.charCodeAt(0),0)*37%360)+',42%,40%)'; return; }
+    el.setAttribute('data-p','1');
+    if(v) el.innerHTML='<img alt="" src="'+v+'">'; else el.style.background='hsl('+([...n].reduce((a,c)=>a+c.charCodeAt(0),0)*37%360)+',42%,40%)';
+  });
+  const names=Object.keys(avQ).filter(n=>SOC.av[n]===undefined).slice(0,50);
+  if(!names.length||avBusy||!SOC.sb) return; avBusy=true; avQ={};
+  SOC.sb.rpc('get_avatars',{p_names:names}).then(r=>{ avBusy=false; names.forEach(n=>{ SOC.av[n]=''; }); if(!r.error) (r.data||[]).forEach(x=>{ SOC.av[String(x.username).toLowerCase()]=x.avatar||''; }); paintAv(); },()=>{ avBusy=false; names.forEach(n=>{ SOC.av[n]=''; }); });
+}
+new MutationObserver(()=>{ clearTimeout(avT); avT=setTimeout(paintAv,80); }).observe(document.body,{childList:true,subtree:true});
+document.addEventListener('change',function(e){ const t=e.target; if(!t||!t.getAttribute||t.getAttribute('data-in')!=='avfile'||!t.files||!t.files[0]) return;
+  const url=URL.createObjectURL(t.files[0]), img=new Image();
+  img.onload=()=>{ const c=document.createElement('canvas'); c.width=c.height=96; const g=c.getContext('2d'), m=Math.min(img.width,img.height); g.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,96,96); URL.revokeObjectURL(url);
+    const data=c.toDataURL('image/jpeg',0.75);
+    SOC.sb.rpc('set_avatar',{p_avatar:data}).then(r=>{ if(r.error){ S.flash=r.error.message; try{ renderBank(); }catch(x){} return; } SOC.av[SOC.me.username.toLowerCase()]=data; document.querySelectorAll('.av[data-p]').forEach(el=>el.removeAttribute('data-p')); paintAv(); }); };
+  img.onerror=()=>{ S.flash='That picture could not be read.'; try{ renderBank(); }catch(x){} }; img.src=url; t.value=''; });
+if(/[?&]debug=1/.test(location.search)) window.__bt={BT,SOC,S,render:()=>render()};
+
+
+/* ---------- challenger alert: a pop-up on ANY screen of the app when someone accepts the battle you started ---------- */
+BT.alerts={shown:{},last:0};
+function btSeenGet(){ try{ return JSON.parse(localStorage.getItem('ls_bt_alerted')||'[]'); }catch(e){ return []; } }
+function btSeenAdd(id){ try{ const a=btSeenGet(); if(a.indexOf(id)<0){ a.push(id); localStorage.setItem('ls_bt_alerted',JSON.stringify(a.slice(-60))); } }catch(e){} }
+function btPopHide(id){ btSeenAdd(id); delete BT.alerts.shown[id]; const el=document.getElementById('btpop'); if(el&&el.getAttribute('data-id')==String(id)) el.className=''; }
+function btPopup(b){
+  const T=teamOf(b.sport,b.away), H=teamOf(b.sport,b.home);
+  let el=document.getElementById('btpop'); if(!el){ el=document.createElement('div'); el.id='btpop'; el.setAttribute('role','alert'); el.setAttribute('aria-live','assertive'); document.body.appendChild(el); }
+  el.setAttribute('data-id',b.id);
+  el.innerHTML='<div class="btp-i"><div class="btp-t">⚔️ You have a match!</div><div class="btp-b"><b>'+esc(b.opponent_name||'Someone')+'</b> accepted your '+esc(SPN[b.sport]||b.sport)+' battle and picked <b>'+esc(T.name||b.away||'')+'</b> against your <b>'+esc(H.name||b.home)+'</b>. Build and lock your parlay within 15 minutes.</div>'+
+    '<div class="btp-a"><button class="btn solid" data-act="bt-popgo" data-id="'+b.id+'">Go to battle</button><button class="btn" data-act="bt-popx" data-id="'+b.id+'">Later</button></div></div>';
+  el.className='on';
+  try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
+  try{ if(typeof sfx==='function') sfx('whistle',0); }catch(e){}
+}
+function btCheckAlerts(L){
+  const me=SOC.user&&SOC.user.id; if(!me||!L||!L.open) return;
+  L.open.forEach(b=>{
+    if(b.creator!==me||b.status!=='building'||!b.opponent) return;
+    if(BT.alerts.shown[b.id]||btSeenGet().indexOf(b.id)>=0) return;
+    if(S.view==='battle'&&BT.id===b.id){ btSeenAdd(b.id); return; }       // already looking at it
+    BT.alerts.shown[b.id]=1; btPopup(b);
+  });
+}
+function btWatch(){
+  if(!SOC.sb||!SOC.user||document.hidden) return;
+  const me=SOC.user.id, L=BT.lobby;
+  const waiting=!!(L&&L.open&&L.open.some(b=>b.creator===me&&b.status==='open'))||(BT.alerts.until||0)>Date.now();
+  if(Date.now()-BT.alerts.last<(waiting?5000:30000)) return;
+  if(S.view==='battle'&&!BT.id) return;                                   // the lobby screen already polls and checks
+  BT.alerts.last=Date.now();
+  SOC.sb.rpc('battle_lobby').then(r=>{ if(r.error||!r.data) return; BT.lobby=r.data; if(r.data.now) BT.skew=Date.parse(r.data.now)-Date.now(); btCheckAlerts(r.data); try{ navRefresh(); }catch(e){} },()=>{});
+}
+setInterval(btWatch,2500);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ BT.alerts.last=0; setTimeout(btWatch,300); } });
+
 
 /* ================= Battle animations =================
    A small SVG scene (field / court / diamond) above the play feed.  Every new play that becomes visible is classified, queued and played for

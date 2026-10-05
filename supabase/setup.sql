@@ -929,7 +929,7 @@ create or replace function ls_private.bb_k(p_sport text) returns double precisio
   select case when p_sport = 'cbb' then array[0.12, 0.33, 0.11, 0.12 * 3 + 0.33 * 2 + 0.11 * 1.56] else array[0.15, 0.30, 0.09, 0.15 * 3 + 0.30 * 2 + 0.09 * 1.56] end::double precision[]
 $$;
 
-create or replace function public.battle_markets(p_sport text, p_home text, p_away text) returns jsonb
+create or replace function public.battle_markets_core(p_sport text, p_home text, p_away text) returns jsonb
 language plpgsql stable security definer set search_path = public, ls_private, pg_temp as $$
 declare e double precision[]; eh double precision; ea double precision; lg double precision; sdm double precision; sdt double precision; x double precision;
   ph double precision; lh numeric; pc double precision; tl numeric; po double precision; players jsonb := '[]'::jsonb; props jsonb := '[]'::jsonb; pm jsonb := '{}'::jsonb;
@@ -1056,7 +1056,7 @@ end $$;
 --   ml:home|away   spr:home|away   tot:over|under   p:<pid>:<stat>:over|under   x:<pid>:<stat>:<n>   win:creator|opponent (spectators only)
 -- The returned object is self-contained (line, pid, stat, n, dir are copied in), so a parlay can be shown and graded without the market list.
 create or replace function ls_private.battle_leg(mk jsonb, tok text, allow_win boolean default false) returns jsonb language plpgsql immutable as $$
-declare p text[] := string_to_array(coalesce(tok, ''), ':'); pr jsonb; n int; pz int;
+declare p text[] := string_to_array(coalesce(tok, ''), ':'); pr jsonb; n int; pz int; ln numeric;
 begin
   if p[1] = 'ml' and p[2] in ('home', 'away') then
     return jsonb_build_object('tok', tok, 'kind', 'ml', 'side', p[2], 'grp', 'ml', 'price', (mk -> 'ml' ->> p[2])::int, 'label', (mk ->> p[2]) || ' to win');
@@ -1079,6 +1079,14 @@ begin
     n := p[4]::int;
     return jsonb_build_object('tok', tok, 'kind', 'x', 'pid', p[2], 'stat', p[3], 'n', n, 'grp', 'p:' || p[2] || ':' || p[3], 'price', pz,
       'label', ls_private.surname(pr ->> 'name') || case when (pr ->> 'yn')::boolean then ' ' || lower(pr ->> 'label') else ' ' || n || '+ ' || lower(pr ->> 'label') end);
+  elsif p[1] = 'h1ml' and p[2] in ('home', 'away') and mk ? 'h1' then
+    return jsonb_build_object('tok', tok, 'kind', 'h1ml', 'side', p[2], 'grp', 'h1ml', 'price', (mk -> 'h1' -> 'ml' ->> p[2])::int, 'label', (mk ->> p[2]) || ' leads at the half');
+  elsif p[1] = 'sl' and p[2] in ('game', 'h1') and p[3] in ('spr', 'tot') and p[4] in ('home', 'away', 'over', 'under') and p[5] ~ '^-?[0-9]{1,3}(\.[05])?$' then
+    ln := p[5]::numeric; if (ln * 2) <> floor(ln * 2) then return null; end if;
+    if (p[3] = 'spr') <> (p[4] in ('home', 'away')) then return null; end if;
+    pz := ls_private.line_price(mk, p[2], p[3], p[4], ln); if pz is null then return null; end if;
+    return jsonb_build_object('tok', tok, 'kind', 'sl', 'scope', p[2], 'k', p[3], 'side', p[4], 'line', ln, 'grp', case when p[2] = 'h1' then 'h1' || p[3] else p[3] end, 'price', ls_private.boost_price(pz),
+      'label', case when p[3] = 'spr' then (mk ->> p[4]) || ' ' || ls_private.sg(ln) else initcap(p[4]) || ' ' || ls_private.num_txt(ln) end || case when p[2] = 'h1' then ' (1st half)' else '' end);
   elsif allow_win and p[1] = 'win' and p[2] in ('creator', 'opponent') and mk ? 'winner' then
     return jsonb_build_object('tok', tok, 'kind', 'win', 'grp', 'win', 'price', (mk -> 'winner' ->> p[2])::int, 'label', (mk -> 'winner' ->> (p[2] || 'Name')) || ' wins the battle');
   end if;
@@ -1086,13 +1094,22 @@ begin
 end $$;
 
 create or replace function ls_private.grade_battle_leg(mk jsonb, tok text, hs int, as_ int, players jsonb) returns text language plpgsql immutable as $$
-declare p text[] := string_to_array(tok, ':'); m int := hs - as_; v numeric; t int := hs + as_; pr jsonb; x numeric; ln numeric;
+declare p text[] := string_to_array(tok, ':'); m int := hs - as_; v numeric; t int := hs + as_; pr jsonb; x numeric; ln numeric; mm int; tt int;
 begin
   if p[1] = 'ml' then if m = 0 then return 'V'; end if; return case when (p[2] = 'home') = (m > 0) then 'W' else 'L' end; end if;
   if p[1] = 'spr' then v := (case when p[2] = 'home' then m else -m end) + (mk -> 'spr' ->> (p[2] || 'Line'))::numeric;
     if v = 0 then return 'V'; end if; return case when v > 0 then 'W' else 'L' end; end if;
   if p[1] = 'tot' then ln := (mk -> 'tot' ->> 'line')::numeric; if t = ln then return 'V'; end if;
     return case when (p[2] = 'over') = (t > ln) then 'W' else 'L' end; end if;
+  if p[1] = 'h1ml' then mm := coalesce((players -> '_h1' ->> 'hs')::int, 0) - coalesce((players -> '_h1' ->> 'as')::int, 0);
+    if mm = 0 then return 'V'; end if; return case when (p[2] = 'home') = (mm > 0) then 'W' else 'L' end; end if;
+  if p[1] = 'sl' then
+    if p[2] = 'h1' then mm := coalesce((players -> '_h1' ->> 'hs')::int, 0) - coalesce((players -> '_h1' ->> 'as')::int, 0); tt := coalesce((players -> '_h1' ->> 'hs')::int, 0) + coalesce((players -> '_h1' ->> 'as')::int, 0);
+    else mm := m; tt := t; end if;
+    ln := p[5]::numeric;
+    if p[3] = 'spr' then v := (case when p[4] = 'home' then mm else -mm end) + ln; else v := case when p[4] = 'over' then tt - ln else ln - tt end; end if;
+    if v = 0 then return 'V'; end if; return case when v > 0 then 'W' else 'L' end;
+  end if;
   if p[1] = 'x' then
     x := coalesce((players -> p[2] ->> p[3])::numeric, 0); return case when x >= p[4]::numeric then 'W' else 'L' end;
   end if;
@@ -1795,9 +1812,9 @@ alter table public.battles add column if not exists duration_min int not null de
 alter table public.battles add column if not exists both_locked_at timestamptz;                -- set when the second player locks; the game starts 5 s later unless someone unlocks
 create or replace function ls_private.boost_price(p int) returns int language sql immutable as $$
   select case when p is null or abs(p) < 100 then p else
-    (with d as (select case when p > 0 then 1 + p / 100.0 else 1 + 100.0 / -p end as dec),
-          n as (select 1 + (dec - 1) * 1.10 as dec from d)
-     select case when dec >= 2 then round((dec - 1) * 100)::int else -round(100 / (dec - 1))::int end from n) end
+    (with d as (select case when p > 0 then 1 + p / 100.0 else 1 + 100.0 / -p end as dc),
+          n as (select 1 + (dc - 1) * 1.10 as dc from d)
+     select case when dc >= 2 then round((dc - 1) * 100)::int else -round(100 / (dc - 1))::int end from n) end
 $$;
 create or replace function ls_private.boost_json(j jsonb) returns jsonb language plpgsql immutable as $$
 declare k text; v jsonb; o jsonb;
@@ -1885,7 +1902,7 @@ end $$;
 
 create or replace function public.set_battle_parlay(p_id bigint, p_legs jsonb) returns jsonb
 language plpgsql security definer set search_path = public, ls_private, pg_temp as $$
-declare uid uuid := auth.uid(); b public.battles; pp public.battle_parlays; n int; i int; leg jsonb; v_legs jsonb := '[]'::jsonb; grps text[] := '{}'; q jsonb; nv numeric := 1;
+declare v_cap int; uid uuid := auth.uid(); b public.battles; pp public.battle_parlays; n int; i int; leg jsonb; v_legs jsonb := '[]'::jsonb; grps text[] := '{}'; q jsonb; nv numeric := 1;
 begin
   select * into b from public.battles where id = p_id for update;
   if not found then raise exception 'No such battle'; end if;
@@ -1895,10 +1912,12 @@ begin
   if pp.locked then raise exception 'Your parlay is locked'; end if;
   if jsonb_typeof(p_legs) is distinct from 'array' then raise exception 'Bad parlay'; end if;
   n := jsonb_array_length(p_legs);
-  if n > case when b.max_legs = 0 then 40 else b.max_legs end then raise exception 'This battle allows at most % legs', case when b.max_legs = 0 then 40 else b.max_legs end; end if;
+  v_cap := case when b.max_legs = 0 then 40 else b.max_legs end;
+  if n > v_cap then raise exception 'This battle allows at most % legs', v_cap; end if;
   for i in 0 .. n - 1 loop
     leg := ls_private.battle_leg(b.markets, p_legs ->> i, false);
     if leg is null then raise exception 'Unknown battle market'; end if;
+    if b.fmt = 'sgp' and ((leg ->> 'kind') in ('h1ml', 'sl')) then raise exception 'Halftime bets and line sliders are for Parlay battles'; end if;
     if (leg ->> 'grp') = any(grps) then raise exception 'One pick per market: %', leg ->> 'label'; end if;
     grps := grps || (leg ->> 'grp'); v_legs := v_legs || jsonb_build_array(leg);
     nv := nv * ls_private.dec_of((leg ->> 'price')::int);
@@ -1931,6 +1950,12 @@ begin
   if nlocked >= 2 then update public.battles set both_locked_at = public.app_now() where id = p_id; return jsonb_build_object('ok', true, 'started', false, 'countdown', 5); end if;
   return jsonb_build_object('ok', true, 'started', false);
 end $$;
+
+create or replace function public.battle_quote(p_id bigint, p_tok text) returns jsonb
+language sql stable security definer set search_path = public, ls_private, pg_temp as $$
+  select ls_private.battle_leg(b.markets, p_tok, false) from public.battles b where b.id = p_id
+$$;
+grant execute on function public.battle_quote(bigint, text) to authenticated;
 
 create or replace function public.unlock_battle_parlay(p_id bigint) returns jsonb
 language plpgsql security definer set search_path = public, ls_private, pg_temp as $$
@@ -2030,13 +2055,16 @@ create or replace function ls_private.start_battle(p_id bigint) returns void
 language plpgsql security definer set search_path = public, ls_private, pg_temp as $$
 declare b public.battles; sim jsonb; ev jsonb; tmax float; t0 timestamptz := public.app_now(); e jsonb; seq int := 0; lh int := 0; la int := 0; t float;
   snap jsonb := '{}'::jsonb; rem float; wp float; m int; eh float; ea float; sdm float; ends timestamptz; fin boolean; hs int; as_ int;
-  need text[]; pr text[]; incs jsonb; ii int := 0; ninc int; ic jsonb; pk text;
+  need text[]; pr text[]; incs jsonb; ii int := 0; ninc int; ic jsonb; pk text; h1h int; h1a int;
 begin
   select * into b from public.battles where id = p_id for update;
   if b.status <> 'building' then return; end if;
   sim := ls_private.run_sim(b.markets);
   sim := jsonb_set(sim, '{ev}', ls_private.sprinkle(b.sport, b.home, b.away, sim -> 'ev'));
   hs := (sim ->> 'hs')::int; as_ := (sim ->> 'as')::int;
+  select coalesce((x ->> 'hs')::int, 0), coalesce((x ->> 'as')::int, 0) into h1h, h1a from jsonb_array_elements(sim -> 'ev') x
+    where (x ->> 'hs')::int >= 0 and (x ->> 't')::float <= case when b.sport = 'mlb' then 0.556 else 0.5 end order by (x ->> 't')::float desc limit 1;
+  sim := jsonb_set(sim, '{players}', coalesce(sim -> 'players', '{}'::jsonb) || jsonb_build_object('_h1', jsonb_build_object('hs', coalesce(h1h, 0), 'as', coalesce(h1a, 0))));
   -- the live view only follows the (player, stat) pairs the two slips contain: keep their running totals per play, nothing else
   select coalesce(array_agg(distinct (l ->> 'pid') || '|' || (l ->> 'stat')), '{}') into need
     from public.battle_parlays p, jsonb_array_elements(p.legs) l where p.battle_id = p_id and l ? 'pid';
@@ -2301,6 +2329,34 @@ grant execute on function public.delete_chat(bigint) to authenticated;
 grant execute on function public.finalize_days() to anon, authenticated, service_role;
 grant execute on function public.leaderboard(date) to anon, authenticated;
 grant execute on function public.get_profile(text, uuid) to anon, authenticated;
+grant execute on function public.battle_markets_core(text, text, text) to anon, authenticated;
+
+create or replace function ls_private.p2price(p double precision) returns int language sql immutable as $$ select ls_private.est_price(least(greatest(p, 0.03), 0.97)::numeric) $$;
+-- price of any spread / total line from the model's own expectation (used by the sliders; scope 'game' or 'h1')
+create or replace function ls_private.line_price(mk jsonb, scope text, kind text, side text, ln numeric) returns int language plpgsql immutable as $$
+declare src jsonb := case when scope = 'h1' then mk -> 'h1' else mk end; mu float; sd float; tm float; st float; p float;
+begin
+  if src is null or (src ->> 'sdm') is null then return null; end if;
+  mu := (src ->> 'eh')::float - (src ->> 'ea')::float; sd := greatest((src ->> 'sdm')::float, 0.5);
+  tm := (src ->> 'eh')::float + (src ->> 'ea')::float; st := greatest(coalesce((src ->> 'sdt')::float, sd * 1.2), 0.5);
+  if kind = 'spr' then p := case when side = 'home' then ls_private.phi((mu + ln::float) / sd) else ls_private.phi((ln::float - mu) / sd) end;
+  elsif kind = 'tot' then p := case when side = 'over' then 1 - ls_private.phi((ln::float - tm) / st) else ls_private.phi((ln::float - tm) / st) end;
+  else return null; end if;
+  return ls_private.p2price(p);
+end $$;
+create or replace function public.battle_markets(p_sport text, p_home text, p_away text) returns jsonb
+language plpgsql stable security definer set search_path = public, ls_private, pg_temp as $$
+declare m jsonb := public.battle_markets_core(p_sport, p_home, p_away); fh float := case when p_sport = 'mlb' then 0.556 else 0.5 end;
+  eh1 float; ea1 float; sd1 float; st1 float; mu float; tm float; hl numeric; tl numeric; ph float;
+begin
+  eh1 := (m ->> 'eh')::float * fh; ea1 := (m ->> 'ea')::float * fh;
+  sd1 := (m ->> 'sdm')::float * sqrt(fh); st1 := coalesce((m ->> 'sdt')::float, (m ->> 'sdm')::float * 1.2) * sqrt(fh);
+  mu := eh1 - ea1; tm := eh1 + ea1; hl := floor(-mu) + 0.5; tl := floor(tm) + 0.5; ph := ls_private.phi(mu / greatest(sd1, 0.5));
+  return m || jsonb_build_object('h1', jsonb_build_object('eh', round(eh1::numeric, 2), 'ea', round(ea1::numeric, 2), 'sdm', round(sd1::numeric, 2), 'sdt', round(st1::numeric, 2),
+    'ml', jsonb_build_object('home', ls_private.p2price(ph), 'away', ls_private.p2price(1 - ph)),
+    'spr', jsonb_build_object('homeLine', hl, 'awayLine', -hl, 'home', ls_private.line_price(jsonb_build_object('h1', jsonb_build_object('eh', eh1, 'ea', ea1, 'sdm', sd1, 'sdt', st1)), 'h1', 'spr', 'home', hl), 'away', ls_private.line_price(jsonb_build_object('h1', jsonb_build_object('eh', eh1, 'ea', ea1, 'sdm', sd1, 'sdt', st1)), 'h1', 'spr', 'away', -hl)),
+    'tot', jsonb_build_object('line', tl, 'over', ls_private.line_price(jsonb_build_object('h1', jsonb_build_object('eh', eh1, 'ea', ea1, 'sdm', sd1, 'sdt', st1)), 'h1', 'tot', 'over', tl), 'under', ls_private.line_price(jsonb_build_object('h1', jsonb_build_object('eh', eh1, 'ea', ea1, 'sdm', sd1, 'sdt', st1)), 'h1', 'tot', 'under', tl))));
+end $$;
 grant execute on function public.battle_markets(text, text, text) to anon, authenticated;
 -- (create_battle grant lives next to its definition)
 grant execute on function public.accept_battle(bigint, text) to authenticated;

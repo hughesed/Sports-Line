@@ -5,9 +5,9 @@ alter table public.battles add column if not exists duration_min int not null de
 alter table public.battles add column if not exists both_locked_at timestamptz;                -- set when the second player locks; the game starts 5 s later unless someone unlocks
 create or replace function ls_private.boost_price(p int) returns int language sql immutable as $$
   select case when p is null or abs(p) < 100 then p else
-    (with d as (select case when p > 0 then 1 + p / 100.0 else 1 + 100.0 / -p end as dec),
-          n as (select 1 + (dec - 1) * 1.10 as dec from d)
-     select case when dec >= 2 then round((dec - 1) * 100)::int else -round(100 / (dec - 1))::int end from n) end
+    (with d as (select case when p > 0 then 1 + p / 100.0 else 1 + 100.0 / -p end as dc),
+          n as (select 1 + (dc - 1) * 1.10 as dc from d)
+     select case when dc >= 2 then round((dc - 1) * 100)::int else -round(100 / (dc - 1))::int end from n) end
 $$;
 create or replace function ls_private.boost_json(j jsonb) returns jsonb language plpgsql immutable as $$
 declare k text; v jsonb; o jsonb;
@@ -54,7 +54,7 @@ begin
 end $$;
 create or replace function public.set_battle_parlay(p_id bigint, p_legs jsonb) returns jsonb
 language plpgsql security definer set search_path = public, ls_private, pg_temp as $$
-declare uid uuid := auth.uid(); b public.battles; pp public.battle_parlays; n int; i int; leg jsonb; v_legs jsonb := '[]'::jsonb; grps text[] := '{}'; q jsonb; nv numeric := 1;
+declare v_cap int; uid uuid := auth.uid(); b public.battles; pp public.battle_parlays; n int; i int; leg jsonb; v_legs jsonb := '[]'::jsonb; grps text[] := '{}'; q jsonb; nv numeric := 1;
 begin
   select * into b from public.battles where id = p_id for update;
   if not found then raise exception 'No such battle'; end if;
@@ -64,7 +64,8 @@ begin
   if pp.locked then raise exception 'Your parlay is locked'; end if;
   if jsonb_typeof(p_legs) is distinct from 'array' then raise exception 'Bad parlay'; end if;
   n := jsonb_array_length(p_legs);
-  if n > case when b.max_legs = 0 then 40 else b.max_legs end then raise exception 'This battle allows at most % legs', case when b.max_legs = 0 then 40 else b.max_legs end; end if;
+  v_cap := case when b.max_legs = 0 then 40 else b.max_legs end;
+  if n > v_cap then raise exception 'This battle allows at most % legs', v_cap; end if;
   for i in 0 .. n - 1 loop
     leg := ls_private.battle_leg(b.markets, p_legs ->> i, false);
     if leg is null then raise exception 'Unknown battle market'; end if;

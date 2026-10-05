@@ -75,3 +75,41 @@
 body.vchat .foot{display:none}
 .chatbox{max-height:none;height:calc(100vh - 360px);min-height:320px}
 [data-bt-cd]{color:#ffb62e}
+
+/* ===== smoother battle form: logo team pickers ===== */
+.tp{position:relative;margin:10px 0 4px}.tpl{font-size:12px;color:var(--muted);margin:0 0 4px 2px}
+.tpb{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:inherit;font:inherit;font-size:16px;text-align:left;transition:border-color .15s,box-shadow .15s}
+.tpb[aria-expanded=true],.tpb:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.tpn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tpc{opacity:.7}
+.tpm{position:absolute;z-index:20;left:0;right:0;top:100%;margin-top:6px;max-height:300px;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(0,0,0,.45);padding:4px}
+.tpo{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;border-radius:9px;background:none;color:inherit;font:inherit;text-align:left}
+.tpo:hover,.tpo.on{background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.tl{position:relative;display:inline-grid;place-items:center;flex:none;border-radius:50%;overflow:hidden;color:#fff;font-size:10px;font-weight:800}
+.tl .tlg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
+.fld .seg button{display:inline-flex;align-items:center;gap:6px}
+.fld .seg{border-radius:12px}.seg button{transition:background .15s,color .15s}
+
+/* ===== profile pictures + board look ===== */
+.ulw{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.av{position:relative;display:inline-grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;overflow:hidden;color:#fff;font-weight:800;font-size:13px;border:2px solid color-mix(in srgb,var(--accent) 60%,transparent);background:#3b4a6b}
+.av i{font-style:normal}.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.avatar.av{width:56px;height:56px;font-size:24px}
+.avwrap{position:relative;flex:none}.avup{position:absolute;right:-6px;bottom:-6px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink,#fff);font-size:13px;cursor:pointer}
+.lbrow{border-radius:14px;padding:10px 14px}.lbrow .ulw .av{width:40px;height:40px;font-size:16px}.lbrow .ulink{font-size:18px;font-weight:700}.lbrow .pf{font-size:22px}
+.ylist{display:grid;gap:10px}.yrow{display:grid;grid-template-columns:minmax(120px,38%) 1fr;border-radius:14px;overflow:hidden;background:color-mix(in srgb,var(--surface) 80%,#5a7bbf 20%)}
+.ylab{display:flex;align-items:center;gap:10px;padding:14px 12px;background:#5da4ff;color:#06152e;font-size:18px;font-weight:700;clip-path:polygon(0 0,100% 0,88% 100%,0 100%)}
+.y-trash .ylab{background:#aeb4c0}.ylab i{font-style:normal;font-size:22px}
+.ybody{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:10px 14px;flex-wrap:wrap}.yd{font-size:14px;color:var(--muted)}
+.attable .atr{align-items:center}.attable .atr .ulw .av{width:34px;height:34px}
+.yrow{grid-template-columns:minmax(132px,auto) 1fr}.ylab{font-size:16px;padding:14px 26px 14px 12px}.ylab b{white-space:nowrap}
+
+/* ===== "you have a match" pop-up ===== */
+#btpop{position:fixed;left:0;right:0;top:0;z-index:9999;display:none;padding:max(10px,env(safe-area-inset-top)) 12px 0;pointer-events:none}
+#btpop.on{display:block}
+#btpop .btp-i{pointer-events:auto;max-width:520px;margin:0 auto;background:var(--surface,#fff);color:var(--ink,#111);border:2px solid var(--accent,#1a73e8);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:12px 14px;animation:btpin .28s ease-out}
+#btpop .btp-t{font-weight:800;font-size:16px;margin-bottom:4px}
+#btpop .btp-b{font-size:14px;line-height:1.4}
+#btpop .btp-a{display:flex;gap:8px;margin-top:10px}
+@keyframes btpin{from{transform:translateY(-24px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){#btpop .btp-i{animation:none}}
+
