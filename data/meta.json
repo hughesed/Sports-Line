@@ -2,45 +2,45 @@
  "schema": 1,
  "runNumber": 9,
  "deadlineHit": false,
- "generatedAt": "2026-10-02T12:44:33Z",
- "generatedAtET": "Fri Oct 2, 8:44 AM ET",
- "today": "2026-10-02",
- "lastRunAt": "2026-10-02T12:44:33Z",
+ "generatedAt": "2026-10-05T01:47:36Z",
+ "generatedAtET": "Sun Oct 4, 9:47 PM ET",
+ "today": "2026-10-04",
+ "lastRunAt": "2026-10-05T01:47:36Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 12,
-   "playerLevel": 10,
-   "teamLevel": 2,
-   "carried": 0,
+   "games": 14,
+   "playerLevel": 2,
+   "teamLevel": 0,
+   "carried": 12,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 334,
-   "lastFinal": "2026-10-02"
+   "newFinals": 13,
+   "storeGames": 347,
+   "lastFinal": "2026-10-04"
   },
   "wnba": {
    "status": "ok",
-   "games": 2,
-   "playerLevel": 2,
+   "games": 1,
+   "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 0,
+   "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 340,
-   "lastFinal": "2026-10-02"
+   "newFinals": 3,
+   "storeGames": 343,
+   "lastFinal": "2026-10-04"
   },
   "mlb": {
    "status": "ok",
-   "games": 2,
-   "playerLevel": 2,
+   "games": 4,
+   "playerLevel": 4,
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2438,
-   "lastFinal": "2026-10-02"
+   "newFinals": 5,
+   "storeGames": 2443,
+   "lastFinal": "2026-10-04"
   },
   "nba": {
    "status": "empty",
@@ -55,14 +55,14 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 9,
+   "games": 2,
    "playerLevel": 0,
-   "teamLevel": 8,
+   "teamLevel": 1,
    "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1291,
-   "lastFinal": "2026-10-02"
+   "newFinals": 57,
+   "storeGames": 1348,
+   "lastFinal": "2026-10-04"
   },
   "cbb": {
    "status": "empty",
@@ -77,38 +77,50 @@
   }
  },
  "counts": {
-  "slate": 25,
-  "playerCards": 14,
-  "teamCards": 11,
-  "window": 150,
-  "sched": 98,
-  "pastp": 78,
-  "predictions": 26,
-  "graded": 0,
-  "storeGames": 13334
+  "slate": 21,
+  "playerCards": 17,
+  "teamCards": 4,
+  "window": 112,
+  "sched": 61,
+  "pastp": 53,
+  "predictions": 31,
+  "graded": 26,
+  "storeGames": 13412
  },
  "calibration": {
   "slopes": {},
-  "graded": 0,
-  "accML": null,
-  "accBook": null
+  "graded": 26,
+  "accML": 0.731,
+  "accBook": 0.731
  },
  "social": {
-  "enabled": false,
+  "enabled": true,
   "errors": [],
-  "calls": 0,
+  "pending": 0,
+  "finalize_days": 0,
+  "battle_tick": {
+   "settled": 0,
+   "cancelled": 0
+  },
+  "calls": 17,
   "failedCalls": 0,
-  "seconds": 0.0,
+  "seconds": 5.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
-   "mlb": 30
+   "mlb": 30,
+   "cfb": 92,
+   "cbb": 110
   },
-  "configured": false
+  "gamesUploaded": 21,
+  "simTeamsUploaded": 294,
+  "simPlayersUploaded": 1067,
+  "configured": true
  },
+ "odds": "no ODDS_API_KEY (skipped)",
  "errors": [],
- "requests": 179,
+ "requests": 480,
  "failedRequests": 0,
- "retries": 5,
- "seconds": 62.3
+ "retries": 0,
+ "seconds": 26.2
 }
