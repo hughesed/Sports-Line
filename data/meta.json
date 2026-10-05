@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "runNumber": 14,
+ "runNumber": 16,
  "deadlineHit": false,
- "generatedAt": "2026-10-05T14:22:25Z",
- "generatedAtET": "Mon Oct 5, 10:22 AM ET",
+ "generatedAt": "2026-10-05T22:02:06Z",
+ "generatedAtET": "Mon Oct 5, 6:02 PM ET",
  "today": "2026-10-05",
- "lastRunAt": "2026-10-05T14:22:25Z",
+ "lastRunAt": "2026-10-05T22:02:06Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 13,
+   "games": 12,
    "playerLevel": 1,
    "teamLevel": 0,
-   "carried": 12,
+   "carried": 11,
    "error": null,
    "newFinals": 0,
    "storeGames": 348,
@@ -34,19 +34,19 @@
   "mlb": {
    "status": "ok",
    "games": 5,
-   "playerLevel": 4,
+   "playerLevel": 3,
    "teamLevel": 0,
-   "carried": 1,
+   "carried": 2,
    "error": null,
    "newFinals": 0,
    "storeGames": 2444,
    "lastFinal": "2026-10-05"
   },
   "nba": {
-   "status": "empty",
-   "games": 0,
+   "status": "ok",
+   "games": 8,
    "playerLevel": 0,
-   "teamLevel": 0,
+   "teamLevel": 8,
    "carried": 0,
    "error": null,
    "newFinals": 0,
@@ -77,13 +77,13 @@
   }
  },
  "counts": {
-  "slate": 20,
-  "playerCards": 17,
-  "teamCards": 3,
+  "slate": 27,
+  "playerCards": 16,
+  "teamCards": 11,
   "window": 98,
   "sched": 52,
   "pastp": 39,
-  "predictions": 32,
+  "predictions": 40,
   "graded": 26,
   "storeGames": 13414
  },
@@ -104,7 +104,7 @@
   },
   "calls": 17,
   "failedCalls": 0,
-  "seconds": 2.5,
+  "seconds": 5.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -112,15 +112,15 @@
    "cfb": 92,
    "cbb": 110
   },
-  "gamesUploaded": 6,
+  "gamesUploaded": 13,
   "simTeamsUploaded": 294,
-  "simPlayersUploaded": 1071,
+  "simPlayersUploaded": 1069,
   "configured": true
  },
- "odds": "ok: 5 events (plan limit: Response is missing 29187 bookmaker odds. Upgrade your API key to access all dat)",
+ "odds": "ok: 7 events (plan limit: Response is missing 31617 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
- "requests": 130,
+ "requests": 327,
  "failedRequests": 0,
- "retries": 0,
- "seconds": 13.7
+ "retries": 1,
+ "seconds": 33.6
 }
