@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 16,
+ "runNumber": 17,
  "deadlineHit": false,
- "generatedAt": "2026-10-05T22:02:06Z",
- "generatedAtET": "Mon Oct 5, 6:02 PM ET",
+ "generatedAt": "2026-10-05T22:17:04Z",
+ "generatedAtET": "Mon Oct 5, 6:17 PM ET",
  "today": "2026-10-05",
- "lastRunAt": "2026-10-05T22:02:06Z",
+ "lastRunAt": "2026-10-05T22:17:04Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -95,16 +95,18 @@
  },
  "social": {
   "enabled": true,
-  "errors": [],
+  "errors": [
+   "battle data upload: RuntimeError: HTTP 500 on /rest/v1/sim_players: ON CONFLICT DO UPDATE command cannot affect row a second time"
+  ],
   "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 17,
-  "failedCalls": 0,
-  "seconds": 5.0,
+  "calls": 16,
+  "failedCalls": 2,
+  "seconds": 4.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -112,15 +114,14 @@
    "cfb": 92,
    "cbb": 110
   },
-  "gamesUploaded": 13,
+  "gamesUploaded": 4,
   "simTeamsUploaded": 294,
-  "simPlayersUploaded": 1069,
   "configured": true
  },
- "odds": "ok: 7 events (plan limit: Response is missing 31617 bookmaker odds. Upgrade your API key to access all dat)",
+ "odds": "kept (15 min old, pulls every 120 min)",
  "errors": [],
- "requests": 327,
+ "requests": 124,
  "failedRequests": 0,
- "retries": 1,
- "seconds": 33.6
+ "retries": 0,
+ "seconds": 13.8
 }
