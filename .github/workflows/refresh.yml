@@ -1,36 +1,38 @@
+# Line Scout refresh bot (public repo version: Actions minutes are unlimited)
 name: Refresh data
 
 on:
   schedule:
-    - cron: "47 5,7,9,11,13 * * *"
-    - cron: "37 15 * * *"
-    - cron: "7,37 16-23,0-4 * * *"
-  workflow_dispatch:
+    - cron: "*/10 16-23,0-4 * * *"     # every 10 min, 12:00 to 00:50 ET (games, lines, injuries)
+    - cron: "7,37 5-15 * * *"          # every 30 min overnight and morning ET
+  workflow_dispatch:                    # the "Run workflow" button
 
 concurrency:
-  group: line-scout-refresh
+  group: line-scout-refresh             # runs never overlap
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: write                       # lets the bot save the new data files
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 6
     env:
       PYTHONUNBUFFERED: "1"
-      LS_DEADLINE: "70"
+      LS_DEADLINE: "150"                # seconds before the bot stops starting new ESPN requests
       LS_MIN_PUBLISH_GAP_MIN: ${{ vars.LS_MIN_PUBLISH_GAP_MIN || '0' }}
       SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
       SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+      ODDS_MIN_GAP_MIN: ${{ vars.ODDS_MIN_GAP_MIN || '120' }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: Restore ESPN scratch cache
+      - name: Restore ESPN cache
         uses: actions/cache@v4
         with:
           path: .cache
@@ -43,20 +45,28 @@ jobs:
 
       - name: Refresh data
         run: |
-          python refresh.py || echo "::warning::refresh.py reported a problem; the last good data was kept (see data/
+          python refresh.py || echo "::warning::refresh.py reported a problem; the last good data was kept (see data/meta.json)"
 
       - name: Commit data
         run: |
           git config user.name "line-scout-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          B="${GITHUB_REF_NAME}"
           mkdir -p data store
           git add -A data store
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
-          git commit -m "data: refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          MSG="data: refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          if [ "$(git log -1 --format=%an)" = "line-scout-bot" ]; then
+            git commit --amend -m "$MSG"
+            git push --force-with-lease origin "HEAD:$B" && exit 0
+          else
+            git commit -m "$MSG"
+            git push origin "HEAD:$B" && exit 0
+          fi
+          # someone else pushed while the bot was running: put our data commit on top of theirs and try again
           for i in 1 2 3; do
-            git pull --rebase origin "${GITHUB_REF_NAME}" \
-              && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
-            sleep 3
+            git pull --rebase -X theirs origin "$B" && git push origin "HEAD:$B" && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 5
           done
-          exit 1
-
+          echo "::error::could not push the data commit"; exit 1
