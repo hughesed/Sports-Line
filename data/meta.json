@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 10,
+ "runNumber": 11,
  "deadlineHit": false,
- "generatedAt": "2026-10-05T04:23:49Z",
- "generatedAtET": "Mon Oct 5, 12:23 AM ET",
+ "generatedAt": "2026-10-05T07:40:57Z",
+ "generatedAtET": "Mon Oct 5, 3:40 AM ET",
  "today": "2026-10-05",
- "lastRunAt": "2026-10-05T04:23:49Z",
+ "lastRunAt": "2026-10-05T07:40:57Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,7 +16,7 @@
    "teamLevel": 0,
    "carried": 12,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 348,
    "lastFinal": "2026-10-05"
   },
@@ -38,7 +38,7 @@
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2444,
    "lastFinal": "2026-10-05"
   },
@@ -102,9 +102,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 17,
+  "calls": 14,
   "failedCalls": 0,
-  "seconds": 3.3,
+  "seconds": 4.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -113,14 +113,13 @@
    "cbb": 110
   },
   "gamesUploaded": 5,
-  "simTeamsUploaded": 294,
-  "simPlayersUploaded": 1058,
+  "simPlayersUploaded": 1032,
   "configured": true
  },
- "odds": "ok: 5 events (plan limit: Response is missing 21520 bookmaker odds. Upgrade your API key to access all dat)",
+ "odds": "ok: 5 events (plan limit: Response is missing 25742 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
- "requests": 158,
- "failedRequests": 0,
- "retries": 0,
- "seconds": 17.0
+ "requests": 389,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 24.1
 }
