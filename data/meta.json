@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 23,
+ "runNumber": 24,
  "deadlineHit": false,
- "generatedAt": "2026-10-06T20:43:24Z",
- "generatedAtET": "Tue Oct 6, 4:43 PM ET",
+ "generatedAt": "2026-10-06T22:13:28Z",
+ "generatedAtET": "Tue Oct 6, 6:13 PM ET",
  "today": "2026-10-06",
- "lastRunAt": "2026-10-06T20:43:24Z",
+ "lastRunAt": "2026-10-06T22:13:28Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -34,9 +34,9 @@
   "mlb": {
    "status": "ok",
    "games": 6,
-   "playerLevel": 4,
+   "playerLevel": 3,
    "teamLevel": 0,
-   "carried": 2,
+   "carried": 3,
    "error": null,
    "newFinals": 0,
    "storeGames": 2446,
@@ -104,7 +104,7 @@
   },
   "calls": 17,
   "failedCalls": 0,
-  "seconds": 3.9,
+  "seconds": 1.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -112,15 +112,15 @@
    "cfb": 95,
    "cbb": 110
   },
-  "gamesUploaded": 11,
+  "gamesUploaded": 9,
   "simTeamsUploaded": 297,
   "simPlayersUploaded": 1040,
   "configured": true
  },
- "odds": "ok: 6 events (plan limit: Response is missing 24927 bookmaker odds. Upgrade your API key to access all dat)",
+ "odds": "kept (90 min old, pulls every 120 min)",
  "errors": [],
- "requests": 393,
+ "requests": 146,
  "failedRequests": 0,
  "retries": 0,
- "seconds": 31.4
+ "seconds": 12.8
 }
