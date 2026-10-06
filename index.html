@@ -800,7 +800,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="1681f1c882">
+<body data-build="7d4d37c244">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -819,10 +819,26 @@ body.vchat .foot{display:none}
   var cur=null, started=false, pending=null, offline=false;
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function getJSON(u){ return fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(u.split('?')[0]+' returned HTTP '+r.status); return r.json(); }); }
+  // GitHub Pages is a static CDN. A single slow/blocked JSON request must not leave
+  // the whole app stuck on "Loading the slate…" forever.  The slate + learning
+  // files are required; pastp.json is optional for first paint and can fail/timeout
+  // without preventing the rest of the site from opening.
+  function getJSON(u, timeoutMs){
+    timeoutMs=timeoutMs||15000;
+    var ctl=(typeof AbortController==='function')?new AbortController():null;
+    var timer=ctl?setTimeout(function(){ try{ctl.abort();}catch(e){} },timeoutMs):null;
+    return fetch(u,ctl?{cache:'no-store',signal:ctl.signal}:{cache:'no-store'}).then(function(r){
+      if(!r.ok) throw new Error(u.split('?')[0]+' returned HTTP '+r.status);
+      return r.json();
+    }).finally(function(){ if(timer) clearTimeout(timer); });
+  }
   function fetchAll(meta){
     var v=encodeURIComponent(meta.generatedAt||Date.now());
-    return Promise.all(['slate','learn','pastp'].map(function(n){ return getJSON('data/'+n+'.json?v='+v); })).then(function(a){
+    return Promise.all([
+      getJSON('data/slate.json?v='+v,15000),
+      getJSON('data/learn.json?v='+v,15000),
+      getJSON('data/pastp.json?v='+v,8000).catch(function(){ return {}; })
+    ]).then(function(a){
       if(!a[0]||!Array.isArray(a[0].games)||!a[1]||!a[1].leagues) throw new Error('data files are not in the expected format');
       return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{}};
     });
@@ -3947,7 +3963,7 @@ function btLobbyHtml(){
     '<section class="game"><div class="sec"><h3>Open battles <span class="hint">accept one and pick your team</span></h3>'+(L?list(L.open,'open','No open battles. Start one above.'):'<div class="small muted">Loading…</div>')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>Live now</h3>'+(L?list(L.live,'live','No battle is being played right now.'):'')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>Recent results</h3>'+(L?list(BT.moreRecent?L.recent:(L.recent||[]).slice(0,6),'recent','No finished battles yet.')+(!BT.moreRecent&&(L.recent||[]).length>6?'<div class="btnrow"><button class="btn" data-act="bt-more">More ('+((L.recent.length)-6)+')</button></div>':''):'')+'</div></section>'+
-    '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, MLB, college football or college basketball), your team, a format (Parlay or Same Game Parlay), the legs allowed and a wager, then wait. 2. Another player accepts with the same wager and picks the opposing team. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record.</div>'+PRACTICE_NOTE+'</div></section>';
+    '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, MLB, college football or college basketball), your team, a format (Parlay or Same Game Parlay), the legs allowed and a wager, then wait. 2. Another player accepts with the same wager and picks the opposing team. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. If your winning parlay hits, you also receive 10% of that parlay\'s total payout in bonus coins. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record.</div>'+PRACTICE_NOTE+'</div></section>';
 }
 const bgrp=tok=>{ const p=tok.split(':'); return p[0]==='p'||p[0]==='x'?'p:'+p[1]+':'+p[2]:p[0]; };
 function mktBtn(tok,top,price,on,dis,act,aria){ return '<button class="odd'+(on?' on':'')+'" data-act="'+(act||'bt-leg')+'" data-tok="'+esc(tok)+'" aria-pressed="'+!!on+'"'+(aria?' aria-label="'+esc(aria)+'"':'')+(dis?' disabled':'')+'><span class="o1">'+esc(top)+'</span><span class="o2 mono">'+fo(price)+'</span></button>'; }
@@ -4127,7 +4143,7 @@ function btSettingsHtml(b){
 function btWinnerHtml(b,d){
   const r=b.result||{}; if(!r.creator) return '<div class="small muted">Settling…</div>';
   const wn=r.split?null:(b.winner===b.creator?b.creator_name:b.opponent_name);
-  return '<div class="winbar">'+(r.split?'🤝 Tied: the pot is split and both wagers go back.':'🏆 '+esc(wn)+' wins '+cn(b.wager*2)+' coins')+'<div class="small">'+esc(b.creator_name)+': slip pays '+cn(r.creator.payout)+' ('+r.creator.hits+' hit) · '+esc(b.opponent_name)+': '+cn(r.opponent.payout)+' ('+r.opponent.hits+' hit)</div>'+
+  return '<div class="winbar">'+(r.split?'🤝 Tied: the pot is split and both wagers go back.':'🏆 '+esc(wn)+' wins '+cn(b.wager*2)+' coins'+(r.bonus>0?' + '+cn(r.bonus)+' bonus coins':'') )+'<div class="small">'+esc(b.creator_name)+': slip pays '+cn(r.creator.payout)+' ('+r.creator.hits+' hit) · '+esc(b.opponent_name)+': '+cn(r.opponent.payout)+' ('+r.opponent.hits+' hit)'+(r.bonus>0?' · winner gets 10% of the winning parlay payout as a bonus':'')+'</div>'+
     '<div class="btnrow"><button class="btn solid" data-act="sh-open" data-k="battle">Share result</button><button class="btn" data-act="vsf-open">Replay finish</button></div></div>';
 }
 const BT_ORDER=['head','board','stand','act','mk','spec','parl','feed','bets'];

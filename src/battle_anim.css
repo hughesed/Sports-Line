@@ -1,0 +1,17 @@
+/* battle animations */
+.stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#1d3b2a;line-height:0}
+.stage[data-f="bk"]{background:#7a5428}.stage[data-f="bb"]{background:#1d3b2a}
+.stsvg{display:block;width:100%;height:auto;max-height:200px}
+.stsvg .fx *{transform-box:fill-box}
+.stbanner{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.3);opacity:0;pointer-events:none;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis;
+  font-weight:900;letter-spacing:.06em;line-height:1.1;font-size:20px;padding:6px 14px;border-radius:10px;color:#fff;background:rgba(15,23,42,.78);border:2px solid #fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.stbanner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.stbanner.big{font-size:26px;background:#d89200;border-color:#fff3c4}
+.stbanner.mid{background:#1f6fd8}.stbanner.sm{font-size:15px;background:rgba(15,23,42,.8)}
+.stbanner.warn{background:#c98700;color:#1a1300;text-shadow:none}.stbanner.bad{background:#cc3a33}.stbanner.good{background:#1f9d5a}
+@media (max-width:420px){.stbanner{font-size:17px}.stbanner.big{font-size:22px}}
+.fe .fi{font-style:normal;margin-right:2px}
+.fe.fd,.fe.flag,.fe.sack,.fe.foul,.fe.steal,.fe.block,.fe.run,.fe.strikeout,.fe.walk,.fe.safe,.fe.out{color:var(--muted)}
+.fe.flag .fc{color:#c98700}.fe.sack,.fe.foul,.fe.out,.fe.strikeout{color:var(--under)}.fe.run{font-weight:700}
+.playchip.pop{animation:chpop .45s cubic-bezier(.2,1.4,.4,1)}
+@media (prefers-reduced-motion: reduce){.stbanner{transition:none}}
