@@ -208,14 +208,19 @@ function oddsGrid(g){
   return '<div class="ogrid"><div class="ohead"><span></span><span>'+lgName+'</span><span>Total</span><span>Money</span></div>'+row(a,'away')+row(h,'home')+'</div>';
 }
 function linesTable(g){ return oddsGrid(g); }
+function safeCard(g){
+  try{ return gameCard(g); }
+  catch(e){ try{ console.error('Line Scout: game card failed',g&&g.id,e); }catch(_){}
+    return '<div class="lserr" style="margin:8px 0"><div>Could not display one game ('+esc(((g&&g.teams&&g.teams.away&&g.teams.away.abbr)||'?')+' @ '+((g&&g.teams&&g.teams.home&&g.teams.home.abbr)||'?'))+').</div></div>'; }
+}
 function learnedBox(g){
-  const ln=g.crossroads.learn; if(!ln) return '';
+  const ln=g.crossroads&&g.crossroads.learn; if(!ln) return '';
   const h=g.teams.home.abbr,a=g.teams.away.abbr; const N=g.n||lnOf(keyOf(g));
-  const hs=ln.leanStats||{}; const bits=[]; if(hs.spread) bits.push('spread '+hs.spread.hit+'/'+hs.spread.n); if(hs.total) bits.push('total '+hs.total.hit+'/'+hs.total.n);
+  const rk=ln.rk||{}, rkA=rk.away, rkH=rk.home; const hs=ln.leanStats||{}; const bits=[]; if(hs.spread) bits.push('spread '+hs.spread.hit+'/'+hs.spread.n); if(hs.total) bits.push('total '+hs.total.hit+'/'+hs.total.n);
   return '<details class="d lbox"><summary>Learned model vs the book ('+ln.n+' games of training)</summary><ul>'+
     '<li>Raw model margin '+esc(h)+' '+sg(-ln.baseMargin)+' from learned ratings, '+sg(-ln.injMargin)+' for injuries and context = '+sg(-ln.rawMargin)+'. Book '+sg(-ln.bookMargin)+'.</li>'+
-    '<li>Blend: '+Math.round(ln.w.m*100)+'% model for margin, '+Math.round(ln.w.t*100)+'% for total, '+Math.round(ln.w.p*100)+'% for win chance, the rest the book. Weights come from past results.</li>'+
-    '<li>Learned ratings: '+esc(a)+' offense #'+ln.rk.away[0]+'/'+N+', defense #'+ln.rk.away[1]+' · '+esc(h)+' offense #'+ln.rk.home[0]+', defense #'+ln.rk.home[1]+'.</li>'+
+    (ln.w?'<li>Blend: '+Math.round(ln.w.m*100)+'% model for margin, '+Math.round(ln.w.t*100)+'% for total, '+Math.round(ln.w.p*100)+'% for win chance, the rest the book. Weights come from past results.</li>':'')+
+    ((rkA||rkH)?'<li>Learned ratings: '+(rkA?esc(a)+' offense #'+rkA[0]+'/'+N+', defense #'+rkA[1]:esc(a)+' not rated yet')+' · '+(rkH?esc(h)+' offense #'+rkH[0]+', defense #'+rkH[1]:esc(h)+' not rated yet')+'.</li>':'')+
     (bits.length?'<li>Past lean record vs the line: '+bits.join(', ')+'. Types under 52% are not shown as leans.</li>':'')+'</ul></details>';
 }
 function navHtml(){
@@ -229,7 +234,7 @@ function render(){
   const counts={all:DATA.games.length}; DATA.games.forEach(g=>{counts[keyOf(g)]=(counts[keyOf(g)]||0)+1;});
   const ltabs=LGT.map(([k,l])=>'<button class="tab" data-act="league" data-k="'+k+'" aria-pressed="'+(S.league===k)+'">'+l+'</button>').join('');
   let body='';
-  if(S.view==='pre') body = S.date===TODAY?gs.map(gameCard).join(''):(S.date<TODAY?reportView(S.date):previewView(S.date));
+  if(S.view==='pre') body = S.date===TODAY?gs.map(safeCard).join(''):(S.date<TODAY?reportView(S.date):previewView(S.date));
   else if(S.view==='live') body=liveView();
   else if(S.view==='slips') body=slipsView();
   else if(S.view==='board') body=boardView();
