@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "runNumber": 17,
+ "runNumber": 18,
  "deadlineHit": false,
- "generatedAt": "2026-10-05T22:17:04Z",
- "generatedAtET": "Mon Oct 5, 6:17 PM ET",
+ "generatedAt": "2026-10-06T02:20:41Z",
+ "generatedAtET": "Mon Oct 5, 10:20 PM ET",
  "today": "2026-10-05",
- "lastRunAt": "2026-10-05T22:17:04Z",
+ "lastRunAt": "2026-10-06T02:20:41Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 12,
+   "games": 5,
    "playerLevel": 1,
    "teamLevel": 0,
-   "carried": 11,
+   "carried": 4,
    "error": null,
    "newFinals": 0,
    "storeGames": 348,
@@ -22,10 +22,10 @@
   },
   "wnba": {
    "status": "ok",
-   "games": 1,
-   "playerLevel": 0,
+   "games": 2,
+   "playerLevel": 2,
    "teamLevel": 0,
-   "carried": 1,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 343,
@@ -33,21 +33,21 @@
   },
   "mlb": {
    "status": "ok",
-   "games": 5,
-   "playerLevel": 3,
-   "teamLevel": 0,
-   "carried": 2,
+   "games": 6,
+   "playerLevel": 2,
+   "teamLevel": 1,
+   "carried": 3,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2444,
+   "newFinals": 1,
+   "storeGames": 2445,
    "lastFinal": "2026-10-05"
   },
   "nba": {
    "status": "ok",
    "games": 8,
    "playerLevel": 0,
-   "teamLevel": 8,
-   "carried": 0,
+   "teamLevel": 3,
+   "carried": 5,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -55,9 +55,9 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 1,
+   "games": 3,
    "playerLevel": 0,
-   "teamLevel": 1,
+   "teamLevel": 3,
    "carried": 0,
    "error": null,
    "newFinals": 0,
@@ -77,36 +77,34 @@
   }
  },
  "counts": {
-  "slate": 27,
-  "playerCards": 16,
-  "teamCards": 11,
+  "slate": 24,
+  "playerCards": 10,
+  "teamCards": 14,
   "window": 98,
   "sched": 52,
   "pastp": 39,
-  "predictions": 40,
-  "graded": 26,
-  "storeGames": 13414
+  "predictions": 46,
+  "graded": 27,
+  "storeGames": 13415
  },
  "calibration": {
   "slopes": {},
-  "graded": 26,
-  "accML": 0.731,
-  "accBook": 0.731
+  "graded": 27,
+  "accML": 0.704,
+  "accBook": 0.704
  },
  "social": {
   "enabled": true,
-  "errors": [
-   "battle data upload: RuntimeError: HTTP 500 on /rest/v1/sim_players: ON CONFLICT DO UPDATE command cannot affect row a second time"
-  ],
+  "errors": [],
   "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 16,
-  "failedCalls": 2,
-  "seconds": 4.5,
+  "calls": 17,
+  "failedCalls": 0,
+  "seconds": 5.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -114,14 +112,15 @@
    "cfb": 92,
    "cbb": 110
   },
-  "gamesUploaded": 4,
+  "gamesUploaded": 9,
   "simTeamsUploaded": 294,
+  "simPlayersUploaded": 1059,
   "configured": true
  },
- "odds": "kept (15 min old, pulls every 120 min)",
+ "odds": "ok: 8 events (plan limit: Response is missing 26083 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
- "requests": 124,
+ "requests": 327,
  "failedRequests": 0,
  "retries": 0,
- "seconds": 13.8
+ "seconds": 33.3
 }
