@@ -800,7 +800,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="884b393d4d">
+<body data-build="21ce4ab81c">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -3867,7 +3867,7 @@ function cpuNote(){
   const c=BT.cpu; let learn='';
   if(c){ const you=c.you; learn=' It learns from every battle: '+cn(c.legs_learned||0)+' legs studied so far'+(c.battles?', '+cn(c.battles)+' battle'+(c.battles===1?'':'s')+' played':'')+'.'+(you&&(you.w+you.l+you.t)?' Your record against it: '+you.w+'-'+you.l+(you.t?'-'+you.t:'')+'.':''); }
   else if(BT.cpuMissing) learn=' (The computer needs the v6 database patch: run supabase/patch_battle_v6.sql once.)';
-  return '<div class="small muted">The computer picks the opposing team (an even matchup) and builds a balanced parlay from its best bets: at least 4 legs, and with Unlimited legs at most 14. It locks right away, and your parlay stays hidden from it.'+learn+' Practice mode: coins and your win/loss record count, not Elo, the Board or streaks. Maximum wager 1,000.</div>';
+  return '<div class="small muted">You choose the computer\'s team, or leave it on Random (an even matchup). It builds a balanced parlay from its best bets: at least 4 legs, and with Unlimited legs at most 14. It locks right away, and your parlay stays hidden from it.'+learn+' Practice mode: coins and your win/loss record count, not Elo, the Board or streaks. Maximum wager 1,000.</div>';
 }
 
 /* ---------- data ---------- */
@@ -3950,9 +3950,10 @@ function btCreateHtml(){
     '<div class="seg" role="group" aria-label="Sport">'+seg+'</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
     (ts.length?(big?'<label class="fld">Find a team<input class="num wide" data-bt="q" value="'+esc(f.q||'')+'" placeholder="Type a school" aria-label="Find a team" autocomplete="off"></label>':'')+
       tpHtml(f,'home',ts,q,'Your team',null)+
+      (cpu?tpHtml(f,'cpuAway',ts,q,'Computer\'s team',f.home,true):'')+
       (noProps?'<div class="small muted">'+esc(H.short||H.abbr)+' has no player data yet, so this battle would have team lines only (spread, total, moneyline).</div>':'<div class="small muted">Player props included: about 9 players per team, lines from current rosters.</div>')+
       injLine(H,H.abbr)+
-      (cpu?'<div class="small muted">You pick your team and the settings. The computer picks the other team and the lines are set at once.</div>':'<div class="small muted">You only pick your team and the settings. Whoever accepts picks the opposing team, and then the lines are set.</div>')+
+      (cpu?'<div class="small muted">You pick both teams (or leave the computer\'s team on Random for an even matchup) and the settings. The lines are set at once.</div>':'<div class="small muted">You only pick your team and the settings. Whoever accepts picks the opposing team, and then the lines are set.</div>')+
       '<div class="fld">Format'+fseg+'<div class="small muted">'+btFmtNote(f.fmt,f.legs)+'</div></div>'+
       '<div class="fld">Legs allowed<div class="seg" role="group" aria-label="Legs allowed">'+[[4,'4'],[8,'8'],[12,'12'],[0,'Unlimited']].map(([k,l])=>'<button data-act="bt-legs" data-k="'+k+'" aria-pressed="'+(f.legs===k)+'">'+l+'</button>').join('')+'</div></div>'+
       '<div class="fld">Game length (minutes)<div class="seg" role="group" aria-label="Game length">'+[2,3,4,5,6,7,8].map(k=>'<button data-act="bt-mins" data-k="'+k+'" aria-pressed="'+(f.mins===k)+'">'+k+(k===4?' ·std':'')+'</button>').join('')+'</div></div>'+
@@ -4216,17 +4217,17 @@ document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act]'); if(!t) return; const act=t.getAttribute('data-act'); if(act.indexOf('bt-')!==0) return;
   e.stopPropagation(); e.preventDefault();
   const f=BT.form;
-  if(act==='bt-sport'){ f.sport=t.getAttribute('data-k'); f.q=''; btFormDefaults(); btRender(); return; }
+  if(act==='bt-sport'){ f.sport=t.getAttribute('data-k'); f.q=''; f.cpuAway=''; btFormDefaults(); btRender(); return; }
   if(act==='bt-more'){ BT.moreRecent=true; btRender(); return; }
   if(act==='bt-tdd'){ const k=t.getAttribute('data-k'); BT.form.dd=(BT.form.dd===k?null:k); btRender(); return; }
-  if(act==='bt-tsel'){ BT.form[t.getAttribute('data-k')]=t.getAttribute('data-v'); BT.form.dd=null; btRender(); return; }
+  if(act==='bt-tsel'){ BT.form[t.getAttribute('data-k')]=t.getAttribute('data-v'); if(BT.form.cpuAway===BT.form.home) BT.form.cpuAway=''; BT.form.dd=null; btRender(); return; }
   if(act==='bt-legs'){ f.legs=parseInt(t.getAttribute('data-k'),10); btRender(); return; }
   if(act==='bt-mins'){ f.mins=parseInt(t.getAttribute('data-k'),10); btRender(); return; }
   if(act==='bt-fmt'){ f.fmt=t.getAttribute('data-k'); btRender(); return; }
   if(act==='bt-wager'){ f.wager=t.getAttribute('data-v'); btRender(); return; }
   if(act==='bt-vs'){ f.vs=t.getAttribute('data-k')==='cpu'?'cpu':'players'; BT.msg=''; if(f.vs==='cpu'){ if((parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0)>1000) f.wager='1000'; if(!BT.cpuTried) loadCpu(); } btRender(); return; }
   if(act==='bt-create'&&f.vs==='cpu'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
-    btCall('create_cpu_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ refreshMe(); loadCpu(); btOpen(d.id); }); return; }
+    btCall('create_cpu_battle',{p_sport:f.sport,p_home:f.home,p_away:f.cpuAway||null,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ refreshMe(); loadCpu(); btOpen(d.id); }); return; }
   if(act==='bt-create'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
     btCall('create_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ BT.alerts.until=Date.now()+30*60000; BT.alerts.last=0; refreshMe(); btOpen(d.id); }); return; }
   if(act==='bt-open'){ btOpen(+t.getAttribute('data-id')); return; }
@@ -4293,11 +4294,11 @@ setInterval(()=>{ try{
 const LOGO_LG={nfl:'nfl',nba:'nba',mlb:'mlb'};
 function tlogo(sport,t,sz){ sz=sz||30; if(!t) return ''; const lg=LOGO_LG[sport]; const ab=String(t.abbr||'');
   return '<span class="tl" style="width:'+sz+'px;height:'+sz+'px;background:'+esc(t.color||'#3b4a6b')+'"><b>'+esc(ab.slice(0,3))+'</b>'+(lg?'<img class="tlg" alt="" loading="lazy" src="https://a.espncdn.com/i/teamlogos/'+lg+'/500/'+esc(ab.toLowerCase())+'.png" onerror="this.style.display=\'none\'">':'')+'</span>'; }
-function tpHtml(f,kind,ts,q,label,other){
+function tpHtml(f,kind,ts,q,label,other,rnd){
   const sel=ts.find(t=>t.abbr===f[kind])||(kind==='home'?ts[0]:null); const open=f.dd===kind;
   const list=ts.filter(t=>t.abbr!==other&&(!q||(t.name||'').toLowerCase().indexOf(q)>=0||(t.abbr||'').toLowerCase().indexOf(q)>=0));
-  return '<div class="tp"><div class="tpl">'+esc(label||'Team')+'</div><button class="tpb" data-act="bt-tdd" data-k="'+kind+'" aria-haspopup="listbox" aria-expanded="'+open+'">'+(sel?tlogo(f.sport||BT.form.sport,sel):'')+'<span class="tpn">'+esc(sel?sel.name:'Choose your team')+'</span><span class="tpc" aria-hidden="true">&#9662;</span></button>'+
-    (open?'<div class="tpm" role="listbox">'+(list.length?list.map(t=>'<button class="tpo'+(t.abbr===f[kind]?' on':'')+'" role="option" data-act="bt-tsel" data-k="'+kind+'" data-v="'+esc(t.abbr)+'">'+tlogo(f.sport||BT.form.sport,t)+'<span>'+esc(t.name||t.abbr)+(t.props===false?' <i class="muted">(lines only)</i>':'')+'</span></button>').join(''):'<div class="small muted" style="padding:10px">No team matches.</div>')+'</div>':'')+'</div>';
+  return '<div class="tp"><div class="tpl">'+esc(label||'Team')+'</div><button class="tpb" data-act="bt-tdd" data-k="'+kind+'" aria-haspopup="listbox" aria-expanded="'+open+'">'+(sel?tlogo(f.sport||BT.form.sport,sel):(rnd?'🎲 ':''))+'<span class="tpn">'+esc(sel?sel.name:(rnd?'Random (an even matchup)':'Choose your team'))+'</span><span class="tpc" aria-hidden="true">&#9662;</span></button>'+
+    (open?'<div class="tpm" role="listbox">'+(rnd?'<button class="tpo'+(!sel?' on':'')+'" role="option" data-act="bt-tsel" data-k="'+kind+'" data-v="">🎲 <span>Random (an even matchup)</span></button>':'')+(list.length?list.map(t=>'<button class="tpo'+(t.abbr===f[kind]?' on':'')+'" role="option" data-act="bt-tsel" data-k="'+kind+'" data-v="'+esc(t.abbr)+'">'+tlogo(f.sport||BT.form.sport,t)+'<span>'+esc(t.name||t.abbr)+(t.props===false?' <i class="muted">(lines only)</i>':'')+'</span></button>').join(''):'<div class="small muted" style="padding:10px">No team matches.</div>')+'</div>':'')+'</div>';
 }
 document.addEventListener('click',function(e){ if(BT.form&&BT.form.dd&&!(e.target.closest&&e.target.closest('.tp'))){ BT.form.dd=null; btRender(); } },true);
 

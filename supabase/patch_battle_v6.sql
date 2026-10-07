@@ -1,7 +1,7 @@
 -- Battle v6: play the COMPUTER. Run ONCE in the Supabase SQL editor after setup.sql and patches v2 to v5. Safe to run again.
 --
 --  * A CPU player ("SportsLineCPU") exists as a normal account nobody can log in to.
---  * create_cpu_battle(...) opens a battle against it at once: it picks the opposing team (a fairly even matchup), builds its parlay
+--  * create_cpu_battle(...) opens a battle against it at once: the opposing team is YOUR choice (default Random = a fairly even matchup), it builds its parlay
 --    from the battle's real lines and player props, and locks it. You build yours and lock; the game starts 5 seconds later.
 --  * How it picks a parlay ("balanced, best bets"):
 --      - every leg on the board is priced against the model, then corrected by what the CPU has LEARNED (see below)
@@ -192,7 +192,8 @@ end $$;
 
 -- ---------------------------------------------------------------- start a battle against the computer
 drop function if exists public.create_cpu_battle(text, text, numeric, text, int, int);
-create or replace function public.create_cpu_battle(p_sport text, p_home text, p_wager numeric, p_fmt text default 'parlay', p_max_legs int default 8, p_minutes int default 4) returns jsonb
+drop function if exists public.create_cpu_battle(text, text, numeric, text, int, int, text);
+create or replace function public.create_cpu_battle(p_sport text, p_home text, p_wager numeric, p_fmt text default 'parlay', p_max_legs int default 8, p_minutes int default 4, p_away text default null) returns jsonb
 language plpgsql security definer set search_path = public, ls_private, pg_temp as $$
 declare
   uid uuid := auth.uid(); v_cpu uuid := ls_private.cpu_id(); w numeric := round(coalesce(p_wager, 0), 2); fm text := coalesce(p_fmt, 'parlay'); bid bigint; bal numeric; cb numeric;
@@ -212,6 +213,10 @@ begin
 
   -- the CPU's team: a fairly even matchup (your team's win chance closest to 50%) among a handful of random teams, preferring ones with player props
   v_has := (select count(*) from public.sim_players where sport = p_sport and team = p_home) >= 8;
+  if nullif(p_away, '') is not null and p_away <> 'random' then          -- you chose the computer's team
+    if p_away = p_home or not exists (select 1 from public.sim_teams where sport = p_sport and abbr = p_away) then raise exception 'Pick a different team for the computer'; end if;
+    bestab := p_away; best := public.battle_markets(p_sport, p_home, p_away);
+  else
   for r in select abbr from public.sim_teams where sport = p_sport and abbr <> p_home order by random() limit 8 loop
     m := public.battle_markets(p_sport, p_home, r.abbr);
     v_ph := coalesce((m ->> 'pHome')::double precision, 0.5);
@@ -220,6 +225,7 @@ begin
     elsif abs(v_ph - 0.5) < bestd2 then bestd2 := abs(v_ph - 0.5); anyab := r.abbr; anym := m; end if;
   end loop;
   if bestab is null then bestab := anyab; best := anym; end if;       -- no team with props found: team lines only
+  end if;
   if bestab is null then raise exception 'Could not find an opponent team right now, try again'; end if;
   mk := ls_private.boost_json(best);
 
@@ -245,7 +251,7 @@ begin
   perform ls_private.cpu_build(bid);
   return jsonb_build_object('id', bid, 'balance', bal, 'cpu_team', bestab);
 end $$;
-grant execute on function public.create_cpu_battle(text, text, numeric, text, int, int) to authenticated;
+grant execute on function public.create_cpu_battle(text, text, numeric, text, int, int, text) to authenticated;
 
 -- ---------------------------------------------------------------- learning (runs when a battle settles)
 create or replace function ls_private.cpu_learn(p_id bigint) returns void
