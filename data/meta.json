@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 32,
+ "runNumber": 33,
  "deadlineHit": false,
- "generatedAt": "2026-10-07T15:00:17Z",
- "generatedAtET": "Wed Oct 7, 11:00 AM ET",
+ "generatedAt": "2026-10-07T18:51:42Z",
+ "generatedAtET": "Wed Oct 7, 2:51 PM ET",
  "today": "2026-10-07",
- "lastRunAt": "2026-10-07T15:00:17Z",
+ "lastRunAt": "2026-10-07T18:51:42Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -104,7 +104,7 @@
   },
   "calls": 17,
   "failedCalls": 0,
-  "seconds": 6.6,
+  "seconds": 6.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -114,13 +114,13 @@
   },
   "gamesUploaded": 14,
   "simTeamsUploaded": 1063,
-  "simPlayersUploaded": 1151,
+  "simPlayersUploaded": 1250,
   "configured": true
  },
- "odds": "ok: 7 events (plan limit: Response is missing 28824 bookmaker odds. Upgrade your API key to access all dat)",
+ "odds": "ok: 7 events (plan limit: Response is missing 30900 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
- "requests": 429,
- "failedRequests": 0,
- "retries": 0,
- "seconds": 38.9
+ "requests": 430,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 31.0
 }
