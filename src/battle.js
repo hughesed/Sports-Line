@@ -2,7 +2,7 @@
    Flow: create (wager escrowed; format Parlay or Same Game Parlay) -> someone accepts (matching wager) -> both build + lock a parlay from the battle's markets
    -> the database simulates the whole game and reveals it play by play over ~3 minutes -> the slip that pays more wins the pot.
    Spectators can bet on the game lines and on who wins the battle until the game starts. Rosters and injuries are frozen into the battle when it is created. */
-const BT={lobby:null,id:null,det:null,timer:null,tick:null,sim:null,simTried:false,form:{sport:'nfl',home:'',pick:'',wager:'50',fmt:'parlay',q:''},
+const BT={lobby:null,id:null,det:null,timer:null,tick:null,sim:null,simTried:false,form:{sport:'nfl',home:'',pick:'',wager:'50',fmt:'parlay',q:'',vs:'players'},
   draft:{},saveT:null,spec:{tok:'',stake:'25'},msg:'',busy:false,seen:{},html:{},lastTick:0,skew:0,quote:{},acc:{},all:{},sawLive:{},flashed:{}};
 const SPORTS3=[['nfl','NFL'],['nba','NBA'],['mlb','MLB'],['cfb','CFB'],['cbb','CBB']];
 const SPLONG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'College football',cbb:"Men's college basketball"};
@@ -21,6 +21,19 @@ function teamOf(sport,ab){ return simTeams(sport).find(t=>t.abbr===ab)||{abbr:ab
 function btFormDefaults(){ const f=BT.form, ts=simTeams(f.sport); if(!ts.length) return; const pr=ts.filter(t=>t.props!==false); const pool=pr.length>=1?pr:ts;
   if(!ts.some(t=>t.abbr===f.home)) f.home=pool[0].abbr; }
 function tchip(name,color){ return '<span class="tchip" style="background:'+esc(color||'#334155')+'">'+esc((name||'').slice(0,4))+'</span>'; }
+
+/* ---------- the computer opponent ---------- */
+const CPU_NAME='SportsLineCPU';
+function loadCpu(){
+  if(!SOC.sb||BT.cpuBusy) return; BT.cpuBusy=true;
+  SOC.sb.rpc('cpu_status').then(r=>{ BT.cpuBusy=false; BT.cpuTried=true; if(!r.error&&r.data){ BT.cpu=r.data; BT.cpuMissing=false; } else BT.cpuMissing=true; btRender(); },()=>{ BT.cpuBusy=false; BT.cpuTried=true; BT.cpuMissing=true; });
+}
+function cpuNote(){
+  const c=BT.cpu; let learn='';
+  if(c){ const you=c.you; learn=' It learns from every battle: '+cn(c.legs_learned||0)+' legs studied so far'+(c.battles?', '+cn(c.battles)+' battle'+(c.battles===1?'':'s')+' played':'')+'.'+(you&&(you.w+you.l+you.t)?' Your record against it: '+you.w+'-'+you.l+(you.t?'-'+you.t:'')+'.':''); }
+  else if(BT.cpuMissing) learn=' (The computer needs the v6 database patch: run supabase/patch_battle_v6.sql once.)';
+  return '<div class="small muted">The computer picks the opposing team (an even matchup) and builds a balanced parlay from its best bets: at least 4 legs, and with Unlimited legs at most 14. It locks right away, and your parlay stays hidden from it.'+learn+' Practice mode: coins and your win/loss record count, not Elo, the Board or streaks. Maximum wager 1,000.</div>';
+}
 
 /* ---------- data ---------- */
 function loadLobby(){
@@ -96,26 +109,28 @@ function btCreateHtml(){
   const fseg='<div class="seg" role="group" aria-label="Battle format"><button data-act="bt-fmt" data-k="parlay" aria-pressed="'+(f.fmt==='parlay')+'">Parlay</button><button data-act="bt-fmt" data-k="sgp" aria-pressed="'+(f.fmt==='sgp')+'">Same Game Parlay <span class="sgpb">SGP</span></button></div>';
   const noProps=ts.length&&H.props===false;
   const sp=(BT.sim&&BT.sim.sports[f.sport])||{}; const off=(f.sport==='nba'||f.sport==='cbb')&&[6,7,8,9].indexOf(new Date().getMonth())>=0;
-  return '<section class="game"><div class="sec"><h3>Start a battle <span class="hint">practice coins</span></h3>'+
+  const cpu=(f.vs==='cpu');
+  const vseg='<div class="fld">Play against<div class="seg" role="group" aria-label="Opponent"><button data-act="bt-vs" data-k="players" aria-pressed="'+(!cpu)+'">Players</button><button data-act="bt-vs" data-k="cpu" aria-pressed="'+cpu+'">🤖 Computer</button></div>'+(cpu?cpuNote():'')+'</div>';
+  return '<section class="game"><div class="sec"><h3>Start a battle <span class="hint">practice coins</span></h3>'+vseg+
     '<div class="seg" role="group" aria-label="Sport">'+seg+'</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
     (ts.length?(big?'<label class="fld">Find a team<input class="num wide" data-bt="q" value="'+esc(f.q||'')+'" placeholder="Type a school" aria-label="Find a team" autocomplete="off"></label>':'')+
       tpHtml(f,'home',ts,q,'Your team',null)+
       (noProps?'<div class="small muted">'+esc(H.short||H.abbr)+' has no player data yet, so this battle would have team lines only (spread, total, moneyline).</div>':'<div class="small muted">Player props included: about 9 players per team, lines from current rosters.</div>')+
       injLine(H,H.abbr)+
-      '<div class="small muted">You only pick your team and the settings. Whoever accepts picks the opposing team, and then the lines are set.</div>'+
+      (cpu?'<div class="small muted">You pick your team and the settings. The computer picks the other team and the lines are set at once.</div>':'<div class="small muted">You only pick your team and the settings. Whoever accepts picks the opposing team, and then the lines are set.</div>')+
       '<div class="fld">Format'+fseg+'<div class="small muted">'+btFmtNote(f.fmt,f.legs)+'</div></div>'+
       '<div class="fld">Legs allowed<div class="seg" role="group" aria-label="Legs allowed">'+[[4,'4'],[8,'8'],[12,'12'],[0,'Unlimited']].map(([k,l])=>'<button data-act="bt-legs" data-k="'+k+'" aria-pressed="'+(f.legs===k)+'">'+l+'</button>').join('')+'</div></div>'+
       '<div class="fld">Game length (minutes)<div class="seg" role="group" aria-label="Game length">'+[2,3,4,5,6,7,8].map(k=>'<button data-act="bt-mins" data-k="'+k+'" aria-pressed="'+(f.mins===k)+'">'+k+(k===4?' ·std':'')+'</button>').join('')+'</div></div>'+
       '<div class="stakerow2"><label>Wager <input class="num" data-bt="wager" inputmode="decimal" value="'+esc(f.wager)+'" aria-label="Wager in coins"> coins</label><span class="chips2">'+wchips+'</span></div>'+
-      '<div class="btnrow"><button class="btn solid" data-act="bt-create"'+(BT.busy?' disabled':'')+'>'+(SOC.user?'Create battle':'Sign in to battle')+'</button></div>'+
-      '<div class="small muted">Your wager is held until the battle ends. Then you wait for a challenger. If you leave this screen you get a pop-up the moment someone accepts. If nobody accepts within 30 minutes, or the parlays are not locked within 15 minutes of accepting, everything is refunded.</div>'
+      '<div class="btnrow"><button class="btn solid" data-act="bt-create"'+(BT.busy?' disabled':'')+'>'+(SOC.user?(cpu?'Play the computer':'Create battle'):'Sign in to battle')+'</button></div>'+
+      (cpu?'<div class="small muted">Your wager is held until the battle ends and the computer matches it. Build your parlay and lock it: the game starts 5 seconds after you lock. If you do not lock within 15 minutes, everything is refunded.</div>':'<div class="small muted">Your wager is held until the battle ends. Then you wait for a challenger. If you leave this screen you get a pop-up the moment someone accepts. If nobody accepts within 30 minutes, or the parlays are not locked within 15 minutes of accepting, everything is refunded.</div>')
     :'<div class="small muted">Loading teams…</div>')+
     (BT.msg?'<div class="slipnote warnt">'+esc(BT.msg)+'</div>':'')+'</div></section>';
 }
 function btRow(b,kind){
   const me=SOC.user&&SOC.user.id; const mine=me&&(b.creator===me||b.opponent===me);
   const A=teamOf(b.sport,b.away), H=teamOf(b.sport,b.home); const wait=!b.away;
-  const who=esc(b.creator_name||'?')+(b.opponent_name?' vs '+esc(b.opponent_name):'');
+  const who=((b.creator_name===CPU_NAME||b.opponent_name===CPU_NAME)?'🤖 ':'')+esc(b.creator_name||'?')+(b.opponent_name?' vs '+esc(b.opponent_name):'');
   let right='';
   if(kind==='open'){
     if(b.status==='open'&&!mine) right='<span class="badge warn">'+(wait?'pick a team':'open')+'</span>';
@@ -133,7 +148,7 @@ function btLobbyHtml(){
     '<section class="game"><div class="sec"><h3>Open battles <span class="hint">accept one and pick your team</span></h3>'+(L?list(L.open,'open','No open battles. Start one above.'):'<div class="small muted">Loading…</div>')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>Live now</h3>'+(L?list(L.live,'live','No battle is being played right now.'):'')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>Recent results</h3>'+(L?list(BT.moreRecent?L.recent:(L.recent||[]).slice(0,6),'recent','No finished battles yet.')+(!BT.moreRecent&&(L.recent||[]).length>6?'<div class="btnrow"><button class="btn" data-act="bt-more">More ('+((L.recent.length)-6)+')</button></div>':''):'')+'</div></section>'+
-    '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, MLB, college football or college basketball), your team, a format (Parlay or Same Game Parlay), the legs allowed and a wager, then wait. 2. Another player accepts with the same wager and picks the opposing team. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. If your winning parlay hits, you also receive 10% of that parlay\'s total payout in bonus coins. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record.</div>'+PRACTICE_NOTE+'</div></section>';
+    '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, MLB, college football or college basketball), your team, a format (Parlay or Same Game Parlay), the legs allowed and a wager, then wait. 2. Another player accepts with the same wager and picks the opposing team. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. If your winning parlay hits, you also receive 10% of that parlay\'s total payout in bonus coins. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record. No one to play? Choose <b>Computer</b> when you start a battle: it picks a balanced parlay from its best bets (4 legs minimum, 14 maximum on Unlimited), learns from every battle, and counts toward your record but not Elo or the Board.</div>'+PRACTICE_NOTE+'</div></section>';
 }
 const bgrp=tok=>{ const p=tok.split(':'); return p[0]==='p'||p[0]==='x'?'p:'+p[1]+':'+p[2]:p[0]; };
 function mktBtn(tok,top,price,on,dis,act,aria){ return '<button class="odd'+(on?' on':'')+'" data-act="'+(act||'bt-leg')+'" data-tok="'+esc(tok)+'" aria-pressed="'+!!on+'"'+(aria?' aria-label="'+esc(aria)+'"':'')+(dis?' disabled':'')+'><span class="o1">'+esc(top)+'</span><span class="o2 mono">'+fo(price)+'</span></button>'; }
@@ -374,6 +389,9 @@ document.addEventListener('click',function(e){
   if(act==='bt-mins'){ f.mins=parseInt(t.getAttribute('data-k'),10); btRender(); return; }
   if(act==='bt-fmt'){ f.fmt=t.getAttribute('data-k'); btRender(); return; }
   if(act==='bt-wager'){ f.wager=t.getAttribute('data-v'); btRender(); return; }
+  if(act==='bt-vs'){ f.vs=t.getAttribute('data-k')==='cpu'?'cpu':'players'; BT.msg=''; if(f.vs==='cpu'){ if((parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0)>1000) f.wager='1000'; if(!BT.cpuTried) loadCpu(); } btRender(); return; }
+  if(act==='bt-create'&&f.vs==='cpu'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
+    btCall('create_cpu_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ refreshMe(); loadCpu(); btOpen(d.id); }); return; }
   if(act==='bt-create'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
     btCall('create_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ BT.alerts.until=Date.now()+30*60000; BT.alerts.last=0; refreshMe(); btOpen(d.id); }); return; }
   if(act==='bt-open'){ btOpen(+t.getAttribute('data-id')); return; }
