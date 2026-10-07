@@ -4,7 +4,7 @@
    - last good copy kept in localStorage so the page still opens offline (clearly labelled) */
 (function(){
   'use strict';
-  var STALE_MS=6*3600e3, RECHECK_MS=4*60e3, CKEY='linescout.data.v1';
+  var STALE_MS=6*3600e3, RECHECK_MS=60e3, CKEY='linescout.data.v1';
   var cur=null, started=false, pending=null, offline=false;
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }

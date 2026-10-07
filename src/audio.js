@@ -38,7 +38,16 @@ const SFX={
   cheer(){ sNoise(2.2,.38,'bandpass',900,1500,.8,0,.35); sNoise(2.2,.22,'bandpass',2200,3200,.9,.05,.4); for(let i=0;i<7;i++) sNoise(.08,.18,'highpass',1800,1800,.7,.2+i*.22+Math.random()*.1); },
   groan(){ sNoise(1.1,.22,'bandpass',500,260,.8,0,.3); },
   crack(){ sNoise(.06,.7,'highpass',1800,1800,.7,0); sTone(1100,500,.08,.3,'square',0); },
-  swish(){ sNoise(.35,.25,'bandpass',2800,1200,1.1,0,.05); }
+  swish(){ sNoise(.35,.25,'bandpass',2800,1200,1.1,0,.05); },
+  /* battle sounds */
+  fanfare(){ [[523,0],[659,.13],[784,.26],[1047,.39]].forEach(a=>{ sTone(a[0],a[0]*1.01,.28,.16,'sawtooth',a[1],null,2400); sTone(a[0]/2,a[0]/2,.28,.10,'square',a[1],null,1200); }); sTone(1047,1047,.7,.16,'sawtooth',.52,null,2600); sTone(784,784,.7,.12,'triangle',.52); },
+  chime(){ sTone(988,988,.16,.16,'triangle',0); sTone(1319,1319,.34,.16,'triangle',.11); },
+  batcrack(){ sNoise(.05,.85,'highpass',2200,2200,.7,0); sTone(1400,420,.09,.4,'square',0); sTone(180,70,.16,.5,'sine',.01); },
+  mitt(){ sNoise(.09,.6,'bandpass',900,500,1.1,0,.005); sTone(150,60,.12,.5,'sine',0); },
+  slide(){ sNoise(.45,.22,'bandpass',1800,500,.8,0,.05); },
+  squeak(){ sTone(1500,2100,.09,.14,'square',0,null,3000); sTone(1900,1300,.08,.12,'square',.1,null,3000); },
+  buzzer(){ sTone(220,220,.9,.38,'sawtooth',0,null,1400); sTone(233,233,.9,.3,'sawtooth',0,null,1400); },
+  organ(){ [[392,0],[523,.14],[659,.28],[784,.42],[659,.56],[784,.70],[1047,.84]].forEach(a=>{ sTone(a[0],a[0],.2,.12,'square',a[1],null,1800); sTone(a[0]*2,a[0]*2,.2,.05,'triangle',a[1]); }); }
 };
 function sfx(name,delay,a){ if(!SND.on||!SND.ctx) return; const f=SFX[name]; if(!f) return; if(delay>0) setTimeout(()=>{ if(SND.on&&SND.ctx) try{ f(a); }catch(e){} },delay); else try{ f(a); }catch(e){} }
 

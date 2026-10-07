@@ -47,7 +47,7 @@ function loadDetail(){
   SOC.sb.rpc('battle_detail',{p_id:id}).then(r=>{
     if(BT.id!==id) return;
     if(r.error){ BT.msg=r.error.message; btRender(); return; }
-    BT.det=r.data; if(r.data&&r.data.now) BT.skew=Date.parse(r.data.now)-Date.now();
+    BT.det=r.data; btCum(r.data&&r.data.events); if(r.data&&r.data.now) BT.skew=Date.parse(r.data.now)-Date.now();
     const b=r.data&&r.data.battle;
     if(b&&b.status==='open'&&SOC.user&&b.creator===SOC.user.id) BT.alerts.until=Date.now()+30*60000;      // keep watching for a challenger from other screens
     if(b&&b.status==='live'&&Date.parse(b.ends_at)<=btNow()+500&&!BT.settling){ BT.settling=true; SOC.sb.rpc('settle_battle',{p_id:id}).then(()=>{ BT.settling=false; loadDetail(); refreshMe(); },()=>{ BT.settling=false; }); }
@@ -56,11 +56,39 @@ function loadDetail(){
     btRender();
   });
 }
+/* each play row carries only the player totals that changed on that play; add them up so every row holds the running totals */
+function btCum(evs){ let acc={}; (evs||[]).forEach(e=>{ const s=e.stats; if(s&&typeof s==='object'){ const n=Object.assign({},acc); for(const pid in s) n[pid]=Object.assign({},acc[pid]||{},s[pid]); acc=n; } e.stats=acc; }); }
+/* ---------- box score ---------- */
+const BX_COLS={nfl:{QB:[['passYds','Pass'],['passTD','PaTD'],['rushYds','Rush']],RB:[['rushYds','Rush'],['rec','Rec'],['recYds','RecYd'],['tdany','TD']],WR:[['rec','Rec'],['recYds','RecYd'],['tdany','TD']]},
+  nba:{P:[['pts','PTS'],['reb','REB'],['ast','AST'],['fg3','3PM'],['pra','PRA']]},
+  mlb:{H:[['hits','H'],['runs','R'],['rbi','RBI'],['hr','HR'],['tb','TB'],['hrr','H+R+RBI']],SP:[['outs','IP'],['k','K']]}};
+BX_COLS.cfb=BX_COLS.nfl; BX_COLS.cbb=BX_COLS.nba;
+const BX_GROUPS={nfl:[['QB','RB','WR']],nba:[['P']],mlb:[['H'],['SP']]}; BX_GROUPS.cfb=BX_GROUPS.nfl; BX_GROUPS.cbb=BX_GROUPS.nba;
+function btBox(b,d,last){
+  const ro=b.markets&&b.markets.roster; if(!ro||!last) return '';
+  const st=last.stats||{}, cols=BX_COLS[b.sport]||{}, groups=BX_GROUPS[b.sport]||[];
+  const star=new Set(); (d.parlays||[]).forEach(p=>(p.graded||p.legs||[]).forEach(l=>{ if(l.pid) star.add(l.pid); }));
+  const fmtv=(k,v)=>k==='outs'?Math.floor(v/3)+'.'+(v%3):String(v);
+  const people=Object.keys(ro).map(pid=>({pid:pid,n:ro[pid][0]||pid,side:ro[pid][1],role:ro[pid][2],rk:+ro[pid][3]||0}));
+  let out='';
+  ['away','home'].forEach(side=>{
+    const T=teamOf(b.sport,side==='home'?b.home:b.away);
+    out+='<div class="bxh">'+tchip(T.abbr,T.color)+' <b>'+esc(T.name||T.abbr)+'</b> <span class="muted small">'+(side==='home'?last.hs:last.as_)+'</span></div>';
+    groups.forEach(g=>{
+      const rows=people.filter(x=>x.side===side&&g.indexOf(x.role)>=0).sort((x,y)=>g.indexOf(x.role)-g.indexOf(y.role)||x.rk-y.rk); if(!rows.length) return;
+      const ks=[]; g.forEach(r=>(cols[r]||[]).forEach(c=>{ if(!ks.some(q=>q[0]===c[0])) ks.push(c); }));
+      out+='<div class="xscroll"><table class="bxt"><thead><tr><th>Player</th>'+ks.map(c=>'<th>'+esc(c[1])+'</th>').join('')+'</tr></thead><tbody>'+
+        rows.map(x=>{ const have=(cols[x.role]||[]).map(c=>c[0]); const s=st[x.pid]||{};
+          return '<tr'+(star.has(x.pid)?' class="mine"':'')+'><td class="bxn">'+esc(surname(x.n))+(star.has(x.pid)?' <span title="In a slip">★</span>':'')+'</td>'+ks.map(c=>'<td class="mono">'+(have.indexOf(c[0])<0?'<span class="muted">–</span>':fmtv(c[0],s[c[0]]||0))+'</td>').join('')+'</tr>'; }).join('')+'</tbody></table></div>';
+    });
+  });
+  return '<div class="sec"><h3>Box score <span class="hint">★ = in a slip</span></h3>'+out+'</div>';
+}
 function btSchedule(){
   clearTimeout(BT.timer); BT.timer=null;
   if(S.view!=='battle'||!SOC.sb||document.hidden) return;
   const b=BT.det&&BT.det.battle; const live=BT.id&&b&&b.status==='live';
-  const ms=BT.id?(live?1500:(b&&(b.status==='final'||b.status==='cancelled')?15000:4000)):6000;
+  const ms=BT.id?(live?1000:(b&&(b.status==='final'||b.status==='cancelled')?15000:4000)):6000;
   BT.timer=setTimeout(()=>{ if(BT.id) loadDetail(); else loadLobby(); btSchedule(); },ms);
 }
 function btAfterRender(){
@@ -151,12 +179,12 @@ function btLobbyHtml(){
     '<section class="game"><div class="sec"><h3>Recent results</h3>'+(L?list(BT.moreRecent?L.recent:(L.recent||[]).slice(0,6),'recent','No finished battles yet.')+(!BT.moreRecent&&(L.recent||[]).length>6?'<div class="btnrow"><button class="btn" data-act="bt-more">More ('+((L.recent.length)-6)+')</button></div>':''):'')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, MLB, college football or college basketball), your team, a format (Parlay or Same Game Parlay), the legs allowed and a wager, then wait. 2. Another player accepts with the same wager and picks the opposing team. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. If your winning parlay hits, you also receive 10% of that parlay\'s total payout in bonus coins. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record. No one to play? Choose <b>Computer</b> when you start a battle: it picks a balanced parlay from its best bets (4 legs minimum, 14 maximum on Unlimited), learns from every battle, and counts toward your record but not Elo or the Board.</div>'+PRACTICE_NOTE+'</div></section>';
 }
-const bgrp=tok=>{ const p=tok.split(':'); return p[0]==='p'||p[0]==='x'?'p:'+p[1]+':'+p[2]:p[0]; };
+const bgrp=tok=>{ const p=tok.split(':'); return p[0]==='p'||p[0]==='x'?'p:'+p[1]+':'+p[2]:p[0]==='tt'?'tt:'+p[1]:p[0]; };
 function mktBtn(tok,top,price,on,dis,act,aria){ return '<button class="odd'+(on?' on':'')+'" data-act="'+(act||'bt-leg')+'" data-tok="'+esc(tok)+'" aria-pressed="'+!!on+'"'+(aria?' aria-label="'+esc(aria)+'"':'')+(dis?' disabled':'')+'><span class="o1">'+esc(top)+'</span><span class="o2 mono">'+fo(price)+'</span></button>'; }
 /* FanDuel-style order of the player sections for each sport (Game Lines always first) */
-const PSEC={passYds:'Passing Yards',passTD:'Passing TDs',rushYds:'Rushing Yards',recYds:'Receiving Yards',rec:'Receptions',tdany:'Anytime Touchdown Scorer',pts:'Points',reb:'Rebounds',ast:'Assists',fg3:'Made Threes',pra:'Points + Rebounds + Assists',hits:'Hits',tb:'Total Bases',hr:'Home Runs',rbi:'RBIs',runs:'Runs Scored',k:'Strikeouts',outs:'Outs Recorded'};
-const PORD={nfl:['tdany','passYds','passTD','rushYds','recYds','rec'],nba:['pts','reb','ast','fg3','pra'],mlb:['hits','hr','tb','rbi','runs','k','outs']}; PORD.cfb=PORD.nfl; PORD.cbb=PORD.nba;
-function selIn(sel,key){ return sel.filter(t=>{ const p=t.split(':'); return key==='lines'?(p[0]==='ml'||p[0]==='spr'||p[0]==='tot'):(p[0]==='p'||p[0]==='x')&&p[2]===key; }).length; }
+const PSEC={passYds:'Passing Yards',passTD:'Passing TDs',rushYds:'Rushing Yards',recYds:'Receiving Yards',rec:'Receptions',tdany:'Anytime Touchdown Scorer',pts:'Points',reb:'Rebounds',ast:'Assists',fg3:'Made Threes',pra:'Points + Rebounds + Assists',hits:'Hits',hrr:'Hits + Runs + RBIs',tb:'Total Bases',hr:'Home Runs',rbi:'RBIs',runs:'Runs Scored',k:'Strikeouts',outs:'Outs Recorded'};
+const PORD={nfl:['tdany','passYds','passTD','rushYds','recYds','rec'],nba:['pts','reb','ast','fg3','pra'],mlb:['hits','hrr','hr','tb','rbi','runs','k','outs']}; PORD.cfb=PORD.nfl; PORD.cbb=PORD.nba;
+function selIn(sel,key){ return sel.filter(t=>{ const p=t.split(':'); return key==='lines'?(p[0]==='ml'||p[0]==='spr'||p[0]==='tot'):key==='tt'?p[0]==='tt':(p[0]==='p'||p[0]==='x')&&p[2]===key; }).length; }
 function accSection(b,key,title,body,sel,o){
   const open=BT.acc[key]!=null?!!BT.acc[key]:!!o.def; const n=selIn(sel||[],key);
   return '<div class="acc"><button class="accH" data-act="bt-acc" data-k="'+esc(key)+'" aria-expanded="'+open+'"><b>'+esc(title)+'</b>'+(n?'<span class="picked">'+n+' picked</span>':'')+(o.sgp?'<span class="sgpb">SGP</span>':'')+'<span class="chev" aria-hidden="true">'+(open?'⌃':'⌄')+'</span></button>'+(open?'<div class="accB">'+body+'</div>':'')+'</div>';
@@ -175,6 +203,12 @@ function btMarketsHtml(b,sel,act,o){ o=o||{lines:true,props:true};
     '<div class="orow"><div class="team">'+tchip(A.abbr,A.color)+'<div class="tn"><div class="n">'+esc(A.short||A.abbr)+'</div><div class="r">away · ~'+Math.round(m.ea)+'</div></div></div>'+btn('spr:away',sg(m.spr.awayLine),m.spr.away)+btn('tot:over','O '+m.tot.line,m.tot.over)+btn('ml:away','ML',m.ml.away)+'</div>'+
     '<div class="orow"><div class="team">'+tchip(H.abbr,H.color)+'<div class="tn"><div class="n">'+esc(H.short||H.abbr)+'</div><div class="r">home · ~'+Math.round(m.eh)+'</div></div></div>'+btn('spr:home',sg(m.spr.homeLine),m.spr.home)+btn('tot:under','U '+m.tot.line,m.tot.under)+btn('ml:home','ML',m.ml.home)+'</div></div>';
     h+=o.props||o.accordion?accSection(b,'lines','Game Lines',g,sel,{def:true,sgp:sgp}):g;
+  }
+  if(o.props&&m.tt){
+    const unit=b.sport==='mlb'?'runs':'points';
+    const tg='<div class="ogrid"><div class="ohead"><span></span><span>Over</span><span>Under</span><span></span></div>'+['away','home'].map(s=>{ const T=s==='away'?A:H, x=m.tt[s]; if(!x) return '';
+      return '<div class="orow"><div class="team">'+tchip(T.abbr,T.color)+'<div class="tn"><div class="n">'+esc(T.short||T.abbr)+'</div><div class="r">team total '+unit+' · ~'+Math.round(s==='away'?m.ea:m.eh)+'</div></div></div>'+btn('tt:'+s+':over','O '+x.line,x.over)+btn('tt:'+s+':under','U '+x.line,x.under)+'<span></span></div>'; }).join('')+'</div>';
+    h+=accSection(b,'tt','Team Totals'+(b.sport==='mlb'?' (runs)':''),tg,sel,{def:false,sgp:sgp});
   }
   if(o.win&&m.winner) h+='<div class="legs win2">'+btn('win:creator',(m.winner.creatorName||'Creator')+' wins the battle',m.winner.creator)+btn('win:opponent',(m.winner.opponentName||'Opponent')+' wins the battle',m.winner.opponent)+'</div>';
   if(o.props&&(m.props||[]).length){
@@ -202,11 +236,12 @@ function legLabel(b,tok){
   const m=b.markets, p=tok.split(':');
   if(p[0]==='ml') return b[p[1]]+' to win'; if(p[0]==='spr') return b[p[1]]+' '+sg(m.spr[p[1]+'Line']); if(p[0]==='tot') return (p[1]==='over'?'Over ':'Under ')+m.tot.line;
   if(p[0]==='win') return ((m.winner||{})[p[1]+'Name']||p[1])+' wins the battle';
+  if(p[0]==='tt'){ const x=(m.tt||{})[p[1]]; return b[p[1]]+' team total '+(p[2]==='over'?'Over ':'Under ')+(x?x.line:''); }
   const pr=(m.props||[]).find(x=>x.pid===p[1]&&x.stat===p[2]); if(!pr) return tok;
   if(p[0]==='x') return surname(pr.name)+(pr.yn?' ':' '+p[3]+'+ ')+pr.label.toLowerCase();
   return surname(pr.name)+' '+(p[3]==='over'?'Over ':'Under ')+pr.line+' '+pr.label.toLowerCase();
 }
-function legPrice(b,tok){ const m=b.markets, p=tok.split(':'); if(p[0]==='x'){ const pr=(m.props||[]).find(x=>x.pid===p[1]&&x.stat===p[2]); const r=pr&&(pr.rungs||[]).find(x=>x.n===+p[3]); return r?r.price:null; } if(p[0]==='ml') return m.ml[p[1]]; if(p[0]==='spr') return m.spr[p[1]]; if(p[0]==='tot') return m.tot[p[1]]; if(p[0]==='win') return (m.winner||{})[p[1]]; const pr=(m.props||[]).find(x=>x.pid===p[1]&&x.stat===p[2]); return pr?pr[p[3]]:null; }
+function legPrice(b,tok){ const m=b.markets, p=tok.split(':'); if(p[0]==='tt'){ const x=(m.tt||{})[p[1]]; return x?x[p[2]]:null; } if(p[0]==='x'){ const pr=(m.props||[]).find(x=>x.pid===p[1]&&x.stat===p[2]); const r=pr&&(pr.rungs||[]).find(x=>x.n===+p[3]); return r?r.price:null; } if(p[0]==='ml') return m.ml[p[1]]; if(p[0]==='spr') return m.spr[p[1]]; if(p[0]==='tot') return m.tot[p[1]]; if(p[0]==='win') return (m.winner||{})[p[1]]; const pr=(m.props||[]).find(x=>x.pid===p[1]&&x.stat===p[2]); return pr?pr[p[3]]:null; }
 /* live status of one leg from the latest visible play (score + running player lines); the saved leg carries its own line, so this works after the prop list is gone */
 function legNow(b,l,ev,fin){
   if(!ev) return {s:'',t:''}; const hs=ev.hs, as=ev.as_; const k=l.kind;
@@ -214,6 +249,7 @@ function legNow(b,l,ev,fin){
   if(k==='ml'){ if(!fin) return {s:'',t:(l.side==='home'?hs-as:as-hs)>0?'leading':(hs===as?'tied':'trailing')}; return res(hs===as?'V':((l.side==='home')===(hs>as)?'W':'L')); }
   if(k==='spr'){ const v=(l.side==='home'?hs-as:as-hs)+(+l.line); if(!fin) return {s:'',t:v>0?'covering':'not covering'}; return res(v===0?'V':v>0?'W':'L'); }
   if(k==='tot'){ const t=hs+as; if(l.dir==='over'&&t>l.line) return res('W'); if(l.dir==='under'&&t>l.line) return res('L'); if(!fin) return {s:'',t:t+' so far'}; return res(l.dir==='under'?'W':'L'); }
+  if(k==='tt'){ const x=l.side==='home'?hs:as; if(l.dir==='over'&&x>l.line) return res('W'); if(l.dir==='under'&&x>l.line) return res('L'); if(!fin) return {s:'',t:x+' so far'}; return res(x===+l.line?'V':l.dir==='under'?'W':'L'); }
   const cur=((ev.stats||{})[l.pid]||{})[l.stat]||0;
   if(k==='x'){ if(cur>=+l.n) return res('W'); if(!fin) return {s:'',t:cur+' so far'}; return res('L'); }
   if(k==='p'){ if(l.dir==='over'&&cur>l.line) return res('W'); if(l.dir==='under'&&cur>l.line) return res('L'); if(!fin) return {s:'',t:cur+' so far'}; return res(l.dir==='under'?'W':'L'); }
@@ -275,7 +311,7 @@ function btSections(){
   const sideName=s=>s==='home'?b.home:b.away;
   const sec={};
   const timer=b.status==='open'?'<span class="small muted">expires in <b data-until="'+new Date(Date.parse(b.created_at)+30*60000).toISOString()+'"></b></span>':b.status==='building'?'<span class="small muted">lock within <b data-until="'+new Date(Date.parse(b.accepted_at)+15*60000).toISOString()+'"></b></span>':b.status==='live'?'<span class="liveb"><i class="livedot"></i>LIVE</span>':'';
-  sec.head='<div class="sec"><div class="btnrow"><button class="btn" data-act="bt-back">‹ All battles</button></div><h3>'+esc(SPLONG[b.sport]||SPN[b.sport])+' battle #'+b.id+' '+(b.fmt==='sgp'?'<span class="sgpb">SGP</span> ':'')+timer+'</h3>'+
+  sec.head='<div class="sec"><div class="btnrow"><button class="btn" data-act="bt-back">‹ All battles</button>'+((b.status==='live'||fin)?'<button class="btn" data-act="bt-snd" aria-pressed="'+!!SND.on+'">'+(SND.on?'🔊 Sound on':'🔇 Sound off')+'</button>':'')+'</div><h3>'+esc(SPLONG[b.sport]||SPN[b.sport])+' battle #'+b.id+' '+(b.fmt==='sgp'?'<span class="sgpb">SGP</span> ':'')+timer+'</h3>'+
     '<div class="vsrow"><div class="vsp">'+uLink(b.creator_name||'?')+'<span class="small muted">'+(b.away?'backs ':'plays ')+esc(sideName(b.creator_side))+'</span></div><div class="pot">'+COIN+' <b>'+cn(b.wager*(b.opponent?2:1))+'</b><span class="small muted">pot</span></div><div class="vsp">'+(b.opponent?uLink(b.opponent_name||'?')+'<span class="small muted">plays '+esc(sideName(b.opponent_side))+'</span>':'<span class="muted">waiting for a challenger</span>')+'</div></div>'+
     (b.status==='cancelled'?'<div class="flash">Cancelled: '+esc(b.cancel_reason||'')+'. Wagers and spectator bets were refunded.</div>':'')+
     (BT.msg?'<div class="slipnote warnt">'+esc(BT.msg)+'</div>':'')+'</div>';
@@ -285,6 +321,7 @@ function btSections(){
       '<div class="wp" role="img" aria-label="'+esc(b.home+' win chance '+wp+' percent')+'"><div class="wpa" style="width:'+(100-wp)+'%;background:'+esc(A.color)+'">'+(100-wp>=14?esc(b.away)+' '+(100-wp)+'%':'')+'</div><div class="wph" style="width:'+wp+'%;background:'+esc(H.color)+'">'+(wp>=14?esc(b.home)+' '+wp+'%':'')+'</div></div>'+
       '<div class="playchip" id="chip-b'+b.id+'"><b>'+esc(last?anLabelOf(last):'')+'</b><span>'+esc(last?last.text:'Waiting for the first play…')+'</span></div><div class="cel" id="cel-b'+b.id+'"></div></div>'+
       (fin?btWinnerHtml(b,d):'<div class="small muted">Plays appear as their time comes; the server keeps future plays hidden.</div>')+'</div>';
+    sec.box=btBox(b,d,last);
     if((d.parlays||[]).length>1) sec.stand=btStandHtml(b,d,last,fin);
     sec.feed='<div class="sec"><h3>Play by play <span class="hint">'+evs.length+' plays</span></h3><div class="feed">'+evs.slice().reverse().map(e=>'<div class="fe '+esc(e.kind)+'"><span class="mono fc">'+esc(e.clock||'')+'</span><span>'+(anIconOf(e)?'<i class="fi">'+anIconOf(e)+'</i> ':'')+esc(e.text)+'</span><span class="mono fs">'+e.as_+'-'+e.hs+'</span></div>').join('')+'</div></div>';
     sec.parl='<div class="sec"><h3>Parlays <span class="hint">100-coin slips</span></h3>'+(d.parlays||[]).sort((x,y)=>x.user_id===b.creator?-1:1).map(p=>parlayCard(b,p,last,fin)).join('')+'</div>';
@@ -332,7 +369,7 @@ function btWinnerHtml(b,d){
   return '<div class="winbar">'+(r.split?'🤝 Tied: the pot is split and both wagers go back.':'🏆 '+esc(wn)+' wins '+cn(b.wager*2)+' coins'+(r.bonus>0?' + '+cn(r.bonus)+' bonus coins':'') )+'<div class="small">'+esc(b.creator_name)+': slip pays '+cn(r.creator.payout)+' ('+r.creator.hits+' hit) · '+esc(b.opponent_name)+': '+cn(r.opponent.payout)+' ('+r.opponent.hits+' hit)'+(r.bonus>0?' · winner gets 10% of the winning parlay payout as a bonus':'')+'</div>'+
     '<div class="btnrow"><button class="btn solid" data-act="sh-open" data-k="battle">Share result</button><button class="btn" data-act="vsf-open">Replay finish</button></div></div>';
 }
-const BT_ORDER=['head','board','stand','act','mk','spec','parl','feed','bets'];
+const BT_ORDER=['head','board','box','stand','act','mk','spec','parl','feed','bets'];
 function btDetailHtml(){
   const sec=btSections(); if(!sec) return '<section class="game"><div class="sec"><div class="btnrow"><button class="btn" data-act="bt-back">‹ All battles</button></div><div class="small muted">Loading the battle…</div></div></section>';
   BT.html={}; return '<section class="game">'+BT_ORDER.map(k=>sec[k]?'<div id="bts-'+k+'">'+(BT.html[k]=sec[k])+'</div>':'<div id="bts-'+k+'"></div>').join('')+'</section>';
@@ -354,7 +391,7 @@ function btAnimate(){
   const d=BT.det; if(!d||!d.battle) return; const b=d.battle; const evs=d.events||[]; const last=evs[evs.length-1];
   if(b.status==='live') BT.sawLive[b.id]=true;
   if(b.status==='final'&&b.result&&b.result.creator&&!BT.flashed[b.id]){ BT.flashed[b.id]=true; // the finish flash: when you watched it end, or opened a battle that ended in the last 10 minutes
-    const fresh=BT.sawLive[b.id]||(b.ends_at&&btNow()-Date.parse(b.ends_at)<600000); if(fresh) setTimeout(()=>{ if(S.view==='battle'&&BT.id===b.id) vsfShow(); },BT.sawLive[b.id]?2600:300); }
+    const fresh=BT.sawLive[b.id]||(b.ends_at&&btNow()-Date.parse(b.ends_at)<600000); if(fresh) setTimeout(()=>{ if(S.view==='battle'&&BT.id===b.id) vsfShow(); },BT.sawLive[b.id]?1500:300); }
   if(b.status==='live'||b.status==='final') anEnsureStage(b);
   if(!last) return;
   const seen=BT.seen[b.id]; BT.seen[b.id]=last.seq;
@@ -398,6 +435,7 @@ document.addEventListener('click',function(e){
   if(act==='bt-open'){ btOpen(+t.getAttribute('data-id')); return; }
   if(act==='bt-popgo'){ const id=+t.getAttribute('data-id'); btPopHide(id); btOpen(id); return; }
   if(act==='bt-popx'){ btPopHide(+t.getAttribute('data-id')); return; }
+  if(act==='bt-snd'){ SND.on=!SND.on; sndSave(); if(SND.on){ sndUnlock(); sfx('whistle',0); } else sndStop(); document.querySelectorAll('[data-act="bt-snd"]').forEach(n=>{ n.textContent=SND.on?'🔊 Sound on':'🔇 Sound off'; n.setAttribute('aria-pressed',String(!!SND.on)); }); return; }
   if(act==='bt-back'){ BT.id=null; BT.det=null; BT.msg=''; BT.html={}; render(); return; }
   const b=BT.det&&BT.det.battle; if(!b) return;
   if(act==='bt-accept'){ if(!b.away&&!BT.form.pick){ BT.msg='Pick your team first.'; btRender(); return; } btCall('accept_battle',{p_id:b.id,p_team:b.away?null:BT.form.pick}); return; }
@@ -435,6 +473,7 @@ function btBand(b,tok){ const p=tok.split(':'); if(p[0]==='x') return {k:p[1]+':
   if(p[0]==='p'){ const pr=((b.markets&&b.markets.props)||[]).find(x=>x.pid===p[1]&&x.stat===p[2]); if(!pr) return null; const k=Math.floor(+pr.line)+1; return p[3]==='over'?{k:p[1]+':'+p[2],ge:k}:{k:p[1]+':'+p[2],lt:k}; } return null; }
 function btClash(b,a,c){ if(a===c) return true; const pa=a.split(':'), pc=c.split(':');
   if(pa[0]===pc[0]&&(pa[0]==='ml'||pa[0]==='spr'||pa[0]==='tot')) return pa[1]!==pc[1];
+  if(pa[0]==='tt'&&pc[0]==='tt') return pa[1]===pc[1]&&pa[2]!==pc[2];
   const x=btBand(b,a), y=btBand(b,c); if(x&&y&&x.k===y.k) return (x.ge!=null&&y.lt!=null&&x.ge>=y.lt)||(y.ge!=null&&x.lt!=null&&y.ge>=x.lt); return false; }
 function capN(b){ return b.max_legs===0?40:(b.max_legs||6); }
 function capTxt(b,min){ return b.max_legs===0?'tap '+min+' or more legs (no limit)':'tap '+min+' to '+capN(b)+' legs'; }
@@ -526,3 +565,6 @@ function btWatch(){
 setInterval(btWatch,2500);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ BT.alerts.last=0; setTimeout(btWatch,300); } });
 
+
+/* the browser only lets sound start after a tap: the first tap on the battle screen unlocks it */
+document.addEventListener('click',function(){ try{ if(S.view==='battle'&&SND.on&&!SND.ctx) sndUnlock(); }catch(e){} },true);

@@ -78,9 +78,44 @@ function anBurst(fx,x,y,col,n){ if(anReduced()) return; for(let i=0;i<(n||10);i+
 function anShake(node){ if(anReduced()||!node||!node.animate) return; node.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(-3px)'},{transform:'translateX(0)'}],{duration:420}); }
 
 /* ---- the plays ---- */
+/* sound for each kind of play: stadium sounds that fit the sport (football: kicks, whistles, crowd; basketball: swish, rim, buzzer; baseball: bat crack, mitt, organ) */
+function anSound(b,ty,e){
+  if(typeof sfx!=='function'||!SND.on||!SND.ctx) return; const f=anFam(b.sport);
+  const S=(n,ms)=>sfx(n,ms||0);
+  if(ty==='final'){ if(f==='bk') S('buzzer'); else S('whistle2'); S('crowd',300); S('fanfare',500); return; }
+  if(f==='fb'){
+    if(ty==='td'){ S('fanfare'); S('crowd',150); S('cheer',500); }
+    else if(ty==='fg'){ S('kick'); S('crowd',900); }
+    else if(ty==='fgmiss'||ty==='stop'){ S('groan'); }
+    else if(ty==='fd'){ S('chime'); S('crowd',100); }
+    else if(ty==='flag'){ S('whistle2'); S('boo',500); }
+    else if(ty==='sack'){ S('sack'); S('groan',200); }
+    else if(ty==='int'||ty==='fumble'){ S('catch'); S('tackle',250); S('groan',400); }
+    else if(ty==='punt'){ S('kick'); }
+  } else if(f==='bk'){
+    if(ty==='three'){ S('swish',650); S('crowd',700); S('cheer',900); }
+    else if(ty==='dunk'){ S('crack',350); S('cheer',420); S('big'); }
+    else if(ty==='bucket'){ S('swish',500); S('crowd',550); }
+    else if(ty==='ft'){ S('swish',450); }
+    else if(ty==='foul'){ S('whistle'); S('groan',200); }
+    else if(ty==='steal'){ S('squeak'); S('crowd',300); }
+    else if(ty==='block'){ S('crack',250); S('cheer',300); }
+    else if(ty==='run'){ S('big'); S('cheer',300); }
+  } else {
+    if(ty==='hit1'||ty==='hit2'||ty==='hit3'){ S('batcrack'); S('crowd',400); if(ty!=='hit1') S('organ',700); }
+    else if(ty==='hr'||ty==='walkoff'){ S('batcrack'); S('big',200); S('organ',900); S('cheer',900); S('crowd',1100); }
+    else if(ty==='runscore'){ S('organ'); S('cheer',200); }
+    else if(ty==='steal'){ S('slide'); S('crowd',500); }
+    else if(ty==='safe'){ S('slide'); }
+    else if(ty==='out'){ S('mitt'); S('groan',300); }
+    else if(ty==='strikeout'){ S('mitt',380); S('chime',450); }
+    else if(ty==='walk'){ S('chime'); }
+  }
+}
 function anPlay(b,d,e,done0,scale){
   const done=()=>{ done0(); };
   try{ AN.log.push(d.type); }catch(err){}
+  try{ anSound(b,d.type,e); }catch(err){}
   const st=document.getElementById('stg-b'+b.id); if(!st){ done(); return; }
   const fx=st.querySelector('.fx'); fx.innerHTML=''; const side=e.side||'home'; const f=anFam(b.sport); const col=anColor(b,side);
   const away=side==='away'; const dir=away?1:-1;               // football: the away team attacks the home (right-hand) end zone

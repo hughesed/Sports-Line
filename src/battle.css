@@ -113,3 +113,14 @@ body.vchat .foot{display:none}
 @keyframes btpin{from{transform:translateY(-24px);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){#btpop .btp-i{animation:none}}
 
+
+/* box score */
+.bxh{display:flex;align-items:center;gap:8px;margin:10px 0 4px;font-size:14px}
+.bxh .muted{margin-left:auto;font-size:18px;font-weight:800}
+.bxt{width:100%;border-collapse:collapse;font-size:12.5px;min-width:300px}
+.bxt th{font-weight:700;text-align:right;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.bxt th:first-child,.bxt td:first-child{text-align:left}
+.bxt td{text-align:right;padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.bxt td.bxn{font-weight:600;position:sticky;left:0;background:var(--surface)}
+.bxt tr.mine td{background:rgba(255,200,61,.10)}
+.bxt tr.mine td.bxn{background:rgba(255,200,61,.16)}

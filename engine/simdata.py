@@ -30,8 +30,10 @@ PLAYER_TTL = 20 * 3600
 TEAM_TTL = 20 * 86400
 ROSTER_TTL = 10 * 3600
 ROSTERS_PER_RUN = 14
-COLLEGE_TOP = {"cfb": 36, "cbb": 40}          # college teams that get players: today's slate + this many strongest teams
-COLLEGE_LIST = {"cfb": 90, "cbb": 110}        # college teams offered in the picker (team-level battles): slate + strongest
+COLLEGE_TOP = {"cfb": 36, "cbb": 40}          # college teams refreshed first (today's slate + this many strongest teams); every OTHER rated team is filled in by extend_college()
+EXT_PER_RUN = 14                               # extra college teams (2 ESPN requests each) filled in per bot run, one league per run, alternating
+EXT_TTL = 6 * 86400                            # a filled-in team is refreshed after this long
+COLLEGE_LIST = {"cfb": None, "cbb": None}     # None = every rated college team is offered in the picker
 NEED = {"nfl": 9, "cfb": 9, "nba": 9, "cbb": 9, "mlb": 9}
 PER_TEAM_RAW = {"nfl": dict(QB=3, RB=6, WR=9), "cfb": dict(QB=3, RB=6, WR=9), "nba": dict(P=12), "cbb": dict(P=12), "mlb": dict(H=13, SP=4)}
 
@@ -129,7 +131,7 @@ def scope_teams(lg, root=None):
         rt = ((lj.get("leagues") or {}).get(lg) or {}).get("ratings") or {}
         strong = [a for a, _ in sorted(rt.items(), key=lambda kv: -((kv[1].get("o") or 0) - (kv[1].get("d") or 0)))]
     except Exception: pass
-    return slate | set(strong[:COLLEGE_TOP[lg]]), slate | set(strong[:COLLEGE_LIST[lg]])
+    return slate | set(strong[:COLLEGE_TOP[lg]]), (None if COLLEGE_LIST[lg] is None else slate | set(strong[:COLLEGE_LIST[lg]]))
 
 CORE = "https://sports.core.api.espn.com/v2/sports/{s}/leagues/{l}/seasons/{y}/types/2/teams/{t}/leaders"
 def _num(x):
@@ -392,6 +394,37 @@ def refresh_live(now, log, root=None, lgs=SPORTS, cache=None):
     save_live(live, root)
     return live
 
+def all_college_teams(lg, root=None):
+    """every college team the model has a rating for"""
+    try:
+        with open(os.path.join(root or ROOT, "data", "learn.json")) as f: lj = json.load(f)
+        return sorted((((lj.get("leagues") or {}).get(lg) or {}).get("ratings") or {}).keys())
+    except Exception: return []
+
+def extend_college(now, log, root, c):
+    """Give the rest of the college teams their players (so every school can be picked with player props in a battle). Each bot run fills in a few
+    teams that have none yet (then the oldest ones again), one league per run, alternating CFB / CBB. Uses the same two ESPN requests per team as the
+    main fetch; a team ESPN has too little data for simply stays team-level. Returns True when the cache changed."""
+    lgs = [lg for lg in ("cfb", "cbb") if (c["teams"].get(lg) or {}).get("teams") and (c["players"].get(lg) or {}).get("list")]
+    if not lgs: return False
+    lg = lgs[int(time.time() // 600) % len(lgs)]
+    pc = c["players"][lg]; tts = pc.setdefault("tts", {}); t_now = time.time()
+    tm = {t["abbr"]: t["id"] for t in c["teams"][lg]["teams"]}
+    have = {p["team"] for p in pc["list"]}
+    cand = [a for a in all_college_teams(lg, root) if a in tm]
+    cand.sort(key=lambda a: (a in have, tts.get(a, 0)))              # no players yet first, then the oldest
+    todo = [a for a in cand if (a not in have) or t_now - tts.get(a, 0) > EXT_TTL][:EXT_PER_RUN]
+    if not todo: return False
+    y, pl = players_college(lg, now, c["teams"][lg]["teams"], set(todo), team_gp(lg, root))
+    for a in todo: tts[a] = t_now                                    # tried (also when ESPN had nothing): do not retry every run
+    if pl:
+        got = {p["team"] for p in pl}
+        pc["list"] = [p for p in pc["list"] if p["team"] not in got] + pl
+        log(f"  sim: {lg} filled in {len(got)} of {len(todo)} more teams ({len(have | got)} of {len(cand)} covered)")
+    else:
+        log(f"  sim: {lg} fill-in found no players for {len(todo)} teams")
+    return True
+
 def refresh(now, log, max_leagues=1, root=None):
     """refresh the stalest league's player averages (and missing team lists), then the injury report + a slice of rosters. Returns the cache."""
     c = load_cache(root); changed = False; t_now = time.time()
@@ -406,11 +439,17 @@ def refresh(now, log, max_leagues=1, root=None):
         scope, _ = scope_teams(lg, root)
         y, pl = players_for(lg, now, idmap, scope, teams=(c["teams"].get(lg) or {}).get("teams", []), gpmap=team_gp(lg, root))
         if pl:
-            c["players"][lg] = dict(ts=t_now, season=y, list=pl); changed = True
+            old = c["players"].get(lg) or {}; fresh = {p["team"] for p in pl}
+            keep = [p for p in old.get("list", []) if p["team"] not in fresh] if lg in COLLEGE_TOP else []     # filled-in teams stay
+            tts = dict(old.get("tts") or {}); tts.update({a: t_now for a in fresh})
+            c["players"][lg] = dict(ts=t_now, season=y, list=pl + keep, tts=tts); changed = True
             log(f"  sim: {lg} player averages, season {y}: {len(pl)} players")
         else:
             (c["players"].setdefault(lg, {}))["tried"] = t_now
             log(f"  sim: {lg} player averages could not be fetched; keeping the last copy")
+    try:
+        if extend_college(now, log, root, c): changed = True
+    except Exception as ex: log(f"  sim: college fill-in skipped ({type(ex).__name__}: {ex})"[:200])
     if changed: save_cache(c, root)
     try: refresh_live(now, log, root, cache=c)
     except Exception as ex: log(f"  sim: injuries/rosters skipped ({type(ex).__name__}: {ex})"[:200])
