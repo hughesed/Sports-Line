@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 28,
+ "runNumber": 29,
  "deadlineHit": false,
- "generatedAt": "2026-10-07T00:23:23Z",
- "generatedAtET": "Tue Oct 6, 8:23 PM ET",
- "today": "2026-10-06",
- "lastRunAt": "2026-10-07T00:23:23Z",
+ "generatedAt": "2026-10-07T06:05:29Z",
+ "generatedAtET": "Wed Oct 7, 2:05 AM ET",
+ "today": "2026-10-07",
+ "lastRunAt": "2026-10-07T06:05:29Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -33,21 +33,21 @@
   },
   "mlb": {
    "status": "ok",
-   "games": 4,
-   "playerLevel": 3,
+   "games": 6,
+   "playerLevel": 4,
    "teamLevel": 0,
-   "carried": 1,
+   "carried": 2,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2446,
-   "lastFinal": "2026-10-06"
+   "newFinals": 2,
+   "storeGames": 2448,
+   "lastFinal": "2026-10-07"
   },
   "nba": {
    "status": "ok",
-   "games": 7,
+   "games": 9,
    "playerLevel": 0,
    "teamLevel": 5,
-   "carried": 2,
+   "carried": 4,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -60,9 +60,9 @@
    "teamLevel": 6,
    "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1348,
-   "lastFinal": "2026-10-04"
+   "newFinals": 1,
+   "storeGames": 1349,
+   "lastFinal": "2026-10-07"
   },
   "cbb": {
    "status": "empty",
@@ -77,21 +77,21 @@
   }
  },
  "counts": {
-  "slate": 21,
-  "playerCards": 7,
-  "teamCards": 14,
-  "window": 100,
-  "sched": 99,
-  "pastp": 41,
-  "predictions": 46,
-  "graded": 26,
-  "storeGames": 13417
+  "slate": 25,
+  "playerCards": 9,
+  "teamCards": 16,
+  "window": 97,
+  "sched": 112,
+  "pastp": 37,
+  "predictions": 50,
+  "graded": 28,
+  "storeGames": 13420
  },
  "calibration": {
   "slopes": {},
-  "graded": 26,
-  "accML": 0.731,
-  "accBook": 0.731
+  "graded": 28,
+  "accML": 0.75,
+  "accBook": 0.75
  },
  "social": {
   "enabled": true,
@@ -104,23 +104,23 @@
   },
   "calls": 17,
   "failedCalls": 0,
-  "seconds": 6.1,
+  "seconds": 6.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
    "mlb": 30,
-   "cfb": 95,
+   "cfb": 100,
    "cbb": 110
   },
-  "gamesUploaded": 11,
-  "simTeamsUploaded": 297,
-  "simPlayersUploaded": 1004,
+  "gamesUploaded": 14,
+  "simTeamsUploaded": 302,
+  "simPlayersUploaded": 1012,
   "configured": true
  },
- "odds": "kept (90 min old, pulls every 120 min)",
+ "odds": "ok: 6 events (plan limit: Response is missing 21265 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
- "requests": 352,
- "failedRequests": 0,
- "retries": 0,
- "seconds": 28.1
+ "requests": 481,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 38.2
 }
