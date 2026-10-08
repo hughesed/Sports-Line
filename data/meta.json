@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 36,
+ "runNumber": 37,
  "deadlineHit": false,
- "generatedAt": "2026-10-08T06:41:25Z",
- "generatedAtET": "Thu Oct 8, 2:41 AM ET",
+ "generatedAt": "2026-10-08T11:57:11Z",
+ "generatedAtET": "Thu Oct 8, 7:57 AM ET",
  "today": "2026-10-08",
- "lastRunAt": "2026-10-08T06:41:25Z",
+ "lastRunAt": "2026-10-08T11:57:11Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -27,7 +27,7 @@
    "teamLevel": 0,
    "carried": 2,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 345,
    "lastFinal": "2026-10-08"
   },
@@ -38,16 +38,16 @@
    "teamLevel": 0,
    "carried": 4,
    "error": null,
-   "newFinals": 3,
+   "newFinals": 0,
    "storeGames": 2452,
    "lastFinal": "2026-10-08"
   },
   "nba": {
    "status": "ok",
-   "games": 12,
+   "games": 11,
    "playerLevel": 0,
    "teamLevel": 6,
-   "carried": 6,
+   "carried": 5,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -60,7 +60,7 @@
    "teamLevel": 8,
    "carried": 2,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 1351,
    "lastFinal": "2026-10-08"
   },
@@ -77,9 +77,9 @@
   }
  },
  "counts": {
-  "slate": 32,
+  "slate": 31,
   "playerCards": 10,
-  "teamCards": 22,
+  "teamCards": 21,
   "window": 99,
   "sched": 103,
   "pastp": 37,
@@ -96,22 +96,15 @@
  "social": {
   "enabled": true,
   "errors": [],
-  "pending": 1,
-  "settled": {
-   "won": 1,
-   "legs": 3,
-   "lost": 0,
-   "void": 0,
-   "games": 1
-  },
+  "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 18,
+  "calls": 14,
   "failedCalls": 0,
-  "seconds": 4.9,
+  "seconds": 5.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -119,15 +112,14 @@
    "cfb": 245,
    "cbb": 726
   },
-  "gamesUploaded": 13,
-  "simTeamsUploaded": 1063,
-  "simPlayersUploaded": 1409,
+  "gamesUploaded": 12,
+  "simPlayersUploaded": 1504,
   "configured": true
  },
- "odds": "ok: 4 events (plan limit: Response is missing 8920 bookmaker odds. Upgrade your API key to access all data)",
+ "odds": "ok: 3 events (plan limit: Response is missing 10532 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
- "requests": 422,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 31.4
+ "requests": 426,
+ "failedRequests": 3,
+ "retries": 5,
+ "seconds": 30.8
 }
