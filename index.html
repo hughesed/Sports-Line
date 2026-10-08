@@ -730,6 +730,21 @@ body.vchat .foot{display:none}
 .bxt tr.mine td{background:rgba(255,200,61,.10)}
 .bxt tr.mine td.bxn{background:rgba(255,200,61,.16)}
 
+/* sportsbook lines box */
+.odbox{margin:8px 0;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface2)}
+.odh{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
+.odr{display:grid;grid-template-columns:44px 1fr 1fr 1fr;gap:6px;align-items:center;padding:4px 0}
+.odhd{font-size:11px;color:var(--muted);font-weight:700}
+.odt{font-weight:800}
+.odc a,.odc{display:flex;flex-direction:column;color:inherit;text-decoration:none}
+
+/* sportsbook comparison */
+.bkbox{margin:8px 0}.bkbox summary{cursor:pointer;font-weight:700;font-size:13px}
+.bkt{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+.bkt th{font-weight:700;text-align:right;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.bkt td{text-align:right;padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.bkt th:first-child,.bkt td:first-child{text-align:left}.bkt td.bkn{font-weight:600}
+
 /* battle animations */
 .stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#1d3b2a;line-height:0}
 .stage[data-f="bk"]{background:#7a5428}.stage[data-f="bb"]{background:#1d3b2a}
@@ -811,7 +826,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="26f8b489ef">
+<body data-build="db8da1f6bd">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -826,7 +841,7 @@ body.vchat .foot{display:none}
    - last good copy kept in localStorage so the page still opens offline (clearly labelled) */
 (function(){
   'use strict';
-  var STALE_MS=6*3600e3, RECHECK_MS=60e3, CKEY='linescout.data.v1';
+  var STALE_MS=6*3600e3, RECHECK_MS=20e3, CKEY='linescout.data.v1';
   var cur=null, started=false, pending=null, offline=false;
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -848,10 +863,11 @@ body.vchat .foot{display:none}
     return Promise.all([
       getJSON('data/slate.json?v='+v,15000),
       getJSON('data/learn.json?v='+v,15000),
-      getJSON('data/pastp.json?v='+v,8000).catch(function(){ return {}; })
+      getJSON('data/pastp.json?v='+v,8000).catch(function(){ return {}; }),
+      getJSON('data/odds.json?v='+v,8000).catch(function(){ return null; })
     ]).then(function(a){
       if(!a[0]||!Array.isArray(a[0].games)||!a[1]||!a[1].leagues) throw new Error('data files are not in the expected format');
-      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{}};
+      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{},odds:a[3]||null};
     });
   }
   function fetchFresh(){ return getJSON('data/meta.json?t='+Date.now()).then(fetchAll); }
@@ -2880,7 +2896,29 @@ function oddsGrid(g){
   };
   return '<div class="ogrid"><div class="ohead"><span></span><span>'+lgName+'</span><span>Total</span><span>Money</span></div>'+row(a,'away')+row(h,'home')+'</div>';
 }
-function linesTable(g){ return oddsGrid(g); }
+/* ---------- sportsbook comparison (data/odds.json, written by the bot from the SportsGameOdds key) ---------- */
+const BK_NAME={draftkings:'DraftKings',fanduel:'FanDuel',betmgm:'BetMGM',caesars:'Caesars',espnbet:'ESPN BET',bovada:'Bovada',pointsbet:'PointsBet',unibet:'Unibet',williamhill:'William Hill',fanatics:'Fanatics',betrivers:'BetRivers',hardrock:'Hard Rock',betonline:'BetOnline',mybookie:'MyBookie',fliff:'Fliff',prizepicks:'PrizePicks',underdog:'Underdog'};
+const BK_LG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'NCAAF',cbb:'NCAAB',wnba:'WNBA'};
+const bkNorm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function bkEvent(g){
+  try{ const O=window.__LSDATA&&window.__LSDATA.odds; if(!O||!Array.isArray(O.events)) return null;
+    const lg=BK_LG[g.lg||g.key]; const hn=bkNorm(g.teams.home.name), an=bkNorm(g.teams.away.name), ha=bkNorm(g.teams.home.abbr), aa=bkNorm(g.teams.away.abbr), gt=Date.parse(g.iso);
+    return O.events.find(e=>{ if(lg&&e.league!==lg) return false; const st=Date.parse(e.start); if(isFinite(gt)&&isFinite(st)&&Math.abs(st-gt)>30*3600e3) return false;
+      return (bkNorm(e.homeName)===hn&&bkNorm(e.awayName)===an)||(bkNorm(e.home)===ha&&bkNorm(e.away)===aa); })||null;
+  }catch(e){ return null; }
+}
+function bkBlock(g){
+  const e=bkEvent(g); if(!e||!e.main) return '';
+  const M=e.main, names={}; ['ml','spread','total'].forEach(k=>Object.keys(M[k]||{}).forEach(s=>Object.keys(M[k][s].books||{}).forEach(b=>{ names[b]=1; })));
+  const books=Object.keys(names).sort((x,y)=>(BK_NAME[x]||x).localeCompare(BK_NAME[y]||y)); if(!books.length) return '';
+  const cell=(k,s,b,withLine)=>{ const x=M[k]&&M[k][s]&&M[k][s].books&&M[k][s].books[b]; if(!x) return '<td class="mono muted">–</td>';
+    const ln=withLine&&x.line!=null?(k==='total'?(s==='over'?'O ':'U ')+x.line:sg(x.line))+' ':''; return '<td class="mono">'+ln+fo(x.odds)+'</td>'; };
+  const link=b=>{ const l=(e.eventLinks||{})[b]||''; const name=esc(BK_NAME[b]||b); return /^https:\/\//.test(l)?'<a href="'+esc(l)+'" target="_blank" rel="noopener noreferrer">'+name+'</a>':name; };
+  const rows=books.map(b=>'<tr><td class="bkn">'+link(b)+'</td>'+cell('ml','away',b)+cell('ml','home',b)+cell('spread','away',b,1)+cell('spread','home',b,1)+cell('total','over',b,1)+cell('total','under',b,1)+'</tr>').join('');
+  const when=window.__LSDATA.odds.generatedAt?new Date(window.__LSDATA.odds.generatedAt):null;
+  return '<details class="bkbox"><summary>Sportsbook lines <span class="muted small">'+books.length+' books'+(when&&isFinite(when)?' · '+Math.max(0,Math.round((Date.now()-when)/60000))+' min old':'')+'</span></summary><div class="xscroll"><table class="bkt"><thead><tr><th>Book</th><th>'+esc(g.teams.away.abbr)+' ML</th><th>'+esc(g.teams.home.abbr)+' ML</th><th>'+esc(g.teams.away.abbr)+' spread</th><th>'+esc(g.teams.home.abbr)+' spread</th><th>Over</th><th>Under</th></tr></thead><tbody>'+rows+'</tbody></table></div><div class="small muted">Real sportsbook prices for comparison only. Practice coins only: this page cannot place a bet.</div></details>';
+}
+function linesTable(g){ return oddsGrid(g)+bkBlock(g); }
 function safeCard(g){
   try{ return gameCard(g); }
   catch(e){ try{ console.error('Line Scout: game card failed',g&&g.id,e); }catch(_){}
@@ -4844,6 +4882,54 @@ document.addEventListener('click',function(e){
     shOpen(sp); return; }
 },true);
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if(document.getElementById('shmodal')) shClose(); else vsfClose(); } });
+
+/* Sportsbook lines (SportsGameOdds -> data/odds.json, written by the bot when the ODDS_API_KEY secret is set).
+   Adds a "Sportsbook lines" box to each game card that matches an event: best price per side plus every book's price, with links to the books.
+   Optional: with no key / no file nothing is added. Checked every 60 s (the bot itself pulls at most every ODDS_MIN_GAP_MIN minutes). */
+const OD={data:null,idx:null,busy:false};
+const OD_BOOKS={draftkings:'DK',fanduel:'FD',betmgm:'MGM',caesars:'CZR',espnbet:'ESPN',fanatics:'FAN',bovada:'BOV',betrivers:'BR',hardrockbet:'HR'};
+function odFetch(){
+  if(OD.busy) return; OD.busy=true;
+  fetch('data/odds.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{ OD.busy=false; if(!d||!Array.isArray(d.events)) return; OD.data=d; OD.idx=null; odPaint(); }).catch(()=>{ OD.busy=false; });
+}
+function odKey(s){ return String(s||'').toLowerCase().replace(/[^a-z]/g,''); }
+function odFind(g){
+  if(!OD.data) return null;
+  const lg=String(g.lg||g.key||'').toUpperCase(), h=g.teams.home, a=g.teams.away;
+  return OD.data.events.find(e=>String(e.league||'').toUpperCase()===lg&&((odKey(e.home)===odKey(h.abbr)&&odKey(e.away)===odKey(a.abbr))||(odKey(e.homeName)===odKey(h.name)&&odKey(e.awayName)===odKey(a.name))))||null;
+}
+function odFmt(o){ return o==null?'–':(o>0?'+'+o:String(o)); }
+function odSg(n){ return n==null?'':(n>0?'+'+n:String(n)); }
+/* best price for one outcome: highest American odds across the books */
+/* best price for one outcome: the most common line among the books, then the highest American odds on that line (never mix different lines) */
+function odBest(x){ if(!x||!x.books) return null; const ks=Object.keys(x.books).filter(k=>x.books[k].odds!=null); if(!ks.length) return null;
+  const cnt={}; ks.forEach(k=>{ const l=String(x.books[k].line); cnt[l]=(cnt[l]||0)+1; });
+  const main=Object.keys(cnt).sort((p,q)=>cnt[q]-cnt[p])[0]; let best=null;
+  ks.forEach(k=>{ const v=x.books[k]; if(String(v.line)!==main) return; if(!best||v.odds>best.odds) best={book:k,odds:v.odds,line:v.line,link:v.link,n:cnt[main]}; }); return best; }
+function odCell(x,pre){ const b=odBest(x); if(!b) return '<span class="muted">–</span>';
+  const all=Object.keys(x.books).map(k=>(OD_BOOKS[k]||k)+' '+(x.books[k].line!=null?(pre||'')+(pre?x.books[k].line:odSg(x.books[k].line))+' ':'')+odFmt(x.books[k].odds)).join(' · ');
+  const ln=b.line!=null?(pre?pre+b.line:odSg(b.line))+' ':'';
+  const inner='<b class="mono">'+esc(ln)+odFmt(b.odds)+'</b><span class="small muted">'+esc(OD_BOOKS[b.book]||b.book)+' · '+b.n+' book'+(b.n>1?'s':'')+'</span>';
+  return '<span class="odc" title="'+esc(all)+'">'+(b.link?'<a href="'+esc(b.link)+'" target="_blank" rel="noopener">'+inner+'</a>':inner)+'</span>'; }
+function odBox(g,e){
+  const m=e.main||{}, A=g.teams.away, H=g.teams.home, T=m.total||{};
+  const row=(side,T1)=>'<div class="odr"><div class="odt">'+esc(T1.abbr)+'</div>'+odCell((m.spread||{})[side])+odCell(side==='away'?T.over:T.under,side==='away'?'O ':'U ')+odCell((m.ml||{})[side])+'</div>';
+  const links=e.eventLinks||{}; const lk=['draftkings','fanduel','betmgm','caesars'].filter(k=>links[k]).map(k=>'<a href="'+esc(links[k])+'" target="_blank" rel="noopener">'+esc(OD_BOOKS[k])+'</a>').join(' · ');
+  const when=OD.data.generatedAt?new Date(OD.data.generatedAt):null;
+  return '<div class="odbox" data-od="'+esc(g.id)+'"><div class="odh"><b>Sportsbook lines</b><span class="small muted">best price shown, tap for the book'+(when?' · pulled '+when.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'')+'</span></div>'+
+    '<div class="odr odhd"><div class="odt"></div><span>Spread</span><span>Total</span><span>Money</span></div>'+row('away',A)+row('home',H)+(lk?'<div class="small muted">Open at: '+lk+'</div>':'')+
+    '<div class="small muted">Practice only. Prices are what the books showed when pulled; they move.</div></div>';
+}
+function odPaint(){
+  if(!OD.data||typeof G==='undefined') return;
+  Object.keys(G).forEach(id=>{ const g=G[id], el=document.getElementById('game-'+id); if(!el||!g||!g.teams) return;
+    const old=el.querySelector('.odbox'); const e=odFind(g);
+    if(!e||!e.main||!(e.main.ml||e.main.spread||e.main.total)){ if(old) old.remove(); return; }
+    const html=odBox(g,e); if(old&&old.outerHTML===html) return; if(old) old.remove();
+    const host=el.querySelector('.sec')||el; host.insertAdjacentHTML('afterend',html); });
+}
+let odT=null; new MutationObserver(()=>{ if(!OD.data) return; clearTimeout(odT); odT=setTimeout(odPaint,120); }).observe(document.body,{childList:true,subtree:true});
+setInterval(()=>{ if(!document.hidden) odFetch(); },60e3); odFetch();
 
 const $app=document.getElementById('app');
 document.addEventListener('click',function(e){

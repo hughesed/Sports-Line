@@ -4,7 +4,7 @@
    - last good copy kept in localStorage so the page still opens offline (clearly labelled) */
 (function(){
   'use strict';
-  var STALE_MS=6*3600e3, RECHECK_MS=60e3, CKEY='linescout.data.v1';
+  var STALE_MS=6*3600e3, RECHECK_MS=20e3, CKEY='linescout.data.v1';
   var cur=null, started=false, pending=null, offline=false;
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -26,10 +26,11 @@
     return Promise.all([
       getJSON('data/slate.json?v='+v,15000),
       getJSON('data/learn.json?v='+v,15000),
-      getJSON('data/pastp.json?v='+v,8000).catch(function(){ return {}; })
+      getJSON('data/pastp.json?v='+v,8000).catch(function(){ return {}; }),
+      getJSON('data/odds.json?v='+v,8000).catch(function(){ return null; })
     ]).then(function(a){
       if(!a[0]||!Array.isArray(a[0].games)||!a[1]||!a[1].leagues) throw new Error('data files are not in the expected format');
-      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{}};
+      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{},odds:a[3]||null};
     });
   }
   function fetchFresh(){ return getJSON('data/meta.json?t='+Date.now()).then(fetchAll); }

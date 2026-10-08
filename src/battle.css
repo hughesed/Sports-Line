@@ -124,3 +124,18 @@ body.vchat .foot{display:none}
 .bxt td.bxn{font-weight:600;position:sticky;left:0;background:var(--surface)}
 .bxt tr.mine td{background:rgba(255,200,61,.10)}
 .bxt tr.mine td.bxn{background:rgba(255,200,61,.16)}
+
+/* sportsbook lines box */
+.odbox{margin:8px 0;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface2)}
+.odh{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
+.odr{display:grid;grid-template-columns:44px 1fr 1fr 1fr;gap:6px;align-items:center;padding:4px 0}
+.odhd{font-size:11px;color:var(--muted);font-weight:700}
+.odt{font-weight:800}
+.odc a,.odc{display:flex;flex-direction:column;color:inherit;text-decoration:none}
+
+/* sportsbook comparison */
+.bkbox{margin:8px 0}.bkbox summary{cursor:pointer;font-weight:700;font-size:13px}
+.bkt{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+.bkt th{font-weight:700;text-align:right;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.bkt td{text-align:right;padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.bkt th:first-child,.bkt td:first-child{text-align:left}.bkt td.bkn{font-weight:600}

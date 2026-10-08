@@ -207,7 +207,29 @@ function oddsGrid(g){
   };
   return '<div class="ogrid"><div class="ohead"><span></span><span>'+lgName+'</span><span>Total</span><span>Money</span></div>'+row(a,'away')+row(h,'home')+'</div>';
 }
-function linesTable(g){ return oddsGrid(g); }
+/* ---------- sportsbook comparison (data/odds.json, written by the bot from the SportsGameOdds key) ---------- */
+const BK_NAME={draftkings:'DraftKings',fanduel:'FanDuel',betmgm:'BetMGM',caesars:'Caesars',espnbet:'ESPN BET',bovada:'Bovada',pointsbet:'PointsBet',unibet:'Unibet',williamhill:'William Hill',fanatics:'Fanatics',betrivers:'BetRivers',hardrock:'Hard Rock',betonline:'BetOnline',mybookie:'MyBookie',fliff:'Fliff',prizepicks:'PrizePicks',underdog:'Underdog'};
+const BK_LG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'NCAAF',cbb:'NCAAB',wnba:'WNBA'};
+const bkNorm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function bkEvent(g){
+  try{ const O=window.__LSDATA&&window.__LSDATA.odds; if(!O||!Array.isArray(O.events)) return null;
+    const lg=BK_LG[g.lg||g.key]; const hn=bkNorm(g.teams.home.name), an=bkNorm(g.teams.away.name), ha=bkNorm(g.teams.home.abbr), aa=bkNorm(g.teams.away.abbr), gt=Date.parse(g.iso);
+    return O.events.find(e=>{ if(lg&&e.league!==lg) return false; const st=Date.parse(e.start); if(isFinite(gt)&&isFinite(st)&&Math.abs(st-gt)>30*3600e3) return false;
+      return (bkNorm(e.homeName)===hn&&bkNorm(e.awayName)===an)||(bkNorm(e.home)===ha&&bkNorm(e.away)===aa); })||null;
+  }catch(e){ return null; }
+}
+function bkBlock(g){
+  const e=bkEvent(g); if(!e||!e.main) return '';
+  const M=e.main, names={}; ['ml','spread','total'].forEach(k=>Object.keys(M[k]||{}).forEach(s=>Object.keys(M[k][s].books||{}).forEach(b=>{ names[b]=1; })));
+  const books=Object.keys(names).sort((x,y)=>(BK_NAME[x]||x).localeCompare(BK_NAME[y]||y)); if(!books.length) return '';
+  const cell=(k,s,b,withLine)=>{ const x=M[k]&&M[k][s]&&M[k][s].books&&M[k][s].books[b]; if(!x) return '<td class="mono muted">–</td>';
+    const ln=withLine&&x.line!=null?(k==='total'?(s==='over'?'O ':'U ')+x.line:sg(x.line))+' ':''; return '<td class="mono">'+ln+fo(x.odds)+'</td>'; };
+  const link=b=>{ const l=(e.eventLinks||{})[b]||''; const name=esc(BK_NAME[b]||b); return /^https:\/\//.test(l)?'<a href="'+esc(l)+'" target="_blank" rel="noopener noreferrer">'+name+'</a>':name; };
+  const rows=books.map(b=>'<tr><td class="bkn">'+link(b)+'</td>'+cell('ml','away',b)+cell('ml','home',b)+cell('spread','away',b,1)+cell('spread','home',b,1)+cell('total','over',b,1)+cell('total','under',b,1)+'</tr>').join('');
+  const when=window.__LSDATA.odds.generatedAt?new Date(window.__LSDATA.odds.generatedAt):null;
+  return '<details class="bkbox"><summary>Sportsbook lines <span class="muted small">'+books.length+' books'+(when&&isFinite(when)?' · '+Math.max(0,Math.round((Date.now()-when)/60000))+' min old':'')+'</span></summary><div class="xscroll"><table class="bkt"><thead><tr><th>Book</th><th>'+esc(g.teams.away.abbr)+' ML</th><th>'+esc(g.teams.home.abbr)+' ML</th><th>'+esc(g.teams.away.abbr)+' spread</th><th>'+esc(g.teams.home.abbr)+' spread</th><th>Over</th><th>Under</th></tr></thead><tbody>'+rows+'</tbody></table></div><div class="small muted">Real sportsbook prices for comparison only. Practice coins only: this page cannot place a bet.</div></details>';
+}
+function linesTable(g){ return oddsGrid(g)+bkBlock(g); }
 function safeCard(g){
   try{ return gameCard(g); }
   catch(e){ try{ console.error('Line Scout: game card failed',g&&g.id,e); }catch(_){}

@@ -1,10 +1,10 @@
 """Sportsbook odds from SportsGameOdds (https://api.sportsgameodds.com/v2/events) -> data/odds.json.
 Stdlib only. Needs ODDS_API_KEY (a GitHub secret). Never raises: with no key, a failure, or too little time since the last pull, the old file is kept.
-Free plans are small, so it pulls on a budget: ODDS_MIN_GAP_MIN minutes between pulls (default 120) and ODDS_MAX_EVENTS events per pull (default 30)."""
+Free plans are small, so it pulls on a budget: ODDS_MIN_GAP_MIN minutes between pulls (default 60) and ODDS_MAX_EVENTS events per league per pull (default 15)."""
 import os, json, time, datetime, urllib.request, urllib.parse, urllib.error
 
 API = "https://api.sportsgameodds.com/v2/events"
-LEAGUES = os.environ.get("ODDS_LEAGUES", "NBA,NFL,MLB")
+LEAGUES = os.environ.get("ODDS_LEAGUES", "NFL,NCAAF,NBA,NCAAB,MLB,WNBA")
 # SportsGameOdds stat ids -> the stat names used by the battle picker
 STAT = {"points": "pts", "rebounds": "reb", "assists": "ast", "threePointersMade": "fg3", "points+rebounds+assists": "pra",
         "points+rebounds": "pr", "points+assists": "pa", "rebounds+assists": "ra", "doubleDouble": "dd", "tripleDouble": "td",
@@ -58,11 +58,10 @@ def normalize(ev):
         if bk: g["main"].setdefault(key[0], {})[key[1]] = {"fair": fair, "books": bk}
     return g
 
-def pull(key, max_events, now=None):
-    now = now or datetime.datetime.utcnow()
+def pull_league(key, league, max_events, now):
     events, cursor, notice = [], None, None
     while len(events) < max_events:
-        q = {"leagueID": LEAGUES, "oddsAvailable": "true", "limit": str(min(20, max_events - len(events))),
+        q = {"leagueID": league, "oddsAvailable": "true", "limit": str(min(20, max_events - len(events))),
              "startsBefore": (now + datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ")}
         if cursor: q["cursor"] = cursor
         req = urllib.request.Request(API + "?" + urllib.parse.urlencode(q), headers={"x-api-key": key, "Accept": "application/json", "User-Agent": "LineScout/1.0"})
@@ -74,6 +73,16 @@ def pull(key, max_events, now=None):
         if not cursor or not d.get("data"): break
     return events[:max_events], notice
 
+def pull(key, max_events, now=None, log=print):
+    """one request series per league; a league that errors (unknown id, plan limit) is skipped, the others still count. max_events is per league."""
+    now = now or datetime.datetime.utcnow(); events, notice, ok = [], None, 0
+    for lg in [x.strip() for x in LEAGUES.split(",") if x.strip()]:
+        try:
+            ev, n = pull_league(key, lg, max_events, now); events += ev; notice = n or notice; ok += 1
+        except Exception as ex: log(f"  odds {lg}: {type(ex).__name__}: {ex}"[:160])
+    if not ok: raise RuntimeError("no league could be pulled")
+    return events, notice
+
 def refresh(path, log=print, now=None):
     """Returns a short status string for meta.json. Keeps the previous file on any problem."""
     key = os.environ.get("ODDS_API_KEY", "").strip()
@@ -81,12 +90,12 @@ def refresh(path, log=print, now=None):
     now = now or datetime.datetime.utcnow()
     try: old = json.load(open(path))
     except Exception: old = None
-    gap = float(os.environ.get("ODDS_MIN_GAP_MIN", "120"))
+    gap = float(os.environ.get("ODDS_MIN_GAP_MIN", "60"))
     if old and old.get("generatedAt"):
         age = (now - datetime.datetime.strptime(old["generatedAt"], "%Y-%m-%dT%H:%M:%SZ")).total_seconds() / 60
         if age < gap: return f"kept ({age:.0f} min old, pulls every {gap:.0f} min)"
     try:
-        evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "30")), now)
+        evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "15")), now, log)
         games = [normalize(e) for e in evs]
         out = {"generatedAt": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "source": "sportsgameodds", "notice": notice, "events": games}
         tmp = path + ".tmp"; json.dump(out, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)
