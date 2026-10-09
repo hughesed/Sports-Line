@@ -376,14 +376,14 @@ function profileView(){
   if(!SOC.on||SOC.state!=='ready') return '<section class="game"><div class="sec"><h3>Profile</h3>'+socNote()+'</div></section>';
   return '<section class="game"><div class="sec"><div class="btnrow"><button class="btn" data-act="view" data-k="board">‹ Board</button></div><div id="prof-body">'+profileBodyHtml(S.profName)+'</div></div></section>';
 }
-const SPN={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'CFB',cbb:'CBB'};
+const SPN={nfl:'NFL',nba:'NBA',wnba:'WNBA',mlb:'MLB',cfb:'CFB',cbb:'CBB'};
 function profileBodyHtml(name){
   const c=SOC.prof[(name||'').toLowerCase()]; if(!c) return '<div class="small muted">Loading '+esc(name)+'…</div>';
   const d=c.d; if(d.error) return '<div class="flash">'+esc(d.error)+'</div>'; if(d.missing) return '<div class="small muted">No player called '+esc(name)+'.</div>';
   const mine=SOC.me&&SOC.me.id===d.id;
   const bl=Object.keys(d.badges||{}); const bh=bl.length?'<div class="vcs">'+['champion','trash','active','convo','king','hot'].filter(k=>d.badges[k]).map(k=>badgeChip(k,d.badges[k])).join('')+'</div>':'<div class="small muted">No badges yet.</div>';
   const kings=(d.badge_list||[]).filter(b=>b.kind==='king'); const kingBy={}; kings.forEach(b=>{ kingBy[b.sport]=(kingBy[b.sport]||0)+1; });
-  const bt=d.battle||{}; const recs=['nfl','nba','mlb','cfb','cbb'].map(s=>{ const r=bt[s]; return '<div class="kv"><div class="k">'+SPN[s]+' battles</div><div class="v">'+(r?r.w+'-'+r.l+(r.t?'-'+r.t:''):'0-0')+'</div><div class="s">Elo '+(r?Math.round(r.elo):1200)+(kingBy[s]?' · 👑×'+kingBy[s]:'')+'</div></div>'; }).join('');
+  const bt=d.battle||{}; const recs=['nfl','nba','wnba','mlb','cfb','cbb'].map(s=>{ const r=bt[s]; return '<div class="kv"><div class="k">'+SPN[s]+' battles</div><div class="v">'+(r?r.w+'-'+r.l+(r.t?'-'+r.t:''):'0-0')+'</div><div class="s">Elo '+(r?Math.round(r.elo):1200)+(kingBy[s]?' · 👑×'+kingBy[s]:'')+'</div></div>'; }).join('');
   const bats=(d.battles||[]).map(b=>{ const res=b.status==='final'?(b.result&&b.result.split?'Split':(b.winner===d.id?'Won':'Lost')):b.status==='live'?'Live':b.status==='cancelled'?'Cancelled':'Open';
     return '<button class="rlink" data-act="bt-open" data-id="'+b.id+'"><span><b>'+esc(SPN[b.sport]||b.sport)+'</b> '+esc(b.away)+' @ '+esc(b.home)+(b.vs?' vs '+esc(b.vs):'')+'</span><span class="badge '+(res==='Won'?'ok':res==='Lost'?'bad':'')+'">'+res+(b.result&&b.status==='final'?' · '+b.result.as+'-'+b.result.hs:'')+'</span></button>'; }).join('');
   const sl=d.slips||{}; const slips=(sl.recent||[]).map((s,ix)=>'<div class="bl">'+legStatusIcon({res:s.status==='won'?'W':s.status==='lost'?'L':s.status==='void'?'V':null})+'<span>'+esc((s.legs||[]).map(l=>l.label).join(' + '))+'<br><span class="muted small">'+cn(s.stake)+' coins · '+esc(s.status)+(s.status==='won'?' '+cn(s.payout):'')+'</span></span></div>').join('');

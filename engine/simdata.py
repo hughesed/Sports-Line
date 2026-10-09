@@ -1,5 +1,5 @@
 """Battle data: the latest team ratings (from the learning step) + player season averages, current rosters and the injury report for
-NFL, NBA, MLB and the two college sports (CFB, CBB).
+NFL, NBA, WNBA, MLB and the two college sports (CFB, CBB).
 
 Where it comes from (all ESPN, all optional: every failure falls back to the last good copy):
   * store/sim_cache.json   season averages per player (ESPN "byathlete" boards, 2-4 requests per league), refreshed at most one league per run, 20 h TTL.
@@ -20,9 +20,9 @@ import json, os, time, datetime, hashlib, re
 import concurrent.futures as cf
 from espn import curl, ROOT, CACHE
 
-SPORTS = ("nfl", "nba", "mlb", "cfb", "cbb")
-FB = ("nfl", "cfb"); BB = ("nba", "cbb")
-SPN = {"nfl": ("football", "nfl"), "nba": ("basketball", "nba"), "mlb": ("baseball", "mlb"),
+SPORTS = ("nfl", "nba", "wnba", "mlb", "cfb", "cbb")
+FB = ("nfl", "cfb"); BB = ("nba", "wnba", "cbb")
+SPN = {"nfl": ("football", "nfl"), "nba": ("basketball", "nba"), "wnba": ("basketball", "wnba"), "mlb": ("baseball", "mlb"),
        "cfb": ("football", "college-football"), "cbb": ("basketball", "mens-college-basketball")}
 BYATH = "https://site.web.api.espn.com/apis/common/v3/sports/{s}/{l}/statistics/byathlete?region=us&lang=en&contentorigin=espn&isqualified=false&page={p}&limit={n}&sort={sort}&season={y}&seasontype=2"
 SB = "https://site.api.espn.com/apis/site/v2/sports/{s}/{l}/"
@@ -31,11 +31,11 @@ TEAM_TTL = 20 * 86400
 ROSTER_TTL = 10 * 3600
 ROSTERS_PER_RUN = 14
 COLLEGE_TOP = {"cfb": 36, "cbb": 40}          # college teams refreshed first (today's slate + this many strongest teams); every OTHER rated team is filled in by extend_college()
-EXT_PER_RUN = 14                               # extra college teams (2 ESPN requests each) filled in per bot run, one league per run, alternating
+EXT_PER_RUN = 28                               # extra college teams (2 ESPN requests each) filled in per bot run, one league per run, alternating
 EXT_TTL = 6 * 86400                            # a filled-in team is refreshed after this long
 COLLEGE_LIST = {"cfb": None, "cbb": None}     # None = every rated college team is offered in the picker
-NEED = {"nfl": 9, "cfb": 9, "nba": 9, "cbb": 9, "mlb": 9}
-PER_TEAM_RAW = {"nfl": dict(QB=3, RB=6, WR=9), "cfb": dict(QB=3, RB=6, WR=9), "nba": dict(P=12), "cbb": dict(P=12), "mlb": dict(H=13, SP=4)}
+NEED = {"nfl": 9, "cfb": 9, "nba": 9, "wnba": 9, "cbb": 9, "mlb": 9}
+PER_TEAM_RAW = {"nfl": dict(QB=3, RB=6, WR=9), "cfb": dict(QB=3, RB=6, WR=9), "nba": dict(P=12), "wnba": dict(P=11), "cbb": dict(P=12), "mlb": dict(H=13, SP=4)}
 
 def _path(root=None): return os.path.join(root or ROOT, "store", "sim_cache.json")
 def load_cache(root=None):
@@ -260,7 +260,7 @@ def players_for(lg, now, idmap, scope=None, teams=None, gpmap=None):
         for ath, v in rows:
             t = idmap.get(str(ath.get("teamId"))) or ath.get("teamShortName"); gp = v.get("general.gamesPlayed") or 0
             mn = v.get("general.avgMinutes") or 0
-            if not keep(t) or gp < (10 if lg == "nba" else 5) or mn < 8: continue
+            if not keep(t) or gp < (10 if lg in ("nba", "wnba") else 5) or mn < 8: continue
             add(ath, t, "P", dict(pts=_r(v.get("offensive.avgPoints")), reb=_r(v.get("general.avgRebounds")), ast=_r(v.get("offensive.avgAssists")),
                                   fg3=_r(v.get("offensive.avgThreePointFieldGoalsMade")), min=_r(mn, 1), gp=int(gp)))
         out.sort(key=lambda p: -(p["stats"]["min"] or 0))
@@ -407,7 +407,7 @@ def extend_college(now, log, root, c):
     main fetch; a team ESPN has too little data for simply stays team-level. Returns True when the cache changed."""
     lgs = [lg for lg in ("cfb", "cbb") if (c["teams"].get(lg) or {}).get("teams") and (c["players"].get(lg) or {}).get("list")]
     if not lgs: return False
-    lg = lgs[int(time.time() // 600) % len(lgs)]
+    lg = ("cfb" if "cfb" in lgs else lgs[0]) if int(time.time() // 600) % 3 else lgs[int(time.time() // 600) % len(lgs)]   # CFB gets two runs in three until every school has players
     pc = c["players"][lg]; tts = pc.setdefault("tts", {}); t_now = time.time()
     tm = {t["abbr"]: t["id"] for t in c["teams"][lg]["teams"]}
     have = {p["team"] for p in pc["list"]}
@@ -476,7 +476,7 @@ def compose_team(lg, abbr, cands, out_ids, q_ids, inj_items, today=None):
     cands = [dict(p, stats=dict(p["stats"])) for p in cands]
     by_id = {p["pid"]: p for p in cands}
     info = dict(out=[], q=[], offAdj=0.0, defAdj=0.0)
-    unit = {"nfl": 1.0, "cfb": 1.0, "nba": 1.0, "cbb": 0.8, "mlb": 0.12}[lg]
+    unit = {"nfl": 1.0, "cfb": 1.0, "nba": 1.0, "wnba": 0.75, "cbb": 0.8, "mlb": 0.12}[lg]
     item_by_id = {i["pid"]: i for i in inj_items}
     off = deff = 0.0
     def age(pid): return _ageing((item_by_id.get(pid) or {}).get("date", ""), today)
@@ -534,7 +534,7 @@ def compose_team(lg, abbr, cands, out_ids, q_ids, inj_items, today=None):
             for i, p in enumerate(lst, 1): res.append(dict(p, rk=i))
         cap = (6.0, 3.0)
     elif lg in BB:
-        mult = 0.55 if lg == "nba" else 0.45
+        mult = 0.55 if lg == "nba" else 0.42 if lg == "wnba" else 0.45
         outs = [p for p in cands if p["pid"] in out_ids]
         for p in outs:
             s = p["stats"]; w = age(p["pid"]); info["out"].append(dict(pid=p["pid"], name=p["name"], pos=p["pos"], label=(item_by_id.get(p["pid"]) or {}).get("label", "Out")))
@@ -627,7 +627,7 @@ def build(learn_out, cache, live=None, today=None):
             pl, info = (compose_team(lg, ab, cands, out_ids, q_ids, items, today) if cands else ([], dict(out=[], q=[], offAdj=0.0, defAdj=0.0)))
             if len(pl) < 8: pl, info = [], dict(info, short=True)          # not enough real player data for typical lines: team-level markets only
             o = round(r["o"] - info["offAdj"], 2); d = round(r["d"] + info["defAdj"], 2)
-            teams.append(dict(abbr=ab, name=m.get("name") or ab, short=m.get("short") or ab, color=m.get("color") or "#334155", o=o, d=d, gp=r.get("gp", 0),
+            teams.append(dict(abbr=ab, id=m.get("id"), name=m.get("name") or ab, short=m.get("short") or ab, color=m.get("color") or "#334155", o=o, d=d, gp=r.get("gp", 0),
                               inj=dict(out=info["out"], q=info["q"], offAdj=info["offAdj"], defAdj=info["defAdj"]), props=bool(pl)))
             if pl:
                 players[ab] = [dict(pid=p["pid"], name=p["name"], pos=p["pos"], role=p["role"], rk=p["rk"], stats=p["stats"], **({"inj": p["inj"], "note": p.get("note", "")} if p.get("inj") else {})) for p in pl]

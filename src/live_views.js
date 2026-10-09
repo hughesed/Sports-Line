@@ -1,7 +1,9 @@
 /* ================= slip bar ================= */
-const BOOKS=[['gambly','Gambly: open chat','https://gambly.com/chat'],['draftkings','DraftKings','https://sportsbook.draftkings.com/'],['fanduel','FanDuel','https://sportsbook.fanduel.com/'],['betmgm','BetMGM','https://sports.betmgm.com/'],['caesars','Caesars','https://www.caesars.com/sportsbook-and-casino'],['bet365','bet365','https://www.bet365.com/'],['fanaticsapp','Fanatics app','https://fanatics.onelink.me/5kut?af_force_deeplink=true&pid=share_bet&af_siteid=1616738407']];
+const BOOKS=[['gambly','Gambly: open chat','https://gambly.com/chat'],['draftkings','DraftKings','https://sportsbook.draftkings.com/'],['fanduel','FanDuel','https://sportsbook.fanduel.com/'],['betmgm','BetMGM','https://sports.betmgm.com/'],['caesars','Caesars','https://www.caesars.com/sportsbook-and-casino'],['espnbet','ESPN BET','https://espnbet.com/'],['hardrockbet','Hard Rock Bet','https://app.hardrock.bet/'],['betrivers','BetRivers','https://www.betrivers.com/'],['bet365','bet365','https://www.bet365.com/'],['fanaticsapp','Fanatics app','https://fanatics.onelink.me/5kut?af_force_deeplink=true&pid=share_bet&af_siteid=1616738407']];
 function bookUrl(b){
   if(b[0]==='fanaticsapp') return b[2];
+  /* when every leg is in one game and the odds feed knows that game, open the book on THAT game's page (the closest a web page can get to the slip) */
+  try{ const gids=Array.from(new Set(S.slip.map(l=>l.gid))); if(gids.length===1&&G[gids[0]]&&typeof odFind==='function'){ const ev=odFind(G[gids[0]]); const lk=ev&&ev.eventLinks&&ev.eventLinks[b[0]]; if(lk&&/^https:\/\//i.test(lk)) return lk; } }catch(err){}
   const t=(P.tpl||'').trim();
   if(!/^https:\/\//i.test(t)) return b[2];
   const legs=encodeURIComponent(S.slip.map(l=>l.label+' '+fo(l.price)).join(' | '));
@@ -147,11 +149,14 @@ document.addEventListener('click',function(e){
     const viaBox=()=>{ const ta=document.getElementById('sliptxt'); let ok=false; if(ta){ try{ ta.focus(); ta.select(); ta.setSelectionRange(0,ta.value.length); ok=document.execCommand('copy'); }catch(err){} } say(ok?'Copied '+S.slip.length+' leg'+(S.slip.length>1?'s':'')+'. Now open Gambly and paste.':'Copy was blocked here. The slip text is selected in the box below: tap Copy in the pop-up menu, or press and hold and choose Copy.'); };
     try{ const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):null; if(p&&p.then) p.then(()=>say('Copied '+S.slip.length+' leg'+(S.slip.length>1?'s':'')+'. Now open Gambly and paste.'),viaBox); else viaBox(); }catch(err){ viaBox(); }
     return; }
-  if(act==='book'){ const bk=t.getAttribute('data-bk'); const txt=slipText(S.slip); const say=m=>{ const e=document.getElementById('slipmsg'); if(e) e.textContent=m; };
-    const okMsg=bk==='gambly'?'Slip copied. Paste it into the Gambly chat box and it builds the slip, then pick your sportsbook.':bk==='fanaticsapp'?'Slip copied. The Fanatics app opens but cannot load these bets, so paste or enter them there.':'Slip copied. The sportsbook opens without the bets, so paste or enter them there.';
+  if(act==='book'){ e.preventDefault(); const bk=t.getAttribute('data-bk'); const txt=slipText(S.slip); const url=t.getAttribute('href')||'';
+    const say=m=>{ const el=document.getElementById('slipmsg'); if(el) el.textContent=m; };
+    const okMsg=bk==='gambly'?'Slip copied. Paste it into the Gambly chat box and it builds the slip, then pick your sportsbook.':bk==='fanaticsapp'?'Slip copied. The Fanatics app opens but cannot load these bets, so paste or enter them there.':'Slip copied. The sportsbook opens on the game when it can; add the legs there (long-press, Paste, or enter them).';
     const failMsg='Could not copy automatically. The slip text is selected in the box above the book buttons, so copy it from there.';
     const viaBox=()=>{ const ta=document.getElementById('sliptxt'); let ok=false; if(ta){ try{ ta.focus(); ta.select(); ta.setSelectionRange(0,ta.value.length); ok=document.execCommand('copy'); }catch(err){} } say(ok?okMsg:failMsg); };
+    /* 1) copy inside the tap (browsers only allow it there) 2) open the book in the same tap. Some iPhone home-screen apps ignore target=_blank links, so open it ourselves and fall back to the same window. */
     try{ const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):null; if(p&&p.then) p.then(()=>say(okMsg),viaBox); else viaBox(); }catch(err){ viaBox(); }
+    if(url){ let w=null; try{ w=window.open(url,'_blank'); }catch(err){} if(!w){ say('Opening the sportsbook…'); setTimeout(()=>{ window.location.href=url; },350); } }
     return; }
 });
 document.addEventListener('input',function(e){

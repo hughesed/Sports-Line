@@ -125,7 +125,10 @@ js = rd("live3.js") + "\n" + rd("fullscreen.js") + "\n" + rd("audio.js") + "\n" 
 t = rep(t, "const $app=document.getElementById('app');", js + "\nconst $app=document.getElementById('app');")
 
 # ============================== stage 3 (was assemble_standalone.py): data comes from data/*.json ==============================
-t = rep(t, "const DATA = __DATA__;", "const DATA = window.__LSDATA.slate;")
+t = rep(t, "const DATA = __DATA__;", "const DATA = window.__LSDATA.slate; try{ (DATA.games||[]).forEach(g=>{ ['home','away'].forEach(s=>{ if(g.teams&&g.teams[s]) g.teams[s].lg=g.lg||g.key; }); }); }catch(e){}")
+OLD_CHIP = """function chipOf(t){ return '<div class="chip" style="background:'+esc(t.color)+';border-color:'+esc(t.alt)+'">'+esc(t.abbr.length>3?t.abbr.slice(0,3):t.abbr)+'</div>'; }"""
+NEW_CHIP = """function chipOf(t){ const u=(t.lg==='cfb'||t.lg==='cbb')&&typeof logoUrl==='function'?logoUrl(t.lg,t):''; return '<div class="chip'+(u?' haslogo':'')+'" style="background:'+esc(t.color)+';border-color:'+esc(t.alt)+'">'+(u?'<img alt="" loading="lazy" src="'+esc(u)+'" onerror="this.remove()">':'')+'<span>'+esc(t.abbr.length>3?t.abbr.slice(0,3):t.abbr)+'</span></div>'; }"""
+t = rep(t, OLD_CHIP, NEW_CHIP)
 t = rep(t, "const LEARN=__LEARN__;", "const LEARN=window.__LSDATA.learn;")
 t = rep(t, "const PASTP=__PASTP__;", "const PASTP=window.__LSDATA.pastp;")
 # accounts / leaderboard / chat / battles (Supabase): the older local versions of these functions are renamed *Local and
@@ -135,7 +138,7 @@ for fn in ("slipHtml", "calcHtml", "placeCheck", "slipsView"):
     t = t.replace("function " + fn + "(){", "function " + fn + "Local(){", 1)
 assert t.count("function renderBank(){") == 1
 t = t.replace("function renderBank(){", "function renderBankLocal(){", 1)
-sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("share.js")
+sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("share.js") + "\n" + rd("odds_ui.js")
 assert t.count("const $app=document.getElementById") == 1
 t = t.replace("const $app=document.getElementById", sa + "\nconst $app=document.getElementById", 1)
 t = rep(t, "if(dbh&&userh) initSocial(dbh,userh); else { FS.conn='nodb'; if(S.view==='live') render(); }", "startPoll();")

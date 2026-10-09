@@ -139,3 +139,7 @@ body.vchat .foot{display:none}
 .bkt th{font-weight:700;text-align:right;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
 .bkt td{text-align:right;padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
 .bkt th:first-child,.bkt td:first-child{text-align:left}.bkt td.bkn{font-weight:600}
+
+/* college team logos on game cards (the colored abbreviation chip stays underneath as the fallback) */
+.chip{position:relative;overflow:hidden}
+.chip.haslogo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}

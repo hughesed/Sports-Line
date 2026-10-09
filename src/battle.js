@@ -1,11 +1,11 @@
-/* ================= BATTLE: simulated NFL / NBA / MLB / college football / college basketball games between two players (practice coins) =================
+/* ================= BATTLE: simulated NFL / NBA / WNBA / MLB / college football / college basketball games between two players (practice coins) =================
    Flow: create (wager escrowed; format Parlay or Same Game Parlay) -> someone accepts (matching wager) -> both build + lock a parlay from the battle's markets
    -> the database simulates the whole game and reveals it play by play over ~3 minutes -> the slip that pays more wins the pot.
    Spectators can bet on the game lines and on who wins the battle until the game starts. Rosters and injuries are frozen into the battle when it is created. */
 const BT={lobby:null,id:null,det:null,timer:null,tick:null,sim:null,simTried:false,form:{sport:'nfl',home:'',pick:'',wager:'50',fmt:'parlay',q:'',vs:'players'},
   draft:{},saveT:null,spec:{tok:'',stake:'25'},msg:'',busy:false,seen:{},html:{},lastTick:0,skew:0,quote:{},acc:{},all:{},sawLive:{},flashed:{}};
-const SPORTS3=[['nfl','NFL'],['nba','NBA'],['mlb','MLB'],['cfb','CFB'],['cbb','CBB']];
-const SPLONG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'College football',cbb:"Men's college basketball"};
+const SPORTS3=[['nfl','NFL'],['nba','NBA'],['wnba','WNBA'],['mlb','MLB'],['cfb','CFB'],['cbb','CBB']];
+const SPLONG={nfl:'NFL',nba:'NBA',wnba:'WNBA',mlb:'MLB',cfb:'College football',cbb:"Men's college basketball"};
 function btLiveDot(){ return !!(BT.lobby&&BT.lobby.live&&BT.lobby.live.length); }
 function btNow(){ return Date.now()+BT.skew; }
 function loadSim(){
@@ -62,8 +62,8 @@ function btCum(evs){ let acc={}; (evs||[]).forEach(e=>{ const s=e.stats; if(s&&t
 const BX_COLS={nfl:{QB:[['passYds','Pass'],['passTD','PaTD'],['rushYds','Rush']],RB:[['rushYds','Rush'],['rec','Rec'],['recYds','RecYd'],['tdany','TD']],WR:[['rec','Rec'],['recYds','RecYd'],['tdany','TD']]},
   nba:{P:[['pts','PTS'],['reb','REB'],['ast','AST'],['fg3','3PM'],['pra','PRA']]},
   mlb:{H:[['hits','H'],['runs','R'],['rbi','RBI'],['hr','HR'],['tb','TB'],['hrr','H+R+RBI']],SP:[['outs','IP'],['k','K']]}};
-BX_COLS.cfb=BX_COLS.nfl; BX_COLS.cbb=BX_COLS.nba;
-const BX_GROUPS={nfl:[['QB','RB','WR']],nba:[['P']],mlb:[['H'],['SP']]}; BX_GROUPS.cfb=BX_GROUPS.nfl; BX_GROUPS.cbb=BX_GROUPS.nba;
+BX_COLS.cfb=BX_COLS.nfl; BX_COLS.cbb=BX_COLS.nba; BX_COLS.wnba=BX_COLS.nba;
+const BX_GROUPS={nfl:[['QB','RB','WR']],nba:[['P']],mlb:[['H'],['SP']]}; BX_GROUPS.cfb=BX_GROUPS.nfl; BX_GROUPS.cbb=BX_GROUPS.nba; BX_GROUPS.wnba=BX_GROUPS.nba;
 function btBox(b,d,last){
   const ro=b.markets&&b.markets.roster; if(!ro||!last) return '';
   const st=last.stats||{}, cols=BX_COLS[b.sport]||{}, groups=BX_GROUPS[b.sport]||[];
@@ -136,7 +136,7 @@ function btCreateHtml(){
   const wchips=[10,50,100,250].map(v=>'<button class="x2" data-act="bt-wager" data-v="'+v+'">'+v+'</button>').join('');
   const fseg='<div class="seg" role="group" aria-label="Battle format"><button data-act="bt-fmt" data-k="parlay" aria-pressed="'+(f.fmt==='parlay')+'">Parlay</button><button data-act="bt-fmt" data-k="sgp" aria-pressed="'+(f.fmt==='sgp')+'">Same Game Parlay <span class="sgpb">SGP</span></button></div>';
   const noProps=ts.length&&H.props===false;
-  const sp=(BT.sim&&BT.sim.sports[f.sport])||{}; const off=(f.sport==='nba'||f.sport==='cbb')&&[6,7,8,9].indexOf(new Date().getMonth())>=0;
+  const sp=(BT.sim&&BT.sim.sports[f.sport])||{}; const off=((f.sport==='nba'||f.sport==='cbb')&&[6,7,8,9].indexOf(new Date().getMonth())>=0)||(f.sport==='wnba'&&[10,11,0,1,2,3].indexOf(new Date().getMonth())>=0);
   const cpu=(f.vs==='cpu');
   const vseg='<div class="fld">Play against<div class="seg" role="group" aria-label="Opponent"><button data-act="bt-vs" data-k="players" aria-pressed="'+(!cpu)+'">Players</button><button data-act="bt-vs" data-k="cpu" aria-pressed="'+cpu+'">🤖 Computer</button></div>'+(cpu?cpuNote():'')+'</div>';
   return '<section class="game"><div class="sec"><h3>Start a battle <span class="hint">practice coins</span></h3>'+vseg+
@@ -177,13 +177,13 @@ function btLobbyHtml(){
     '<section class="game"><div class="sec"><h3>Open battles <span class="hint">accept one and pick your team</span></h3>'+(L?list(L.open,'open','No open battles. Start one above.'):'<div class="small muted">Loading…</div>')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>Live now</h3>'+(L?list(L.live,'live','No battle is being played right now.'):'')+'</div></section>'+
     '<section class="game"><div class="sec"><h3>Recent results</h3>'+(L?list(BT.moreRecent?L.recent:(L.recent||[]).slice(0,6),'recent','No finished battles yet.')+(!BT.moreRecent&&(L.recent||[]).length>6?'<div class="btnrow"><button class="btn" data-act="bt-more">More ('+((L.recent.length)-6)+')</button></div>':''):'')+'</div></section>'+
-    '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, MLB, college football or college basketball), your team, a format (Parlay or Same Game Parlay), the legs allowed and a wager, then wait. 2. Another player accepts with the same wager and picks the opposing team. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. If your winning parlay hits, you also receive 10% of that parlay\'s total payout in bonus coins. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record. No one to play? Choose <b>Computer</b> when you start a battle: it picks a balanced parlay from its best bets (4 legs minimum, 14 maximum on Unlimited), learns from every battle, and counts toward your record but not Elo or the Board.</div>'+PRACTICE_NOTE+'</div></section>';
+    '<section class="game"><div class="sec"><h3>How battles work</h3><div class="small muted">1. Pick a sport (NFL, NBA, WNBA, MLB, college football or college basketball), your team, a format (Parlay or Same Game Parlay), the legs allowed and a wager, then wait. 2. Another player accepts with the same wager and picks the opposing team. 3. Both build a parlay (1 to 6 legs) from the battle\'s lines and player props (over/under and X+ ladders) and lock it. In a Same Game Parlay the price accounts for correlated legs. 4. The game is simulated from the latest ratings and player averages and plays out over about 3 minutes. Each parlay is a 100-coin slip: the one that pays more takes the pot. If your winning parlay hits, you also receive 10% of that parlay\'s total payout in bonus coins. Battle wins and losses count toward your record and rating (Elo) per sport; the top rating with 3+ battles in a sport earns that sport\'s daily KING badge (five sports, five Kings). Spectator bets pay at their odds and count for the daily leaderboard, not for anyone\'s battle record. No one to play? Choose <b>Computer</b> when you start a battle: it picks a balanced parlay from its best bets (4 legs minimum, 14 maximum on Unlimited), learns from every battle, and counts toward your record but not Elo or the Board.</div>'+PRACTICE_NOTE+'</div></section>';
 }
 const bgrp=tok=>{ const p=tok.split(':'); return p[0]==='p'||p[0]==='x'?'p:'+p[1]+':'+p[2]:p[0]==='tt'?'tt:'+p[1]:p[0]; };
 function mktBtn(tok,top,price,on,dis,act,aria){ return '<button class="odd'+(on?' on':'')+'" data-act="'+(act||'bt-leg')+'" data-tok="'+esc(tok)+'" aria-pressed="'+!!on+'"'+(aria?' aria-label="'+esc(aria)+'"':'')+(dis?' disabled':'')+'><span class="o1">'+esc(top)+'</span><span class="o2 mono">'+fo(price)+'</span></button>'; }
 /* FanDuel-style order of the player sections for each sport (Game Lines always first) */
 const PSEC={passYds:'Passing Yards',passTD:'Passing TDs',rushYds:'Rushing Yards',recYds:'Receiving Yards',rec:'Receptions',tdany:'Anytime Touchdown Scorer',pts:'Points',reb:'Rebounds',ast:'Assists',fg3:'Made Threes',pra:'Points + Rebounds + Assists',hits:'Hits',hrr:'Hits + Runs + RBIs',tb:'Total Bases',hr:'Home Runs',rbi:'RBIs',runs:'Runs Scored',k:'Strikeouts',outs:'Outs Recorded'};
-const PORD={nfl:['tdany','passYds','passTD','rushYds','recYds','rec'],nba:['pts','reb','ast','fg3','pra'],mlb:['hits','hrr','hr','tb','rbi','runs','k','outs']}; PORD.cfb=PORD.nfl; PORD.cbb=PORD.nba;
+const PORD={nfl:['tdany','passYds','passTD','rushYds','recYds','rec'],nba:['pts','reb','ast','fg3','pra'],mlb:['hits','hrr','hr','tb','rbi','runs','k','outs']}; PORD.cfb=PORD.nfl; PORD.cbb=PORD.nba; PORD.wnba=PORD.nba;
 function selIn(sel,key){ return sel.filter(t=>{ const p=t.split(':'); return key==='lines'?(p[0]==='ml'||p[0]==='spr'||p[0]==='tot'):key==='tt'?p[0]==='tt':(p[0]==='p'||p[0]==='x')&&p[2]===key; }).length; }
 function accSection(b,key,title,body,sel,o){
   const open=BT.acc[key]!=null?!!BT.acc[key]:!!o.def; const n=selIn(sel||[],key);
@@ -495,9 +495,11 @@ setInterval(()=>{ try{
 
 
 /* ---------- team logo dropdowns, profile pictures ---------- */
-const LOGO_LG={nfl:'nfl',nba:'nba',mlb:'mlb'};
-function tlogo(sport,t,sz){ sz=sz||30; if(!t) return ''; const lg=LOGO_LG[sport]; const ab=String(t.abbr||'');
-  return '<span class="tl" style="width:'+sz+'px;height:'+sz+'px;background:'+esc(t.color||'#3b4a6b')+'"><b>'+esc(ab.slice(0,3))+'</b>'+(lg?'<img class="tlg" alt="" loading="lazy" src="https://a.espncdn.com/i/teamlogos/'+lg+'/500/'+esc(ab.toLowerCase())+'.png" onerror="this.style.display=\'none\'">':'')+'</span>'; }
+const LOGO_LG={nfl:'nfl',nba:'nba',wnba:'wnba',mlb:'mlb'};
+/* ESPN team logo: pro leagues are filed by abbreviation, college teams (CFB / CBB) by ESPN team id */
+function logoUrl(sport,t){ if(!t) return ''; if(sport==='cfb'||sport==='cbb') return /^\d+$/.test(String(t.id||''))?'https://a.espncdn.com/i/teamlogos/ncaa/500/'+t.id+'.png':''; const lg=LOGO_LG[sport]; return lg?'https://a.espncdn.com/i/teamlogos/'+lg+'/500/'+String(t.abbr||'').toLowerCase()+'.png':''; }
+function tlogo(sport,t,sz){ sz=sz||30; if(!t) return ''; const u=logoUrl(sport,t); const ab=String(t.abbr||'');
+  return '<span class="tl" style="width:'+sz+'px;height:'+sz+'px;background:'+esc(t.color||'#3b4a6b')+'"><b>'+esc(ab.slice(0,3))+'</b>'+(u?'<img class="tlg" alt="" loading="lazy" src="'+esc(u)+'" onerror="this.style.display=\'none\'">':'')+'</span>'; }
 function tpHtml(f,kind,ts,q,label,other,rnd){
   const sel=ts.find(t=>t.abbr===f[kind])||(kind==='home'?ts[0]:null); const open=f.dd===kind;
   const list=ts.filter(t=>t.abbr!==other&&(!q||(t.name||'').toLowerCase().indexOf(q)>=0||(t.abbr||'').toLowerCase().indexOf(q)>=0));
