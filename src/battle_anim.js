@@ -109,7 +109,7 @@ function anSound(b,ty,e){
     else if(ty==='punt'){ S('kick'); }
   } else if(f==='bk'){
     if(ty==='three'){ S('swish',650); }
-    else if(ty==='dunk'){ S('squeak'); S('slam',380); }
+    else if(ty==='dunk'){ S('squeak'); S('doorslam',380); }
     else if(ty==='bucket'){ S('swish',500); }
     else if(ty==='ft'){ S('dribble',0); S('swish',650); }
     else if(ty==='foul'){ S('whistle'); }

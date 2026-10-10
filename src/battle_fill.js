@@ -130,7 +130,7 @@ function afBkFt(x){
   res.forEach((ok,i)=>{ const t0=300+i*1700; if(ok) made++; let bl=null;
     x.T(t0,()=>{ cnt.textContent='FT '+(i+1)+' of 2'; bl=afBk(fx,sx-sg*4,58); afBounce(bl,sx-sg*4,58,2,8,640); sfx('dribble',0); });
     x.T(t0+700,()=>{ if(!bl) return; anMove(bl,anArc([sx-sg*4,58],[hx,60],20,18),760,'linear',()=>{ if(ok){ anBurst(fx,hx,60,'#fff',8); } else { anMove(bl,[[hx,60],[hx-sg*16,76]],360,'ease-out'); } }); });
-    x.T(t0+1460,()=>{ if(ok){ sfx('swish',0); if(x.A==='home') sfx('crowd',0,false); else sfx('awww',0); } else { sfx('rim',0); if(x.A==='home') sfx('awww',250); else sfx('cheer',250); } });
+    x.T(t0+1460,()=>{ if(ok){ sfx('swish',0); if(x.A==='home') sfx('crowd',0,false); else sfx('awww',0); } else { sfx('denied',0); if(x.A==='home') sfx('awww',250); else sfx('cheer',250); } });
     x.T(t0+1650,()=>{ if(bl&&bl.parentNode) bl.remove(); });
   });
   x.T(3500,()=>{ cnt.textContent=''; anBanner(x.st,made+' OF 2',made===2?'good':made?'mid':'bad'); if(x.A==='home'&&made===2) x.crowd(true,false); });
@@ -142,7 +142,7 @@ function afBkDunk(x){
   const p=afPlayer(fx,x0,y0,x.col,{name:nm}); const bl=afBk(p,5,-3);
   anMove(p,[[x0,y0],[hx-sg*46,58],[hx-sg*22,50],[hx-sg*9,38],[hx-sg*14,60]],1350,'ease-in');
   x.S('squeak',100); x.S('squeak',520); afZoomHoop(x,1.5);
-  x.T(1000,()=>{ anBanner(x.st,'SLAM DUNK!','big top'); anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('slam',0); x.crowd(x.A==='home',true,120); });
+  x.T(1000,()=>{ anBanner(x.st,'SLAM DUNK!','big top'); anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('doorslam',0); x.crowd(x.A==='home',true,120); });
   void bl; return 2300;
 }
 function afBkThree(x){
@@ -152,7 +152,7 @@ function afBkThree(x){
   const sh=afPlayer(fx,sx,sy,x.col,{name:nm}); const ok=Math.random()<.42;
   afZoomHoop(x,1.5); const bl=afBk(fx,px,py-2); anMove(bl,[[px,py-2],[sx,sy-4]],420,'ease-in'); x.S('pass',0);
   x.T(480,()=>{ afHop(sh,sx,sy,5,520); anMove(bl,anArc([sx,sy-4],[hx,60],38,20),900,'linear',()=>{ if(ok) anBurst(fx,hx,60,'#fff',8); else anMove(bl,[[hx,60],[hx-sg*18,80]],420,'ease-out'); }); });
-  x.T(1520,()=>{ if(ok){ sfx('swish',0); anBanner(x.st,'THREE!','big top'); x.crowd(x.A==='home',false); } else { sfx('clang',0); if(x.A==='home') sfx('awww',200); else sfx('cheer',200); } });
+  x.T(1520,()=>{ if(ok){ sfx('swish',0); anBanner(x.st,'THREE!','big top'); x.crowd(x.A==='home',false); } else { sfx('denied',0); if(x.A==='home') sfx('awww',200); else sfx('cheer',200); } });
   return 2700;
 }
 function afBkFast(x){
@@ -177,7 +177,7 @@ function afBkSwing(x){
   afNote(x,'BALL MOVEMENT','sm',0); afZoomHoop(x,1.4);
   const last=sp[seq[seq.length-1]], ok=Math.random()<.62;
   x.T(t+120,()=>{ anMove(bl,anArc([last[0],last[1]-3],[hx,60],26,18),760,'linear',()=>{ if(ok) anBurst(fx,hx,60,'#fff',8); else anMove(bl,[[hx,60],[hx-sg*18,70]],360,'ease-out'); }); });
-  x.T(t+880,()=>{ if(ok){ sfx('swish',0); x.crowd(x.A==='home',false); } else { sfx('rim',0); if(x.A==='home') sfx('awww',200); } });
+  x.T(t+880,()=>{ if(ok){ sfx('swish',0); x.crowd(x.A==='home',false); } else { sfx('denied',0); if(x.A==='home') sfx('awww',200); } });
   return t+1700;
 }
 function afBkRebound(x){
@@ -185,7 +185,7 @@ function afBkRebound(x){
   const shooter=afPlayer(fx,m(86),60,x.col,{name:afName(b,x.A)}); void shooter; const bl=afBk(fx,m(86),56);
   const spots=[[hx-sg*20,46,x.col],[hx-sg*28,74,x.colD],[hx-sg*14,70,x.colD],[hx-sg*30,52,x.col]];
   const dots=spots.map(p=>afPlayer(fx,p[0],p[1],p[2],{r:4}));
-  afZoomHoop(x,1.8); anMove(bl,anArc([m(86),56],[hx,60],26,18),760,'linear'); x.S('clang',780);
+  afZoomHoop(x,1.8); anMove(bl,anArc([m(86),56],[hx,60],26,18),760,'linear'); x.S('denied',780);
   const w=Math.random()<.5?'A':'D', wi=w==='A'?[0,3][Math.floor(Math.random()*2)]:[1,2][Math.floor(Math.random()*2)];
   x.T(800,()=>{ dots.forEach((g,i)=>afHop(g,spots[i][0],spots[i][1],i===wi?11:8,520)); anMove(bl,[[hx,60],[hx-sg*10,40],[spots[wi][0],spots[wi][1]-9]],520,'ease-out'); });
   x.T(1350,()=>{ sfx('rebound',0); anMove(bl,[[spots[wi][0],spots[wi][1]-9],[x.m(120),64]],520,'ease-out'); anBanner(x.st,'REBOUND','sm top'); if((w==='A')===(x.A==='home')) sfx('crowd',0,false); else sfx('awww',0); });
@@ -197,7 +197,7 @@ function afBkAlley(x){
   const d=afPlayer(fx,m(70),48,x.colD,{r:4}); anMove(d,[[m(70),48],[hx-sg*16,52]],1200,'ease-in-out');
   const bl=afBk(fx,m(104),70); x.S('whoosh',100);
   anMove(bl,[[m(104),70],[m(88),22],[hx-sg*9,36]],900,'ease-in-out'); anMove(cut,[[m(98),26],[m(70),30],[hx-sg*22,40],[hx-sg*9,34],[hx-sg*15,62]],1350,'ease-in');
-  afZoomHoop(x,1.6); afNote(x,'ALLEY-OOP!','big',900); x.T(1000,()=>{ anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('slam',0); x.crowd(x.A==='home',true,100); });
+  afZoomHoop(x,1.6); afNote(x,'ALLEY-OOP!','big',900); x.T(1000,()=>{ anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('doorslam',0); x.crowd(x.A==='home',true,100); });
   return 2400;
 }
 function afBkHuddle(x){

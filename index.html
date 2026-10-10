@@ -855,7 +855,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="e233320601">
+<body data-build="83f4394df1">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -2568,6 +2568,12 @@ function sNoise(dur,vol,ftype,f1,f2,q,t0,atk,dest){
   const g=c.createGain(); const a=atk||0.01; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+a); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
   s.connect(fl); fl.connect(g); g.connect(dest||SND.master); s.start(t,Math.random()); s.stop(t+dur+.05);
 }
+/* a swell of the voice babble (pitched up for a roar) played on top of the cheer; silent until the babble has been built */
+function sCrowdVox(dur,vol,rate,t0){
+  const c=SND.ctx, b=sndCrowdBuf(); if(!c||!b) return; const t=c.currentTime+(t0||0); const s=c.createBufferSource(); s.buffer=b; s.playbackRate.value=rate||1;
+  const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(Math.max(.01,vol),t+.35); g.gain.setValueAtTime(Math.max(.01,vol),t+Math.max(.4,dur-1)); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(g); g.connect(SND.master); s.start(t,Math.random()*Math.max(.5,b.duration-dur-.1)); s.stop(t+dur+.05);
+}
 const SFX={
   throw(){ sNoise(.32,.16,'bandpass',900,2600,1.2,0,.12); },
   catch(){ sNoise(.07,.55,'highpass',2200,2200,.8,0); sTone(190,70,.12,.5,'sine',0); sNoise(.12,.2,'bandpass',900,500,1,.01); },
@@ -2580,7 +2586,7 @@ const SFX={
   crowd(long){ const d=long?3.2:1.8; sNoise(d,long?.5:.28,'bandpass',650,1100,.7,0,.5); sNoise(d,long?.3:.15,'bandpass',1800,2600,.8,.1,.6); if(long){ sTone(523,523,.18,.12,'triangle',.5); sTone(659,659,.18,.12,'triangle',.7); sTone(784,784,.35,.14,'triangle',.9); } },
   whistle2(){ SFX.whistle(); setTimeout(()=>{ if(SND.on&&SND.ctx) SFX.whistle(); },520); },
   boo(){ const c=SND.ctx; if(!c) return; const t=c.currentTime, d=2.4; [104,109,115,98].forEach((f,i)=>{ const o=c.createOscillator(), g=c.createGain(), fl=c.createBiquadFilter(), v=c.createOscillator(), vg=c.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(f*1.18,t); o.frequency.exponentialRampToValueAtTime(f*.82,t+d); v.frequency.value=5+i; vg.gain.value=3; v.connect(vg); vg.connect(o.frequency); fl.type='lowpass'; fl.frequency.value=420; fl.Q.value=2; g.gain.setValueAtTime(.0001,t+i*.05); g.gain.exponentialRampToValueAtTime(.11,t+.6); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(fl); fl.connect(g); g.connect(SND.master); o.start(t); v.start(t); o.stop(t+d+.1); v.stop(t+d+.1); }); sNoise(d,.18,'bandpass',420,300,.9,0,.5); },
-  cheer(){ sNoise(2.2,.38,'bandpass',900,1500,.8,0,.35); sNoise(2.2,.22,'bandpass',2200,3200,.9,.05,.4); for(let i=0;i<7;i++) sNoise(.08,.18,'highpass',1800,1800,.7,.2+i*.22+Math.random()*.1); },
+  cheer(){ sCrowdVox(2.4,.9,1.12); sNoise(2.2,.2,'bandpass',900,1500,.8,0,.35); sNoise(2.2,.22,'bandpass',2200,3200,.9,.05,.4); for(let i=0;i<7;i++) sNoise(.08,.18,'highpass',1800,1800,.7,.2+i*.22+Math.random()*.1); },
   groan(){ sNoise(1.1,.22,'bandpass',500,260,.8,0,.3); },
   crack(){ sNoise(.06,.7,'highpass',1800,1800,.7,0); sTone(1100,500,.08,.3,'square',0); },
   swish(){ sNoise(.35,.25,'bandpass',2800,1200,1.1,0,.05); },
@@ -2623,9 +2629,23 @@ Object.assign(SFX,{
   horn(){ sTone(330,330,.55,.2,'sawtooth',0,null,1500); sTone(415,415,.55,.16,'sawtooth',0,null,1500); sTone(330,330,.7,.2,'sawtooth',.62,null,1500); sTone(415,415,.7,.16,'sawtooth',.62,null,1500); },
   firework(){ sNoise(.5,.18,'bandpass',600,2500,1,0,.3); sNoise(.5,.5,'lowpass',900,150,.9,.55,.005); sNoise(.9,.14,'highpass',3000,5000,.8,.6,.1); },
   wave(){ sNoise(2.6,.3,'bandpass',500,1500,.7,0,1.1); sNoise(2.6,.18,'bandpass',1800,2600,.8,.2,1.2); },
-  cheerBig(){ SFX.cheer(); sNoise(3.2,.3,'bandpass',700,1300,.7,.15,.5); SFX.clap(8); },
+  cheerBig(){ sCrowdVox(3.6,1.2,1.2); SFX.cheer(); sNoise(3.2,.3,'bandpass',700,1300,.7,.15,.5); SFX.clap(8); },
   booBig(){ SFX.boo(); sNoise(2.8,.2,'bandpass',380,280,.9,.2,.5); },
-  awww(){ sNoise(1.3,.16,'bandpass',480,240,.8,0,.25); }
+  awww(){ sNoise(1.3,.16,'bandpass',480,240,.8,0,.25); },
+  /* a heavy wooden door slammed shut: frame crack, body boom, wood slap, panel ring, latch rattle, room tail */
+  doorslam(){
+    sNoise(.04,.9,'highpass',1800,1800,.7,0,.002);
+    sTone(100,36,.55,1,'sine',.004); sTone(170,62,.24,.5,'triangle',.008);
+    sNoise(.3,.75,'lowpass',1500,170,1.1,0,.003);
+    sNoise(.2,.4,'bandpass',310,250,5,.01,.004);
+    sNoise(.55,.2,'bandpass',720,330,2.4,.11,.012);
+    sTone(540,420,.12,.11,'square',.1,null,1200); sNoise(.035,.3,'highpass',2600,2600,.7,.16,.002); sNoise(.03,.2,'highpass',2600,2600,.7,.22,.002);
+  },
+  /* a missed shot: a flat "denied" error buzz, two falling tones, with a dull rim tick underneath */
+  denied(){
+    sNoise(.05,.35,'bandpass',900,700,1.2,0,.003);
+    sTone(330,320,.17,.34,'sawtooth',.02,null,1500); sTone(247,160,.38,.36,'sawtooth',.22,null,1400); sTone(124,80,.38,.2,'square',.22,null,700);
+  }
 });
 
 /* ---------- constant crowd noise (battle): a looping murmur that swells on big plays ---------- */
@@ -2635,12 +2655,54 @@ function sndPink(){ const c=SND.ctx; if(SND_PINK) return SND_PINK; const n=c.sam
   for(let i=0;i<n;i++){ const w=Math.random()*2-1; b0=.99886*b0+w*.0555179; b1=.99332*b1+w*.0750759; b2=.969*b2+w*.153852; b3=.8665*b3+w*.3104856; b4=.55*b4+w*.5329522; b5=-.7616*b5-w*.016898; d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11; b6=w*.115926; }
   const f=Math.min(n,Math.floor(c.sampleRate*.05)); for(let i=0;i<f;i++){ d[i]*=i/f; d[n-1-i]*=i/f; }       // short fade so the loop point does not click
   SND_PINK=b; return b; }
+/* ---------- the crowd: a murmur built from dozens of overlapping "voices" (a buzzing pitch shaped by vowel formants, started and stopped like syllables) so it reads as people, not wind.
+   If a real recording is placed at audio/crowd.mp3 (or .ogg) it is loaded and used instead (see sndLoadCrowdFile). ---------- */
+let SND_BAB=null, SND_BABP=false, SND_FILE=null, SND_FILEP=false;
+const BAB_VOWELS=[[730,1090],[530,1840],[270,2290],[570,840],[300,870],[660,1720],[440,1020]];
+function sndMakeBabble(){
+  if(SND_BAB||SND_BABP) return; const c=SND.ctx; if(!c) return;
+  const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext; if(!OC) return; SND_BABP=true;
+  try{
+    const sr=22050, dur=8, oc=new OC(1,sr*dur,sr), mix=oc.createGain(); mix.gain.value=.085; mix.connect(oc.destination);
+    const rnd=(a,b)=>a+Math.random()*(b-a);
+    for(let v=0;v<46;v++){
+      const o=oc.createOscillator(); o.type='sawtooth'; const base=rnd(85,255); o.frequency.setValueAtTime(base,0);
+      for(let t=0;t<dur;t+=.2) o.frequency.setValueAtTime(base*rnd(.9,1.12),t);
+      const f1=oc.createBiquadFilter(), f2=oc.createBiquadFilter(); f1.type=f2.type='bandpass'; f1.Q.value=5; f2.Q.value=7;
+      const g1=oc.createGain(), g2=oc.createGain(), env=oc.createGain(); g1.gain.value=1; g2.gain.value=.55; env.gain.setValueAtTime(0,0);
+      o.connect(f1); o.connect(f2); f1.connect(g1); f2.connect(g2); g1.connect(env); g2.connect(env); env.connect(mix);
+      let t=rnd(0,.9); const talk=rnd(.5,.9);
+      while(t<dur){
+        const vw=BAB_VOWELS[Math.floor(Math.random()*BAB_VOWELS.length)], sy=rnd(.1,.28), amp=rnd(.25,1);
+        f1.frequency.setValueAtTime(vw[0]*rnd(.9,1.1),t); f2.frequency.setValueAtTime(vw[1]*rnd(.9,1.1),t);
+        env.gain.setValueAtTime(0,t); env.gain.linearRampToValueAtTime(amp,t+sy*.3); env.gain.linearRampToValueAtTime(0,t+sy);
+        t+=sy+(Math.random()<talk?rnd(.02,.12):rnd(.3,1.1));
+      }
+      o.start(0); o.stop(dur);
+    }
+    const done=b=>{ try{ const d=b.getChannelData(0), f=Math.floor(sr*.25); for(let i=0;i<f;i++){ const k=i/f; d[i]*=k; d[d.length-1-i]*=k; } }catch(e){} SND_BAB=b; SND_BABP=false; };   // fade the ends so the loop does not click
+    const p=oc.startRendering(); if(p&&p.then) p.then(done).catch(()=>{ SND_BABP=false; }); else oc.oncomplete=e=>done(e.renderedBuffer);
+  }catch(e){ SND_BABP=false; }
+}
+function sndLoadCrowdFile(){
+  if(SND_FILE||SND_FILEP||SND_FILE===false) return; const c=SND.ctx; if(!c) return; SND_FILEP=true;
+  const tries=['audio/crowd.mp3','audio/crowd.ogg','audio/crowd.wav']; let i=0;
+  const next=()=>{ if(i>=tries.length){ SND_FILEP=false; SND_FILE=false; return; }
+    fetch(tries[i++]).then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); }).then(ab=>new Promise((ok,no)=>{ const p=c.decodeAudioData(ab,ok,no); if(p&&p.then) p.then(ok,no); })).then(b=>{ SND_FILE=b; SND_FILEP=false; }).catch(next); };
+  next();
+}
+function sndCrowdBuf(){ return SND_FILE||SND_BAB||null; }
 function ambStart(sport){
   if(!SND.on||AMB.on) return; const c=SND.ctx; if(!c||c.state!=='running') return;
   AMB.on=true; AMB.base=sport==='mlb'?.075:sport==='nfl'||sport==='cfb'?.12:.1; AMB.lvl=1;
   const out=c.createGain(); out.gain.setValueAtTime(.0001,c.currentTime); out.gain.exponentialRampToValueAtTime(AMB.base,c.currentTime+1.6); out.connect(SND.master); AMB.out=out;
   const mk=(f,q,g,type)=>{ const s=c.createBufferSource(); s.buffer=sndPink(); s.loop=true; const fl=c.createBiquadFilter(); fl.type=type||'bandpass'; fl.frequency.value=f; fl.Q.value=q; const gg=c.createGain(); gg.gain.value=g; s.connect(fl); fl.connect(gg); gg.connect(out); s.start(0,Math.random()*3); return {s:s,fl:fl,gg:gg}; };
-  const L=[mk(420,.5,1),mk(900,.7,.9),mk(1900,.8,.45),mk(3600,.9,.12,'highpass')];
+  sndMakeBabble(); sndLoadCrowdFile(); const cb=sndCrowdBuf();
+  let L;
+  if(cb){   // people talking: the recording or the voice babble, with only a faint low rumble of the stands underneath
+    const src=c.createBufferSource(); src.buffer=cb; src.loop=true; const fl=c.createBiquadFilter(); fl.type='peaking'; fl.frequency.value=900; fl.Q.value=.6; fl.gain.value=0; const gg=c.createGain(); gg.gain.value=SND_FILE?1.1:1.6; src.connect(fl); fl.connect(gg); gg.connect(out); src.start(0,Math.random()*Math.max(1,cb.duration-1));
+    L=[mk(180,.5,.22,'lowpass'),{s:src,fl:fl,gg:gg}];
+  } else L=[mk(420,.5,1),mk(900,.7,.9),mk(1900,.8,.45),mk(3600,.9,.12,'highpass')];
   const lfo=c.createOscillator(), lg=c.createGain(); lfo.frequency.value=.13; lg.gain.value=AMB.base*.28; lfo.connect(lg); lg.connect(out.gain); lfo.start();
   AMB.bits={L:L,lfo:lfo};
   AMB.t=setInterval(()=>{ if(!AMB.on||!SND.on||c.state!=='running') return;
@@ -4727,7 +4789,7 @@ function anSound(b,ty,e){
     else if(ty==='punt'){ S('kick'); }
   } else if(f==='bk'){
     if(ty==='three'){ S('swish',650); }
-    else if(ty==='dunk'){ S('squeak'); S('slam',380); }
+    else if(ty==='dunk'){ S('squeak'); S('doorslam',380); }
     else if(ty==='bucket'){ S('swish',500); }
     else if(ty==='ft'){ S('dribble',0); S('swish',650); }
     else if(ty==='foul'){ S('whistle'); }
@@ -4960,7 +5022,7 @@ function afBkFt(x){
   res.forEach((ok,i)=>{ const t0=300+i*1700; if(ok) made++; let bl=null;
     x.T(t0,()=>{ cnt.textContent='FT '+(i+1)+' of 2'; bl=afBk(fx,sx-sg*4,58); afBounce(bl,sx-sg*4,58,2,8,640); sfx('dribble',0); });
     x.T(t0+700,()=>{ if(!bl) return; anMove(bl,anArc([sx-sg*4,58],[hx,60],20,18),760,'linear',()=>{ if(ok){ anBurst(fx,hx,60,'#fff',8); } else { anMove(bl,[[hx,60],[hx-sg*16,76]],360,'ease-out'); } }); });
-    x.T(t0+1460,()=>{ if(ok){ sfx('swish',0); if(x.A==='home') sfx('crowd',0,false); else sfx('awww',0); } else { sfx('rim',0); if(x.A==='home') sfx('awww',250); else sfx('cheer',250); } });
+    x.T(t0+1460,()=>{ if(ok){ sfx('swish',0); if(x.A==='home') sfx('crowd',0,false); else sfx('awww',0); } else { sfx('denied',0); if(x.A==='home') sfx('awww',250); else sfx('cheer',250); } });
     x.T(t0+1650,()=>{ if(bl&&bl.parentNode) bl.remove(); });
   });
   x.T(3500,()=>{ cnt.textContent=''; anBanner(x.st,made+' OF 2',made===2?'good':made?'mid':'bad'); if(x.A==='home'&&made===2) x.crowd(true,false); });
@@ -4972,7 +5034,7 @@ function afBkDunk(x){
   const p=afPlayer(fx,x0,y0,x.col,{name:nm}); const bl=afBk(p,5,-3);
   anMove(p,[[x0,y0],[hx-sg*46,58],[hx-sg*22,50],[hx-sg*9,38],[hx-sg*14,60]],1350,'ease-in');
   x.S('squeak',100); x.S('squeak',520); afZoomHoop(x,1.5);
-  x.T(1000,()=>{ anBanner(x.st,'SLAM DUNK!','big top'); anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('slam',0); x.crowd(x.A==='home',true,120); });
+  x.T(1000,()=>{ anBanner(x.st,'SLAM DUNK!','big top'); anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('doorslam',0); x.crowd(x.A==='home',true,120); });
   void bl; return 2300;
 }
 function afBkThree(x){
@@ -4982,7 +5044,7 @@ function afBkThree(x){
   const sh=afPlayer(fx,sx,sy,x.col,{name:nm}); const ok=Math.random()<.42;
   afZoomHoop(x,1.5); const bl=afBk(fx,px,py-2); anMove(bl,[[px,py-2],[sx,sy-4]],420,'ease-in'); x.S('pass',0);
   x.T(480,()=>{ afHop(sh,sx,sy,5,520); anMove(bl,anArc([sx,sy-4],[hx,60],38,20),900,'linear',()=>{ if(ok) anBurst(fx,hx,60,'#fff',8); else anMove(bl,[[hx,60],[hx-sg*18,80]],420,'ease-out'); }); });
-  x.T(1520,()=>{ if(ok){ sfx('swish',0); anBanner(x.st,'THREE!','big top'); x.crowd(x.A==='home',false); } else { sfx('clang',0); if(x.A==='home') sfx('awww',200); else sfx('cheer',200); } });
+  x.T(1520,()=>{ if(ok){ sfx('swish',0); anBanner(x.st,'THREE!','big top'); x.crowd(x.A==='home',false); } else { sfx('denied',0); if(x.A==='home') sfx('awww',200); else sfx('cheer',200); } });
   return 2700;
 }
 function afBkFast(x){
@@ -5007,7 +5069,7 @@ function afBkSwing(x){
   afNote(x,'BALL MOVEMENT','sm',0); afZoomHoop(x,1.4);
   const last=sp[seq[seq.length-1]], ok=Math.random()<.62;
   x.T(t+120,()=>{ anMove(bl,anArc([last[0],last[1]-3],[hx,60],26,18),760,'linear',()=>{ if(ok) anBurst(fx,hx,60,'#fff',8); else anMove(bl,[[hx,60],[hx-sg*18,70]],360,'ease-out'); }); });
-  x.T(t+880,()=>{ if(ok){ sfx('swish',0); x.crowd(x.A==='home',false); } else { sfx('rim',0); if(x.A==='home') sfx('awww',200); } });
+  x.T(t+880,()=>{ if(ok){ sfx('swish',0); x.crowd(x.A==='home',false); } else { sfx('denied',0); if(x.A==='home') sfx('awww',200); } });
   return t+1700;
 }
 function afBkRebound(x){
@@ -5015,7 +5077,7 @@ function afBkRebound(x){
   const shooter=afPlayer(fx,m(86),60,x.col,{name:afName(b,x.A)}); void shooter; const bl=afBk(fx,m(86),56);
   const spots=[[hx-sg*20,46,x.col],[hx-sg*28,74,x.colD],[hx-sg*14,70,x.colD],[hx-sg*30,52,x.col]];
   const dots=spots.map(p=>afPlayer(fx,p[0],p[1],p[2],{r:4}));
-  afZoomHoop(x,1.8); anMove(bl,anArc([m(86),56],[hx,60],26,18),760,'linear'); x.S('clang',780);
+  afZoomHoop(x,1.8); anMove(bl,anArc([m(86),56],[hx,60],26,18),760,'linear'); x.S('denied',780);
   const w=Math.random()<.5?'A':'D', wi=w==='A'?[0,3][Math.floor(Math.random()*2)]:[1,2][Math.floor(Math.random()*2)];
   x.T(800,()=>{ dots.forEach((g,i)=>afHop(g,spots[i][0],spots[i][1],i===wi?11:8,520)); anMove(bl,[[hx,60],[hx-sg*10,40],[spots[wi][0],spots[wi][1]-9]],520,'ease-out'); });
   x.T(1350,()=>{ sfx('rebound',0); anMove(bl,[[spots[wi][0],spots[wi][1]-9],[x.m(120),64]],520,'ease-out'); anBanner(x.st,'REBOUND','sm top'); if((w==='A')===(x.A==='home')) sfx('crowd',0,false); else sfx('awww',0); });
@@ -5027,7 +5089,7 @@ function afBkAlley(x){
   const d=afPlayer(fx,m(70),48,x.colD,{r:4}); anMove(d,[[m(70),48],[hx-sg*16,52]],1200,'ease-in-out');
   const bl=afBk(fx,m(104),70); x.S('whoosh',100);
   anMove(bl,[[m(104),70],[m(88),22],[hx-sg*9,36]],900,'ease-in-out'); anMove(cut,[[m(98),26],[m(70),30],[hx-sg*22,40],[hx-sg*9,34],[hx-sg*15,62]],1350,'ease-in');
-  afZoomHoop(x,1.6); afNote(x,'ALLEY-OOP!','big',900); x.T(1000,()=>{ anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('slam',0); x.crowd(x.A==='home',true,100); });
+  afZoomHoop(x,1.6); afNote(x,'ALLEY-OOP!','big',900); x.T(1000,()=>{ anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('doorslam',0); x.crowd(x.A==='home',true,100); });
   return 2400;
 }
 function afBkHuddle(x){
