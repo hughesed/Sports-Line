@@ -48,12 +48,12 @@ let odT=null; new MutationObserver(()=>{ if(!OD.data) return; clearTimeout(odT);
 setInterval(()=>{ if(!document.hidden) odFetch(); },60e3); odFetch();
 
 /* ---------- bet slip deep links: each leg's own selection link from the odds feed, combined per book, so the slip arrives with the picks already in it ---------- */
-function odLegLinks(l,info){
+function odLegLinks(l,info,px){
   const g=G[l.gid]; if(!g) return null; let e=null; try{ e=(typeof bkEvent==='function'&&bkEvent(g))||(typeof odFind==='function'&&odFind(g))||null; }catch(err){} if(!e) return null;
   const sp=l.spec||{}, out={}, M=e.main||{}, diff={};
   /* each book's own link for this pick; when a book does not list the exact line, use the closest line that book does list (the price will differ, the pick is the same) */
   /* tol: for player props the closest line is used only when it is within about one unit; a "5+ rush yds" pick must not turn into "Over 24.5 rush yds" at the book */
-  const take=(x,line,tol)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(tol!=null&&d>tol) return; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=bkRegion(b.link); } }); };
+  const take=(x,line,tol)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(tol!=null&&d>tol) return; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=bkRegion(b.link); if(px) px[k]=b.odds; } }); };
   if(sp.k==='ml') take(M.ml&&M.ml[sp.side]);
   else if(sp.k==='spr') take(M.spread&&M.spread[sp.side],+sp.line);
   else if(sp.k==='tot') take(M.total&&M.total[sp.dir],+sp.line);
@@ -66,9 +66,8 @@ function odLegLinks(l,info){
 function odCombine(book,ls){
   try{
     const U=ls.map(u=>new URL(u)), q=(u,k)=>u.searchParams.get(k);
-    /* FanDuel: the indexed multi-leg link only ever landed ONE pick (the rest came back 'Selection not added'), so it is not used; the first pick opens by link and the Add list covers the rest */
-    if(book==='fanduel') return null;
-    if(false){ const v=U.map(u=>({m:q(u,'marketId'),s:q(u,'selectionId')})); if(v.every(x=>x.m&&x.s)) return 'https://sportsbook.fanduel.com/addToBetslip?'+v.map((x,i)=>'marketId['+i+']='+encodeURIComponent(x.m)+'&selectionId['+i+']='+encodeURIComponent(x.s)).join('&'); }
+    /* FanDuel: same shape as the links Gambly/Unabated send: account host, and each leg's "marketId[i]=..&selectionId[i]=.." encoded as ONE value, legs joined by a plain & */
+    if(book==='fanduel'){ const v=U.map(u=>({m:q(u,'marketId'),s:q(u,'selectionId')})); if(v.every(x=>x.m&&x.s)) return 'https://account.sportsbook.fanduel.com/sportsbook/addToBetslip?'+v.map((x,i)=>encodeURIComponent('marketId['+i+']='+x.m+'&selectionId['+i+']='+x.s).replace(/%5B/g,'%5b').replace(/%5D/g,'%5d').replace(/%3D/g,'%3d').replace(/%26/g,'%26')).join('&'); }
     if(book==='draftkings'){ const o=U.map(u=>q(u,'outcomes')); if(o.every(Boolean)&&U.every(u=>u.pathname===U[0].pathname)) return U[0].origin+U[0].pathname+'?outcomes='+o.map(encodeURIComponent).join('%7C'); }
     if(book==='caesars'){ const o=U.map(u=>q(u,'selectionIds')); if(o.every(Boolean)&&U.every(u=>u.pathname===U[0].pathname)) return U[0].origin+U[0].pathname+'?selectionIds='+o.map(encodeURIComponent).join(','); }
     if(book==='espnbet'){ const v=U.map(u=>({s:q(u,'market_selection_id[0]'),n:q(u,'odds_numerator[0]'),d:q(u,'odds_denominator[0]')})); if(v.every(x=>x.s&&x.n&&x.d)) return U[0].origin+'/?'+v.map((x,i)=>'market_selection_id['+i+']='+encodeURIComponent(x.s)+'&odds_numerator['+i+']='+x.n+'&odds_denominator['+i+']='+x.d).join('&'); }
@@ -78,11 +77,11 @@ function odCombine(book,ls){
 /* {url, n, total}: n = how many of the slip's legs are inside the link */
 function slipDeepLink(book){
   const legs=S.slip||[]; if(!legs.length) return null;
-  const links=[], miss=[]; let subs=0;
-  legs.forEach(l=>{ const inf={}; const m=odLegLinks(l,inf); const u=m&&m[book]; if(u&&/^https:\/\//i.test(u)){ links.push(u); if(inf[book]>0.01) subs++; } else miss.push(l.label); });
+  const links=[], miss=[]; let subs=0, dec=1, pxOk=true;
+  legs.forEach(l=>{ const inf={}, px={}; const m=odLegLinks(l,inf,px); const u=m&&m[book]; if(u&&/^https:\/\//i.test(u)){ links.push(u); if(inf[book]>0.01) subs++; const o=+px[book]; if(isFinite(o)&&o!==0&&px[book]!=null) dec*=(o>0?1+o/100:1+100/-o); else pxOk=false; } else miss.push(l.label); });
   if(!links.length) return null;
   let url=links[0], n=1; if(links.length>1){ const c=odCombine(book,links); if(c){ url=c; n=links.length; } }
-  return {url:url,n:n,total:legs.length,subs:subs,miss:miss};
+  return {url:url,n:n,total:legs.length,subs:subs,miss:miss,dec:pxOk?dec:null};
 }
 
 /* "Your state" picker in the slip: BetMGM and Caesars links are state pages */

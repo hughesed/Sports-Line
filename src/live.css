@@ -70,3 +70,12 @@ svg.chart text.dnpt{font-size:6.5px}
 .bl{display:flex;gap:8px;align-items:flex-start;font-size:13px}
 .ic{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-size:11px;flex:none;margin-top:1px}
 .ic.w{background:var(--over);color:#fff}.ic.l{background:var(--under);color:#fff}.ic.v{background:var(--muted);color:#fff}.ic.p{background:var(--line);color:var(--muted)}
+
+.bkhead{display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin:8px 0 6px}
+.bkgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bktile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:12px;border:1.5px solid transparent;background:rgba(255,255,255,.08);color:inherit;font:inherit;cursor:pointer}
+.bktile.on{border-color:#7ee89b;background:rgba(126,232,155,.12)}
+.bkmark{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff}
+.bkn{font-size:11px;opacity:.85;text-align:center}.bkc{font-size:12px;opacity:.8}.bko{font-weight:800;font-size:14px}
+.bkplace{display:flex;flex-direction:column;align-items:center;gap:2px;margin:10px 0;padding:13px 10px;border-radius:14px;background:#86ef9f;color:#0b2a14;text-decoration:none;text-align:center}
+.bkplace b{font-size:17px;letter-spacing:.3px}.bkplace span{font-size:13px;font-weight:600}

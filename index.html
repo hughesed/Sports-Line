@@ -279,6 +279,15 @@ svg.chart text.dnpt{font-size:6.5px}
 .ic{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-size:11px;flex:none;margin-top:1px}
 .ic.w{background:var(--over);color:#fff}.ic.l{background:var(--under);color:#fff}.ic.v{background:var(--muted);color:#fff}.ic.p{background:var(--line);color:var(--muted)}
 
+.bkhead{display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin:8px 0 6px}
+.bkgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bktile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:12px;border:1.5px solid transparent;background:rgba(255,255,255,.08);color:inherit;font:inherit;cursor:pointer}
+.bktile.on{border-color:#7ee89b;background:rgba(126,232,155,.12)}
+.bkmark{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff}
+.bkn{font-size:11px;opacity:.85;text-align:center}.bkc{font-size:12px;opacity:.8}.bko{font-weight:800;font-size:14px}
+.bkplace{display:flex;flex-direction:column;align-items:center;gap:2px;margin:10px 0;padding:13px 10px;border-radius:14px;background:#86ef9f;color:#0b2a14;text-decoration:none;text-align:center}
+.bkplace b{font-size:17px;letter-spacing:.3px}.bkplace span{font-size:13px;font-weight:600}
+
 /* ===== v3: blue sportsbook look ===== */
 .hd{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--hdr);color:var(--hdr-ink);box-shadow:0 2px 10px rgba(5,20,60,.25)}
 .hd-in{max-width:760px;margin-inline:auto;padding:10px 16px;display:flex;flex-direction:column;gap:10px}
@@ -1087,7 +1096,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="6f42bd2ba6">
+<body data-build="8fb31c9b28">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -2133,7 +2142,13 @@ function slipHtmlLocal(){
   if(!S.slipOpen) return '<div class="in">'+sum+'</div>';
   const rows=legs.map(l=>'<div class="sl"><span>'+esc(l.label)+' <span class="mono" style="opacity:.75">'+fo(l.price)+(l.live?' live':l.src==='est.'?' est.':' '+(l.bk||'DK'))+'</span><br><span style="opacity:.65;font-size:11px">'+esc(G[l.gid].title)+'</span></span><button class="x" data-act="rm" data-tok="'+esc(l.id)+'" aria-label="Remove '+esc(l.label)+'">Remove</button></div>').join('');
   const chips=[['10%','10'],['25%','25'],['50%','50'],['Max','max']].map(x=>'<button class="x" data-act="stake-chip" data-v="'+x[1]+'">'+x[0]+'</button>').join('');
-  const books=BOOKS.map(b=>{ let dl=null; try{ dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; }catch(err){} return '<a class="btn bk" href="'+esc(bookUrl(b))+'"'+(b[0]==='gambly'||b[0]==='fanaticsapp'?' target="_blank"':'')+' rel="noopener" data-act="book" data-bk="'+b[0]+'">'+esc(b[1])+(dl?' ✓ '+dl.n+'/'+dl.total:'')+(dl&&dl.subs?'*':'')+'</a>'; }).join('');
+  const sel=slipBookSel(), bsel=BOOKS.find(b=>b[0]===sel)||BOOKS[2];
+  const tiles=BOOKS.filter(b=>b[0]!=='gambly').map(b=>{ let dl=null; try{ dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; }catch(err){} const am=dl&&dl.dec&&dl.n===dl.total?amerOfDec(dl.dec):null;
+    return '<button class="bktile'+(b[0]===sel?' on':'')+'" data-act="pickbook" data-bk="'+b[0]+'" aria-pressed="'+(b[0]===sel)+'"><span class="bkmark" style="background:'+bkHue(b[0])+'">'+esc(b[1].replace(/[^A-Za-z0-9]/g,'').slice(0,2))+'</span><span class="bkn">'+esc(b[1])+'</span><span class="bkc">'+(dl?dl.n+' Bet'+(dl.n>1?'s':'')+(dl.n<dl.total?' of '+dl.total:''):'Open')+'</span><span class="bko mono">'+(am!=null?fo(am):'--')+'</span></button>'; }).join('');
+  let sdl=null; try{ sdl=slipDeepLink(sel); }catch(err){}
+  const sAm=sdl&&sdl.dec&&sdl.n===sdl.total?amerOfDec(sdl.dec):null, sWin=sdl&&sdl.dec&&sdl.n===sdl.total?(10*sdl.dec-10):null;
+  const placeBtn='<a class="bkplace" href="'+esc(bookUrl(bsel))+'" rel="noopener" data-act="book" data-bk="'+sel+'"'+(sel==='fanaticsapp'?' target="_blank"':'')+'><b>PLACE '+(sdl&&sdl.n>1?'ALL '+sdl.n+' BETS':sdl&&sdl.n===1?'1 BET':'ON '+esc(bsel[1]).toUpperCase())+'</b><span>'+(sWin!=null?'$10 wins $'+sWin.toFixed(2)+' on '+esc(bsel[1]):(sdl&&sdl.n<sdl.total?sdl.n+' of '+sdl.total+' picks carry over, add the rest from the list below':'Opens '+esc(bsel[1])))+'</span></a>';
+  const books='<div class="bkhead">Selected sportsbook <span class="mono">'+esc(bsel[1])+'</span></div><div class="bkgrid">'+tiles+'</div>'+placeBtn+'<div class="btnrow"><a class="btn" href="https://gambly.com/chat" target="_blank" rel="noopener" data-act="book" data-bk="gambly">Gambly chat</a></div>';
   return '<div class="in"><div class="slipscroll">'+sum+'<div class="slipbody">'+rows+'</div>'+
     '<div class="seg inv" role="group" aria-label="Bet type"><button data-act="mode" data-v="parlay" aria-pressed="'+!c.single+'">'+(legs.length>1?(games>1?'Parlay':'Same-game parlay'):'Straight bet')+'</button><button data-act="mode" data-v="single" aria-pressed="'+c.single+'">Singles</button></div>'+
     boostHtml()+'<div class="stakerow"><label class="sl-l">Stake $<input class="num stk" data-in="stake" inputmode="decimal" value="'+esc(S.stake)+'" aria-label="Stake in dollars"></label><span class="chips">'+chips+'</span></div>'+
@@ -2142,9 +2157,11 @@ function slipHtmlLocal(){
     '<div class="slipnote" id="slipmsg">'+esc(S.slipMsg||'')+'</div>'+
     '<div class="small" style="opacity:.9"><b>Step 1.</b> Copy the slip. <b>Step 2.</b> Open Gambly and paste it into the chat box (Gambly cannot receive bets from a link, only pasted text or a screenshot).</div><div class="btnrow"><button class="btn solid" data-act="copyslip">Copy slip text</button></div>'+
     '<label class="small" style="display:block;opacity:.8" for="sliptxt">Slip text (if copying is blocked on your device, press and hold in this box, Select All, Copy)</label><textarea id="sliptxt" readonly rows="'+Math.min(6,legs.length+1)+'" style="width:100%;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace" aria-label="Slip text to paste">'+esc(slipText(legs))+'</textarea>'+
-    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div>'+fdFresh()+stateRow()+fdSteps()+pickByPick()+'<div class="small" style="opacity:.85">A ✓ means the book is sent that many of your picks in one link; it can still refuse some (a market that has closed, or a line that moved). If a book says a selection was not added, use the one-at-a-time list. A * means at least one pick goes to the book\'s closest line instead of your exact line. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
+    '<div class="small" style="opacity:.8">Pick a sportsbook, then tap the big button. It opens the book with your picks loaded and copies the slip text as a backup.</div><div class="btnrow">'+books+'</div>'+fdFresh()+stateRow()+fdSteps()+pickByPick()+'<div class="small" style="opacity:.85">A ✓ means the book is sent that many of your picks in one link; it can still refuse some (a market that has closed, or a line that moved). If a book says a selection was not added, use the one-at-a-time list. A * means at least one pick goes to the book\'s closest line instead of your exact line. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
     '<div class="slipnote">Prices here are model estimates or ESPN/DraftKings numbers from this snapshot, so the book will price it differently. Same-game legs are correlated. Real-money betting is for adults 21+ (call 1-800-GAMBLER for help).</div></div></div>';
 }
+function slipBookSel(){ return S.slipBook||'fanduel'; }
+function bkHue(k){ return ({draftkings:'#53d337',fanduel:'#1493ff',betmgm:'#b8975a',caesars:'#0e5a3a',espnbet:'#e8173b',hardrockbet:'#5b2bd6',betrivers:'#1b4f8f',bet365:'#0f7a4a',fanaticsapp:'#e4372b'})[k]||'#556'; }
 function stateRow(){ const cur=bkState(); return '<label class="small bkst" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;opacity:.95">Your state <select data-in="bkstate" aria-label="Your state">'+(cur?'':'<option value="" selected>Choose…</option>')+BK_STATES.map(x=>'<option value="'+x[0]+'"'+(cur===x[0]?' selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select><span class="muted">BetMGM and Caesars open your state\'s page</span></label>'; }
 /* the sportsbook links come from the odds file; a book retires a market when its line moves, so an old pull means some picks may come back "no longer available" */
 function fdFresh(){
@@ -2263,6 +2280,7 @@ document.addEventListener('click',function(e){
     const viaBox=()=>{ const ta=document.getElementById('sliptxt'); let ok=false; if(ta){ try{ ta.focus(); ta.select(); ta.setSelectionRange(0,ta.value.length); ok=document.execCommand('copy'); }catch(err){} } say(ok?'Copied '+S.slip.length+' leg'+(S.slip.length>1?'s':'')+'. Now open Gambly and paste.':'Copy was blocked here. The slip text is selected in the box below: tap Copy in the pop-up menu, or press and hold and choose Copy.'); };
     try{ const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):null; if(p&&p.then) p.then(()=>say('Copied '+S.slip.length+' leg'+(S.slip.length>1?'s':'')+'. Now open Gambly and paste.'),viaBox); else viaBox(); }catch(err){ viaBox(); }
     return; }
+  if(act==='pickbook'){ S.slipBook=t.getAttribute('data-bk'); S.forceSlip=true; try{ renderSlip(); }catch(err){} S.forceSlip=false; return; }
   if(act==='book'){ const bk=t.getAttribute('data-bk'); const txt=slipText(S.slip); const url=t.getAttribute('href')||''; const native=bk!=='gambly'&&bk!=='fanaticsapp'&&/^https:\/\//i.test(url); if(!native) e.preventDefault();
     const say=m=>{ const el=document.getElementById('slipmsg'); if(el) el.textContent=m; };
     const okMsg=bk==='gambly'?'Slip copied. Paste it into the Gambly chat box and it builds the slip, then pick your sportsbook.':bk==='fanaticsapp'?'Slip copied. The Fanatics app opens but cannot load these bets, so paste or enter them there.':'Slip copied. The sportsbook opens on the game when it can; add the legs there (long-press, Paste, or enter them).';
@@ -6361,12 +6379,12 @@ let odT=null; new MutationObserver(()=>{ if(!OD.data) return; clearTimeout(odT);
 setInterval(()=>{ if(!document.hidden) odFetch(); },60e3); odFetch();
 
 /* ---------- bet slip deep links: each leg's own selection link from the odds feed, combined per book, so the slip arrives with the picks already in it ---------- */
-function odLegLinks(l,info){
+function odLegLinks(l,info,px){
   const g=G[l.gid]; if(!g) return null; let e=null; try{ e=(typeof bkEvent==='function'&&bkEvent(g))||(typeof odFind==='function'&&odFind(g))||null; }catch(err){} if(!e) return null;
   const sp=l.spec||{}, out={}, M=e.main||{}, diff={};
   /* each book's own link for this pick; when a book does not list the exact line, use the closest line that book does list (the price will differ, the pick is the same) */
   /* tol: for player props the closest line is used only when it is within about one unit; a "5+ rush yds" pick must not turn into "Over 24.5 rush yds" at the book */
-  const take=(x,line,tol)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(tol!=null&&d>tol) return; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=bkRegion(b.link); } }); };
+  const take=(x,line,tol)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(tol!=null&&d>tol) return; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=bkRegion(b.link); if(px) px[k]=b.odds; } }); };
   if(sp.k==='ml') take(M.ml&&M.ml[sp.side]);
   else if(sp.k==='spr') take(M.spread&&M.spread[sp.side],+sp.line);
   else if(sp.k==='tot') take(M.total&&M.total[sp.dir],+sp.line);
@@ -6379,9 +6397,8 @@ function odLegLinks(l,info){
 function odCombine(book,ls){
   try{
     const U=ls.map(u=>new URL(u)), q=(u,k)=>u.searchParams.get(k);
-    /* FanDuel: the indexed multi-leg link only ever landed ONE pick (the rest came back 'Selection not added'), so it is not used; the first pick opens by link and the Add list covers the rest */
-    if(book==='fanduel') return null;
-    if(false){ const v=U.map(u=>({m:q(u,'marketId'),s:q(u,'selectionId')})); if(v.every(x=>x.m&&x.s)) return 'https://sportsbook.fanduel.com/addToBetslip?'+v.map((x,i)=>'marketId['+i+']='+encodeURIComponent(x.m)+'&selectionId['+i+']='+encodeURIComponent(x.s)).join('&'); }
+    /* FanDuel: same shape as the links Gambly/Unabated send: account host, and each leg's "marketId[i]=..&selectionId[i]=.." encoded as ONE value, legs joined by a plain & */
+    if(book==='fanduel'){ const v=U.map(u=>({m:q(u,'marketId'),s:q(u,'selectionId')})); if(v.every(x=>x.m&&x.s)) return 'https://account.sportsbook.fanduel.com/sportsbook/addToBetslip?'+v.map((x,i)=>encodeURIComponent('marketId['+i+']='+x.m+'&selectionId['+i+']='+x.s).replace(/%5B/g,'%5b').replace(/%5D/g,'%5d').replace(/%3D/g,'%3d').replace(/%26/g,'%26')).join('&'); }
     if(book==='draftkings'){ const o=U.map(u=>q(u,'outcomes')); if(o.every(Boolean)&&U.every(u=>u.pathname===U[0].pathname)) return U[0].origin+U[0].pathname+'?outcomes='+o.map(encodeURIComponent).join('%7C'); }
     if(book==='caesars'){ const o=U.map(u=>q(u,'selectionIds')); if(o.every(Boolean)&&U.every(u=>u.pathname===U[0].pathname)) return U[0].origin+U[0].pathname+'?selectionIds='+o.map(encodeURIComponent).join(','); }
     if(book==='espnbet'){ const v=U.map(u=>({s:q(u,'market_selection_id[0]'),n:q(u,'odds_numerator[0]'),d:q(u,'odds_denominator[0]')})); if(v.every(x=>x.s&&x.n&&x.d)) return U[0].origin+'/?'+v.map((x,i)=>'market_selection_id['+i+']='+encodeURIComponent(x.s)+'&odds_numerator['+i+']='+x.n+'&odds_denominator['+i+']='+x.d).join('&'); }
@@ -6391,11 +6408,11 @@ function odCombine(book,ls){
 /* {url, n, total}: n = how many of the slip's legs are inside the link */
 function slipDeepLink(book){
   const legs=S.slip||[]; if(!legs.length) return null;
-  const links=[], miss=[]; let subs=0;
-  legs.forEach(l=>{ const inf={}; const m=odLegLinks(l,inf); const u=m&&m[book]; if(u&&/^https:\/\//i.test(u)){ links.push(u); if(inf[book]>0.01) subs++; } else miss.push(l.label); });
+  const links=[], miss=[]; let subs=0, dec=1, pxOk=true;
+  legs.forEach(l=>{ const inf={}, px={}; const m=odLegLinks(l,inf,px); const u=m&&m[book]; if(u&&/^https:\/\//i.test(u)){ links.push(u); if(inf[book]>0.01) subs++; const o=+px[book]; if(isFinite(o)&&o!==0&&px[book]!=null) dec*=(o>0?1+o/100:1+100/-o); else pxOk=false; } else miss.push(l.label); });
   if(!links.length) return null;
   let url=links[0], n=1; if(links.length>1){ const c=odCombine(book,links); if(c){ url=c; n=links.length; } }
-  return {url:url,n:n,total:legs.length,subs:subs,miss:miss};
+  return {url:url,n:n,total:legs.length,subs:subs,miss:miss,dec:pxOk?dec:null};
 }
 
 /* "Your state" picker in the slip: BetMGM and Caesars links are state pages */
