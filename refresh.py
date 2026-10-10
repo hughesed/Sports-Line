@@ -178,7 +178,7 @@ def main():
     log(f"  slate: {len(games)} games " + str({lg: sum(1 for g in games if (g.get('key') or g['lg']) == lg) for lg in LEAGUES}))
 
     # ---------------------------------------------------------------- sportsbook prices: FanDuel is the main book on every card (lines, props, links)
-    try: odds_status = ODDS.refresh(f"{DATA}/odds.json", log)
+    try: odds_status = ODDS.refresh(f"{DATA}/odds.json", log, games=games)
     except Exception as ex: odds_status = "error"
     log(f"  odds: {odds_status}")
     try:
@@ -249,6 +249,12 @@ def main():
     except Exception as ex:
         log(f"  feed cards failed: {type(ex).__name__}: {ex}"[:200])
 
+    try:      # FanDuel's CURRENT lines for games in play: the page shows these on a live game (never the frozen pregame lines, which stay on the card only so open bets settle)
+        live_status = ODDS.refresh_live(f"{DATA}/odds.json", games, now, log)
+    except Exception as ex:
+        live_status = f"error: {type(ex).__name__}"[:60]
+    log(f"  odds live: {live_status}")
+
     # ---------------------------------------------------------------- social: battle data file, uploads, wait for the background work
     social_info = runner.finish(((T0 + deadline + 3) - time.time()) if deadline else 90)
     try:
@@ -279,7 +285,7 @@ def main():
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),
-                social=social_info, odds=odds_status, fanduel=fd_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
+                social=social_info, odds=odds_status, oddsLive=live_status, fanduel=fd_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
     write_json(f"{DATA}/slate.json", slate)
     write_json(f"{DATA}/learn.json", learn_out)
     write_json(f"{DATA}/pastp.json", pastp)

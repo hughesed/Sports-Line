@@ -26,7 +26,8 @@ jobs:
       SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-      ODDS_MIN_GAP_MIN: ${{ vars.ODDS_MIN_GAP_MIN || '120' }}
+      ODDS_MIN_GAP_MIN: ${{ vars.ODDS_MIN_GAP_MIN || '60' }}
+      ODDS_LIVE_GAP_MIN: ${{ vars.ODDS_LIVE_GAP_MIN || '4' }}
 
     steps:
       - name: Checkout

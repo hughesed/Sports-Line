@@ -81,27 +81,38 @@ function hpLeg(tok){ const p=String(tok).split(':'); const g=G[p[1]]; if(!g) ret
 /* games from the selected day through the next 3 days (a Friday home screen still shows Sunday's NFL slate) */
 function hpInWin(g){ if(!g.day) return true; const a=Date.parse(S.date+'T12:00:00Z'), d=Date.parse(g.day+'T12:00:00Z'); return d>=a&&d<=a+3*864e5; }
 /* ---------- same-game parlays ---------- */
+const HP_SIZES=[[2,0.6],[4,0.55],[8,0.5]];     // legs wanted, and the lowest chance a leg may have to be used
 function hpBuild(g){
   const legs=hpLegs(g).slice().sort((a,b)=>b.p-a.p); if(legs.length<2) return [];
-  const pickN=n=>{ const out=[],grp={},per={}; let team=false;
-    for(const l of legs){ if(out.length>=n) break; if(l.p<HP.min) break; if(grp[l.group]) continue;
+  const pickN=(n,floor)=>{ const out=[],grp={},per={}; let team=false;
+    for(const l of legs){ if(out.length>=n) break; if(l.p<floor) break; if(grp[l.group]) continue;
       if(l.kind==='ml'||l.kind==='spr'){ if(team) continue; team=true; }
       if(l.kind==='prop'){ if(per[l.pid]) continue; per[l.pid]=1; }
       out.push(l); grp[l.group]=1; }
     return out; };
-  const res=[]; [2,3].forEach(n=>{ const ls=pickN(n); if(ls.length===n){ const dec=ls.reduce((d,l)=>d*decOf(l.price),1); res.push({g:g,n:n,legs:ls,dec:dec,am:amerOfDec(dec),p:ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,n-1)}); } });
+  const res=[]; let prev=0;
+  HP_SIZES.forEach(sz=>{ const n=sz[0], ls=pickN(n,sz[1]);
+    /* up to n legs: fewer are fine when the game does not have enough good ones, but a 4 or 8 that is no bigger than the size below it is not repeated */
+    if(ls.length<2||(n>2&&ls.length<=prev)) return; prev=ls.length;
+    const dec=ls.reduce((d,l)=>d*decOf(l.price),1); res.push({g:g,n:n,k:ls.length,legs:ls,dec:dec,am:amerOfDec(dec),p:ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,ls.length-1)}); });
   return res;
 }
 function hpAllSgp(){
-  const gs=boardGames().filter(g=>(S.league==='all'||keyOf(g)===S.league)&&hpInWin(g)&&preOK(g)); const all=[];
+  const gs=boardGames().filter(g=>(S.league==='all'||keyOf(g)===S.league)&&hpInWin(g)&&preOK(g)&&(typeof llState!=='function'||llState(g)==='pre')); const all=[];
   gs.forEach(g=>{ hpBuild(g).forEach(s=>all.push(s)); });
   all.sort((a,b)=>b.p-a.p); return all;
 }
+function hpLegRow(l){
+  const isP=l.kind==='prop';
+  return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <span class="mono">'+fo(l.price)+'</span> <span class="muted small">'+(l.book==='fanduel'?'<b class="fdtag">FD</b>':esc(l.bk))+' · '+Math.round(l.p*100)+'%</span></summary>'+
+    '<div class="small muted hpld">'+(isP?'Player prop. ':'Game line. ')+(l.book==='fanduel'?'FanDuel\'s own price and line.':'FanDuel has not posted this one; best other book shown ('+esc(l.bk)+').')+
+    ' Book no-vig chance '+Math.round(l.pFair*100)+'%'+(l.pModel!=null?', model '+Math.round(l.pModel*100)+'%':'')+', blended to '+Math.round(l.p*100)+'%.'+(l.why?' '+esc(l.why)+'.':'')+(l.link&&l.book==='fanduel'?' <a href="'+esc(l.link)+'" target="_blank" rel="noopener">Open this leg on FanDuel</a>':'')+'</div></details>';
+}
 function hpSgpCard(s,i){
-  const g=s.g, on=s.legs.every(l=>inSlip(l.tok)); const nFd=s.legs.filter(l=>l.book==='fanduel').length, allFd=nFd===s.legs.length, fdU=hpFdUrl(s);
-  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.away,20)+' ':'')+esc(g.teams.away.abbr)+' @ '+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.home,20)+' ':'')+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.n+'-leg</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
-    '<div class="hpsrc">'+(allFd?fdMark()+' same-game parlay legs':(nFd?fdMark()+' on '+nFd+' of '+s.n+' legs, the rest at the best other book':'FanDuel has not posted these legs yet, so the best other book is shown'))+'</div>'+
-    s.legs.map(l=>'<div class="small">'+esc(l.label)+' <span class="mono">'+fo(l.price)+'</span> <span class="muted">'+(l.book==='fanduel'?'<b class="fdtag">FD</b>':esc(l.bk))+' · '+Math.round(l.p*100)+'%'+(l.why?' · '+esc(l.why):'')+'</span></div>').join('')+
+  const g=s.g, on=s.legs.every(l=>inSlip(l.tok)); const nFd=s.legs.filter(l=>l.book==='fanduel').length, allFd=nFd===s.legs.length, fdU=hpFdUrl(s), nP=s.legs.filter(l=>l.kind==='prop').length;
+  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.away,20)+' ':'')+esc(g.teams.away.abbr)+' @ '+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.home,20)+' ':'')+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.k+(s.k<s.n?' of up to '+s.n:'')+' legs'+(nP?' · '+nP+' prop'+(nP>1?'s':''):'')+'</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
+    '<div class="hpsrc">'+(allFd?fdMark()+' same-game parlay legs':(nFd?fdMark()+' on '+nFd+' of '+s.k+' legs, the rest at the best other book':'FanDuel has not posted these legs yet, so the best other book is shown'))+'</div>'+
+    '<details class="hplegs"'+(S.fold['hpl'+g.id+s.n]?' open':'')+' data-fold="hpl'+esc(g.id+s.n)+'"><summary class="small"><b>Legs</b> <span class="muted">tap to open or close, and tap a leg for its detail</span></summary>'+s.legs.map(hpLegRow).join('')+'</details>'+
     '<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="hp-add" data-i="'+i+'">'+(on?'Remove from slip':'Add to slip')+'</button>'+(fdU?'<a class="btn" href="'+esc(fdU)+'" target="_blank" rel="noopener">Open on FanDuel</a>':'')+'</div></div>';
 }
 /* the FanDuel page for a parlay: all legs in one betslip link when every leg has its FanDuel link, otherwise the game's FanDuel page */
@@ -110,10 +121,13 @@ function hpFdUrl(s){
     const e=bkEvent(s.g); const u=e&&e.eventLinks&&e.eventLinks.fanduel; return u&&/^https:\/\//.test(u)?u:''; }catch(e){ return ''; }
 }
 function hpSgpHtml(){
-  if(!hpOdds()) return '<div class="small muted">Sportsbook lines have not loaded yet, so no parlays can be built. They refresh about every hour.</div>';
-  const all=hpAllSgp(); HP.list=all; if(!all.length) return '<div class="small muted">No same-game parlay clears '+Math.round(HP.min*100)+'% right now'+(S.league==='all'?'':' in this league')+'. That is normal when lines are tight or a league has no props posted.</div>';
-  const per={}; const show=[]; all.forEach((s,i)=>{ const k=keyOf(s.g)+s.n; per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<8) show.push([s,i]); });
-  return show.map(x=>hpSgpCard(x[0],x[1])).join('')+'<div class="small muted">Every leg is a sportsbook line with its best price and a chance that blends the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book.</div>';
+  if(!hpOdds()) return {err:'<div class="small muted">Sportsbook lines have not loaded yet, so no parlays can be built. They refresh about every hour.</div>'};
+  const all=hpAllSgp(); HP.list=all; const out={};
+  HP_SIZES.forEach(sz=>{ const n=sz[0], per={}; const show=[];
+    all.forEach((s,i)=>{ if(s.n!==n) return; const k=keyOf(s.g); per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<4) show.push([s,i]); });
+    out[n]=show.length?show.map(x=>hpSgpCard(x[0],x[1])).join(''):'<div class="small muted">No game has enough legs at or above '+Math.round(sz[1]*100)+'% for a '+n+'-leg parlay'+(S.league==='all'?'':' in this league')+' right now.</div>'; });
+  out.note='<div class="small muted">Every leg is a FanDuel line (game lines and player props, over and under) at FanDuel\'s price; only a line FanDuel has not posted falls back to the best other book. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
+  return out;
 }
 
 /* ---------- first basket (NBA / WNBA) ---------- */
@@ -149,9 +163,11 @@ function hpFold(key,title,sum,inner,startOpen){
   return '<details class="d hpfold" data-fold="'+esc(key)+'"'+(open?' open':'')+'><summary><b>'+esc(title)+'</b>'+(sum?' <span class="muted small">'+esc(sum)+'</span>':'')+'</summary>'+inner+'</details>';
 }
 function hpHomeHtml(){
-  const sgp=hpSgpHtml(), n=HP.list.length; const fb=hpFirstHtml(), nr=hpNrfiHtml();
-  return '<section class="game hpsec"><div class="sec">'+hpFold('sgp','Best same-game parlays',n?Math.min(n,8)+' picks · sportsbook lines':'sportsbook lines',sgp,true)+
-    hpFold('fb','First basket (NBA and WNBA)','',fb,false)+hpFold('nrfi','No run first inning (MLB)','',nr,false)+'</div></section>';
+  const sg=hpSgpHtml(); const fb=hpFirstHtml(), nr=hpNrfiHtml(); let parlays;
+  if(sg.err) parlays=hpFold('sgp','Best same-game parlays','',sg.err,true);
+  else parlays=hpFold('sgp','Best same-game parlays',HP.list.length+' built · FanDuel lines and props',
+      HP_SIZES.map(sz=>hpFold('sgp'+sz[0],sz[0]+'-leg parlays',(HP.list.filter(s=>s.n===sz[0]).length)+' found'+(sz[0]>2?' · up to '+sz[0]+' legs, fewer when that is all there is':''),sg[sz[0]],sz[0]===2)).join('')+sg.note,true);
+  return '<section class="game hpsec"><div class="sec">'+parlays+hpFold('fb','First basket (NBA and WNBA)','',fb,false)+hpFold('nrfi','No run first inning (MLB)','',nr,false)+'</div></section>';
 }
 document.addEventListener('toggle',function(e){ const d=e.target; if(d&&d.getAttribute&&d.getAttribute('data-fold')) S.fold[d.getAttribute('data-fold')]=d.open; },true);
 

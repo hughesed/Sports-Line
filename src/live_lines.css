@@ -1,0 +1,17 @@
+.llive .llscore{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0 10px;background:var(--surface)}
+.llhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.llclock{font-weight:700;font-size:13px}
+.llboard{display:flex;align-items:center;justify-content:center;gap:10px}
+.lltm{display:flex;align-items:center;gap:6px;flex:1;min-width:0}.lltm.r{justify-content:flex-end}
+.llpt{font-size:30px;font-weight:800;min-width:34px;text-align:center}
+.llsep{color:var(--muted)}
+.llsit{margin-top:6px}
+.llmeta{margin-top:6px;color:var(--muted)}.llmeta.llstale{color:#c2410c;font-weight:600}
+.llnote{padding:10px 12px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);margin-bottom:6px}
+.llive .odd.ro{cursor:default;pointer-events:none}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer}
+.hplegs{margin:4px 0}.hplegs>summary{cursor:pointer;padding:4px 0}
+.hpleg{border-top:1px solid var(--line);padding:5px 0}.hpleg>summary{cursor:pointer;list-style:none}.hpleg>summary::-webkit-details-marker{display:none}
+.hpleg>summary::before{content:"›";display:inline-block;margin-right:6px;color:var(--muted);transition:transform .15s}.hpleg[open]>summary::before{transform:rotate(90deg)}
+.hpld{padding:4px 0 2px 14px}
+.hpfold .hpfold{margin-left:6px}

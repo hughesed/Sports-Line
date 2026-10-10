@@ -43,6 +43,8 @@ function preToks(g){
       (st.miles||[]).forEach(m=>out.push('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t));
     });
   });
+  /* FanDuel's own player props (over AND under) from the sportsbook feed, so the builders consider every line FanDuel posts */
+  try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(l.kind==='prop') out.push(l.tok); }); }catch(e){}
   return out;
 }
 function preLegs(g){

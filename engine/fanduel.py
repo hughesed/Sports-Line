@@ -4,7 +4,7 @@
     FanDuel lists become player cards of their own, so the same-game-parlay builder has props to build from. Those players have no game log here: the chance comes from FanDuel's no-vig price,
     alternate rungs are the model's estimate around FanDuel's line (marked est.).
 Never raises into the caller: apply() returns a short status string and leaves any card it cannot match as it was."""
-import math, re
+import math, re, unicodedata
 
 KEYLG = {"nfl": "NFL", "cfb": "NCAAF", "nba": "NBA", "cbb": "NCAAB", "mlb": "MLB", "wnba": "WNBA", "nhl": "NHL"}
 BOOK = "fanduel"
@@ -30,11 +30,36 @@ def _ppf(p):                                         # inverse normal by bisecti
     return (lo + hi) / 2
 def _est_price(p): return _am(min(0.97, p * 1.045))
 
+def _canon(s):
+    """a school or club name reduced to what both ESPN and the odds feed agree on: no accents, "&" spelled out, "Saint"/"State" both "st"
+    ("Kansas St" = "Kansas State", "St. John's" = "Saint John's"), no "the" / "university", letters and digits only"""
+    s = unicodedata.normalize("NFKD", s or "")
+    s = "".join(c for c in s if not unicodedata.combining(c)).lower().replace("&", " and ")
+    s = re.sub(r"\b(saint|state)\b", "st", s)
+    s = re.sub(r"\b(the|university)\b", " ", s)
+    return re.sub(r"[^a-z0-9]", "", s)
+
+def _name_keys(names, strip=False):
+    """every spelling of a team name. strip=True (the slate's full ESPN names, "Kansas State Wildcats") also gives the name without its mascot (one or two
+    trailing words); the feed's own names are used as written, because its "Miami (OH)" must not shorten to "Miami"."""
+    ks = set()
+    for nm in names:
+        nm = (nm or "").strip()
+        if not nm: continue
+        ks.add(_canon(nm))
+        w = nm.split()
+        if strip:
+            for k in (1, 2):
+                if len(w) > k: ks.add(_canon(" ".join(w[:-k])))
+    return {k for k in ks if len(k) >= 2}
+
 def _team_eq(ev, side, t):
-    ab, nm = _n(ev.get(side)), _n(ev.get(side + "Name"))
-    if ab and ab == _n(t.get("abbr")): return True
-    if not nm: return False
-    return nm in (_n(t.get("name")), _n(t.get("short")), _n(t.get("loc")))
+    """does the feed's home/away side match this slate team? The feed often has no short code and writes colleges without the mascot ("Kansas State")."""
+    ab = _canon(ev.get(side))
+    if ab and ab == _canon(t.get("abbr")): return True
+    mine = _name_keys([t.get("name")], strip=True) | _name_keys([t.get("short"), t.get("loc")])
+    theirs = _name_keys([ev.get(side + "Name")])
+    return bool(mine & theirs)
 
 def _started(g, now):
     import datetime
@@ -42,19 +67,24 @@ def _started(g, now):
     except Exception: return False
 
 def find_event(g, events):
+    """the feed event for a slate game: same league, both teams match, nearest start time (a doubleheader picks its own game)"""
     lg = KEYLG.get(g.get("key") or g.get("lg"))
     if not lg: return None
     try: import datetime; gt = datetime.datetime.fromisoformat(g["iso"].replace("Z", "+00:00"))
     except Exception: gt = None
+    best, bd = None, None
     for e in events:
         if e.get("league") != lg: continue
+        d = 0.0
         if gt is not None:
             try:
                 st = datetime.datetime.fromisoformat((e.get("start") or "").replace("Z", "+00:00"))
-                if abs((st - gt).total_seconds()) > 30 * 3600: continue
+                d = abs((st - gt).total_seconds())
+                if d > 30 * 3600: continue
             except Exception: pass
-        if _team_eq(e, "home", g["teams"]["home"]) and _team_eq(e, "away", g["teams"]["away"]): return e
-    return None
+        if _team_eq(e, "home", g["teams"]["home"]) and _team_eq(e, "away", g["teams"]["away"]):
+            if best is None or d < bd: best, bd = e, d
+    return best
 
 def _fd(x):
     """FanDuel's entry of one market side -> {odds, line, link} or None"""
@@ -152,18 +182,21 @@ def _overlay_stat(st, d):
         st["safeSrc"] = "est."; st["safePrice"] = _est_price(st["pSafe"])
 
 def apply(games, odds, now=None):
-    """-> status string. Mutates the cards in place. Cards that have kicked off keep the numbers they had (open bets settle against them)."""
+    """-> status string. Mutates the cards in place. Cards that have kicked off keep the numbers they had (open bets settle against them;
+    the page shows FanDuel's current in-play lines for a live game from the feed itself, never these)."""
     try:
         events = (odds or {}).get("events") or []
         if not events: return "no odds feed"
-        stat = dict(lines=0, props=0, synth=0, games=0)
+        stat = dict(lines=0, props=0, synth=0, games=0); nomatch, nofd = [], []
+        tag = lambda g: "%s@%s" % (g["teams"]["away"].get("abbr"), g["teams"]["home"].get("abbr"))
         for g in games:
             try:
                 if g.get("bookOnly") or g.get("oddsId"): continue          # tennis cards are built from FanDuel-first prices already
                 if now is not None and _started(g, now): continue
                 e = find_event(g, events)
-                if not e: continue
+                if not e: nomatch.append(tag(g)); continue
                 if _main(g, e): stat["lines"] += 1
+                else: nofd.append(tag(g))
                 by = _props_by_player(e)
                 if g.get("players"):
                     names = {_n(p["name"]): p for p in g["players"]}
@@ -177,7 +210,10 @@ def apply(games, odds, now=None):
                 stat["games"] += 1
             except Exception:
                 continue
-        return "ok: FanDuel lines on %d cards, %d player stats, FanDuel-only players on %d cards" % (stat["lines"], stat["props"], stat["synth"])
+        msg = "ok: FanDuel lines on %d cards, %d player stats, FanDuel-only players on %d cards" % (stat["lines"], stat["props"], stat["synth"])
+        if nomatch: msg += "; not in the feed (%d): %s%s" % (len(nomatch), ", ".join(nomatch[:6]), "..." if len(nomatch) > 6 else "")
+        if nofd: msg += "; in the feed but FanDuel has not posted (%d): %s%s" % (len(nofd), ", ".join(nofd[:6]), "..." if len(nofd) > 6 else "")
+        return msg
     except Exception as ex:
         return "error: %s: %s" % (type(ex).__name__, ex)
 
