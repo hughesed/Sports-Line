@@ -769,6 +769,13 @@ body.vchat .foot{display:none}
 .btab .hint{font-weight:600;font-size:11px;margin-left:4px}
 .bxwrap{max-height:460px;overflow-y:auto}
 .bxkey{margin-bottom:2px}
+/* battle header: picture on top, name under it, team under that; the pot sits between the two columns and never overlaps */
+.vsrow{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:start}
+.vsrow .vsp,.vsrow .vsp:last-child{align-items:center;text-align:center;min-width:0}
+.vsrow .ulw{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:100%}
+.vsrow .ulw .av{width:52px;height:52px;font-size:22px}
+.vsrow .ulink{text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.vsrow .pot{align-self:center;position:relative;z-index:1;white-space:nowrap}
 
 /* battle animations */
 .stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#1d3b2a;line-height:0}
@@ -867,11 +874,15 @@ body.vchat .foot{display:none}
 .shmem{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .shacts{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
 .shinvite,.shprof{margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px}
+/* bottom bar: one row that slides sideways, icons a little closer together */
+.bnav{display:flex!important;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0}
+.bnav::-webkit-scrollbar{display:none}
+.bnav .nv{flex:0 0 auto;min-width:62px;padding-inline:8px;scroll-snap-align:start}
 
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="bbf2abd874">
+<body data-build="626f3fc003">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -1907,7 +1918,7 @@ function slipHtmlLocal(){
   if(!S.slipOpen) return '<div class="in">'+sum+'</div>';
   const rows=legs.map(l=>'<div class="sl"><span>'+esc(l.label)+' <span class="mono" style="opacity:.75">'+fo(l.price)+(l.live?' live':l.src==='est.'?' est.':' '+(l.bk||'DK'))+'</span><br><span style="opacity:.65;font-size:11px">'+esc(G[l.gid].title)+'</span></span><button class="x" data-act="rm" data-tok="'+esc(l.id)+'" aria-label="Remove '+esc(l.label)+'">Remove</button></div>').join('');
   const chips=[['10%','10'],['25%','25'],['50%','50'],['Max','max']].map(x=>'<button class="x" data-act="stake-chip" data-v="'+x[1]+'">'+x[0]+'</button>').join('');
-  const books=BOOKS.map(b=>{ let dl=null; try{ dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; }catch(err){} return '<a class="btn bk" href="'+esc(bookUrl(b))+'" target="_blank" rel="noopener" data-act="book" data-bk="'+b[0]+'">'+esc(b[1])+(dl?' ✓ '+dl.n+'/'+dl.total:'')+'</a>'; }).join('');
+  const books=BOOKS.map(b=>{ let dl=null; try{ dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; }catch(err){} return '<a class="btn bk" href="'+esc(bookUrl(b))+'"'+(b[0]==='gambly'||b[0]==='fanaticsapp'?' target="_blank"':'')+' rel="noopener" data-act="book" data-bk="'+b[0]+'">'+esc(b[1])+(dl?' ✓ '+dl.n+'/'+dl.total:'')+'</a>'; }).join('');
   return '<div class="in"><div class="slipscroll">'+sum+'<div class="slipbody">'+rows+'</div>'+
     '<div class="seg inv" role="group" aria-label="Bet type"><button data-act="mode" data-v="parlay" aria-pressed="'+!c.single+'">'+(legs.length>1?(games>1?'Parlay':'Same-game parlay'):'Straight bet')+'</button><button data-act="mode" data-v="single" aria-pressed="'+c.single+'">Singles</button></div>'+
     boostHtml()+'<div class="stakerow"><label class="sl-l">Stake $<input class="num stk" data-in="stake" inputmode="decimal" value="'+esc(S.stake)+'" aria-label="Stake in dollars"></label><span class="chips">'+chips+'</span></div>'+
@@ -1916,7 +1927,7 @@ function slipHtmlLocal(){
     '<div class="slipnote" id="slipmsg">'+esc(S.slipMsg||'')+'</div>'+
     '<div class="small" style="opacity:.9"><b>Step 1.</b> Copy the slip. <b>Step 2.</b> Open Gambly and paste it into the chat box (Gambly cannot receive bets from a link, only pasted text or a screenshot).</div><div class="btnrow"><button class="btn solid" data-act="copyslip">Copy slip text</button></div>'+
     '<label class="small" style="display:block;opacity:.8" for="sliptxt">Slip text (if copying is blocked on your device, press and hold in this box, Select All, Copy)</label><textarea id="sliptxt" readonly rows="'+Math.min(6,legs.length+1)+'" style="width:100%;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace" aria-label="Slip text to paste">'+esc(slipText(legs))+'</textarea>'+
-    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div><div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
+    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div><div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
     '<div class="slipnote">Prices here are model estimates or ESPN/DraftKings numbers from this snapshot, so the book will price it differently. Same-game legs are correlated. Real-money betting is for adults 21+ (call 1-800-GAMBLER for help).</div></div></div>';
 }
 function renderSlip(){
@@ -5699,6 +5710,10 @@ document.addEventListener('input',function(e){ const t=e.target; if(!t.getAttrib
 document.addEventListener('change',function(e){ const t=e.target; if(!t.getAttribute) return; if(t.getAttribute('data-in')==='sh-to') SHP.to[t.getAttribute('data-inv')]=t.value; });
 document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e.target.id==='shdm'){ e.preventDefault(); const b=document.querySelector('[data-act="sh-dm-send"]'); if(b) b.click(); } });
 
+/* keep the selected tab visible in the sliding bottom bar */
+(function(){ function fit(){ try{ const n=document.getElementById('nav'); const a=n&&n.querySelector('.nv[aria-pressed="true"]'); if(a&&n.scrollWidth>n.clientWidth){ const L=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2; n.scrollTo({left:Math.max(0,L)}); } }catch(e){} }
+  try{ const n=document.getElementById('nav'); if(n) new MutationObserver(fit).observe(n,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed']}); }catch(e){} })();
+
 /* Sportsbook lines (SportsGameOdds -> data/odds.json, written by the bot when the ODDS_API_KEY secret is set).
    Adds a "Sportsbook lines" box to each game card that matches an event: best price per side plus every book's price, with links to the books.
    Optional: with no key / no file nothing is added. Checked every 60 s (the bot itself pulls at most every ODDS_MIN_GAP_MIN minutes). */
@@ -5748,16 +5763,18 @@ let odT=null; new MutationObserver(()=>{ if(!OD.data) return; clearTimeout(odT);
 setInterval(()=>{ if(!document.hidden) odFetch(); },60e3); odFetch();
 
 /* ---------- bet slip deep links: each leg's own selection link from the odds feed, combined per book, so the slip arrives with the picks already in it ---------- */
-function odLegLinks(l){
+function odLegLinks(l,info){
   const g=G[l.gid]; if(!g) return null; let e=null; try{ e=(typeof bkEvent==='function'&&bkEvent(g))||(typeof odFind==='function'&&odFind(g))||null; }catch(err){} if(!e) return null;
-  const sp=l.spec||{}, out={}, M=e.main||{};
-  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link) return; if(line!=null&&b.line!=null&&Math.abs(+b.line-line)>0.01) return; out[k]=b.link; }); };
+  const sp=l.spec||{}, out={}, M=e.main||{}, diff={};
+  /* each book's own link for this pick; when a book does not list the exact line, use the closest line that book does list (the price will differ, the pick is the same) */
+  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=b.link; } }); };
   if(sp.k==='ml') take(M.ml&&M.ml[sp.side]);
   else if(sp.k==='spr') take(M.spread&&M.spread[sp.side],+sp.line);
   else if(sp.k==='tot') take(M.total&&M.total[sp.dir],+sp.line);
-  else if(sp.k==='prop'){ const pl=(typeof findPlayer==='function')?findPlayer(g,sp.pid):null; if(pl){ const nm=odKey(pl.name); const side=sp.dir==='lt'?'under':'over'; const line=side==='over'?sp.T-0.5:sp.T-0.5;
+  else if(sp.k==='prop'){ const pl=(typeof findPlayer==='function')?findPlayer(g,sp.pid):null; if(pl){ const nm=odKey(pl.name); const side=sp.dir==='lt'?'under':'over'; const line=sp.T-0.5;
       (e.props||[]).forEach(p=>{ if(odKey(p.name)!==nm||p.stat!==sp.stat||p.side!==side) return; take(p,line); }); } }
-  if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]) out[k]=l.links[k]; });
+  if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]){ out[k]=l.links[k]; diff[k]=0; } });
+  if(info) Object.keys(diff).forEach(k=>{ info[k]=diff[k]; });
   return out;
 }
 function odCombine(book,ls){
@@ -5773,9 +5790,11 @@ function odCombine(book,ls){
 /* {url, n, total}: n = how many of the slip's legs are inside the link */
 function slipDeepLink(book){
   const legs=S.slip||[]; if(!legs.length) return null;
-  const links=legs.map(l=>{ const m=odLegLinks(l); return (m&&m[book])||null; }).filter(u=>u&&/^https:\/\//i.test(u)); if(!links.length) return null;
+  const links=[], miss=[]; let subs=0;
+  legs.forEach(l=>{ const inf={}; const m=odLegLinks(l,inf); const u=m&&m[book]; if(u&&/^https:\/\//i.test(u)){ links.push(u); if(inf[book]>0.01) subs++; } else miss.push(l.label); });
+  if(!links.length) return null;
   let url=links[0], n=1; if(links.length>1){ const c=odCombine(book,links); if(c){ url=c; n=links.length; } }
-  return {url:url,n:n,total:legs.length};
+  return {url:url,n:n,total:legs.length,subs:subs,miss:miss};
 }
 
 /* ================= Home screen picks built from the sportsbook feed (data/odds.json, SportsGameOdds) =================

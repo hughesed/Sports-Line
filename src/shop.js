@@ -146,3 +146,7 @@ document.addEventListener('click',function(e){
 document.addEventListener('input',function(e){ const t=e.target; if(!t.getAttribute) return; const k=t.getAttribute('data-in'); if(k==='sh-note') SHP.note[t.getAttribute('data-inv')]=t.value; if(k==='sh-dm') SHP.dm=t.value; });
 document.addEventListener('change',function(e){ const t=e.target; if(!t.getAttribute) return; if(t.getAttribute('data-in')==='sh-to') SHP.to[t.getAttribute('data-inv')]=t.value; });
 document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e.target.id==='shdm'){ e.preventDefault(); const b=document.querySelector('[data-act="sh-dm-send"]'); if(b) b.click(); } });
+
+/* keep the selected tab visible in the sliding bottom bar */
+(function(){ function fit(){ try{ const n=document.getElementById('nav'); const a=n&&n.querySelector('.nv[aria-pressed="true"]'); if(a&&n.scrollWidth>n.clientWidth){ const L=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2; n.scrollTo({left:Math.max(0,L)}); } }catch(e){} }
+  try{ const n=document.getElementById('nav'); if(n) new MutationObserver(fit).observe(n,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed']}); }catch(e){} })();

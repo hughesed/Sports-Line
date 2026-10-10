@@ -13,3 +13,7 @@
 .shmem{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .shacts{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
 .shinvite,.shprof{margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px}
+/* bottom bar: one row that slides sideways, icons a little closer together */
+.bnav{display:flex!important;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0}
+.bnav::-webkit-scrollbar{display:none}
+.bnav .nv{flex:0 0 auto;min-width:62px;padding-inline:8px;scroll-snap-align:start}

@@ -47,16 +47,18 @@ let odT=null; new MutationObserver(()=>{ if(!OD.data) return; clearTimeout(odT);
 setInterval(()=>{ if(!document.hidden) odFetch(); },60e3); odFetch();
 
 /* ---------- bet slip deep links: each leg's own selection link from the odds feed, combined per book, so the slip arrives with the picks already in it ---------- */
-function odLegLinks(l){
+function odLegLinks(l,info){
   const g=G[l.gid]; if(!g) return null; let e=null; try{ e=(typeof bkEvent==='function'&&bkEvent(g))||(typeof odFind==='function'&&odFind(g))||null; }catch(err){} if(!e) return null;
-  const sp=l.spec||{}, out={}, M=e.main||{};
-  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link) return; if(line!=null&&b.line!=null&&Math.abs(+b.line-line)>0.01) return; out[k]=b.link; }); };
+  const sp=l.spec||{}, out={}, M=e.main||{}, diff={};
+  /* each book's own link for this pick; when a book does not list the exact line, use the closest line that book does list (the price will differ, the pick is the same) */
+  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=b.link; } }); };
   if(sp.k==='ml') take(M.ml&&M.ml[sp.side]);
   else if(sp.k==='spr') take(M.spread&&M.spread[sp.side],+sp.line);
   else if(sp.k==='tot') take(M.total&&M.total[sp.dir],+sp.line);
-  else if(sp.k==='prop'){ const pl=(typeof findPlayer==='function')?findPlayer(g,sp.pid):null; if(pl){ const nm=odKey(pl.name); const side=sp.dir==='lt'?'under':'over'; const line=side==='over'?sp.T-0.5:sp.T-0.5;
+  else if(sp.k==='prop'){ const pl=(typeof findPlayer==='function')?findPlayer(g,sp.pid):null; if(pl){ const nm=odKey(pl.name); const side=sp.dir==='lt'?'under':'over'; const line=sp.T-0.5;
       (e.props||[]).forEach(p=>{ if(odKey(p.name)!==nm||p.stat!==sp.stat||p.side!==side) return; take(p,line); }); } }
-  if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]) out[k]=l.links[k]; });
+  if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]){ out[k]=l.links[k]; diff[k]=0; } });
+  if(info) Object.keys(diff).forEach(k=>{ info[k]=diff[k]; });
   return out;
 }
 function odCombine(book,ls){
@@ -72,7 +74,9 @@ function odCombine(book,ls){
 /* {url, n, total}: n = how many of the slip's legs are inside the link */
 function slipDeepLink(book){
   const legs=S.slip||[]; if(!legs.length) return null;
-  const links=legs.map(l=>{ const m=odLegLinks(l); return (m&&m[book])||null; }).filter(u=>u&&/^https:\/\//i.test(u)); if(!links.length) return null;
+  const links=[], miss=[]; let subs=0;
+  legs.forEach(l=>{ const inf={}; const m=odLegLinks(l,inf); const u=m&&m[book]; if(u&&/^https:\/\//i.test(u)){ links.push(u); if(inf[book]>0.01) subs++; } else miss.push(l.label); });
+  if(!links.length) return null;
   let url=links[0], n=1; if(links.length>1){ const c=odCombine(book,links); if(c){ url=c; n=links.length; } }
-  return {url:url,n:n,total:legs.length};
+  return {url:url,n:n,total:legs.length,subs:subs,miss:miss};
 }

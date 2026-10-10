@@ -164,3 +164,10 @@ body.vchat .foot{display:none}
 .btab .hint{font-weight:600;font-size:11px;margin-left:4px}
 .bxwrap{max-height:460px;overflow-y:auto}
 .bxkey{margin-bottom:2px}
+/* battle header: picture on top, name under it, team under that; the pot sits between the two columns and never overlaps */
+.vsrow{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:start}
+.vsrow .vsp,.vsrow .vsp:last-child{align-items:center;text-align:center;min-width:0}
+.vsrow .ulw{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:100%}
+.vsrow .ulw .av{width:52px;height:52px;font-size:22px}
+.vsrow .ulink{text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.vsrow .pot{align-self:center;position:relative;z-index:1;white-space:nowrap}
