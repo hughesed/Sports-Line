@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 57,
+ "runNumber": 58,
  "deadlineHit": false,
- "generatedAt": "2026-10-10T22:42:56Z",
- "generatedAtET": "Sat Oct 10, 6:42 PM ET",
+ "generatedAt": "2026-10-10T22:58:05Z",
+ "generatedAtET": "Sat Oct 10, 6:58 PM ET",
  "today": "2026-10-10",
- "lastRunAt": "2026-10-10T22:42:56Z",
+ "lastRunAt": "2026-10-10T22:58:05Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,10 +45,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 4,
+   "games": 5,
    "playerLevel": 0,
    "teamLevel": 4,
-   "carried": 0,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -56,13 +56,13 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 22,
+   "games": 21,
    "playerLevel": 0,
-   "teamLevel": 8,
+   "teamLevel": 7,
    "carried": 14,
    "error": null,
-   "newFinals": 9,
-   "storeGames": 1377,
+   "newFinals": 4,
+   "storeGames": 1381,
    "lastFinal": "2026-10-10"
   },
   "cbb": {
@@ -83,7 +83,7 @@
    "teamLevel": 10,
    "carried": 0,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 74,
    "lastFinal": "2026-10-10",
    "note": "book lines only (ESPN had no cards)"
@@ -99,20 +99,20 @@
  },
  "counts": {
   "slate": 50,
-  "playerCards": 25,
-  "teamCards": 25,
+  "playerCards": 30,
+  "teamCards": 20,
   "window": 151,
   "sched": 136,
   "pastp": 37,
-  "predictions": 92,
-  "graded": 52,
-  "storeGames": 13532
+  "predictions": 98,
+  "graded": 53,
+  "storeGames": 13536
  },
  "calibration": {
   "slopes": {},
-  "graded": 52,
-  "accML": 0.673,
-  "accBook": 0.673
+  "graded": 53,
+  "accML": 0.66,
+  "accBook": 0.66
  },
  "social": {
   "enabled": true,
@@ -125,7 +125,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 7.3,
+  "seconds": 2.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -135,17 +135,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 33,
+  "gamesUploaded": 12,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2293,
   "configured": true
  },
- "odds": "ok: 47 events (+53 in play kept)",
- "oddsLive": "ok: 28 in-play events (28 live, 17 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 13 cards, 321 player stats, FanDuel-only players on 1 cards; not in the feed (3): ATL@IND, DET@WSH, MIN@MIA",
+ "odds": "kept (15 min old, pulls every 60 min)",
+ "oddsLive": "ok: 21 in-play events (21 live, 12 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 20 cards, 339 player stats, FanDuel-only players on 5 cards; not in the feed (4): ATL@IND, DET@WSH, MIN@MIA, PHI@BOS",
  "errors": [],
  "requests": 932,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 121.6
+ "seconds": 28.1
 }
