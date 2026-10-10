@@ -28,7 +28,46 @@ insert into public.shop_items(id, name, emoji, price, blurb, sort) values
   ('diamond', 'Diamond', '💎', 120, 'Rare and shiny.', 14),
   ('goat', 'GOAT', '🐐', 150, 'The greatest.', 15),
   ('crown', 'Crown', '👑', 250, 'Royalty. Lasts the longest.', 16),
-  ('car', 'Sports car', '🏎️', 400, 'Top of the board.', 17)
+  ('car', 'Sports car', '🏎️', 400, 'Top of the board.', 17),
+  ('football', 'Football', '🏈', 15, 'Game day.', 18),
+  ('basketball', 'Basketball', '🏀', 15, 'Bucket.', 19),
+  ('baseball', 'Baseball', '⚾', 15, 'Play ball.', 20),
+  ('hockey', 'Hockey stick', '🏒', 15, 'Top shelf.', 21),
+  ('soccer', 'Soccer ball', '⚽', 15, 'Goooal.', 22),
+  ('golf', 'Golf flag', '⛳', 20, 'Fore.', 23),
+  ('glove', 'Boxing glove', '🥊', 30, 'Knockout call.', 24),
+  ('sneakers', 'Sneakers', '👟', 40, 'Fresh kicks.', 25),
+  ('gold', 'Gold medal', '🥇', 60, 'First place.', 26),
+  ('belt', 'Champ belt', '🏅', 90, 'Undisputed.', 27),
+  ('hotdog', 'Hot dog', '🌭', 10, 'Stadium classic.', 28),
+  ('popcorn', 'Popcorn', '🍿', 10, 'Enjoy the show.', 29),
+  ('nachos', 'Nachos', '🌮', 10, 'Tailgate fuel.', 30),
+  ('finger', 'Foam finger', '👆', 15, 'We are number one.', 31),
+  ('bell', 'Cowbell', '🔔', 15, 'More cowbell.', 32),
+  ('paint', 'Face paint', '🎨', 15, 'Full game face.', 33),
+  ('flag', 'Pennant', '🚩', 20, 'Wave it.', 34),
+  ('mega', 'Megaphone', '📣', 20, 'Loud and proud.', 35),
+  ('cap', 'Fan cap', '🧢', 30, 'Rep your side.', 36),
+  ('scarf', 'Team scarf', '🧣', 35, 'Cold weather fan.', 37),
+  ('ticket', 'Season ticket', '🎟️', 40, 'Front row.', 38),
+  ('jersey', 'Jersey', '👕', 60, 'Wear it.', 39),
+  ('ring', 'Champion ring', '💍', 300, 'Bling.', 40),
+  ('stadium', 'Stadium', '🏟️', 200, 'Your own house.', 41),
+  ('lion', 'Blue Lion', '🦁', 75, 'Roar. A look-alike for the Lions.', 42),
+  ('eagle', 'Gridiron Eagle', '🦅', 75, 'Fly high. A look-alike for the Eagles.', 43),
+  ('bear', 'Prairie Bear', '🐻', 75, 'Windy city bear.', 44),
+  ('cheese', 'Cheese Hat', '🧀', 40, 'Dairy-state fan.', 45),
+  ('cowboy', 'Lone Star Cowboy', '🤠', 75, 'Big Texas energy.', 46),
+  ('dolphin', 'Dolphin', '🐬', 75, 'Surf the wave.', 47),
+  ('raven', 'Raven', '🐦‍⬛', 75, 'Nevermore losing.', 48),
+  ('tiger', 'Tiger', '🐯', 75, 'Old English D vibes.', 49),
+  ('bull', 'Bull', '🐂', 75, 'Charging in.', 50),
+  ('pirate', 'Pirate Flag', '🏴‍☠️', 75, 'Raise the flag.', 51),
+  ('ram', 'Ram', '🐏', 75, 'Headbutt.', 52),
+  ('panther', 'Panther', '🐆', 75, 'Prowling.', 53),
+  ('horse', 'Wild Horse', '🐎', 75, 'Broncos energy.', 54),
+  ('bat', 'Night Bat', '🦇', 75, 'After dark.', 55),
+  ('gear', 'Motor City Gear', '⚙️', 50, 'Built in Detroit.', 56)
 on conflict (id) do update set name = excluded.name, emoji = excluded.emoji, price = excluded.price, blurb = excluded.blurb, sort = excluded.sort;
 
 create table if not exists public.inventory(
@@ -301,3 +340,68 @@ begin
   end loop;
 end $$;
 revoke all on all functions in schema ls_private from public, anon, authenticated;
+
+-- ---------------------------------------------------------------- the vault: gifts you received, and a room others can see
+create table if not exists public.vault_rooms(
+  owner uuid primary key references public.profiles(id) on delete cascade,
+  wall text not null default 'navy', floor text not null default 'wood',
+  slots jsonb not null default '{}'::jsonb, updated_at timestamptz not null default now());
+alter table public.vault_rooms enable row level security;
+revoke all on public.vault_rooms from anon, authenticated;
+
+create or replace function public.my_vault() returns jsonb
+language plpgsql security definer set search_path = public, ls_private, pg_temp as $$
+declare uid uuid := auth.uid(); r public.vault_rooms;
+begin
+  if uid is null then raise exception 'Sign in first'; end if;
+  select * into r from public.vault_rooms where owner = uid;
+  return jsonb_build_object(
+    'gifts', coalesce((select jsonb_agg(to_jsonb(x) order by x.at desc) from (
+       select i.id, s.emoji, s.name, s.price, (select username from public.profiles where id = i.owner) as from_name, i.sent_at as at
+       from public.inventory i join public.shop_items s on s.id = i.item_id where i.sent_to = uid order by i.sent_at desc limit 200) x), '[]'::jsonb),
+    'room', jsonb_build_object('wall', coalesce(r.wall, 'navy'), 'floor', coalesce(r.floor, 'wood'), 'slots', coalesce(r.slots, '{}'::jsonb)));
+end $$;
+
+create or replace function public.save_room(p_wall text, p_floor text, p_slots jsonb) returns jsonb
+language plpgsql security definer set search_path = public, ls_private, pg_temp as $$
+declare uid uuid := auth.uid(); k text; v text; clean jsonb := '{}'::jsonb; used bigint[] := '{}';
+begin
+  if uid is null then raise exception 'Sign in first'; end if;
+  if p_wall not in ('navy','sunset','forest','royal','neon','brick') then p_wall := 'navy'; end if;
+  if p_floor not in ('wood','turf','court','carpet','tile') then p_floor := 'wood'; end if;
+  if p_slots is null or jsonb_typeof(p_slots) <> 'object' then p_slots := '{}'::jsonb; end if;
+  for k, v in select key, value #>> '{}' from jsonb_each(p_slots) loop
+    if k ~ '^[0-9]{1,2}$' and k::int between 0 and 23 and v ~ '^[0-9]{1,18}$'
+       and not (v::bigint = any(used))
+       and exists (select 1 from public.inventory where id = v::bigint and sent_to = uid) then
+      clean := clean || jsonb_build_object(k, v::bigint); used := used || v::bigint;
+    end if;
+  end loop;
+  insert into public.vault_rooms(owner, wall, floor, slots, updated_at) values (uid, p_wall, p_floor, clean, now())
+  on conflict (owner) do update set wall = excluded.wall, floor = excluded.floor, slots = excluded.slots, updated_at = now();
+  return jsonb_build_object('ok', true, 'slots', clean);
+end $$;
+
+create or replace function public.get_room(p_user uuid) returns jsonb
+language plpgsql security definer set search_path = public, ls_private, pg_temp as $$
+declare r public.vault_rooms;
+begin
+  if auth.uid() is null then return null; end if;
+  select * into r from public.vault_rooms where owner = p_user;
+  return jsonb_build_object('wall', coalesce(r.wall, 'navy'), 'floor', coalesce(r.floor, 'wood'),
+    'total', (select count(*) from public.inventory where sent_to = p_user),
+    'items', coalesce((select jsonb_agg(jsonb_build_object('slot', e.key::int, 'emoji', s.emoji, 'name', s.name,
+         'from_name', (select username from public.profiles where id = i.owner)))
+       from jsonb_each(coalesce(r.slots, '{}'::jsonb)) e
+       join public.inventory i on i.id = (e.value #>> '{}')::bigint and i.sent_to = p_user
+       join public.shop_items s on s.id = i.item_id), '[]'::jsonb));
+end $$;
+
+do $$
+declare f text;
+begin
+  foreach f in array array['my_vault()', 'save_room(text,text,jsonb)', 'get_room(uuid)'] loop
+    execute format('revoke execute on function public.%s from public, anon, authenticated', f);
+    execute format('grant execute on function public.%s to authenticated', f);
+  end loop;
+end $$;

@@ -278,12 +278,14 @@ function render(){
   else if(S.view==='battle') body=battleView();
   else if(S.view==='profile') body=profileView();
   else if(S.view==='shop') body=shopView();
+  else if(S.view==='vault') body=vaultView();
   else body=chatView();
   if(typeof COMM_VIEWS!=='undefined'&&COMM_VIEWS[S.view]&&typeof commBar==='function') body=commBar()+body;
   const showLeague=S.view==='pre'||S.view==='live';
   const dlabel=S.date===TODAY?'Today':wd(S.date)+' '+mon(S.date)+' '+dnum(S.date);
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
-    (S.calOpen?calHtml():'')+(showLeague?'<div class="tabs" role="group" aria-label="League">'+ltabs+'</div>':'')+'</div>';
+    (S.calOpen?calHtml():'')+'<div class="hd-tools">'+(showLeague?'<div class="tabwrap"><div class="slhint"><span>Slide for more sports</span><span>‹ ›</span></div><div class="slbar"><i id="slthumb"></i></div><div class="tabs" id="ltabs" role="group" aria-label="League">'+ltabs+'</div></div>':'<div></div>')+'<button class="themebtn" data-act="theme" aria-label="Switch light or dark mode">'+themeLabel()+'</button></div></div>';
+  slFit();
   $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+hpHomeHtml()+hpFold('potd','Pick of the day','',potdHtml(),false)+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
     '<div class="foot"><div>Source: ESPN game logs (up to 15 games shown, last 10 feed the model), standings, results, live play-by-play, injury reports and DraftKings lines. Pregame numbers are a snapshot, so lines and injury news will change before game time.</div>'+
     '<div>Boost types shown are ones sportsbooks have advertised: <a href="https://www.cbssports.com/betting/news/nfl-sportsbook-boosts-promo-codes-for-week-1-best-draftkings-bet365-betmgm-betting-promotions" target="_blank" rel="noopener">CBS Sports</a>, <a href="https://www.actionnetwork.com/education/best-sportsbooks-same-game-parlays" target="_blank" rel="noopener">Action Network</a>, <a href="https://www.oddschecker.com/us/insight/football/nfl/20251020-fanduel-sportsbook-choose-your-own-reward-promotion-2x-25pp-profit-boosts-or-30pp-sgp-profit-boost-on-monday-night-football" target="_blank" rel="noopener">Oddschecker</a>, <a href="https://rg.org/bonuses/parlay-bonuses" target="_blank" rel="noopener">rg.org</a>. They are not live offers.</div>'+
@@ -299,6 +301,7 @@ function render(){
 document.addEventListener('click',function(e){
   const t=e.target.closest('[data-act]'); if(!t) return;
   const act=t.getAttribute('data-act');
+  if(act==='theme'){ themeCycle(); return; }
   if(act==='cal'){ S.calOpen=!S.calOpen; render(); return; }
   if(act==='date'){ S.date=t.getAttribute('data-d'); S.calOpen=false; S.view='pre'; render(); window.scrollTo(0,0); return; }
   if(act==='learn'){ S.learnOpen=!S.learnOpen; render(); return; }
@@ -331,3 +334,13 @@ function previewCtx(g){
   const a=side(g.away,cx.away), h=side(g.home,cx.home);
   return (a||h)?'<div class="ctxp">'+a+h+'</div>':'';
 }
+
+/* ---------- light / dark mode (auto follows the phone) and the sports slider bar ---------- */
+function themeGet(){ try{ return localStorage.getItem('ls_theme')||'auto'; }catch(e){ return 'auto'; } }
+function themeApply(m){ const r=document.documentElement; if(m==='light'||m==='dark') r.setAttribute('data-theme',m); else r.removeAttribute('data-theme'); }
+function themeLabel(){ const m=themeGet(); return m==='dark'?'🌙 Dark':m==='light'?'☀️ Light':'◐ Auto'; }
+function themeCycle(){ const m=themeGet(); const n=m==='auto'?'light':m==='light'?'dark':'auto'; try{ localStorage.setItem('ls_theme',n); }catch(e){} themeApply(n); const b=document.querySelector('.themebtn'); if(b) b.textContent=themeLabel(); }
+themeApply(themeGet());
+function slFit(){ const t=document.getElementById('ltabs'), th=document.getElementById('slthumb'); if(!t||!th) return; const w=Math.max(0.2,Math.min(1,t.clientWidth/Math.max(1,t.scrollWidth))); th.style.width=(w*100)+'%'; const max=t.scrollWidth-t.clientWidth; th.style.left=(max>0?(t.scrollLeft/max)*(100-w*100):0)+'%'; }
+document.addEventListener('scroll',function(e){ if(e.target&&e.target.id==='ltabs') slFit(); },true);
+window.addEventListener('resize',slFit);

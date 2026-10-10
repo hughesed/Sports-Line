@@ -57,3 +57,40 @@
 .pbd{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:6px 0}.pbd summary{font-weight:700;font-size:13px}
 .pbp{display:flex;flex-direction:column;gap:4px;padding:6px 0;border-top:1px solid var(--line);font-size:13px}.pbcs{display:flex;flex-wrap:wrap;gap:6px}
 .pbc{border:1px solid var(--accent);border-radius:999px;padding:4px 12px;font-weight:800;font-size:12px;color:var(--accent);text-decoration:none}
+
+/* category chips in the gift shop */
+.gcats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.gcats::-webkit-scrollbar{display:none}
+.gcats button{flex:0 0 auto;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#f3f1fb;border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;font-weight:700}
+.gcats button[aria-pressed="true"]{background:linear-gradient(135deg,#7c4dff,#ff4d8d);border-color:transparent}
+.commbar{grid-template-columns:repeat(4,1fr)}.commbar button{font-size:13px;padding:10px 2px}
+
+/* ===== the vault and room ===== */
+.vthead{display:flex;flex-direction:column;margin:10px 0 6px}.vthead b{font-size:17px}.vthead span{font-size:12px;color:var(--muted)}
+.vtroom{--wl:#1d2f55;--wl2:#142342;--fl:#b57b45;--fl2:#99642f;border-radius:18px;overflow:hidden;border:2px solid rgba(0,0,0,.25);box-shadow:0 10px 24px rgba(0,0,0,.28);background:linear-gradient(180deg,var(--wl) 0 50%,var(--fl) 50% 100%);position:relative}
+.vtroom::before{content:"";position:absolute;left:0;right:0;top:50%;height:6px;background:rgba(0,0,0,.25)}
+.vtroom.w-navy{--wl:#1d2f55;--wl2:#142342}.vtroom.w-sunset{--wl:#e0665a;--wl2:#b3456b}.vtroom.w-forest{--wl:#2e6b4a;--wl2:#1f4a35}.vtroom.w-royal{--wl:#5a3ec0;--wl2:#3a2790}.vtroom.w-neon{--wl:#0f1230;--wl2:#240a4a}.vtroom.w-brick{--wl:#9a4a38;--wl2:#76352a}
+.vtroom.f-wood{--fl:#b57b45;--fl2:#99642f}.vtroom.f-turf{--fl:#3b9d4c;--fl2:#2f8b42}.vtroom.f-court{--fl:#dca46a;--fl2:#c9561f}.vtroom.f-carpet{--fl:#7a2e4a;--fl2:#5e2038}.vtroom.f-tile{--fl:#cfd8e3;--fl2:#aab6c6}
+.vtroom{background:linear-gradient(180deg,var(--wl),var(--wl2) 50%,var(--fl) 50%,var(--fl2))}
+.vtgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative}
+.vtc{aspect-ratio:1;border:1px dashed rgba(255,255,255,.12);background:transparent;display:grid;place-items:center;font-size:30px;padding:0}
+.vtc.has{border-color:transparent}.vtc.has span{filter:drop-shadow(0 4px 3px rgba(0,0,0,.45));animation:vtp .4s cubic-bezier(.2,1.5,.4,1)}.vtc.sel{background:rgba(255,255,255,.22);border-color:#fff}
+@keyframes vtp{0%{transform:scale(.3)}100%{transform:none}}
+.vthint{font-size:12px;color:var(--muted);margin:6px 0}
+.vtopts{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;margin:6px 0}.vtl{font-size:12px;font-weight:800;color:var(--muted)}
+.vtrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.vtch{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:700}.vtch[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.vttray{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.vtg{border:1.5px solid var(--line);background:var(--surface2);border-radius:14px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;font:inherit;color:var(--ink);min-width:0}
+.vtg span{font-size:30px}.vtg small{font-size:10.5px;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vtg i{font-style:normal;font-size:9.5px;color:var(--muted)}
+.vtg.on{border-color:var(--accent);background:var(--accent-soft)}.vtg.used{opacity:.55}
+.gmute3{font-size:12px;color:var(--muted)}
+
+/* ===== league slider with a bar above it, and the light / dark button ===== */
+.hd-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.tabwrap{display:flex;flex-direction:column;gap:5px;min-width:0}
+.slbar{position:relative;height:4px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.slbar i{position:absolute;left:0;top:0;bottom:0;width:40%;border-radius:99px;background:#fff;transition:left .08s linear}
+.hd .tabs{display:flex!important;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.hd .tabs::-webkit-scrollbar{display:none}
+.hd .tab{flex:0 0 auto;scroll-snap-align:start;padding:6px 20px;font-size:14px}
+.slhint{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;display:flex;justify-content:space-between}
+.themebtn{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:var(--hdr-ink);border-radius:999px;height:34px;min-width:34px;padding:0 10px;font:inherit;font-size:15px;white-space:nowrap}

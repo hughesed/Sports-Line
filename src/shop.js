@@ -20,7 +20,8 @@ function shLoadThread(){ if(!shReady()||!SHP.with) return; const w=SHP.with.id; 
 function shLoadVis(){ if(!shReady()) return; shCall('my_visitors').then(d=>{ SHP.vis=d; shPaint(); }).catch(e=>{ SHP.msg=shErr(e); shPaint(); }); }
 function shLoadTab(){ if(SHP.tab==='shop'){ shLoadShop(); shLoadOnline(); } else if(SHP.tab==='msg'){ if(SHP.with) shLoadThread(); else shLoadInbox(); } else if(SHP.tab==='online') shLoadOnline(); else if(SHP.tab==='vis') shLoadVis(); }
 function shAfterRender(){
-  if(S.view!=='profile'){ SHP.pex={}; SHP.pexBusy={}; }
+  if(S.view!=='profile'){ SHP.pex={}; SHP.pexBusy={}; SHP.room={}; SHP.roomBusy={}; }
+  if(S.view==='vault'&&SOC.user) vtLoad();
   if(S.view==='chat') shLoadOnline();
   if(S.view==='shop'&&SOC.user) shLoadTab();
 }
@@ -60,16 +61,19 @@ function shBody(){
   const m=SHP.msg?'<div class="flash">'+esc(SHP.msg)+'</div>':'';
   return m+(SHP.tab==='shop'?shShopHtml():SHP.tab==='msg'?shMsgHtml():SHP.tab==='online'?shOnlineHtml():shVisHtml());
 }
-const SH_CAT=[['corn','It\'s corn','🌽',5],['wink','Wink wink','😉',5],['heart','Heart','❤️',10],['clap','Clap clap','👏',10],['icecream','Ice cream','🍦',10],['chili','Chili','🌶️',15],['rose','Rose','🌹',25],['donut','Doughnut','🍩',30],['pizza','Pizza slice','🍕',40],['cook','Let em cook','👨‍🍳',50],['fire','Hot streak','🔥',60],['rocket','Rocket','🚀',80],['trophy','Trophy','🏆',100],['diamond','Diamond','💎',120],['goat','GOAT','🐐',150],['crown','Crown','👑',250],['car','Sports car','🏎️',400]];
+const SH_CAT=[['corn',"It's corn",'🌽',5,'fun'],['wink','Wink wink','😉',5,'fun'],['heart','Heart','❤️',10,'fun'],['clap','Clap clap','👏',10,'fun'],['icecream','Ice cream','🍦',10,'fun'],['chili','Chili','🌶️',15,'fun'],['rose','Rose','🌹',25,'fun'],['donut','Doughnut','🍩',30,'fun'],['pizza','Pizza slice','🍕',40,'fun'],['cook','Let em cook','👨‍🍳',50,'fun'],['fire','Hot streak','🔥',60,'fun'],['rocket','Rocket','🚀',80,'fun'],['trophy','Trophy','🏆',100,'fun'],['diamond','Diamond','💎',120,'fun'],['goat','GOAT','🐐',150,'fun'],['crown','Crown','👑',250,'fun'],['car','Sports car','🏎️',400,'fun'],['football','Football','🏈',15,'sport'],['basketball','Basketball','🏀',15,'sport'],['baseball','Baseball','⚾',15,'sport'],['hockey','Hockey stick','🏒',15,'sport'],['soccer','Soccer ball','⚽',15,'sport'],['golf','Golf flag','⛳',20,'sport'],['glove','Boxing glove','🥊',30,'sport'],['sneakers','Sneakers','👟',40,'sport'],['gold','Gold medal','🥇',60,'sport'],['belt','Champ belt','🏅',90,'sport'],['hotdog','Hot dog','🌭',10,'fan'],['popcorn','Popcorn','🍿',10,'fan'],['nachos','Nachos','🌮',10,'fan'],['finger','Foam finger','👆',15,'fan'],['bell','Cowbell','🔔',15,'fan'],['paint','Face paint','🎨',15,'fan'],['flag','Pennant','🚩',20,'fan'],['mega','Megaphone','📣',20,'fan'],['cap','Fan cap','🧢',30,'fan'],['scarf','Team scarf','🧣',35,'fan'],['ticket','Season ticket','🎟️',40,'fan'],['jersey','Jersey','👕',60,'fan'],['ring','Champion ring','💍',300,'fan'],['stadium','Stadium','🏟️',200,'fan'],['lion','Blue Lion','🦁',75,'team'],['eagle','Gridiron Eagle','🦅',75,'team'],['bear','Prairie Bear','🐻',75,'team'],['cheese','Cheese Hat','🧀',40,'team'],['cowboy','Lone Star Cowboy','🤠',75,'team'],['dolphin','Dolphin','🐬',75,'team'],['raven','Raven','🐦‍⬛',75,'team'],['tiger','Tiger','🐯',75,'team'],['bull','Bull','🐂',75,'team'],['pirate','Pirate Flag','🏴‍☠️',75,'team'],['ram','Ram','🐏',75,'team'],['panther','Panther','🐆',75,'team'],['horse','Wild Horse','🐎',75,'team'],['bat','Night Bat','🦇',75,'team'],['gear','Motor City Gear','⚙️',50,'team']];
+const SH_TABS=[['all','All'],['sport','Sports'],['fan','Fan gear'],['team','Teams'],['fun','Fun']];
+const shCatOf=id=>{ const c=SH_CAT.find(x=>x[0]===id); return c?c[4]:'fun'; };
 function shTier(p){ return p<=10?1:p<=30?2:p<=60?3:p<=120?4:5; }
 function shShopHtml(){
   const real=SHP.st&&!SHP.missing;
   const s=real?SHP.st:{balance:SOC.me?SOC.me.balance:0,pass_price:1000,discount_pct:20,pass:false,daily_ready:false,daily_amount:10,inventory:[],items:SH_CAT.map(x=>({id:x[0],name:x[1],emoji:x[2],price:x[3],pay:x[3],days:2+Math.floor(x[3]/50),blurb:''}))};
+  const cats='<div class="gcats">'+SH_TABS.map(c=>'<button data-act="sh-cat" data-id="'+c[0]+'" aria-pressed="'+((SHP.cat||'all')===c[0])+'">'+c[1]+'</button>').join('')+'</div>';
   if(!SHP.st&&!SHP.missing) return '<div class="small muted">Loading…</div>';
   const pick=(s.items||[]).find(i=>i.id===SHP.pick);
   const pass='<div class="gpass"><div class="gpt"><b>👑 30-day pass</b><span>'+COIN+' '+cn(s.pass_price)+'</span></div><div class="gpl">'+cn(20)+' coins a day instead of '+cn(10)+' · see who visits your page · '+s.discount_pct+'% off every gift</div>'+
     (s.pass?'<div class="gpon">Active until '+esc(shFmt(s.pass_until))+'</div>':'')+'<button class="gpb" data-act="sh-pass"'+(SHP.busy||!real?' disabled':'')+'>'+(s.pass?'Add 30 days':'Get the pass')+'</button></div>';
-  const tiles='<div class="ggrid">'+(s.items||[]).map(i=>'<button class="gt t'+shTier(i.price)+(SHP.pick===i.id?' on':'')+'" data-act="sh-pick" data-id="'+esc(i.id)+'" aria-pressed="'+(SHP.pick===i.id)+'"><span class="gE">'+esc(i.emoji)+'</span><b>'+esc(i.name)+'</b><span class="gp"><i class="gc"></i>'+(i.pay<i.price?'<s>'+cn(i.price)+'</s> ':'')+cn(i.pay)+'</span></button>').join('')+'</div>';
+  const tiles=cats+'<div class="ggrid">'+(s.items||[]).filter(i=>(SHP.cat||'all')==='all'||shCatOf(i.id)===SHP.cat).map(i=>'<button class="gt t'+shTier(i.price)+(SHP.pick===i.id?' on':'')+'" data-act="sh-pick" data-id="'+esc(i.id)+'" aria-pressed="'+(SHP.pick===i.id)+'"><span class="gE">'+esc(i.emoji)+'</span><b>'+esc(i.name)+'</b><span class="gp"><i class="gc"></i>'+(i.pay<i.price?'<s>'+cn(i.price)+'</s> ':'')+cn(i.pay)+'</span></button>').join('')+'</div>';
   const bar='<div class="gbar">'+(pick?'<span class="gbl"><span class="gE2">'+esc(pick.emoji)+'</span><span><b>'+esc(pick.name)+'</b><br><small>send it within '+pick.days+' days</small></span></span><button class="gbuy" data-act="sh-buy" data-id="'+esc(pick.id)+'"'+(SHP.busy||!real?' disabled':'')+'><i class="gc"></i> Buy '+cn(pick.pay)+'</button>':'<span class="gbl gmute">Tap a gift to pick it</span>')+'<span class="gbal2"><i class="gc"></i><b>'+cn(s.balance)+'</b></span></div>';
   const mem=shMembers();
   const inv=(s.inventory||[]).filter(x=>!x.sent_at).map(x=>'<div class="ginv"><span class="gE2">'+esc(x.emoji)+'</span><span class="gil"><b>'+esc(x.name)+'</b><small>send by '+esc(shFmt(x.use_by))+'</small></span>'+
@@ -115,7 +119,7 @@ function shProfileBlock(d){
   const x=SHP.pex[d.id]; if(!x){ shLoadPex(d); return ''; }
   const mine=SOC.me.id===d.id;
   const g=(x.gifts||[]).map(i=>'<span class="vc">'+esc(i.emoji)+' '+esc(i.name)+' <span class="muted">from '+esc(i.from_name||'?')+' · until '+esc(shFmt(i.until))+'</span></span>').join('');
-  return '<div class="shprof"><div class="small">'+shDot(x.online)+(x.online?'Online now':'Last seen '+shAgo(x.last_seen))+(x.pass?' · ⭐ Pass holder':'')+'</div>'+(g?'<h4 class="sub">Gifts right now</h4><div class="vcs">'+g+'</div>':'')+
+  return vtProfileRoom(d)+'<div class="shprof"><div class="small">'+shDot(x.online)+(x.online?'Online now':'Last seen '+shAgo(x.last_seen))+(x.pass?' · ⭐ Pass holder':'')+'</div>'+(g?'<h4 class="sub">Gifts right now</h4><div class="vcs">'+g+'</div>':'')+
     (mine?'':'<div class="btnrow"><button class="btn" data-act="sh-msg-user" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Message</button><button class="btn" data-act="sh-gift-user" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Send a gift</button><button class="btn" data-act="sh-challenge" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Send a battle</button></div>')+'</div>';
 }
 function shLoadPex(d){
@@ -138,6 +142,7 @@ document.addEventListener('click',function(e){
   if(!shReady()){ if(act.indexOf('sh-')===0){ stop(); if(SOC.sb) openModal('in'); } return; }
   const id=t.getAttribute('data-id'), nm=t.getAttribute('data-n');
   if(act==='sh-tab'){ stop(); SHP.tab=t.getAttribute('data-k'); SHP.msg=''; S.comm='shop'; if(S.view!=='shop'){ S.view='shop'; render(); } else shPaint(); shLoadTab(); return; }
+  if(act==='sh-cat'){ stop(); SHP.cat=id; shPaint(); return; }
   if(act==='sh-pick'){ stop(); SHP.pick=(SHP.pick===id?'':id); shPaint(); return; }
   if(act==='sh-back'){ stop(); SHP.with=null; SHP.thread=[]; shLoadInbox(); shPaint(); return; }
   if(act==='sh-open'||act==='sh-msg-user'){ stop(); SHP.with={id:id,name:nm}; SHP.thread=[]; SHP.tab='msg'; SHP.msg=''; if(S.view!=='shop'){ S.view='shop'; render(); window.scrollTo(0,0); } else shPaint(); shLoadThread(); return; }
@@ -160,12 +165,12 @@ document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e
 
 
 /* ---------- Community: Chat, Shop and your Profile in one tab ---------- */
-const COMM_VIEWS={chat:1,shop:1,profile:1};
+const COMM_VIEWS={chat:1,shop:1,vault:1,profile:1};
 function commBar(){
   const mine=SOC.me&&SOC.me.username; const own=S.view==='profile'&&mine&&S.profName===mine;
   const b=(k,l,on,badge)=>'<button data-act="comm" data-k="'+k+'" aria-pressed="'+on+'">'+l+(badge?'<i class="nb">'+badge+'</i>':'')+'</button>';
   const men=typeof socUnseen==='function'?socUnseen():0;
-  return '<div class="commbar" role="group" aria-label="Community">'+b('chat','💬 Chat',S.view==='chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''))+b('shop','🎁 Shop',S.view==='shop',shBadge())+b('profile','🙂 Profile',S.view==='profile')+'</div>';
+  return '<div class="commbar" role="group" aria-label="Community">'+b('chat','💬 Chat',S.view==='chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''))+b('shop','🎁 Shop',S.view==='shop',shBadge())+b('vault','🗄️ Vault',S.view==='vault')+b('profile','🙂 Profile',S.view==='profile')+'</div>';
 }
 document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act="comm"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
@@ -173,3 +178,57 @@ document.addEventListener('click',function(e){
   if(k==='profile'){ const me=SOC.me&&SOC.me.username; if(me){ openProfile(me); return; } if(SOC.sb&&!SOC.user){ openModal('in'); return; } S.view='profile'; render(); window.scrollTo(0,0); return; }
   S.view=k; render(); window.scrollTo(0,0);
 },true);
+
+
+/* ---------- the vault: gifts people sent you, and a room you decorate (others see it on your profile) ---------- */
+const VT={data:null,sel:null,slot:null,busy:false,msg:'',saveT:null,room:{}};
+const VT_WALL={navy:'Navy',sunset:'Sunset',forest:'Forest',royal:'Royal',neon:'Neon',brick:'Brick'}, VT_FLOOR={wood:'Wood',turf:'Turf',court:'Court',carpet:'Carpet',tile:'Tile'};
+function vtLoad(){ if(!shReady()) return; shCall('my_vault').then(d=>{ VT.data=d; shPaintVault(); }).catch(e=>{ VT.msg=shErr(e); shPaintVault(); }); }
+function shPaintVault(){ if(S.view!=='vault') return; const b=document.getElementById('vt-body'); if(b) b.innerHTML=vtBody(); }
+function vtRoomHtml(room,items,edit){
+  /* items: [{slot,emoji,name,from_name}] */
+  const by={}; (items||[]).forEach(i=>{ by[i.slot]=i; });
+  let cells=''; for(let n=0;n<24;n++){ const it=by[n]; cells+='<button class="vtc'+(it?' has':'')+(edit&&VT.slot===n?' sel':'')+'" '+(edit?'data-act="vt-slot" data-id="'+n+'"':'disabled')+' title="'+(it?esc(it.name+(it.from_name?' from '+it.from_name:'')):'')+'">'+(it?'<span>'+esc(it.emoji)+'</span>':'')+'</button>'; }
+  return '<div class="vtroom w-'+esc(room.wall||'navy')+' f-'+esc(room.floor||'wood')+'"><div class="vtgrid">'+cells+'</div></div>';
+}
+function vtItemsFromData(d){ const slots=(d.room&&d.room.slots)||{}; const g={}; (d.gifts||[]).forEach(x=>{ g[x.id]=x; }); const out=[]; Object.keys(slots).forEach(k=>{ const x=g[slots[k]]; if(x) out.push({slot:+k,emoji:x.emoji,name:x.name,from_name:x.from_name,id:x.id}); }); return out; }
+function vtBody(){
+  if(SHP.missing) return '<div class="flash">The vault needs the one-time database update (supabase/patch_shop_v8.sql). Until it is applied you can look around but not save.</div>'+vtPreview();
+  const d=VT.data; if(!d) return '<div class="small muted">Loading your vault…</div>';
+  const room=d.room||{wall:'navy',floor:'wood',slots:{}}; const items=vtItemsFromData(d); const placed=new Set(items.map(i=>i.id));
+  const tray=(d.gifts||[]).map(x=>'<button class="vtg'+(VT.sel===x.id?' on':'')+(placed.has(x.id)?' used':'')+'" data-act="vt-pick" data-id="'+x.id+'" title="'+esc(x.name+' from '+(x.from_name||'?'))+'"><span>'+esc(x.emoji)+'</span><small>'+esc(x.name)+'</small><i>'+esc(x.from_name||'')+'</i></button>').join('');
+  const chip=(map,cur,act)=>Object.keys(map).map(k=>'<button class="vtch" data-act="'+act+'" data-id="'+k+'" aria-pressed="'+(cur===k)+'">'+map[k]+'</button>').join('');
+  return (VT.msg?'<div class="flash">'+esc(VT.msg)+'</div>':'')+
+    '<div class="vthead"><b>Your room</b><span>'+(d.gifts||[]).length+' gift'+((d.gifts||[]).length===1?'':'s')+' in your vault · everyone who opens your profile sees this room</span></div>'+
+    vtRoomHtml(room,items,true)+
+    '<div class="vthint">'+(VT.sel?'Now tap a spot in the room to place it.':VT.slot!=null?'Now tap a gift below to put it in that spot.':'Tap a gift below, then a spot. Tap a placed gift to take it down.')+'</div>'+
+    '<div class="vtopts"><div class="vtl">Wall</div><div class="vtrow">'+chip(VT_WALL,room.wall,'vt-wall')+'</div><div class="vtl">Floor</div><div class="vtrow">'+chip(VT_FLOOR,room.floor,'vt-floor')+'</div></div>'+
+    '<div class="vthead"><b>Gifts you got</b><span>from the shop, sent by other players</span></div>'+(tray?'<div class="vttray">'+tray+'</div>':'<div class="gmute3">Nothing here yet. When someone sends you a gift it lands in your vault. Send a gift to a friend and ask them to send one back.</div>');
+}
+function vtPreview(){ const prev=[{slot:2,emoji:'🏆',name:'Trophy'},{slot:5,emoji:'🦁',name:'Blue Lion'},{slot:14,emoji:'🍕',name:'Pizza'},{slot:20,emoji:'🏈',name:'Football'}]; return vtRoomHtml({wall:'navy',floor:'wood'},prev,false); }
+function vaultView(){
+  const h='<section class="game"><div class="sec">';
+  if(!SOC.on||SOC.state!=='ready') return h+socNote()+'</div></section>';
+  if(!SOC.user) return h+'<div class="small">Sign in to open your vault and decorate your room.</div><div class="btnrow"><button class="btn solid" data-act="signin">Sign in</button></div></div></section>';
+  return h+'<div id="vt-body">'+vtBody()+'</div></div></section>';
+}
+function vtSave(){ if(!VT.data) return; clearTimeout(VT.saveT); VT.saveT=setTimeout(()=>{ const r=VT.data.room; shCall('save_room',{p_wall:r.wall,p_floor:r.floor,p_slots:r.slots}).then(x=>{ if(x&&x.slots) VT.data.room.slots=x.slots; }).catch(e=>{ VT.msg=shErr(e); shPaintVault(); }); },500); }
+function vtPlace(){
+  const d=VT.data; if(!d||VT.sel==null||VT.slot==null) return; const r=d.room; r.slots=Object.assign({},r.slots);
+  Object.keys(r.slots).forEach(k=>{ if(r.slots[k]===VT.sel) delete r.slots[k]; });
+  r.slots[VT.slot]=VT.sel; VT.sel=null; VT.slot=null; vtSave(); shPaintVault();
+}
+document.addEventListener('click',function(e){
+  const t=e.target.closest&&e.target.closest('[data-act^="vt-"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
+  const act=t.getAttribute('data-act'), id=t.getAttribute('data-id'), d=VT.data; if(!d) return; const r=d.room;
+  if(act==='vt-pick'){ VT.sel=(VT.sel===+id?null:+id); if(VT.sel!=null&&VT.slot!=null) vtPlace(); else shPaintVault(); return; }
+  if(act==='vt-slot'){ const n=+id; const cur=r.slots[n]; if(cur!=null&&VT.sel==null){ r.slots=Object.assign({},r.slots); delete r.slots[n]; vtSave(); shPaintVault(); return; } VT.slot=n; if(VT.sel!=null) vtPlace(); else shPaintVault(); return; }
+  if(act==='vt-wall'){ r.wall=id; vtSave(); shPaintVault(); return; }
+  if(act==='vt-floor'){ r.floor=id; vtSave(); shPaintVault(); return; }
+},true);
+/* a visitor's view of someone's room, on their profile */
+function vtProfileRoom(d){
+  const x=SHP.room&&SHP.room[d.id]; if(!x){ if(!SHP.roomBusy) SHP.roomBusy={}; if(!SHP.roomBusy[d.id]){ SHP.roomBusy[d.id]=1; shCall('get_room',{p_user:d.id}).then(r=>{ (SHP.room=SHP.room||{})[d.id]=r||{items:[]}; const el=document.getElementById('prof-body'); if(el&&S.view==='profile') el.innerHTML=profileBodyHtml(S.profName); }).catch(er=>{ shErr(er); (SHP.room=SHP.room||{})[d.id]={items:[]}; }); } return ''; }
+  if(!x.items||(!x.items.length&&!x.total)) return '';
+  return '<h4 class="sub">'+esc(d.username)+'\'s room <span class="hint">'+(x.total||0)+' gift'+(x.total===1?'':'s')+' in the vault</span></h4>'+vtRoomHtml(x,x.items,false);
+}
