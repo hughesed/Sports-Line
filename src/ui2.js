@@ -247,11 +247,16 @@ function learnedBox(g){
     ((rkA||rkH)?'<li>Learned ratings: '+(rkA?esc(a)+' offense #'+rkA[0]+'/'+N+', defense #'+rkA[1]:esc(a)+' not rated yet')+' · '+(rkH?esc(h)+' offense #'+rkH[0]+', defense #'+rkH[1]:esc(h)+' not rated yet')+'.</li>':'')+
     (bits.length?'<li>Past lean record vs the line: '+bits.join(', ')+'. Types under 52% are not shown as leans.</li>':'')+'</ul></details>';
 }
+function commNav(){
+  const on=!!(typeof COMM_VIEWS!=='undefined'&&COMM_VIEWS[S.view]); const men=typeof socUnseen==='function'?socUnseen():0;
+  const badge=men?'@'+men:((typeof chatNew==='function'&&chatNew())||(typeof shBadge==='function'&&shBadge())||'');
+  return '<button class="nv" data-act="view" data-k="'+esc(on?S.view:(S.comm||'chat'))+'" aria-pressed="'+on+'">'+IC.chat+'<span>Community</span>'+(badge?'<i class="nb">'+badge+'</i>':'')+'</button>';
+}
 function navHtml(){
   const pend=(typeof socPending==='function'&&socPending()!=null)?socPending():P.bets.filter(b=>b.status==='pending').length;
   const it=(k,ic,l,badge,dot)=>'<button class="nv" data-act="view" data-k="'+k+'" aria-pressed="'+(S.view===k)+'">'+IC[ic]+'<span>'+l+'</span>'+(badge?'<i class="nb">'+badge+'</i>':'')+(dot?'<i class="livedot" title="A game is live"></i>':'')+'</button>';
   const men=typeof socUnseen==='function'?socUnseen():0;
-  return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+it('chat','chat','Chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''))+it('shop','slip','Shop',(typeof shBadge==='function'&&shBadge())||'');
+  return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+commNav();
 }
 /* the home board: today's games, then later days under "Coming up". Yesterday's games stay out of it: the slate keeps them for ~30 h so open slips can settle, and Past (calendar) has their recaps */
 function boardGames(){ return DATA.games.filter(g=>!g.ghost&&(!g.day||g.day>=TODAY)); }
@@ -274,6 +279,7 @@ function render(){
   else if(S.view==='profile') body=profileView();
   else if(S.view==='shop') body=shopView();
   else body=chatView();
+  if(typeof COMM_VIEWS!=='undefined'&&COMM_VIEWS[S.view]&&typeof commBar==='function') body=commBar()+body;
   const showLeague=S.view==='pre'||S.view==='live';
   const dlabel=S.date===TODAY?'Today':wd(S.date)+' '+mon(S.date)+' '+dnum(S.date);
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+

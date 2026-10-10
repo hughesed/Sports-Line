@@ -66,7 +66,7 @@ function celebrate(gid,label,scorer){
   const cols=['#ffb62e',tc,'#2fcb7e','#fff','#f06d66']; let c=''; for(let i=0;i<30;i++){ const a=Math.random()*360, d=40+Math.random()*110, dl=Math.random()*.3; c+='<i style="--a:'+a.toFixed(0)+'deg;--d:'+d.toFixed(0)+'px;--dl:'+dl.toFixed(2)+'s;--c:'+cols[i%5]+'"></i>'; }
   el.innerHTML='<div class="celt">'+esc(label)+'</div>'+c; restart(el,'go'); clearTimeout(el._t); el._t=setTimeout(()=>{ el.classList.remove('go'); el.innerHTML=''; },2800);
 }
-function chip(gid,label,txt,kind){ const el=E('chip-'+gid); if(!el) return; el.className='playchip '+(kind||''); el.innerHTML='<b>'+esc(label)+'</b><span>'+esc(txt)+'</span>'; restart(el,'pop'); }
+function chip(gid,label,txt,kind){ const el=E('chip-'+gid); if(!el) return; el.className='playchip '+(kind||''); el.innerHTML='<b>'+esc(label)+'</b><span>'+esc(txt)+'</span>'; restart(el,'pop'); const pl=E('pill-'+gid); if(pl){ pl.textContent=String(label||'').slice(0,22); restart(pl,'pop'); } }
 
 /* --- football --- */
 /* --- football (v5: arcs, gain/loss colours, kickoff, TD, sack, big plays, camera) --- */
@@ -343,8 +343,19 @@ function wnbaPlay(g,p,instant){
 
 function vizHtml(g){
   const kind=g.lg==='nfl'?nflViz(g):g.lg==='mlb'?mlbViz(g):wnbaViz(g);
-  return '<div class="viz" id="viz-'+g.id+'" data-act="fs" data-g="'+g.id+'" role="button" tabindex="0" aria-label="Open full screen">'+kind+'<span class="fshint">Full screen</span>'+'<div class="playchip" id="chip-'+g.id+'"><b>Waiting for a play</b><span></span></div><div class="cel" id="cel-'+g.id+'"></div></div>';
+  const a=g.teams.away,h=g.teams.home, k=g.lg==='nfl'?'nfl':g.lg==='mlb'?'mlb':'bkb';
+  const plate=(t,side)=>'<div class="vz-plate '+side+'" style="--c:'+esc(t.color||'#4d98ff')+'"><i>SCORE</i><span><em>'+esc(t.abbr)+'</em><b id="vs'+side[0]+'-'+g.id+'">0</b></span></div>';
+  const first=k==='nfl'?'KICKOFF':k==='mlb'?'AT BAT':'TIP-OFF';
+  return '<div class="viz vz-'+k+'" id="viz-'+g.id+'" data-act="fs" data-g="'+g.id+'" role="button" tabindex="0" aria-label="Open full screen"><div class="vz-field">'+kind+'<div class="vz-vig"></div></div>'+
+    '<div class="vz-top">'+plate(a,'away')+'<div class="vz-pill" id="pill-'+g.id+'">'+first+'</div>'+plate(h,'home')+'</div>'+
+    '<div class="vz-ball" id="vball-'+g.id+'"><span>'+(k==='nfl'?'🏈':k==='mlb'?'⚾':'🏀')+'</span><em id="vclk-'+g.id+'"></em></div>'+
+    '<span class="fshint">Full screen</span><div class="playchip" id="chip-'+g.id+'"><b>Waiting for a play</b><span></span></div><div class="cel" id="cel-'+g.id+'"></div></div>';
 }
+function vzScores(){
+  Object.keys(G).forEach(id=>{ const a=E('vsa-'+id); if(!a) return; const h=E('vsh-'+id); let st=null; try{ st=stateOf(G[id]); }catch(e){} if(st){ if(a.textContent!==String(st.away)){ a.textContent=st.away; restart(a,'pop'); } if(h&&h.textContent!==String(st.home)){ h.textContent=st.home; restart(h,'pop'); } }
+    const c=E('vclk-'+id); if(c){ let t=''; try{ t=pbLabel(G[id],FEED[id]); }catch(e){} if(t==='Not started') t=''; c.textContent=t; } });
+}
+setInterval(vzScores,1000);
 function vizRestore(g){
   if(g.lg==='nfl') nflApply(g,true); else if(g.lg==='mlb') mlbApply(g,true); else wnbaApply(g);
   const V=vis(g.id); const last=V.shown[0]; if(last){ chip(g.id,g.lg==='nfl'?nflLabel(last):(last.ty||'Play').toUpperCase(),(last.tx||'').slice(0,110),g.lg==='nfl'?nflKind(last):'other'); }

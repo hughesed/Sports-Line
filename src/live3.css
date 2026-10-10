@@ -71,3 +71,29 @@
 .feed2 .pf.fresh{animation:slidein .5s ease-out}
 @keyframes slidein{0%{transform:translateY(-10px);opacity:0;background:var(--accent-soft)}100%{transform:none;opacity:1}}
 @media (prefers-reduced-motion: reduce){.fld .ball{transition:none}.livedot,.liveb .livedot{animation:none}.playchip.pop,.feed2 .pf.fresh{animation:none}}
+
+/* ===== modern stadium look for the live field / diamond / court ===== */
+.viz{background:radial-gradient(120% 90% at 50% 0%,#18304f 0%,#0a1322 70%);padding:6px 6px 8px;border-radius:18px;border:1px solid rgba(120,160,220,.25);box-shadow:0 12px 30px rgba(3,10,25,.45)}
+.vz-field{position:relative;perspective:900px;padding-top:22px;overflow:hidden;border-radius:14px}
+.vz-field>svg,.vz-field>.mlbviz{transform:rotateX(16deg) scale(1.03);transform-origin:50% 100%;filter:drop-shadow(0 14px 14px rgba(0,0,0,.45))}
+.vz-field .fld,.vz-field .crt,.vz-field .dia{border-radius:6px}
+.vz-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 60%,transparent 50%,rgba(2,8,20,.55) 100%),linear-gradient(180deg,rgba(2,8,20,.5),transparent 28%)}
+.vz-top{position:absolute;left:12px;right:12px;top:10px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:start;gap:8px;pointer-events:none}
+.vz-plate{justify-self:start;min-width:74px;border-radius:10px;background:rgba(10,18,40,.82);border:1.5px solid rgba(255,255,255,.28);border-top:3px solid var(--c);backdrop-filter:blur(4px);padding:2px 8px 4px;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.vz-plate.home{justify-self:end}
+.vz-plate i{display:block;font-style:normal;font-size:8.5px;font-weight:800;letter-spacing:.18em;opacity:.7;text-align:center}
+.vz-plate span{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.vz-plate em{font-style:normal;font-weight:800;font-size:12px;letter-spacing:.06em}.vz-plate b{font-size:20px;line-height:1;font-family:var(--f-mono)}
+.vz-pill{margin-top:2px;border-radius:12px;background:rgba(22,38,36,.92);color:#fff;border:2px solid #fff;font-weight:900;letter-spacing:.06em;font-size:13px;text-transform:uppercase;padding:5px 14px;max-width:46vw;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.vz-ball{position:absolute;left:12px;bottom:64px;display:flex;align-items:center;gap:6px;background:rgba(10,18,40,.85);border:1.5px solid rgba(255,255,255,.3);border-radius:12px;padding:3px 10px;color:#fff;font-size:12px;pointer-events:none}
+.vz-ball b{font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:11px}.vz-ball em{font-style:normal;opacity:.75;font-size:11px}
+.vz-pill.pop,.vz-plate b.pop{animation:chpop .45s cubic-bezier(.2,1.4,.4,1)}
+.viz .playchip{background:rgba(10,18,40,.85);border-color:rgba(255,255,255,.18);color:#eaf1ff}.viz .playchip span{color:#a9b9d6}
+/* richer turf, floor and dirt */
+.fld .gA{fill:#3b9d4c}.fld .gB{fill:#2f8b42}
+.dia .grs{fill:#3b9d4c}.dia .grs2{fill:#2f8b42}.dia .drt{fill:#b9774a}
+.crt .cfl{fill:#dca46a}.crt .paint{fill:#c9561f;stroke:#fff}
+.fsstage .vz-field{padding-top:26px}
+@media (prefers-reduced-motion: reduce){.vz-pill.pop,.vz-plate b.pop{animation:none}}
+.vz-field>svg,.vz-field>.mlbviz{transform:rotateX(9deg) scale(1.02)}
+.viz .fshint{top:auto!important;bottom:70px!important;right:12px!important;left:auto!important;background:rgba(10,18,40,.8);color:#cfe0ff;border-radius:999px;padding:2px 9px;font-size:10px}

@@ -41,8 +41,17 @@ function slipHtml(){
     '<div class="slipnote" id="slipmsg">'+esc(S.slipMsg||'')+'</div>'+
     '<div class="small" style="opacity:.9"><b>Step 1.</b> Copy the slip. <b>Step 2.</b> Open Gambly and paste it into the chat box (Gambly cannot receive bets from a link, only pasted text or a screenshot).</div><div class="btnrow"><button class="btn solid" data-act="copyslip">Copy slip text</button></div>'+
     '<label class="small" style="display:block;opacity:.8" for="sliptxt">Slip text (if copying is blocked on your device, press and hold in this box, Select All, Copy)</label><textarea id="sliptxt" readonly rows="'+Math.min(6,legs.length+1)+'" style="width:100%;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace" aria-label="Slip text to paste">'+esc(slipText(legs))+'</textarea>'+
-    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div><div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
+    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div>'+pickByPick()+'<div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
     '<div class="slipnote">Prices here are model estimates or ESPN/DraftKings numbers from this snapshot, so the book will price it differently. Same-game legs are correlated. Real-money betting is for adults 21+ (call 1-800-GAMBLER for help).</div></div></div>';
+}
+/* one pick at a time: every pick's own link at each book (the one-tap version of the whole slip is above). * = that book's closest line */
+function pickByPick(){
+  if(typeof odLegLinks!=='function') return '';
+  const nm={draftkings:'DK',fanduel:'FD',betmgm:'MGM',caesars:'CZR',espnbet:'ESPN',hardrockbet:'HR',betrivers:'BR'};
+  const rows=S.slip.map(l=>{ const inf={}; let m=null; try{ m=odLegLinks(l,inf); }catch(err){} m=m||{};
+    const chips=Object.keys(nm).filter(k=>m[k]).map(k=>'<a class="pbc" href="'+esc(m[k])+'" rel="noopener" data-act="book" data-bk="'+k+'">'+nm[k]+(inf[k]>0.01?'*':'')+'</a>').join('');
+    return '<div class="pbp"><span class="pbl">'+esc(l.label)+'</span><span class="pbcs">'+(chips||'<span class="muted small">no book link</span>')+'</span></div>'; }).join('');
+  return '<details class="pbd"><summary>Add picks one at a time</summary>'+rows+'<div class="small muted">Tap a book beside a pick to open that pick in the book\'s app. * means the book\'s closest line.</div></details>';
 }
 function renderSlip(){
   { const ae=document.activeElement; if(ae&&ae.blur&&!S.slip.length&&ae.closest&&ae.closest('#slip')) ae.blur(); }   // only the slip's own fields (never the sign-in form or chat box)

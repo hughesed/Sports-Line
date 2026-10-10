@@ -468,6 +468,32 @@ svg.chart text.dnpt{font-size:6.5px}
 @keyframes slidein{0%{transform:translateY(-10px);opacity:0;background:var(--accent-soft)}100%{transform:none;opacity:1}}
 @media (prefers-reduced-motion: reduce){.fld .ball{transition:none}.livedot,.liveb .livedot{animation:none}.playchip.pop,.feed2 .pf.fresh{animation:none}}
 
+/* ===== modern stadium look for the live field / diamond / court ===== */
+.viz{background:radial-gradient(120% 90% at 50% 0%,#18304f 0%,#0a1322 70%);padding:6px 6px 8px;border-radius:18px;border:1px solid rgba(120,160,220,.25);box-shadow:0 12px 30px rgba(3,10,25,.45)}
+.vz-field{position:relative;perspective:900px;padding-top:22px;overflow:hidden;border-radius:14px}
+.vz-field>svg,.vz-field>.mlbviz{transform:rotateX(16deg) scale(1.03);transform-origin:50% 100%;filter:drop-shadow(0 14px 14px rgba(0,0,0,.45))}
+.vz-field .fld,.vz-field .crt,.vz-field .dia{border-radius:6px}
+.vz-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 60%,transparent 50%,rgba(2,8,20,.55) 100%),linear-gradient(180deg,rgba(2,8,20,.5),transparent 28%)}
+.vz-top{position:absolute;left:12px;right:12px;top:10px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:start;gap:8px;pointer-events:none}
+.vz-plate{justify-self:start;min-width:74px;border-radius:10px;background:rgba(10,18,40,.82);border:1.5px solid rgba(255,255,255,.28);border-top:3px solid var(--c);backdrop-filter:blur(4px);padding:2px 8px 4px;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.vz-plate.home{justify-self:end}
+.vz-plate i{display:block;font-style:normal;font-size:8.5px;font-weight:800;letter-spacing:.18em;opacity:.7;text-align:center}
+.vz-plate span{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.vz-plate em{font-style:normal;font-weight:800;font-size:12px;letter-spacing:.06em}.vz-plate b{font-size:20px;line-height:1;font-family:var(--f-mono)}
+.vz-pill{margin-top:2px;border-radius:12px;background:rgba(22,38,36,.92);color:#fff;border:2px solid #fff;font-weight:900;letter-spacing:.06em;font-size:13px;text-transform:uppercase;padding:5px 14px;max-width:46vw;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.vz-ball{position:absolute;left:12px;bottom:64px;display:flex;align-items:center;gap:6px;background:rgba(10,18,40,.85);border:1.5px solid rgba(255,255,255,.3);border-radius:12px;padding:3px 10px;color:#fff;font-size:12px;pointer-events:none}
+.vz-ball b{font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:11px}.vz-ball em{font-style:normal;opacity:.75;font-size:11px}
+.vz-pill.pop,.vz-plate b.pop{animation:chpop .45s cubic-bezier(.2,1.4,.4,1)}
+.viz .playchip{background:rgba(10,18,40,.85);border-color:rgba(255,255,255,.18);color:#eaf1ff}.viz .playchip span{color:#a9b9d6}
+/* richer turf, floor and dirt */
+.fld .gA{fill:#3b9d4c}.fld .gB{fill:#2f8b42}
+.dia .grs{fill:#3b9d4c}.dia .grs2{fill:#2f8b42}.dia .drt{fill:#b9774a}
+.crt .cfl{fill:#dca46a}.crt .paint{fill:#c9561f;stroke:#fff}
+.fsstage .vz-field{padding-top:26px}
+@media (prefers-reduced-motion: reduce){.vz-pill.pop,.vz-plate b.pop{animation:none}}
+.vz-field>svg,.vz-field>.mlbviz{transform:rotateX(9deg) scale(1.02)}
+.viz .fshint{top:auto!important;bottom:70px!important;right:12px!important;left:auto!important;background:rgba(10,18,40,.8);color:#cfe0ff;border-radius:999px;padding:2px 9px;font-size:10px}
+
 /* ===== v5: football animation + big screen ===== */
 .fld .hm{stroke:rgba(255,255,255,.35);stroke-width:.18}
 .fld .shd{fill:#000}
@@ -879,10 +905,50 @@ body.vchat .foot{display:none}
 .bnav::-webkit-scrollbar{display:none}
 .bnav .nv{flex:0 0 auto;min-width:62px;padding-inline:8px;scroll-snap-align:start}
 
+/* ===== Community bar ===== */
+.commbar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:4px;border-radius:16px;background:var(--surface2);border:1px solid var(--line);position:sticky;top:0;z-index:5}
+.commbar button{position:relative;border:0;border-radius:12px;padding:10px 6px;font:inherit;font-weight:800;font-size:14px;background:transparent;color:var(--muted)}
+.commbar button[aria-pressed="true"]{background:linear-gradient(135deg,#7c4dff,#ff4d8d);color:#fff;box-shadow:0 4px 14px rgba(124,77,255,.35)}
+.commbar .nb{position:absolute;top:3px;right:8px;font-style:normal;font-size:10px;background:#ff3b5c;color:#fff;border-radius:999px;padding:1px 6px}
+
+/* ===== Gift shop: dark, clustered, colourful ===== */
+.gshop{background:linear-gradient(180deg,#26232f,#1b1a22);color:#f3f1fb;border-radius:20px;padding:12px;margin:-4px -6px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(10,6,30,.35)}
+.gshop small{opacity:.65;font-size:11px}
+.ghd{display:flex;justify-content:space-between;align-items:center}.ghd b{display:block;font-size:19px;letter-spacing:.01em}.ghd span{font-size:12px;opacity:.7}
+.gc{display:inline-block;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe27a,#f2a900 70%);box-shadow:inset 0 0 0 2px #b97800;vertical-align:-2px;margin-right:4px}
+.gpass{position:relative;border-radius:16px;padding:12px;background:linear-gradient(120deg,#ffcf4a,#ff8a3d 55%,#ff4d8d);color:#2a1300;display:grid;gap:4px}
+.gpt{display:flex;justify-content:space-between;font-size:15px}.gpl{font-size:12px;font-weight:600}.gpon{font-size:12px;font-weight:800}
+.gpb{justify-self:start;border:0;border-radius:999px;background:#1b1a22;color:#ffd24a;font:inherit;font-weight:800;padding:7px 16px;margin-top:4px}
+.gpb:disabled,.gbuy:disabled{opacity:.5}
+.ggrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.gt{--g:#ff6aa0;border:1.5px solid transparent;background:rgba(255,255,255,.05);color:#f3f1fb;border-radius:14px;padding:8px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;min-width:0;position:relative;transition:transform .12s,background .12s}
+.gt.t1{--g:#ff6aa0}.gt.t2{--g:#ff9d3d}.gt.t3{--g:#a56bff}.gt.t4{--g:#35d6e8}.gt.t5{--g:#ffd24a}
+.gt .gE{width:48px;height:48px;display:grid;place-items:center;font-size:30px;line-height:1;border-radius:50%;background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--g) 55%,transparent),transparent 70%)}
+.gt b{font-size:11.5px;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.gt .gp{font-size:12px;font-weight:700;opacity:.9;display:flex;align-items:center}.gt .gp s{opacity:.5;margin-right:3px}
+.gt .gp .gc{width:11px;height:11px;margin-right:3px}
+.gt.on{background:color-mix(in srgb,var(--g) 22%,transparent);border-color:var(--g);transform:translateY(-2px)}
+.gt:active{transform:scale(.95)}
+.gbar{position:sticky;bottom:78px;display:flex;align-items:center;gap:8px;background:#0f0e14;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:8px 10px}
+.gbl{display:flex;align-items:center;gap:8px;flex:1;min-width:0;font-size:13px}.gbl.gmute{opacity:.6}.gE2{font-size:26px}
+.gbuy{border:0;border-radius:999px;background:linear-gradient(135deg,#ffcf4a,#ff8a3d);color:#2a1300;font:inherit;font-weight:900;padding:9px 16px;white-space:nowrap}
+.gbal2{display:flex;align-items:center;font-size:13px;background:rgba(255,255,255,.08);border-radius:999px;padding:5px 10px}
+.gsec{font-weight:800;font-size:14px;margin-top:2px}
+.gmute2{font-size:12px;opacity:.65}
+.ginv{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:rgba(255,255,255,.06);border-radius:14px;padding:8px}
+.ginv .gil{display:flex;flex-direction:column;flex:1 1 90px;font-size:13px}
+.ginv select,.ginv input{flex:1 1 120px;min-width:0;background:#0f0e14;color:#f3f1fb;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:7px}
+.gsend{border:0;border-radius:999px;background:linear-gradient(135deg,#7c4dff,#ff4d8d);color:#fff;font:inherit;font-weight:800;padding:8px 18px}
+.gsents{display:flex;flex-wrap:wrap;gap:6px}.gsent{font-size:12px;background:rgba(255,255,255,.07);border-radius:999px;padding:4px 10px}
+.gshop .flash{color:#2a1300}
+.pbd{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:6px 0}.pbd summary{font-weight:700;font-size:13px}
+.pbp{display:flex;flex-direction:column;gap:4px;padding:6px 0;border-top:1px solid var(--line);font-size:13px}.pbcs{display:flex;flex-wrap:wrap;gap:6px}
+.pbc{border:1px solid var(--accent);border-radius:999px;padding:4px 12px;font-weight:800;font-size:12px;color:var(--accent);text-decoration:none}
+
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="626f3fc003">
+<body data-build="45be934f9d">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -1927,8 +1993,17 @@ function slipHtmlLocal(){
     '<div class="slipnote" id="slipmsg">'+esc(S.slipMsg||'')+'</div>'+
     '<div class="small" style="opacity:.9"><b>Step 1.</b> Copy the slip. <b>Step 2.</b> Open Gambly and paste it into the chat box (Gambly cannot receive bets from a link, only pasted text or a screenshot).</div><div class="btnrow"><button class="btn solid" data-act="copyslip">Copy slip text</button></div>'+
     '<label class="small" style="display:block;opacity:.8" for="sliptxt">Slip text (if copying is blocked on your device, press and hold in this box, Select All, Copy)</label><textarea id="sliptxt" readonly rows="'+Math.min(6,legs.length+1)+'" style="width:100%;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace" aria-label="Slip text to paste">'+esc(slipText(legs))+'</textarea>'+
-    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div><div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
+    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div>'+pickByPick()+'<div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
     '<div class="slipnote">Prices here are model estimates or ESPN/DraftKings numbers from this snapshot, so the book will price it differently. Same-game legs are correlated. Real-money betting is for adults 21+ (call 1-800-GAMBLER for help).</div></div></div>';
+}
+/* one pick at a time: every pick's own link at each book (the one-tap version of the whole slip is above). * = that book's closest line */
+function pickByPick(){
+  if(typeof odLegLinks!=='function') return '';
+  const nm={draftkings:'DK',fanduel:'FD',betmgm:'MGM',caesars:'CZR',espnbet:'ESPN',hardrockbet:'HR',betrivers:'BR'};
+  const rows=S.slip.map(l=>{ const inf={}; let m=null; try{ m=odLegLinks(l,inf); }catch(err){} m=m||{};
+    const chips=Object.keys(nm).filter(k=>m[k]).map(k=>'<a class="pbc" href="'+esc(m[k])+'" rel="noopener" data-act="book" data-bk="'+k+'">'+nm[k]+(inf[k]>0.01?'*':'')+'</a>').join('');
+    return '<div class="pbp"><span class="pbl">'+esc(l.label)+'</span><span class="pbcs">'+(chips||'<span class="muted small">no book link</span>')+'</span></div>'; }).join('');
+  return '<details class="pbd"><summary>Add picks one at a time</summary>'+rows+'<div class="small muted">Tap a book beside a pick to open that pick in the book\'s app. * means the book\'s closest line.</div></details>';
 }
 function renderSlip(){
   if(!S.slip.length) S.boost=null;
@@ -2114,7 +2189,7 @@ function celebrate(gid,label,scorer){
   const cols=['#ffb62e',tc,'#2fcb7e','#fff','#f06d66']; let c=''; for(let i=0;i<30;i++){ const a=Math.random()*360, d=40+Math.random()*110, dl=Math.random()*.3; c+='<i style="--a:'+a.toFixed(0)+'deg;--d:'+d.toFixed(0)+'px;--dl:'+dl.toFixed(2)+'s;--c:'+cols[i%5]+'"></i>'; }
   el.innerHTML='<div class="celt">'+esc(label)+'</div>'+c; restart(el,'go'); clearTimeout(el._t); el._t=setTimeout(()=>{ el.classList.remove('go'); el.innerHTML=''; },2800);
 }
-function chip(gid,label,txt,kind){ const el=E('chip-'+gid); if(!el) return; el.className='playchip '+(kind||''); el.innerHTML='<b>'+esc(label)+'</b><span>'+esc(txt)+'</span>'; restart(el,'pop'); }
+function chip(gid,label,txt,kind){ const el=E('chip-'+gid); if(!el) return; el.className='playchip '+(kind||''); el.innerHTML='<b>'+esc(label)+'</b><span>'+esc(txt)+'</span>'; restart(el,'pop'); const pl=E('pill-'+gid); if(pl){ pl.textContent=String(label||'').slice(0,22); restart(pl,'pop'); } }
 
 /* --- football --- */
 /* --- football (v5: arcs, gain/loss colours, kickoff, TD, sack, big plays, camera) --- */
@@ -2391,8 +2466,19 @@ function wnbaPlay(g,p,instant){
 
 function vizHtml(g){
   const kind=g.lg==='nfl'?nflViz(g):g.lg==='mlb'?mlbViz(g):wnbaViz(g);
-  return '<div class="viz" id="viz-'+g.id+'" data-act="fs" data-g="'+g.id+'" role="button" tabindex="0" aria-label="Open full screen">'+kind+'<span class="fshint">Full screen</span>'+'<div class="playchip" id="chip-'+g.id+'"><b>Waiting for a play</b><span></span></div><div class="cel" id="cel-'+g.id+'"></div></div>';
+  const a=g.teams.away,h=g.teams.home, k=g.lg==='nfl'?'nfl':g.lg==='mlb'?'mlb':'bkb';
+  const plate=(t,side)=>'<div class="vz-plate '+side+'" style="--c:'+esc(t.color||'#4d98ff')+'"><i>SCORE</i><span><em>'+esc(t.abbr)+'</em><b id="vs'+side[0]+'-'+g.id+'">0</b></span></div>';
+  const first=k==='nfl'?'KICKOFF':k==='mlb'?'AT BAT':'TIP-OFF';
+  return '<div class="viz vz-'+k+'" id="viz-'+g.id+'" data-act="fs" data-g="'+g.id+'" role="button" tabindex="0" aria-label="Open full screen"><div class="vz-field">'+kind+'<div class="vz-vig"></div></div>'+
+    '<div class="vz-top">'+plate(a,'away')+'<div class="vz-pill" id="pill-'+g.id+'">'+first+'</div>'+plate(h,'home')+'</div>'+
+    '<div class="vz-ball" id="vball-'+g.id+'"><span>'+(k==='nfl'?'🏈':k==='mlb'?'⚾':'🏀')+'</span><em id="vclk-'+g.id+'"></em></div>'+
+    '<span class="fshint">Full screen</span><div class="playchip" id="chip-'+g.id+'"><b>Waiting for a play</b><span></span></div><div class="cel" id="cel-'+g.id+'"></div></div>';
 }
+function vzScores(){
+  Object.keys(G).forEach(id=>{ const a=E('vsa-'+id); if(!a) return; const h=E('vsh-'+id); let st=null; try{ st=stateOf(G[id]); }catch(e){} if(st){ if(a.textContent!==String(st.away)){ a.textContent=st.away; restart(a,'pop'); } if(h&&h.textContent!==String(st.home)){ h.textContent=st.home; restart(h,'pop'); } }
+    const c=E('vclk-'+id); if(c){ let t=''; try{ t=pbLabel(G[id],FEED[id]); }catch(e){} if(t==='Not started') t=''; c.textContent=t; } });
+}
+setInterval(vzScores,1000);
 function vizRestore(g){
   if(g.lg==='nfl') nflApply(g,true); else if(g.lg==='mlb') mlbApply(g,true); else wnbaApply(g);
   const V=vis(g.id); const last=V.shown[0]; if(last){ chip(g.id,g.lg==='nfl'?nflLabel(last):(last.ty||'Play').toUpperCase(),(last.tx||'').slice(0,110),g.lg==='nfl'?nflKind(last):'other'); }
@@ -3138,11 +3224,16 @@ function learnedBox(g){
     ((rkA||rkH)?'<li>Learned ratings: '+(rkA?esc(a)+' offense #'+rkA[0]+'/'+N+', defense #'+rkA[1]:esc(a)+' not rated yet')+' · '+(rkH?esc(h)+' offense #'+rkH[0]+', defense #'+rkH[1]:esc(h)+' not rated yet')+'.</li>':'')+
     (bits.length?'<li>Past lean record vs the line: '+bits.join(', ')+'. Types under 52% are not shown as leans.</li>':'')+'</ul></details>';
 }
+function commNav(){
+  const on=!!(typeof COMM_VIEWS!=='undefined'&&COMM_VIEWS[S.view]); const men=typeof socUnseen==='function'?socUnseen():0;
+  const badge=men?'@'+men:((typeof chatNew==='function'&&chatNew())||(typeof shBadge==='function'&&shBadge())||'');
+  return '<button class="nv" data-act="view" data-k="'+esc(on?S.view:(S.comm||'chat'))+'" aria-pressed="'+on+'">'+IC.chat+'<span>Community</span>'+(badge?'<i class="nb">'+badge+'</i>':'')+'</button>';
+}
 function navHtml(){
   const pend=(typeof socPending==='function'&&socPending()!=null)?socPending():P.bets.filter(b=>b.status==='pending').length;
   const it=(k,ic,l,badge,dot)=>'<button class="nv" data-act="view" data-k="'+k+'" aria-pressed="'+(S.view===k)+'">'+IC[ic]+'<span>'+l+'</span>'+(badge?'<i class="nb">'+badge+'</i>':'')+(dot?'<i class="livedot" title="A game is live"></i>':'')+'</button>';
   const men=typeof socUnseen==='function'?socUnseen():0;
-  return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+it('chat','chat','Chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''))+it('shop','slip','Shop',(typeof shBadge==='function'&&shBadge())||'');
+  return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+commNav();
 }
 /* the home board: today's games, then later days under "Coming up". Yesterday's games stay out of it: the slate keeps them for ~30 h so open slips can settle, and Past (calendar) has their recaps */
 function boardGames(){ return DATA.games.filter(g=>!g.ghost&&(!g.day||g.day>=TODAY)); }
@@ -3165,6 +3256,7 @@ function render(){
   else if(S.view==='profile') body=profileView();
   else if(S.view==='shop') body=shopView();
   else body=chatView();
+  if(typeof COMM_VIEWS!=='undefined'&&COMM_VIEWS[S.view]&&typeof commBar==='function') body=commBar()+body;
   const showLeague=S.view==='pre'||S.view==='live';
   const dlabel=S.date===TODAY?'Today':wd(S.date)+' '+mon(S.date)+' '+dnum(S.date);
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
@@ -5564,7 +5656,7 @@ document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if(docume
 /* ================= shop, 30-day pass, gifts, direct messages, online/offline, profile visitors, battle invites =================
    Practice coins only. Needs supabase/patch_shop_v8.sql in the project; until it is applied every call fails with "function not found" and the
    screens show a setup note instead (nothing else in the app is affected). */
-const SHP={tab:'shop',st:null,on:null,inbox:null,with:null,thread:[],msg:'',busy:false,vis:null,missing:false,unread:0,invite:null,to:{},note:{},pex:{},pexBusy:{},dailyFor:'',dm:''};
+const SHP={pick:'',tab:'shop',st:null,on:null,inbox:null,with:null,thread:[],msg:'',busy:false,vis:null,missing:false,unread:0,invite:null,to:{},note:{},pex:{},pexBusy:{},dailyFor:'',dm:''};
 const shFmt=t=>{ try{ return new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }catch(e){ return ''; } };
 const shAgo=t=>{ if(!t) return 'a while ago'; const m=Math.max(0,Math.round((Date.now()-Date.parse(t))/60000)); return m<2?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'; };
 function shErr(e){ const m=String((e&&e.message)||e||''); if(/could not find|schema cache|does not exist|not exist/i.test(m)) SHP.missing=true; return m; }
@@ -5613,29 +5705,35 @@ function shChatStrip(){ return '<div id="sh-strip">'+shStripInner()+'</div>'; }
 /* ---------- views ---------- */
 function shTabs(){ return [['shop','Shop'],['msg','Messages'+(SHP.unread?' ('+SHP.unread+')':'')],['online','Online'],['vis','Visitors']].map(x=>'<button data-act="sh-tab" data-k="'+x[0]+'" aria-pressed="'+(SHP.tab===x[0])+'">'+x[1]+'</button>').join(''); }
 function shopView(){
-  const h='<section class="game"><div class="sec"><h3>Shop &amp; messages <span class="hint">practice coins only</span></h3>';
+  const h='<section class="game"><div class="sec">';
   if(!SOC.on||SOC.state!=='ready') return h+socNote()+'</div></section>';
   if(!SOC.user) return h+'<div class="small">Sign in to use the shop, messages, and the online list.</div><div class="btnrow"><button class="btn solid" data-act="signin">Sign in</button></div></div></section>';
   return h+'<div class="seg" id="sh-tabs" role="group" aria-label="Section">'+shTabs()+'</div><div id="sh-body">'+shBody()+'</div></div></section>';
 }
 function shBody(){
-  if(SHP.missing) return '<div class="flash">The shop needs a one-time database update (supabase/patch_shop_v8.sql). Until it is applied these screens stay empty. Everything else in the app works.</div>';
+  if(SHP.missing) return '<div class="flash">The shop needs a one-time database update (supabase/patch_shop_v8.sql). Until it is applied you can look around but not buy. Everything else in the app works.</div>'+(SHP.tab==='shop'?shShopHtml():'');
   const m=SHP.msg?'<div class="flash">'+esc(SHP.msg)+'</div>':'';
   return m+(SHP.tab==='shop'?shShopHtml():SHP.tab==='msg'?shMsgHtml():SHP.tab==='online'?shOnlineHtml():shVisHtml());
 }
+const SH_CAT=[['corn','It\'s corn','🌽',5],['wink','Wink wink','😉',5],['heart','Heart','❤️',10],['clap','Clap clap','👏',10],['icecream','Ice cream','🍦',10],['chili','Chili','🌶️',15],['rose','Rose','🌹',25],['donut','Doughnut','🍩',30],['pizza','Pizza slice','🍕',40],['cook','Let em cook','👨‍🍳',50],['fire','Hot streak','🔥',60],['rocket','Rocket','🚀',80],['trophy','Trophy','🏆',100],['diamond','Diamond','💎',120],['goat','GOAT','🐐',150],['crown','Crown','👑',250],['car','Sports car','🏎️',400]];
+function shTier(p){ return p<=10?1:p<=30?2:p<=60?3:p<=120?4:5; }
 function shShopHtml(){
-  const s=SHP.st; if(!s) return '<div class="small muted">Loading…</div>';
-  const pass='<div class="shpass"><div><b>30-day pass</b> <span class="small muted">'+cn(s.pass_price)+' coins</span></div><ul class="small"><li>'+cn(20)+' coins a day instead of '+cn(10)+'</li><li>See who visited your page</li><li>'+s.discount_pct+'% off everything in the shop</li></ul>'+
-    (s.pass?'<div class="small ok">Active until '+esc(shFmt(s.pass_until))+'. Buying again adds 30 more days.</div>':'')+'<button class="btn solid" data-act="sh-pass"'+(SHP.busy?' disabled':'')+'>'+(s.pass?'Add 30 days':'Buy the pass')+'</button></div>';
-  const daily='<div class="small muted">Daily coins: '+(s.daily_ready?'ready, it is added automatically when you open the app.':'collected today.')+' You get '+s.daily_amount+' a day'+(s.pass?' with your pass':'')+'.</div>';
-  const items='<div class="shgrid">'+(s.items||[]).map(i=>'<div class="shi"><span class="shE">'+esc(i.emoji)+'</span><b>'+esc(i.name)+'</b><span class="small muted">'+esc(i.blurb)+' Use it within '+i.days+' days.</span><span class="mono">'+COIN+' '+(i.pay<i.price?'<s class="muted">'+cn(i.price)+'</s> ':'')+cn(i.pay)+'</span><button class="btn" data-act="sh-buy" data-id="'+esc(i.id)+'"'+(SHP.busy?' disabled':'')+'>Buy</button></div>').join('')+'</div>';
+  const real=SHP.st&&!SHP.missing;
+  const s=real?SHP.st:{balance:SOC.me?SOC.me.balance:0,pass_price:1000,discount_pct:20,pass:false,daily_ready:false,daily_amount:10,inventory:[],items:SH_CAT.map(x=>({id:x[0],name:x[1],emoji:x[2],price:x[3],pay:x[3],days:2+Math.floor(x[3]/50),blurb:''}))};
+  if(!SHP.st&&!SHP.missing) return '<div class="small muted">Loading…</div>';
+  const pick=(s.items||[]).find(i=>i.id===SHP.pick);
+  const pass='<div class="gpass"><div class="gpt"><b>👑 30-day pass</b><span>'+COIN+' '+cn(s.pass_price)+'</span></div><div class="gpl">'+cn(20)+' coins a day instead of '+cn(10)+' · see who visits your page · '+s.discount_pct+'% off every gift</div>'+
+    (s.pass?'<div class="gpon">Active until '+esc(shFmt(s.pass_until))+'</div>':'')+'<button class="gpb" data-act="sh-pass"'+(SHP.busy||!real?' disabled':'')+'>'+(s.pass?'Add 30 days':'Get the pass')+'</button></div>';
+  const tiles='<div class="ggrid">'+(s.items||[]).map(i=>'<button class="gt t'+shTier(i.price)+(SHP.pick===i.id?' on':'')+'" data-act="sh-pick" data-id="'+esc(i.id)+'" aria-pressed="'+(SHP.pick===i.id)+'"><span class="gE">'+esc(i.emoji)+'</span><b>'+esc(i.name)+'</b><span class="gp"><i class="gc"></i>'+(i.pay<i.price?'<s>'+cn(i.price)+'</s> ':'')+cn(i.pay)+'</span></button>').join('')+'</div>';
+  const bar='<div class="gbar">'+(pick?'<span class="gbl"><span class="gE2">'+esc(pick.emoji)+'</span><span><b>'+esc(pick.name)+'</b><br><small>send it within '+pick.days+' days</small></span></span><button class="gbuy" data-act="sh-buy" data-id="'+esc(pick.id)+'"'+(SHP.busy||!real?' disabled':'')+'><i class="gc"></i> Buy '+cn(pick.pay)+'</button>':'<span class="gbl gmute">Tap a gift to pick it</span>')+'<span class="gbal2"><i class="gc"></i><b>'+cn(s.balance)+'</b></span></div>';
   const mem=shMembers();
-  const inv=(s.inventory||[]).filter(x=>!x.sent_at).map(x=>'<div class="shinv"><span class="shE">'+esc(x.emoji)+'</span><span><b>'+esc(x.name)+'</b><br><span class="small muted">send by '+esc(shFmt(x.use_by))+'</span></span>'+
+  const inv=(s.inventory||[]).filter(x=>!x.sent_at).map(x=>'<div class="ginv"><span class="gE2">'+esc(x.emoji)+'</span><span class="gil"><b>'+esc(x.name)+'</b><small>send by '+esc(shFmt(x.use_by))+'</small></span>'+
     '<select data-in="sh-to" data-inv="'+x.id+'" aria-label="Send to"><option value="">Send to…</option>'+mem.map(p=>'<option value="'+p.id+'"'+((SHP.to[x.id]||SHP.giftTo)===p.id?' selected':'')+'>'+(p.online?'● ':'○ ')+esc(p.username)+'</option>').join('')+'</select>'+
-    '<input class="num" data-in="sh-note" data-inv="'+x.id+'" maxlength="140" placeholder="Note (optional)" value="'+esc(SHP.note[x.id]||'')+'" aria-label="Note"><button class="btn solid" data-act="sh-send" data-inv="'+x.id+'">Send</button></div>').join('');
-  const sent=(s.inventory||[]).filter(x=>x.sent_at).map(x=>'<div class="small muted">'+esc(x.emoji)+' '+esc(x.name)+' sent to '+esc(x.sent_to_name||'someone')+'</div>').join('');
-  return '<div class="proj"><div class="kv"><div class="k">Coins</div><div class="v">'+COIN+' '+cn(s.balance)+'</div></div></div>'+daily+pass+'<h4 class="sub">Items</h4>'+items+
-    '<h4 class="sub">Your items <span class="hint">sent items show in chat, in messages and on their profile</span></h4>'+(inv||'<div class="small muted">Nothing to send. Buy an item above.</div>')+(sent?'<h4 class="sub">Recently sent</h4>'+sent:'');
+    '<input class="num" data-in="sh-note" data-inv="'+x.id+'" maxlength="140" placeholder="Note (optional)" value="'+esc(SHP.note[x.id]||'')+'" aria-label="Note"><button class="gsend" data-act="sh-send" data-inv="'+x.id+'">Send</button></div>').join('');
+  const sent=(s.inventory||[]).filter(x=>x.sent_at).map(x=>'<span class="gsent">'+esc(x.emoji)+' '+esc(x.name)+' → '+esc(x.sent_to_name||'someone')+'</span>').join('');
+  return '<div class="gshop"><div class="ghd"><div><b>Send a gift</b><span>Buy with practice coins, send in chat or messages</span></div></div>'+pass+tiles+bar+
+    '<div class="gsec">Your gifts <small>sent gifts show in chat and on their profile</small></div>'+(inv||'<div class="gmute2">Nothing to send yet. Pick a gift above.</div>')+(sent?'<div class="gsec">Recently sent</div><div class="gsents">'+sent+'</div>':'')+
+    '<div class="gmute2">Daily coins: '+(s.daily_ready?'ready, added automatically when you open the app':'collected today')+' · '+s.daily_amount+' a day'+(s.pass?' with your pass':'')+'</div></div>';
 }
 function shMsgHtml(){
   if(SHP.with){
@@ -5694,7 +5792,8 @@ document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act^="sh-"]'); if(!t) return; const act=t.getAttribute('data-act'); const stop=()=>{ e.stopPropagation(); e.preventDefault(); };
   if(!shReady()){ if(act.indexOf('sh-')===0){ stop(); if(SOC.sb) openModal('in'); } return; }
   const id=t.getAttribute('data-id'), nm=t.getAttribute('data-n');
-  if(act==='sh-tab'){ stop(); SHP.tab=t.getAttribute('data-k'); SHP.msg=''; if(S.view!=='shop'){ S.view='shop'; render(); } else shPaint(); shLoadTab(); return; }
+  if(act==='sh-tab'){ stop(); SHP.tab=t.getAttribute('data-k'); SHP.msg=''; S.comm='shop'; if(S.view!=='shop'){ S.view='shop'; render(); } else shPaint(); shLoadTab(); return; }
+  if(act==='sh-pick'){ stop(); SHP.pick=(SHP.pick===id?'':id); shPaint(); return; }
   if(act==='sh-back'){ stop(); SHP.with=null; SHP.thread=[]; shLoadInbox(); shPaint(); return; }
   if(act==='sh-open'||act==='sh-msg-user'){ stop(); SHP.with={id:id,name:nm}; SHP.thread=[]; SHP.tab='msg'; SHP.msg=''; if(S.view!=='shop'){ S.view='shop'; render(); window.scrollTo(0,0); } else shPaint(); shLoadThread(); return; }
   if(act==='sh-gift-user'){ stop(); SHP.tab='shop'; SHP.msg='Pick an item below and choose '+nm+' in the list.'; if(!SHP.on) shLoadOnline(); SHP.giftTo=id; S.view='shop'; render(); window.scrollTo(0,0); return; }
@@ -5713,6 +5812,22 @@ document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e
 /* keep the selected tab visible in the sliding bottom bar */
 (function(){ function fit(){ try{ const n=document.getElementById('nav'); const a=n&&n.querySelector('.nv[aria-pressed="true"]'); if(a&&n.scrollWidth>n.clientWidth){ const L=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2; n.scrollTo({left:Math.max(0,L)}); } }catch(e){} }
   try{ const n=document.getElementById('nav'); if(n) new MutationObserver(fit).observe(n,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed']}); }catch(e){} })();
+
+
+/* ---------- Community: Chat, Shop and your Profile in one tab ---------- */
+const COMM_VIEWS={chat:1,shop:1,profile:1};
+function commBar(){
+  const mine=SOC.me&&SOC.me.username; const own=S.view==='profile'&&mine&&S.profName===mine;
+  const b=(k,l,on,badge)=>'<button data-act="comm" data-k="'+k+'" aria-pressed="'+on+'">'+l+(badge?'<i class="nb">'+badge+'</i>':'')+'</button>';
+  const men=typeof socUnseen==='function'?socUnseen():0;
+  return '<div class="commbar" role="group" aria-label="Community">'+b('chat','💬 Chat',S.view==='chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''))+b('shop','🎁 Shop',S.view==='shop',shBadge())+b('profile','🙂 Profile',S.view==='profile')+'</div>';
+}
+document.addEventListener('click',function(e){
+  const t=e.target.closest&&e.target.closest('[data-act="comm"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
+  const k=t.getAttribute('data-k'); S.comm=k;
+  if(k==='profile'){ const me=SOC.me&&SOC.me.username; if(me){ openProfile(me); return; } if(SOC.sb&&!SOC.user){ openModal('in'); return; } S.view='profile'; render(); window.scrollTo(0,0); return; }
+  S.view=k; render(); window.scrollTo(0,0);
+},true);
 
 /* Sportsbook lines (SportsGameOdds -> data/odds.json, written by the bot when the ODDS_API_KEY secret is set).
    Adds a "Sportsbook lines" box to each game card that matches an event: best price per side plus every book's price, with links to the books.

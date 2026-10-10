@@ -12,12 +12,23 @@ create table if not exists public.shop_items(
   id text primary key, name text not null, emoji text not null, price int not null check (price > 0),
   blurb text not null default '', active boolean not null default true, sort int not null default 0);
 insert into public.shop_items(id, name, emoji, price, blurb, sort) values
-  ('rose',   'Rose',          '🌹', 25,  'A small thank-you.', 1),
-  ('pizza',  'Pizza slice',   '🍕', 40,  'Winner winner.', 2),
-  ('fire',   'Hot streak',    '🔥', 60,  'You are on fire.', 3),
-  ('trophy', 'Trophy',        '🏆', 100, 'For a big win.', 4),
-  ('goat',   'GOAT',          '🐐', 150, 'The greatest.', 5),
-  ('crown',  'Crown',         '👑', 250, 'Royalty. Lasts the longest.', 6)
+  ('corn', 'It''s corn', '🌽', 5, 'Corny, but it counts.', 1),
+  ('wink', 'Wink wink', '😉', 5, 'A little nod.', 2),
+  ('heart', 'Heart', '❤️', 10, 'Show some love.', 3),
+  ('clap', 'Clap clap', '👏', 10, 'Nice call.', 4),
+  ('icecream', 'Ice cream', '🍦', 10, 'Cool under pressure.', 5),
+  ('chili', 'Chili', '🌶️', 15, 'Spicy pick.', 6),
+  ('rose', 'Rose', '🌹', 25, 'A small thank-you.', 7),
+  ('donut', 'Doughnut', '🍩', 30, 'Sweet win.', 8),
+  ('pizza', 'Pizza slice', '🍕', 40, 'Winner winner.', 9),
+  ('cook', 'Let em cook', '👨‍🍳', 50, 'Let them cook.', 10),
+  ('fire', 'Hot streak', '🔥', 60, 'You are on fire.', 11),
+  ('rocket', 'Rocket', '🚀', 80, 'To the moon.', 12),
+  ('trophy', 'Trophy', '🏆', 100, 'For a big win.', 13),
+  ('diamond', 'Diamond', '💎', 120, 'Rare and shiny.', 14),
+  ('goat', 'GOAT', '🐐', 150, 'The greatest.', 15),
+  ('crown', 'Crown', '👑', 250, 'Royalty. Lasts the longest.', 16),
+  ('car', 'Sports car', '🏎️', 400, 'Top of the board.', 17)
 on conflict (id) do update set name = excluded.name, emoji = excluded.emoji, price = excluded.price, blurb = excluded.blurb, sort = excluded.sort;
 
 create table if not exists public.inventory(
