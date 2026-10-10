@@ -52,7 +52,7 @@ function refreshMe(){
 }
 function socPending(){ if(!SOC.on) return null; if(!SOC.user||!SOC.bets) return SOC.user?null:0; return SOC.bets.filter(b=>b.status==='pending').length; }
 function socUnseen(){ return SOC.user?SOC.mentions.filter(m=>m.id>SOC.seenMention).length:0; }
-function socRerender(){ if(['board','chat','battle','profile','slips'].indexOf(S.view)>=0) render(); else { const h=document.getElementById('hdr'); if(h) render(); } }
+function socRerender(){ if(['board','chat','battle','profile','slips','shop'].indexOf(S.view)>=0) render(); else { const h=document.getElementById('hdr'); if(h) render(); } }
 function socAfterRender(){
   if(!SOC.on) return;
   if(S.view==='board') loadBoard(false);
@@ -61,6 +61,7 @@ function socAfterRender(){
   else stopChat();
   if(S.view==='profile') loadProfile(S.profName,false);
   if(typeof btAfterRender==='function') btAfterRender();
+  if(typeof shAfterRender==='function') shAfterRender();
 }
 function socNote(){
   if(SOC.state==='off') return '<div class="flash">Sign-in not set up yet. Accounts, coins, the leaderboard, chat and Battles start working once the site owner connects a free Supabase project (README, "Accounts, chat, leaderboard and Battles"). Everything else on the page works now.</div>';
@@ -115,7 +116,9 @@ async function placeBetServer(){
   if(!SOC.user){ openModal('in'); return; }
   const err=placeCheck(); if(err){ S.slipMsg=err; renderSlip(); return; }
   if(SOC.sending) return; SOC.sending=true;
-  const legs=S.slip.map(l=>l.live?{tok:l.id,price:l.price,label:l.label}:l.id);
+  const bad=S.slip.filter(l=>l.id.indexOf('o:')===0&&!hpServerTok(l));
+  if(bad.length){ S.slipMsg='The practice server only prices lines on its own slate: '+bad.map(l=>l.label).join(', ')+' use a different line or are not supported, so take them out or open the sportsbook instead.'; renderSlip(); return; }
+  const legs=S.slip.map(l=>l.live?{tok:l.id,price:l.price,label:l.label}:(l.id.indexOf('o:')===0?hpServerTok(l):l.id));
   const sent={}; S.slip.forEach(l=>{ sent[l.id]=l.price; });
   const bb=S.betMode==='single'?null:activeBoost();
   S.slipMsg='Placing…'; renderSlip();
@@ -253,7 +256,7 @@ function boardBodyHtml(){
     '<div class="seg" role="group" aria-label="Board"><button data-act="lbtab" data-t="win" aria-pressed="'+(tab==='win')+'">Top 10 winners</button><button data-act="lbtab" data-t="lose" aria-pressed="'+(tab==='lose')+'">Top 10 losers</button></div>'+
     '<div class="lblist">'+(tab==='win'?rows(lb.winners||[],true):rows(lb.losers||[],false))+'</div>'+
     '<h4 class="sub">Yesterday\'s champions</h4>'+yHtml+
-    '<h4 class="sub">All-time badges</h4>'+atHtml+badgeLegend()+PRACTICE_NOTE;
+    '<h4 class="sub">All-time badges</h4>'+atHtml+badgeLegend()+shProfileBlock(d)+PRACTICE_NOTE;
 }
 function fmtDay(d){ if(!d) return ''; const t=new Date(d+'T12:00:00'); return t.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
 function boardView(){
@@ -286,7 +289,7 @@ function msgHtml(m){
 function fmtClock(t){ return new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
 function chatBodyHtml(){
   const un=socUnseen(); const lastM=SOC.mentions[0];
-  return (SOC.chatErr?'<div class="flash">'+esc(SOC.chatErr)+'</div>':'')+
+  return shChatStrip()+(SOC.chatErr?'<div class="flash">'+esc(SOC.chatErr)+'</div>':'')+
     (un&&lastM?'<div class="menbar">'+lastM.from_name+' mentioned you'+(un>1?' (+'+(un-1)+' more)':'')+'</div>':'')+
     '<div class="chatbox" id="chatbox" aria-live="polite">'+(SOC.chat.length?SOC.chat.map(msgHtml).join(''):'<div class="small muted">No messages yet. Say hi.</div>')+'</div>'+
     '<div class="sugg" id="chatsugg" role="listbox" aria-label="Usernames"></div>'+

@@ -10,7 +10,7 @@ function odFetch(){
 function odKey(s){ return String(s||'').toLowerCase().replace(/[^a-z]/g,''); }
 function odFind(g){
   if(!OD.data) return null;
-  const lg=String(g.lg||g.key||'').toUpperCase(), h=g.teams.home, a=g.teams.away;
+  const lg=String(({cfb:'NCAAF',cbb:'NCAAB'})[g.key||g.lg]||g.key||g.lg||'').toUpperCase(), h=g.teams.home, a=g.teams.away;
   return OD.data.events.find(e=>String(e.league||'').toUpperCase()===lg&&((odKey(e.home)===odKey(h.abbr)&&odKey(e.away)===odKey(a.abbr))||(odKey(e.homeName)===odKey(h.name)&&odKey(e.awayName)===odKey(a.name))))||null;
 }
 function odFmt(o){ return o==null?'–':(o>0?'+'+o:String(o)); }
@@ -45,3 +45,34 @@ function odPaint(){
 }
 let odT=null; new MutationObserver(()=>{ if(!OD.data) return; clearTimeout(odT); odT=setTimeout(odPaint,120); }).observe(document.body,{childList:true,subtree:true});
 setInterval(()=>{ if(!document.hidden) odFetch(); },60e3); odFetch();
+
+/* ---------- bet slip deep links: each leg's own selection link from the odds feed, combined per book, so the slip arrives with the picks already in it ---------- */
+function odLegLinks(l){
+  const g=G[l.gid]; if(!g) return null; let e=null; try{ e=(typeof bkEvent==='function'&&bkEvent(g))||(typeof odFind==='function'&&odFind(g))||null; }catch(err){} if(!e) return null;
+  const sp=l.spec||{}, out={}, M=e.main||{};
+  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link) return; if(line!=null&&b.line!=null&&Math.abs(+b.line-line)>0.01) return; out[k]=b.link; }); };
+  if(sp.k==='ml') take(M.ml&&M.ml[sp.side]);
+  else if(sp.k==='spr') take(M.spread&&M.spread[sp.side],+sp.line);
+  else if(sp.k==='tot') take(M.total&&M.total[sp.dir],+sp.line);
+  else if(sp.k==='prop'){ const pl=(typeof findPlayer==='function')?findPlayer(g,sp.pid):null; if(pl){ const nm=odKey(pl.name); const side=sp.dir==='lt'?'under':'over'; const line=side==='over'?sp.T-0.5:sp.T-0.5;
+      (e.props||[]).forEach(p=>{ if(odKey(p.name)!==nm||p.stat!==sp.stat||p.side!==side) return; take(p,line); }); } }
+  if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]) out[k]=l.links[k]; });
+  return out;
+}
+function odCombine(book,ls){
+  try{
+    const U=ls.map(u=>new URL(u)), q=(u,k)=>u.searchParams.get(k);
+    if(book==='fanduel'){ const v=U.map(u=>({m:q(u,'marketId'),s:q(u,'selectionId')})); if(v.every(x=>x.m&&x.s)) return 'https://sportsbook.fanduel.com/addToBetslip?'+v.map((x,i)=>'marketId['+i+']='+encodeURIComponent(x.m)+'&selectionId['+i+']='+encodeURIComponent(x.s)).join('&'); }
+    if(book==='draftkings'){ const o=U.map(u=>q(u,'outcomes')); if(o.every(Boolean)&&U.every(u=>u.pathname===U[0].pathname)) return U[0].origin+U[0].pathname+'?outcomes='+o.map(encodeURIComponent).join('%7C'); }
+    if(book==='caesars'){ const o=U.map(u=>q(u,'selectionIds')); if(o.every(Boolean)&&U.every(u=>u.pathname===U[0].pathname)) return U[0].origin+U[0].pathname+'?selectionIds='+o.map(encodeURIComponent).join(','); }
+    if(book==='espnbet'){ const v=U.map(u=>({s:q(u,'market_selection_id[0]'),n:q(u,'odds_numerator[0]'),d:q(u,'odds_denominator[0]')})); if(v.every(x=>x.s&&x.n&&x.d)) return U[0].origin+'/?'+v.map((x,i)=>'market_selection_id['+i+']='+encodeURIComponent(x.s)+'&odds_numerator['+i+']='+x.n+'&odds_denominator['+i+']='+x.d).join('&'); }
+  }catch(err){}
+  return null;
+}
+/* {url, n, total}: n = how many of the slip's legs are inside the link */
+function slipDeepLink(book){
+  const legs=S.slip||[]; if(!legs.length) return null;
+  const links=legs.map(l=>{ const m=odLegLinks(l); return (m&&m[book])||null; }).filter(u=>u&&/^https:\/\//i.test(u)); if(!links.length) return null;
+  let url=links[0], n=1; if(links.length>1){ const c=odCombine(book,links); if(c){ url=c; n=links.length; } }
+  return {url:url,n:n,total:legs.length};
+}

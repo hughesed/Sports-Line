@@ -17,7 +17,7 @@ def roster_players(lg, tid):
         for a in items:
             if "id" not in a: continue
             out.append({"id": a["id"], "name": a.get("displayName") or a.get("fullName"), "pos": (a.get("position") or {}).get("abbreviation"), "jersey": a.get("jersey"),
-                        "inj": [(i.get("status")) for i in a.get("injuries", [])], "grp": g.get("position")})
+                        "inj": [(i.get("status")) for i in a.get("injuries", [])], "grp": g.get("position"), "ht": a.get("height") if isinstance(a.get("height"), (int, float)) else None})
     with _rlock: _roster[key] = out
     return out
 

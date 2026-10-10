@@ -215,7 +215,7 @@ const BK_LG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'NCAAF',cbb:'NCAAB',wnba:'WNBA'};
 const bkNorm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 function bkEvent(g){
   try{ const O=window.__LSDATA&&window.__LSDATA.odds; if(!O||!Array.isArray(O.events)) return null;
-    const lg=BK_LG[g.lg||g.key]; const hn=bkNorm(g.teams.home.name), an=bkNorm(g.teams.away.name), ha=bkNorm(g.teams.home.abbr), aa=bkNorm(g.teams.away.abbr), gt=Date.parse(g.iso);
+    const lg=BK_LG[g.key||g.lg]; const hn=bkNorm(g.teams.home.name), an=bkNorm(g.teams.away.name), ha=bkNorm(g.teams.home.abbr), aa=bkNorm(g.teams.away.abbr), gt=Date.parse(g.iso);
     return O.events.find(e=>{ if(lg&&e.league!==lg) return false; const st=Date.parse(e.start); if(isFinite(gt)&&isFinite(st)&&Math.abs(st-gt)>30*3600e3) return false;
       return (bkNorm(e.homeName)===hn&&bkNorm(e.awayName)===an)||(bkNorm(e.home)===ha&&bkNorm(e.away)===aa); })||null;
   }catch(e){ return null; }
@@ -251,7 +251,7 @@ function navHtml(){
   const pend=(typeof socPending==='function'&&socPending()!=null)?socPending():P.bets.filter(b=>b.status==='pending').length;
   const it=(k,ic,l,badge,dot)=>'<button class="nv" data-act="view" data-k="'+k+'" aria-pressed="'+(S.view===k)+'">'+IC[ic]+'<span>'+l+'</span>'+(badge?'<i class="nb">'+badge+'</i>':'')+(dot?'<i class="livedot" title="A game is live"></i>':'')+'</button>';
   const men=typeof socUnseen==='function'?socUnseen():0;
-  return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+it('chat','chat','Chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''));
+  return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+it('chat','chat','Chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''))+it('shop','slip','Shop',(typeof shBadge==='function'&&shBadge())||'');
 }
 /* the home board: today's games, then later days under "Coming up". Yesterday's games stay out of it: the slate keeps them for ~30 h so open slips can settle, and Past (calendar) has their recaps */
 function boardGames(){ return DATA.games.filter(g=>!g.ghost&&(!g.day||g.day>=TODAY)); }
@@ -272,12 +272,13 @@ function render(){
   else if(S.view==='board') body=boardView();
   else if(S.view==='battle') body=battleView();
   else if(S.view==='profile') body=profileView();
+  else if(S.view==='shop') body=shopView();
   else body=chatView();
   const showLeague=S.view==='pre'||S.view==='live';
   const dlabel=S.date===TODAY?'Today':wd(S.date)+' '+mon(S.date)+' '+dnum(S.date);
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
     (S.calOpen?calHtml():'')+(showLeague?'<div class="tabs" role="group" aria-label="League">'+ltabs+'</div>':'')+'</div>';
-  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+potdHtml()+trackRecordHtml():'')+body+
+  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+hpHomeHtml()+hpFold('potd','Pick of the day','',potdHtml(),false)+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
     '<div class="foot"><div>Source: ESPN game logs (up to 15 games shown, last 10 feed the model), standings, results, live play-by-play, injury reports and DraftKings lines. Pregame numbers are a snapshot, so lines and injury news will change before game time.</div>'+
     '<div>Boost types shown are ones sportsbooks have advertised: <a href="https://www.cbssports.com/betting/news/nfl-sportsbook-boosts-promo-codes-for-week-1-best-draftkings-bet365-betmgm-betting-promotions" target="_blank" rel="noopener">CBS Sports</a>, <a href="https://www.actionnetwork.com/education/best-sportsbooks-same-game-parlays" target="_blank" rel="noopener">Action Network</a>, <a href="https://www.oddschecker.com/us/insight/football/nfl/20251020-fanduel-sportsbook-choose-your-own-reward-promotion-2x-25pp-profit-boosts-or-30pp-sgp-profit-boost-on-monday-night-football" target="_blank" rel="noopener">Oddschecker</a>, <a href="https://rg.org/bonuses/parlay-bonuses" target="_blank" rel="noopener">rg.org</a>. They are not live offers.</div>'+
     '<div>Practice money is pretend. Live scores and plays come from ESPN and can lag or contain errors. For information only. Sportsbook buttons may open partner links. Sports betting involves risk, so only stake what you can afford to lose. 21+. Help: 1-800-GAMBLER. This app is not affiliated with any sportsbook.</div></div>';

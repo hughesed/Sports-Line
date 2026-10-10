@@ -2,6 +2,7 @@
 const BOOKS=[['gambly','Gambly: open chat','https://gambly.com/chat'],['draftkings','DraftKings','https://sportsbook.draftkings.com/'],['fanduel','FanDuel','https://sportsbook.fanduel.com/'],['betmgm','BetMGM','https://sports.betmgm.com/'],['caesars','Caesars','https://www.caesars.com/sportsbook-and-casino'],['espnbet','ESPN BET','https://espnbet.com/'],['hardrockbet','Hard Rock Bet','https://app.hardrock.bet/'],['betrivers','BetRivers','https://www.betrivers.com/'],['bet365','bet365','https://www.bet365.com/'],['fanaticsapp','Fanatics app','https://fanatics.onelink.me/5kut?af_force_deeplink=true&pid=share_bet&af_siteid=1616738407']];
 function bookUrl(b){
   if(b[0]==='fanaticsapp') return b[2];
+  try{ const dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; if(dl&&dl.url) return dl.url; }catch(err){}
   /* when every leg is in one game and the odds feed knows that game, open the book on THAT game's page (the closest a web page can get to the slip) */
   try{ const gids=Array.from(new Set(S.slip.map(l=>l.gid))); if(gids.length===1&&G[gids[0]]&&typeof odFind==='function'){ const ev=odFind(G[gids[0]]); const lk=ev&&ev.eventLinks&&ev.eventLinks[b[0]]; if(lk&&/^https:\/\//i.test(lk)) return lk; } }catch(err){}
   const t=(P.tpl||'').trim();
@@ -29,9 +30,9 @@ function slipHtml(){
   const c=calc(); const am=amerOfDec(c.dec); const games=new Set(legs.map(l=>l.gid)).size;
   const sum='<button class="slipsum" data-act="slip" aria-expanded="'+S.slipOpen+'"><span class="a">Slip · '+legs.length+' leg'+(legs.length>1?'s':'')+(S.slipOpen?'  (tap to collapse)':'')+'</span><span class="b">'+(c.single?'singles':'est. '+fo(am))+' · $10 pays $'+(c.single?legs.reduce((s,l)=>s+10*decOf(l.price),0):10*c.dec).toFixed(2)+'</span></button>';
   if(!S.slipOpen) return '<div class="in">'+sum+'</div>';
-  const rows=legs.map(l=>'<div class="sl"><span>'+esc(l.label)+' <span class="mono" style="opacity:.75">'+fo(l.price)+(l.live?' live':l.src==='est.'?' est.':' DK')+'</span><br><span style="opacity:.65;font-size:11px">'+esc(G[l.gid].title)+'</span></span><button class="x" data-act="rm" data-tok="'+esc(l.id)+'" aria-label="Remove '+esc(l.label)+'">Remove</button></div>').join('');
+  const rows=legs.map(l=>'<div class="sl"><span>'+esc(l.label)+' <span class="mono" style="opacity:.75">'+fo(l.price)+(l.live?' live':l.src==='est.'?' est.':' '+(l.bk||'DK'))+'</span><br><span style="opacity:.65;font-size:11px">'+esc(G[l.gid].title)+'</span></span><button class="x" data-act="rm" data-tok="'+esc(l.id)+'" aria-label="Remove '+esc(l.label)+'">Remove</button></div>').join('');
   const chips=[['10%','10'],['25%','25'],['50%','50'],['Max','max']].map(x=>'<button class="x" data-act="stake-chip" data-v="'+x[1]+'">'+x[0]+'</button>').join('');
-  const books=BOOKS.map(b=>'<a class="btn bk" href="'+esc(bookUrl(b))+'" target="_blank" rel="noopener" data-act="book" data-bk="'+b[0]+'">'+esc(b[1])+'</a>').join('');
+  const books=BOOKS.map(b=>{ let dl=null; try{ dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; }catch(err){} return '<a class="btn bk" href="'+esc(bookUrl(b))+'" target="_blank" rel="noopener" data-act="book" data-bk="'+b[0]+'">'+esc(b[1])+(dl?' ✓ '+dl.n+'/'+dl.total:'')+'</a>'; }).join('');
   return '<div class="in"><div class="slipscroll">'+sum+'<div class="slipbody">'+rows+'</div>'+
     '<div class="seg inv" role="group" aria-label="Bet type"><button data-act="mode" data-v="parlay" aria-pressed="'+!c.single+'">'+(legs.length>1?(games>1?'Parlay':'Same-game parlay'):'Straight bet')+'</button><button data-act="mode" data-v="single" aria-pressed="'+c.single+'">Singles</button></div>'+
     '<div class="stakerow"><label class="sl-l">Stake $<input class="num stk" data-in="stake" inputmode="decimal" value="'+esc(S.stake)+'" aria-label="Stake in dollars"></label><span class="chips">'+chips+'</span></div>'+
@@ -40,7 +41,7 @@ function slipHtml(){
     '<div class="slipnote" id="slipmsg">'+esc(S.slipMsg||'')+'</div>'+
     '<div class="small" style="opacity:.9"><b>Step 1.</b> Copy the slip. <b>Step 2.</b> Open Gambly and paste it into the chat box (Gambly cannot receive bets from a link, only pasted text or a screenshot).</div><div class="btnrow"><button class="btn solid" data-act="copyslip">Copy slip text</button></div>'+
     '<label class="small" style="display:block;opacity:.8" for="sliptxt">Slip text (if copying is blocked on your device, press and hold in this box, Select All, Copy)</label><textarea id="sliptxt" readonly rows="'+Math.min(6,legs.length+1)+'" style="width:100%;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace" aria-label="Slip text to paste">'+esc(slipText(legs))+'</textarea>'+
-    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div>'+
+    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div><div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
     '<div class="slipnote">Prices here are model estimates or ESPN/DraftKings numbers from this snapshot, so the book will price it differently. Same-game legs are correlated. Real-money betting is for adults 21+ (call 1-800-GAMBLER for help).</div></div></div>';
 }
 function renderSlip(){
@@ -149,14 +150,14 @@ document.addEventListener('click',function(e){
     const viaBox=()=>{ const ta=document.getElementById('sliptxt'); let ok=false; if(ta){ try{ ta.focus(); ta.select(); ta.setSelectionRange(0,ta.value.length); ok=document.execCommand('copy'); }catch(err){} } say(ok?'Copied '+S.slip.length+' leg'+(S.slip.length>1?'s':'')+'. Now open Gambly and paste.':'Copy was blocked here. The slip text is selected in the box below: tap Copy in the pop-up menu, or press and hold and choose Copy.'); };
     try{ const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):null; if(p&&p.then) p.then(()=>say('Copied '+S.slip.length+' leg'+(S.slip.length>1?'s':'')+'. Now open Gambly and paste.'),viaBox); else viaBox(); }catch(err){ viaBox(); }
     return; }
-  if(act==='book'){ e.preventDefault(); const bk=t.getAttribute('data-bk'); const txt=slipText(S.slip); const url=t.getAttribute('href')||'';
+  if(act==='book'){ const bk=t.getAttribute('data-bk'); const txt=slipText(S.slip); const url=t.getAttribute('href')||''; const native=bk!=='gambly'&&bk!=='fanaticsapp'&&/^https:\/\//i.test(url); if(!native) e.preventDefault();
     const say=m=>{ const el=document.getElementById('slipmsg'); if(el) el.textContent=m; };
     const okMsg=bk==='gambly'?'Slip copied. Paste it into the Gambly chat box and it builds the slip, then pick your sportsbook.':bk==='fanaticsapp'?'Slip copied. The Fanatics app opens but cannot load these bets, so paste or enter them there.':'Slip copied. The sportsbook opens on the game when it can; add the legs there (long-press, Paste, or enter them).';
     const failMsg='Could not copy automatically. The slip text is selected in the box above the book buttons, so copy it from there.';
     const viaBox=()=>{ const ta=document.getElementById('sliptxt'); let ok=false; if(ta){ try{ ta.focus(); ta.select(); ta.setSelectionRange(0,ta.value.length); ok=document.execCommand('copy'); }catch(err){} } say(ok?okMsg:failMsg); };
     /* 1) copy inside the tap (browsers only allow it there) 2) open the book in the same tap. Some iPhone home-screen apps ignore target=_blank links, so open it ourselves and fall back to the same window. */
     try{ const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):null; if(p&&p.then) p.then(()=>say(okMsg),viaBox); else viaBox(); }catch(err){ viaBox(); }
-    if(url){ let w=null; try{ w=window.open(url,'_blank'); }catch(err){} if(!w){ say('Opening the sportsbook…'); setTimeout(()=>{ window.location.href=url; },350); } }
+    if(url&&!native){ let w=null; try{ w=window.open(url,'_blank'); }catch(err){} if(!w){ say('Opening the sportsbook…'); setTimeout(()=>{ window.location.href=url; },350); } }
     return; }
 });
 document.addEventListener('input',function(e){

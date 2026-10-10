@@ -339,10 +339,12 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                 if p["pos"] in ("QB", "RB", "WR", "TE", "FB") and p["grp"] in ("offense", "injuredReserveOrOut"):
                     s, a = prod_nfl(p["id"]); tot += s; att += a
             team_scrim[side] = (tot or 1, att or 1)
+    HT = {}
     for side in ("away", "home"):
         t = teams[side]; tid = G[side]
         offp = 0.0; defp = 0.0; notes = []
         rpl = {p["id"]: p for p in roster_players(lg, tid)}
+        for _pid, _p in rpl.items(): HT[_pid] = _p.get("ht")
         for i in t["injuries"]:
             w = i["weight"]
             if w <= 0 or i["kind"] in ("returning", "inactive"): continue
@@ -641,7 +643,12 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                                   v15=[None if x is None else (round(x, 1) if x != int(x) else int(x)) for x in v15], n15=len(vals15), overHits15=over_hits15, sd=round(sd_adj, 2)))
         games_meta = [dict(date=g["date"][:10], opp=g["opp"], home=g["home"], res=g["result"], post=g["post"]) for g in X["gl"][-10:]]
         players_out.append(dict(id=pid, name=p["name"], side=side, abbr=T["abbr"], pos=p["pos"], jersey=p.get("jersey"), status=status, avail=avail,
-                                flags=flags, boostNotes=boost_note, games=games_meta, slots=slots, stats=stats_out, fam=X["fam"]))
+                                flags=flags, boostNotes=boost_note, games=games_meta, slots=slots, stats=stats_out, fam=X["fam"], ht=HT.get(pid)))
+    # --- basketball: how tall each team's tracked rotation is (inches), used for the height / skill matchup
+    if lg == "wnba":
+        for _side in ("away", "home"):
+            _hs = sorted([p["ht"] for p in players_out if p["side"] == _side and p.get("ht")], reverse=True)[:8]
+            if len(_hs) >= 3: teams[_side]["ht"] = {"avg": round(sum(_hs) / len(_hs), 1), "big": _hs[0], "n": len(_hs)}
     # --- output
     gout = dict(id=G["event"], lg=lg, league={"nfl": "NFL", "wnba": "WNBA", "mlb": "MLB"}[lg],
                 title=f"{a['name']} at {h['name']}", start=start.strftime("%-I:%M %p ET"), startDate=start.strftime("%a %b %-d"), iso=start.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), day=start.strftime("%Y-%m-%d"),

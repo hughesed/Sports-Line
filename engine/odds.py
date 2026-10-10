@@ -38,8 +38,22 @@ def normalize(ev):
     players = ev.get("players") or {}
     for oid, o in (ev.get("odds") or {}).items():
         bt, side, ent, per = o.get("betTypeID"), o.get("sideID"), o.get("statEntityID"), o.get("periodID")
-        if per != "game" or o.get("statID") != "points" and not o.get("playerID"): continue
         fair = {"odds": _am(o.get("fairOdds")), "line": _num(o.get("fairSpread") or o.get("fairOverUnder"))}
+        sid = str(o.get("statID") or "")
+        # MLB: runs in the 1st inning (under 0.5 = "no run first inning", NRFI): both teams (all), or one team
+        if per == "1i" and sid == "points" and bt == "ou" and ent in ("home", "away", "all") and not o.get("playerID"):
+            bk = _books(o, "overUnder")
+            if bk: g.setdefault("nrfi", {}).setdefault(ent, {})[side] = {"fair": fair, "books": bk}
+            continue
+        # basketball: first basket / first to score markets (a player, or a team)
+        if "first" in sid.lower() and bt in ("yn", "ou", "ml") and (o.get("playerID") or ent in ("home", "away")):
+            bk = _books(o, None)
+            if bk:
+                p = players.get(o.get("playerID")) or {}
+                g.setdefault("first", []).append({"stat": sid, "pid": o.get("playerID"), "name": p.get("name"), "ent": ent, "side": side,
+                    "team": "home" if (p.get("teamID") or ent) in ((t.get("home") or {}).get("teamID"), "home") else "away", "fair": fair, "books": bk})
+            continue
+        if per != "game" or o.get("statID") != "points" and not o.get("playerID"): continue
         if o.get("playerID"):
             stat = STAT.get(o.get("statID"))
             if not stat or bt not in ("ou", "yn"): continue

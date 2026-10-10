@@ -25,6 +25,7 @@ function liveLeg(tok){
   return null;
 }
 function legFor(tok){
+  if(tok.indexOf('o:')===0) return (typeof hpLeg==='function')?hpLeg(tok):null;
   if(tok.charAt(0)==='l'&&tok.charAt(1)===':') return liveLeg(tok);
   const parts = tok.split(':'); const k=parts[0]; const g=G[parts[1]]; if(!g) return null;
   const cr=g.crossroads, L=g.lines, lg=g.lg;
@@ -61,7 +62,7 @@ function legFor(tok){
   }
   return null;
 }
-function legSub(tok){ const l=legFor(tok); if(!l) return ''; if(l.live) return fo(l.price)+' · '+pct(l.p); return fo(l.price)+(l.src==='est.'?' est.':' DK')+' · '+pct(l.p); }
+function legSub(tok){ const l=legFor(tok); if(!l) return ''; if(l.live) return fo(l.price)+' · '+pct(l.p); return fo(l.price)+(l.src==='est.'?' est.':' '+(l.bk||'DK'))+' · '+pct(l.p); }
 function legBtn(tok,title,sub,dis){
   const on=inSlip(tok);
   return '<button class="leg'+(on?' on':'')+'" data-act="leg" data-tok="'+esc(tok)+'" aria-pressed="'+on+'"'+(dis?' disabled':'')+'><span class="t">'+esc(title)+'</span><span class="pr">'+esc(sub)+'</span></button>';

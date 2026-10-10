@@ -337,7 +337,7 @@ function btSections(){
     let act='';
     if(b.status==='open'){
       if(!me) act='<div class="btnrow"><button class="btn solid" data-act="signin">Sign in to accept</button></div>';
-      else if(isC) act='<div class="small">You picked <b>'+esc(b.home)+'</b>. Waiting for a challenger to pick the opposing team and accept. You can leave this screen: a pop-up will tell you the moment someone accepts.</div>'+btSettingsHtml(b)+'<div class="btnrow"><button class="btn" data-act="bt-cancel">Cancel and refund</button></div>';
+      else if(isC) act='<div class="small">You picked <b>'+esc(b.home)+'</b>. Waiting for a challenger to pick the opposing team and accept. You can leave this screen: a pop-up will tell you the moment someone accepts.</div>'+btSettingsHtml(b)+(typeof shInviteHtml==='function'?shInviteHtml(b):'')+'<div class="btnrow"><button class="btn" data-act="bt-cancel">Cancel and refund</button></div>';
       else if(b.away){ const oth=b.creator_side==='home'?'away':'home'; act='<div class="small"><b>'+esc(b.creator_name||'They')+'</b> backs <b>'+esc(sideName(b.creator_side))+'</b>. Accept the same wager ('+cn(b.wager)+' coins) and you get <b>'+esc(sideName(oth))+'</b>. Then you both build your parlays.</div><div class="btnrow"><button class="btn solid" data-act="bt-accept" data-k="'+oth+'">Accept · back '+esc(sideName(oth))+'</button></div>'; }
       else { const ts=simTeams(b.sport); const f2={sport:b.sport,pick:BT.form.pick,dd:BT.form.dd}; const qq=(BT.form.q||'').trim().toLowerCase(); const pk=teamOf(b.sport,BT.form.pick);
         act='<div class="small"><b>'+esc(b.creator_name||'They')+'</b> is playing <b>'+esc(teamOf(b.sport,b.home).name||b.home)+'</b> and is waiting for a challenger. Pick the team you want to play, then accept the same wager ('+cn(b.wager)+' coins). Then you both build your parlays.</div>'+btSettingsHtml(b)+
@@ -442,7 +442,7 @@ document.addEventListener('click',function(e){
   if(act==='bt-create'&&f.vs==='cpu'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
     btCall('create_cpu_battle',{p_sport:f.sport,p_home:f.home,p_away:f.cpuAway||null,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ refreshMe(); loadCpu(); btOpen(d.id); }); return; }
   if(act==='bt-create'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
-    btCall('create_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ BT.alerts.until=Date.now()+30*60000; BT.alerts.last=0; refreshMe(); btOpen(d.id); }); return; }
+    btCall('create_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ BT.alerts.until=Date.now()+30*60000; BT.alerts.last=0; refreshMe(); try{ shAfterCreate(d.id); }catch(e){} btOpen(d.id); }); return; }
   if(act==='bt-open'){ btOpen(+t.getAttribute('data-id')); return; }
   if(act==='bt-popgo'){ const id=+t.getAttribute('data-id'); btPopHide(id); btOpen(id); return; }
   if(act==='bt-popx'){ btPopHide(+t.getAttribute('data-id')); return; }

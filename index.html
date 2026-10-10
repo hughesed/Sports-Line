@@ -852,10 +852,26 @@ body.vchat .foot{display:none}
 @media (prefers-reduced-motion: reduce){.vsflash,.vsflash::before,.vsflash *{animation:none!important}.vsf-conf{display:none}}
 .vsf-btns .btn{background:#fff;color:#101826;border:0;font-weight:800}.vsf-btns .btn.solid{background:#ffc83d;color:#101826}
 
+/* shop, messages, online list */
+.shdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle;background:#9aa7b8}
+.shdot.on{background:var(--over);box-shadow:0 0 0 3px var(--over-soft)}
+.shrow{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.shchip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 10px;font:inherit;font-size:12px;cursor:pointer}
+.shgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0}
+.shi{display:flex;flex-direction:column;gap:4px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface2)}
+.shE{font-size:26px;line-height:1}
+.shpass{border:1px solid var(--accent);background:var(--accent-soft);border-radius:12px;padding:10px;margin:8px 0;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.shpass ul{margin:0;padding-left:18px}
+.shinv{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px;margin:6px 0}
+.shinv select,.shinv input{flex:1 1 120px;min-width:0}
+.shmem{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.shacts{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.shinvite,.shprof{margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px}
+
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="83f4394df1">
+<body data-build="bbf2abd874">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -1199,7 +1215,7 @@ function gameCard(g){
     '<div class="team" style="flex-direction:row-reverse;text-align:right">'+chipOf(h)+'<div class="tn"><div class="n">'+esc(h.short)+'</div><div class="r">'+esc(h.record)+' · home</div></div></div></div></div>';
   return '<article class="game" id="game-'+g.id+'">'+hs+
     '<div class="sec"><h3>Lines <span class="hint">DraftKings via ESPN · tap to add to slip</span></h3>'+linesTable(g)+'</div>'+
-    crossroads(g)+patterns(g)+injuries(g)+safeBar(g)+
+    hpFold('cr:'+g.id,'Crossroads','matchup, height and skill',crossroads(g)+hpHtBlock(g),false)+hpFold('pt:'+g.id,'Team patterns','',patterns(g),false)+hpFold('inj:'+g.id,'Injury report','',injuries(g),false)+safeBar(g)+
     (g.players.length?'<button class="drawerbtn" data-act="drawer" data-gid="'+g.id+'" aria-expanded="'+open+'"><span>SGP builder</span><span class="mono">'+countSelections(g)+' selections '+(open?'(hide)':'(open)')+'</span></button>':'<div class="sec"><div class="small muted">The book feed does not publish player props for this league, so there is no SGP builder here. Lines, the model, and the live view still work.</div></div>')+
     (open&&g.players.length?drawer(g):'')+'</article>';
 }
@@ -1640,6 +1656,7 @@ function liveLeg(tok){
   return null;
 }
 function legFor(tok){
+  if(tok.indexOf('o:')===0) return (typeof hpLeg==='function')?hpLeg(tok):null;
   if(tok.charAt(0)==='l'&&tok.charAt(1)===':') return liveLeg(tok);
   const parts = tok.split(':'); const k=parts[0]; const g=G[parts[1]]; if(!g) return null;
   const cr=g.crossroads, L=g.lines, lg=g.lg;
@@ -1676,7 +1693,7 @@ function legFor(tok){
   }
   return null;
 }
-function legSub(tok){ const l=legFor(tok); if(!l) return ''; if(l.live) return fo(l.price)+' · '+pct(l.p); return fo(l.price)+(l.src==='est.'?' est.':' DK')+' · '+pct(l.p); }
+function legSub(tok){ const l=legFor(tok); if(!l) return ''; if(l.live) return fo(l.price)+' · '+pct(l.p); return fo(l.price)+(l.src==='est.'?' est.':' '+(l.bk||'DK'))+' · '+pct(l.p); }
 function legBtn(tok,title,sub,dis){
   const on=inSlip(tok);
   return '<button class="leg'+(on?' on':'')+'" data-act="leg" data-tok="'+esc(tok)+'" aria-pressed="'+on+'"'+(dis?' disabled':'')+'><span class="t">'+esc(title)+'</span><span class="pr">'+esc(sub)+'</span></button>';
@@ -1859,6 +1876,7 @@ const BOOKS=[['gambly','Gambly: open chat','https://gambly.com/chat'],['draftkin
 function bookUrl(b){
   const dku=(b[0]==='draftkings'&&S.slip.length===1)?dkLeg(S.slip[0]):''; if(dku) return dku;
   if(b[0]==='fanaticsapp') return b[2];
+  try{ const dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; if(dl&&dl.url) return dl.url; }catch(err){}
   /* when every leg is in one game and the odds feed knows that game, open the book on THAT game's page (the closest a web page can get to the slip) */
   try{ const gids=Array.from(new Set(S.slip.map(l=>l.gid))); if(gids.length===1&&G[gids[0]]&&typeof odFind==='function'){ const ev=odFind(G[gids[0]]); const lk=ev&&ev.eventLinks&&ev.eventLinks[b[0]]; if(lk&&/^https:\/\//i.test(lk)) return lk; } }catch(err){}
   const t=(P.tpl||'').trim();
@@ -1887,9 +1905,9 @@ function slipHtmlLocal(){
   const c=calc(); const am=amerOfDec(c.bdec); const games=new Set(legs.map(l=>l.gid)).size;
   const sum='<button class="slipsum" data-act="slip" aria-expanded="'+S.slipOpen+'"><span class="a">Slip · '+legs.length+' leg'+(legs.length>1?'s':'')+(S.slipOpen?'  (tap to collapse)':'')+'</span><span class="b">'+(c.single?'singles':'est. '+fo(am))+' · $10 pays $'+(c.single?legs.reduce((s,l)=>s+10*decOf(l.price),0):10*c.bdec).toFixed(2)+'</span></button>';
   if(!S.slipOpen) return '<div class="in">'+sum+'</div>';
-  const rows=legs.map(l=>'<div class="sl"><span>'+esc(l.label)+' <span class="mono" style="opacity:.75">'+fo(l.price)+(l.live?' live':l.src==='est.'?' est.':' DK')+'</span><br><span style="opacity:.65;font-size:11px">'+esc(G[l.gid].title)+'</span></span><button class="x" data-act="rm" data-tok="'+esc(l.id)+'" aria-label="Remove '+esc(l.label)+'">Remove</button></div>').join('');
+  const rows=legs.map(l=>'<div class="sl"><span>'+esc(l.label)+' <span class="mono" style="opacity:.75">'+fo(l.price)+(l.live?' live':l.src==='est.'?' est.':' '+(l.bk||'DK'))+'</span><br><span style="opacity:.65;font-size:11px">'+esc(G[l.gid].title)+'</span></span><button class="x" data-act="rm" data-tok="'+esc(l.id)+'" aria-label="Remove '+esc(l.label)+'">Remove</button></div>').join('');
   const chips=[['10%','10'],['25%','25'],['50%','50'],['Max','max']].map(x=>'<button class="x" data-act="stake-chip" data-v="'+x[1]+'">'+x[0]+'</button>').join('');
-  const books=BOOKS.map(b=>'<a class="btn bk" href="'+esc(bookUrl(b))+'" target="_blank" rel="noopener" data-act="book" data-bk="'+b[0]+'">'+esc(b[1])+'</a>').join('');
+  const books=BOOKS.map(b=>{ let dl=null; try{ dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; }catch(err){} return '<a class="btn bk" href="'+esc(bookUrl(b))+'" target="_blank" rel="noopener" data-act="book" data-bk="'+b[0]+'">'+esc(b[1])+(dl?' ✓ '+dl.n+'/'+dl.total:'')+'</a>'; }).join('');
   return '<div class="in"><div class="slipscroll">'+sum+'<div class="slipbody">'+rows+'</div>'+
     '<div class="seg inv" role="group" aria-label="Bet type"><button data-act="mode" data-v="parlay" aria-pressed="'+!c.single+'">'+(legs.length>1?(games>1?'Parlay':'Same-game parlay'):'Straight bet')+'</button><button data-act="mode" data-v="single" aria-pressed="'+c.single+'">Singles</button></div>'+
     boostHtml()+'<div class="stakerow"><label class="sl-l">Stake $<input class="num stk" data-in="stake" inputmode="decimal" value="'+esc(S.stake)+'" aria-label="Stake in dollars"></label><span class="chips">'+chips+'</span></div>'+
@@ -1898,7 +1916,7 @@ function slipHtmlLocal(){
     '<div class="slipnote" id="slipmsg">'+esc(S.slipMsg||'')+'</div>'+
     '<div class="small" style="opacity:.9"><b>Step 1.</b> Copy the slip. <b>Step 2.</b> Open Gambly and paste it into the chat box (Gambly cannot receive bets from a link, only pasted text or a screenshot).</div><div class="btnrow"><button class="btn solid" data-act="copyslip">Copy slip text</button></div>'+
     '<label class="small" style="display:block;opacity:.8" for="sliptxt">Slip text (if copying is blocked on your device, press and hold in this box, Select All, Copy)</label><textarea id="sliptxt" readonly rows="'+Math.min(6,legs.length+1)+'" style="width:100%;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace" aria-label="Slip text to paste">'+esc(slipText(legs))+'</textarea>'+
-    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div>'+
+    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div><div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
     '<div class="slipnote">Prices here are model estimates or ESPN/DraftKings numbers from this snapshot, so the book will price it differently. Same-game legs are correlated. Real-money betting is for adults 21+ (call 1-800-GAMBLER for help).</div></div></div>';
 }
 function renderSlip(){
@@ -1990,14 +2008,14 @@ document.addEventListener('click',function(e){
     const viaBox=()=>{ const ta=document.getElementById('sliptxt'); let ok=false; if(ta){ try{ ta.focus(); ta.select(); ta.setSelectionRange(0,ta.value.length); ok=document.execCommand('copy'); }catch(err){} } say(ok?'Copied '+S.slip.length+' leg'+(S.slip.length>1?'s':'')+'. Now open Gambly and paste.':'Copy was blocked here. The slip text is selected in the box below: tap Copy in the pop-up menu, or press and hold and choose Copy.'); };
     try{ const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):null; if(p&&p.then) p.then(()=>say('Copied '+S.slip.length+' leg'+(S.slip.length>1?'s':'')+'. Now open Gambly and paste.'),viaBox); else viaBox(); }catch(err){ viaBox(); }
     return; }
-  if(act==='book'){ e.preventDefault(); const bk=t.getAttribute('data-bk'); const txt=slipText(S.slip); const url=t.getAttribute('href')||'';
+  if(act==='book'){ const bk=t.getAttribute('data-bk'); const txt=slipText(S.slip); const url=t.getAttribute('href')||''; const native=bk!=='gambly'&&bk!=='fanaticsapp'&&/^https:\/\//i.test(url); if(!native) e.preventDefault();
     const say=m=>{ const el=document.getElementById('slipmsg'); if(el) el.textContent=m; };
     const okMsg=bk==='gambly'?'Slip copied. Paste it into the Gambly chat box and it builds the slip, then pick your sportsbook.':bk==='fanaticsapp'?'Slip copied. The Fanatics app opens but cannot load these bets, so paste or enter them there.':'Slip copied. The sportsbook opens on the game when it can; add the legs there (long-press, Paste, or enter them).';
     const failMsg='Could not copy automatically. The slip text is selected in the box above the book buttons, so copy it from there.';
     const viaBox=()=>{ const ta=document.getElementById('sliptxt'); let ok=false; if(ta){ try{ ta.focus(); ta.select(); ta.setSelectionRange(0,ta.value.length); ok=document.execCommand('copy'); }catch(err){} } say(ok?okMsg:failMsg); };
     /* 1) copy inside the tap (browsers only allow it there) 2) open the book in the same tap. Some iPhone home-screen apps ignore target=_blank links, so open it ourselves and fall back to the same window. */
     try{ const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):null; if(p&&p.then) p.then(()=>say(okMsg),viaBox); else viaBox(); }catch(err){ viaBox(); }
-    if(url){ let w=null; try{ w=window.open(url,'_blank'); }catch(err){} if(!w){ say('Opening the sportsbook…'); setTimeout(()=>{ window.location.href=url; },350); } }
+    if(url&&!native){ let w=null; try{ w=window.open(url,'_blank'); }catch(err){} if(!w){ say('Opening the sportsbook…'); setTimeout(()=>{ window.location.href=url; },350); } }
     return; }
 });
 document.addEventListener('input',function(e){
@@ -3077,7 +3095,7 @@ const BK_LG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'NCAAF',cbb:'NCAAB',wnba:'WNBA'};
 const bkNorm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 function bkEvent(g){
   try{ const O=window.__LSDATA&&window.__LSDATA.odds; if(!O||!Array.isArray(O.events)) return null;
-    const lg=BK_LG[g.lg||g.key]; const hn=bkNorm(g.teams.home.name), an=bkNorm(g.teams.away.name), ha=bkNorm(g.teams.home.abbr), aa=bkNorm(g.teams.away.abbr), gt=Date.parse(g.iso);
+    const lg=BK_LG[g.key||g.lg]; const hn=bkNorm(g.teams.home.name), an=bkNorm(g.teams.away.name), ha=bkNorm(g.teams.home.abbr), aa=bkNorm(g.teams.away.abbr), gt=Date.parse(g.iso);
     return O.events.find(e=>{ if(lg&&e.league!==lg) return false; const st=Date.parse(e.start); if(isFinite(gt)&&isFinite(st)&&Math.abs(st-gt)>30*3600e3) return false;
       return (bkNorm(e.homeName)===hn&&bkNorm(e.awayName)===an)||(bkNorm(e.home)===ha&&bkNorm(e.away)===aa); })||null;
   }catch(e){ return null; }
@@ -3113,7 +3131,7 @@ function navHtml(){
   const pend=(typeof socPending==='function'&&socPending()!=null)?socPending():P.bets.filter(b=>b.status==='pending').length;
   const it=(k,ic,l,badge,dot)=>'<button class="nv" data-act="view" data-k="'+k+'" aria-pressed="'+(S.view===k)+'">'+IC[ic]+'<span>'+l+'</span>'+(badge?'<i class="nb">'+badge+'</i>':'')+(dot?'<i class="livedot" title="A game is live"></i>':'')+'</button>';
   const men=typeof socUnseen==='function'?socUnseen():0;
-  return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+it('chat','chat','Chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''));
+  return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+it('chat','chat','Chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''))+it('shop','slip','Shop',(typeof shBadge==='function'&&shBadge())||'');
 }
 /* the home board: today's games, then later days under "Coming up". Yesterday's games stay out of it: the slate keeps them for ~30 h so open slips can settle, and Past (calendar) has their recaps */
 function boardGames(){ return DATA.games.filter(g=>!g.ghost&&(!g.day||g.day>=TODAY)); }
@@ -3134,12 +3152,13 @@ function render(){
   else if(S.view==='board') body=boardView();
   else if(S.view==='battle') body=battleView();
   else if(S.view==='profile') body=profileView();
+  else if(S.view==='shop') body=shopView();
   else body=chatView();
   const showLeague=S.view==='pre'||S.view==='live';
   const dlabel=S.date===TODAY?'Today':wd(S.date)+' '+mon(S.date)+' '+dnum(S.date);
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
     (S.calOpen?calHtml():'')+(showLeague?'<div class="tabs" role="group" aria-label="League">'+ltabs+'</div>':'')+'</div>';
-  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+potdHtml()+trackRecordHtml():'')+body+
+  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+hpHomeHtml()+hpFold('potd','Pick of the day','',potdHtml(),false)+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
     '<div class="foot"><div>Source: ESPN game logs (up to 15 games shown, last 10 feed the model), standings, results, live play-by-play, injury reports and DraftKings lines. Pregame numbers are a snapshot, so lines and injury news will change before game time.</div>'+
     '<div>Boost types shown are ones sportsbooks have advertised: <a href="https://www.cbssports.com/betting/news/nfl-sportsbook-boosts-promo-codes-for-week-1-best-draftkings-bet365-betmgm-betting-promotions" target="_blank" rel="noopener">CBS Sports</a>, <a href="https://www.actionnetwork.com/education/best-sportsbooks-same-game-parlays" target="_blank" rel="noopener">Action Network</a>, <a href="https://www.oddschecker.com/us/insight/football/nfl/20251020-fanduel-sportsbook-choose-your-own-reward-promotion-2x-25pp-profit-boosts-or-30pp-sgp-profit-boost-on-monday-night-football" target="_blank" rel="noopener">Oddschecker</a>, <a href="https://rg.org/bonuses/parlay-bonuses" target="_blank" rel="noopener">rg.org</a>. They are not live offers.</div>'+
     '<div>Practice money is pretend. Live scores and plays come from ESPN and can lag or contain errors. For information only. Sportsbook buttons may open partner links. Sports betting involves risk, so only stake what you can afford to lose. 21+. Help: 1-800-GAMBLER. This app is not affiliated with any sportsbook.</div></div>';
@@ -3691,7 +3710,7 @@ function refreshMe(){
 }
 function socPending(){ if(!SOC.on) return null; if(!SOC.user||!SOC.bets) return SOC.user?null:0; return SOC.bets.filter(b=>b.status==='pending').length; }
 function socUnseen(){ return SOC.user?SOC.mentions.filter(m=>m.id>SOC.seenMention).length:0; }
-function socRerender(){ if(['board','chat','battle','profile','slips'].indexOf(S.view)>=0) render(); else { const h=document.getElementById('hdr'); if(h) render(); } }
+function socRerender(){ if(['board','chat','battle','profile','slips','shop'].indexOf(S.view)>=0) render(); else { const h=document.getElementById('hdr'); if(h) render(); } }
 function socAfterRender(){
   if(!SOC.on) return;
   if(S.view==='board') loadBoard(false);
@@ -3700,6 +3719,7 @@ function socAfterRender(){
   else stopChat();
   if(S.view==='profile') loadProfile(S.profName,false);
   if(typeof btAfterRender==='function') btAfterRender();
+  if(typeof shAfterRender==='function') shAfterRender();
 }
 function socNote(){
   if(SOC.state==='off') return '<div class="flash">Sign-in not set up yet. Accounts, coins, the leaderboard, chat and Battles start working once the site owner connects a free Supabase project (README, "Accounts, chat, leaderboard and Battles"). Everything else on the page works now.</div>';
@@ -3754,7 +3774,9 @@ async function placeBetServer(){
   if(!SOC.user){ openModal('in'); return; }
   const err=placeCheck(); if(err){ S.slipMsg=err; renderSlip(); return; }
   if(SOC.sending) return; SOC.sending=true;
-  const legs=S.slip.map(l=>l.live?{tok:l.id,price:l.price,label:l.label}:l.id);
+  const bad=S.slip.filter(l=>l.id.indexOf('o:')===0&&!hpServerTok(l));
+  if(bad.length){ S.slipMsg='The practice server only prices lines on its own slate: '+bad.map(l=>l.label).join(', ')+' use a different line or are not supported, so take them out or open the sportsbook instead.'; renderSlip(); return; }
+  const legs=S.slip.map(l=>l.live?{tok:l.id,price:l.price,label:l.label}:(l.id.indexOf('o:')===0?hpServerTok(l):l.id));
   const sent={}; S.slip.forEach(l=>{ sent[l.id]=l.price; });
   const bb=S.betMode==='single'?null:activeBoost();
   S.slipMsg='Placing…'; renderSlip();
@@ -3892,7 +3914,7 @@ function boardBodyHtml(){
     '<div class="seg" role="group" aria-label="Board"><button data-act="lbtab" data-t="win" aria-pressed="'+(tab==='win')+'">Top 10 winners</button><button data-act="lbtab" data-t="lose" aria-pressed="'+(tab==='lose')+'">Top 10 losers</button></div>'+
     '<div class="lblist">'+(tab==='win'?rows(lb.winners||[],true):rows(lb.losers||[],false))+'</div>'+
     '<h4 class="sub">Yesterday\'s champions</h4>'+yHtml+
-    '<h4 class="sub">All-time badges</h4>'+atHtml+badgeLegend()+PRACTICE_NOTE;
+    '<h4 class="sub">All-time badges</h4>'+atHtml+badgeLegend()+shProfileBlock(d)+PRACTICE_NOTE;
 }
 function fmtDay(d){ if(!d) return ''; const t=new Date(d+'T12:00:00'); return t.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
 function boardView(){
@@ -3925,7 +3947,7 @@ function msgHtml(m){
 function fmtClock(t){ return new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
 function chatBodyHtml(){
   const un=socUnseen(); const lastM=SOC.mentions[0];
-  return (SOC.chatErr?'<div class="flash">'+esc(SOC.chatErr)+'</div>':'')+
+  return shChatStrip()+(SOC.chatErr?'<div class="flash">'+esc(SOC.chatErr)+'</div>':'')+
     (un&&lastM?'<div class="menbar">'+lastM.from_name+' mentioned you'+(un>1?' (+'+(un-1)+' more)':'')+'</div>':'')+
     '<div class="chatbox" id="chatbox" aria-live="polite">'+(SOC.chat.length?SOC.chat.map(msgHtml).join(''):'<div class="small muted">No messages yet. Say hi.</div>')+'</div>'+
     '<div class="sugg" id="chatsugg" role="listbox" aria-label="Usernames"></div>'+
@@ -4413,7 +4435,7 @@ function btSections(){
     let act='';
     if(b.status==='open'){
       if(!me) act='<div class="btnrow"><button class="btn solid" data-act="signin">Sign in to accept</button></div>';
-      else if(isC) act='<div class="small">You picked <b>'+esc(b.home)+'</b>. Waiting for a challenger to pick the opposing team and accept. You can leave this screen: a pop-up will tell you the moment someone accepts.</div>'+btSettingsHtml(b)+'<div class="btnrow"><button class="btn" data-act="bt-cancel">Cancel and refund</button></div>';
+      else if(isC) act='<div class="small">You picked <b>'+esc(b.home)+'</b>. Waiting for a challenger to pick the opposing team and accept. You can leave this screen: a pop-up will tell you the moment someone accepts.</div>'+btSettingsHtml(b)+(typeof shInviteHtml==='function'?shInviteHtml(b):'')+'<div class="btnrow"><button class="btn" data-act="bt-cancel">Cancel and refund</button></div>';
       else if(b.away){ const oth=b.creator_side==='home'?'away':'home'; act='<div class="small"><b>'+esc(b.creator_name||'They')+'</b> backs <b>'+esc(sideName(b.creator_side))+'</b>. Accept the same wager ('+cn(b.wager)+' coins) and you get <b>'+esc(sideName(oth))+'</b>. Then you both build your parlays.</div><div class="btnrow"><button class="btn solid" data-act="bt-accept" data-k="'+oth+'">Accept · back '+esc(sideName(oth))+'</button></div>'; }
       else { const ts=simTeams(b.sport); const f2={sport:b.sport,pick:BT.form.pick,dd:BT.form.dd}; const qq=(BT.form.q||'').trim().toLowerCase(); const pk=teamOf(b.sport,BT.form.pick);
         act='<div class="small"><b>'+esc(b.creator_name||'They')+'</b> is playing <b>'+esc(teamOf(b.sport,b.home).name||b.home)+'</b> and is waiting for a challenger. Pick the team you want to play, then accept the same wager ('+cn(b.wager)+' coins). Then you both build your parlays.</div>'+btSettingsHtml(b)+
@@ -4518,7 +4540,7 @@ document.addEventListener('click',function(e){
   if(act==='bt-create'&&f.vs==='cpu'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
     btCall('create_cpu_battle',{p_sport:f.sport,p_home:f.home,p_away:f.cpuAway||null,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ refreshMe(); loadCpu(); btOpen(d.id); }); return; }
   if(act==='bt-create'){ if(!SOC.user){ openModal('in'); return; } if(!f.home){ BT.msg='Pick your team.'; btRender(); return; }
-    btCall('create_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ BT.alerts.until=Date.now()+30*60000; BT.alerts.last=0; refreshMe(); btOpen(d.id); }); return; }
+    btCall('create_battle',{p_sport:f.sport,p_home:f.home,p_wager:parseFloat(String(f.wager).replace(/[^0-9.]/g,''))||0,p_fmt:f.fmt,p_max_legs:f.legs==null?8:f.legs,p_minutes:f.mins||4},d=>{ BT.alerts.until=Date.now()+30*60000; BT.alerts.last=0; refreshMe(); try{ shAfterCreate(d.id); }catch(e){} btOpen(d.id); }); return; }
   if(act==='bt-open'){ btOpen(+t.getAttribute('data-id')); return; }
   if(act==='bt-popgo'){ const id=+t.getAttribute('data-id'); btPopHide(id); btOpen(id); return; }
   if(act==='bt-popx'){ btPopHide(+t.getAttribute('data-id')); return; }
@@ -5528,6 +5550,155 @@ document.addEventListener('click',function(e){
 },true);
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if(document.getElementById('shmodal')) shClose(); else vsfClose(); } });
 
+/* ================= shop, 30-day pass, gifts, direct messages, online/offline, profile visitors, battle invites =================
+   Practice coins only. Needs supabase/patch_shop_v8.sql in the project; until it is applied every call fails with "function not found" and the
+   screens show a setup note instead (nothing else in the app is affected). */
+const SHP={tab:'shop',st:null,on:null,inbox:null,with:null,thread:[],msg:'',busy:false,vis:null,missing:false,unread:0,invite:null,to:{},note:{},pex:{},pexBusy:{},dailyFor:'',dm:''};
+const shFmt=t=>{ try{ return new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }catch(e){ return ''; } };
+const shAgo=t=>{ if(!t) return 'a while ago'; const m=Math.max(0,Math.round((Date.now()-Date.parse(t))/60000)); return m<2?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'; };
+function shErr(e){ const m=String((e&&e.message)||e||''); if(/could not find|schema cache|does not exist|not exist/i.test(m)) SHP.missing=true; return m; }
+function shCall(fn,args){ return SOC.sb.rpc(fn,args||{}).then(r=>{ if(r.error) throw r.error; return r.data; }); }
+function shReady(){ return !!(SOC.on&&SOC.sb&&SOC.user&&SOC.me); }
+function shBadge(){ return SHP.unread||''; }
+function shPaint(){ if(S.view==='shop'){ const b=document.getElementById('sh-body'); if(b&&!(document.activeElement&&b.contains(document.activeElement)&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) b.innerHTML=shBody(); const t=document.getElementById('sh-tabs'); if(t) t.innerHTML=shTabs(); }
+  const s=document.getElementById('sh-strip'); if(s) s.innerHTML=shStripInner(); const bx=document.getElementById('sh-thread'); if(bx){ const atEnd=bx.scrollHeight-bx.scrollTop-bx.clientHeight<60; bx.innerHTML=shThreadHtml(); if(atEnd) bx.scrollTop=bx.scrollHeight; } }
+function shFlash(m){ SHP.msg=m; shPaint(); }
+
+/* ---------- loaders ---------- */
+function shLoadShop(){ if(!shReady()) return; shCall('shop_state').then(d=>{ SHP.st=d; if(SOC.me&&d&&d.balance!=null){ SOC.me.balance=+d.balance; renderBank(); } shPaint(); }).catch(e=>{ SHP.msg=shErr(e); shPaint(); }); }
+function shLoadOnline(){ if(!shReady()||SHP.missing) return; shCall('who_online').then(d=>{ SHP.on=d||[]; shPaint(); }).catch(shErr); }
+function shLoadInbox(){ if(!shReady()) return; shCall('dm_inbox').then(d=>{ SHP.inbox=d||[]; SHP.unread=SHP.inbox.reduce((n,x)=>n+(+x.unread||0),0); navRefresh(); shPaint(); }).catch(e=>{ SHP.msg=shErr(e); shPaint(); }); }
+function shLoadThread(){ if(!shReady()||!SHP.with) return; const w=SHP.with.id; shCall('dm_thread',{p_with:w,p_after:0}).then(d=>{ if(!SHP.with||SHP.with.id!==w) return; const n=(d||[]).length; const changed=n!==SHP.thread.length; SHP.thread=d||[]; if(changed){ shPaint(); const bx=document.getElementById('sh-thread'); if(bx) bx.scrollTop=bx.scrollHeight; } }).catch(e=>{ SHP.msg=shErr(e); shPaint(); }); }
+function shLoadVis(){ if(!shReady()) return; shCall('my_visitors').then(d=>{ SHP.vis=d; shPaint(); }).catch(e=>{ SHP.msg=shErr(e); shPaint(); }); }
+function shLoadTab(){ if(SHP.tab==='shop'){ shLoadShop(); shLoadOnline(); } else if(SHP.tab==='msg'){ if(SHP.with) shLoadThread(); else shLoadInbox(); } else if(SHP.tab==='online') shLoadOnline(); else if(SHP.tab==='vis') shLoadVis(); }
+function shAfterRender(){
+  if(S.view!=='profile'){ SHP.pex={}; SHP.pexBusy={}; }
+  if(S.view==='chat') shLoadOnline();
+  if(S.view==='shop'&&SOC.user) shLoadTab();
+}
+/* presence, the daily coins and the unread badge */
+function shTick(){
+  if(!shReady()||document.hidden||SHP.missing) return;
+  shCall('touch_presence').catch(shErr);
+  if(SHP.dailyFor!==SOC.user.id){ SHP.dailyFor=SOC.user.id; shCall('claim_daily').then(d=>{ if(d&&d.claimed){ S.flash='+'+d.amount+' daily coins'+(d.pass?' (pass bonus)':''); if(SOC.me) SOC.me.balance=+d.balance; renderBank(); } }).catch(shErr); }
+  shCall('dm_unread').then(n=>{ const v=+n||0; if(v!==SHP.unread){ SHP.unread=v; navRefresh(); } }).catch(shErr);
+  if(S.view==='chat'||(S.view==='shop'&&SHP.tab!=='msg')) shLoadOnline();
+  if(S.view==='shop'&&SHP.tab==='msg'&&!SHP.with) shLoadInbox();
+}
+setInterval(shTick,45000); setTimeout(shTick,3500);
+setInterval(()=>{ if(S.view==='shop'&&SHP.tab==='msg'&&SHP.with&&!document.hidden) shLoadThread(); },5000);
+
+/* ---------- online / offline ---------- */
+const shDot=on=>'<i class="shdot '+(on?'on':'off')+'" title="'+(on?'online':'offline')+'"></i>';
+function shMembers(){ return (SHP.on||[]).filter(m=>!SOC.me||m.id!==SOC.me.id); }
+function shChip(m){ return '<button class="shchip" data-act="sh-msg-user" data-id="'+m.id+'" data-n="'+esc(m.username)+'">'+shDot(m.online)+esc(m.username)+(m.pass?' ⭐':'')+'</button>'; }
+function shStripInner(){
+  if(SHP.missing||!SHP.on) return ''; const ms=shMembers(); const on=ms.filter(m=>m.online), off=ms.filter(m=>!m.online);
+  return '<details class="d"><summary>Online now ('+on.length+') · Offline ('+off.length+')</summary>'+(on.length?'<div class="shrow">'+on.map(shChip).join('')+'</div>':'<div class="small muted">Nobody else is online right now.</div>')+
+    (off.length?'<div class="small muted">Offline</div><div class="shrow">'+off.slice(0,40).map(shChip).join('')+'</div>':'')+'<div class="small muted">Tap a name to message them. Online means active in the last 2 minutes.</div></details>';
+}
+function shChatStrip(){ return '<div id="sh-strip">'+shStripInner()+'</div>'; }
+
+/* ---------- views ---------- */
+function shTabs(){ return [['shop','Shop'],['msg','Messages'+(SHP.unread?' ('+SHP.unread+')':'')],['online','Online'],['vis','Visitors']].map(x=>'<button data-act="sh-tab" data-k="'+x[0]+'" aria-pressed="'+(SHP.tab===x[0])+'">'+x[1]+'</button>').join(''); }
+function shopView(){
+  const h='<section class="game"><div class="sec"><h3>Shop &amp; messages <span class="hint">practice coins only</span></h3>';
+  if(!SOC.on||SOC.state!=='ready') return h+socNote()+'</div></section>';
+  if(!SOC.user) return h+'<div class="small">Sign in to use the shop, messages, and the online list.</div><div class="btnrow"><button class="btn solid" data-act="signin">Sign in</button></div></div></section>';
+  return h+'<div class="seg" id="sh-tabs" role="group" aria-label="Section">'+shTabs()+'</div><div id="sh-body">'+shBody()+'</div></div></section>';
+}
+function shBody(){
+  if(SHP.missing) return '<div class="flash">The shop needs a one-time database update (supabase/patch_shop_v8.sql). Until it is applied these screens stay empty. Everything else in the app works.</div>';
+  const m=SHP.msg?'<div class="flash">'+esc(SHP.msg)+'</div>':'';
+  return m+(SHP.tab==='shop'?shShopHtml():SHP.tab==='msg'?shMsgHtml():SHP.tab==='online'?shOnlineHtml():shVisHtml());
+}
+function shShopHtml(){
+  const s=SHP.st; if(!s) return '<div class="small muted">Loading…</div>';
+  const pass='<div class="shpass"><div><b>30-day pass</b> <span class="small muted">'+cn(s.pass_price)+' coins</span></div><ul class="small"><li>'+cn(20)+' coins a day instead of '+cn(10)+'</li><li>See who visited your page</li><li>'+s.discount_pct+'% off everything in the shop</li></ul>'+
+    (s.pass?'<div class="small ok">Active until '+esc(shFmt(s.pass_until))+'. Buying again adds 30 more days.</div>':'')+'<button class="btn solid" data-act="sh-pass"'+(SHP.busy?' disabled':'')+'>'+(s.pass?'Add 30 days':'Buy the pass')+'</button></div>';
+  const daily='<div class="small muted">Daily coins: '+(s.daily_ready?'ready, it is added automatically when you open the app.':'collected today.')+' You get '+s.daily_amount+' a day'+(s.pass?' with your pass':'')+'.</div>';
+  const items='<div class="shgrid">'+(s.items||[]).map(i=>'<div class="shi"><span class="shE">'+esc(i.emoji)+'</span><b>'+esc(i.name)+'</b><span class="small muted">'+esc(i.blurb)+' Use it within '+i.days+' days.</span><span class="mono">'+COIN+' '+(i.pay<i.price?'<s class="muted">'+cn(i.price)+'</s> ':'')+cn(i.pay)+'</span><button class="btn" data-act="sh-buy" data-id="'+esc(i.id)+'"'+(SHP.busy?' disabled':'')+'>Buy</button></div>').join('')+'</div>';
+  const mem=shMembers();
+  const inv=(s.inventory||[]).filter(x=>!x.sent_at).map(x=>'<div class="shinv"><span class="shE">'+esc(x.emoji)+'</span><span><b>'+esc(x.name)+'</b><br><span class="small muted">send by '+esc(shFmt(x.use_by))+'</span></span>'+
+    '<select data-in="sh-to" data-inv="'+x.id+'" aria-label="Send to"><option value="">Send to…</option>'+mem.map(p=>'<option value="'+p.id+'"'+((SHP.to[x.id]||SHP.giftTo)===p.id?' selected':'')+'>'+(p.online?'● ':'○ ')+esc(p.username)+'</option>').join('')+'</select>'+
+    '<input class="num" data-in="sh-note" data-inv="'+x.id+'" maxlength="140" placeholder="Note (optional)" value="'+esc(SHP.note[x.id]||'')+'" aria-label="Note"><button class="btn solid" data-act="sh-send" data-inv="'+x.id+'">Send</button></div>').join('');
+  const sent=(s.inventory||[]).filter(x=>x.sent_at).map(x=>'<div class="small muted">'+esc(x.emoji)+' '+esc(x.name)+' sent to '+esc(x.sent_to_name||'someone')+'</div>').join('');
+  return '<div class="proj"><div class="kv"><div class="k">Coins</div><div class="v">'+COIN+' '+cn(s.balance)+'</div></div></div>'+daily+pass+'<h4 class="sub">Items</h4>'+items+
+    '<h4 class="sub">Your items <span class="hint">sent items show in chat, in messages and on their profile</span></h4>'+(inv||'<div class="small muted">Nothing to send. Buy an item above.</div>')+(sent?'<h4 class="sub">Recently sent</h4>'+sent:'');
+}
+function shMsgHtml(){
+  if(SHP.with){
+    return '<div class="btnrow"><button class="btn" data-act="sh-back">‹ Messages</button><button class="btn" data-act="profile" data-u="'+esc(SHP.with.name)+'">'+esc(SHP.with.name)+'\'s profile</button></div>'+
+      '<div class="chatbox" id="sh-thread" aria-live="polite">'+shThreadHtml()+'</div>'+
+      '<div class="composer"><input class="num wide" id="shdm" data-in="sh-dm" maxlength="500" placeholder="Message '+esc(SHP.with.name)+'" aria-label="Message" autocomplete="off" value="'+esc(SHP.dm)+'"><button class="btn solid" data-act="sh-dm-send">Send</button></div>';
+  }
+  const ib=SHP.inbox; if(!ib) return '<div class="small muted">Loading…</div>';
+  return (ib.length?ib.map(x=>'<button class="rlink" data-act="sh-open" data-id="'+x.user_id+'" data-n="'+esc(x.username)+'"><span>'+shDot(x.online)+'<b>'+esc(x.username)+'</b> <span class="muted small">'+esc((x.mine?'You: ':'')+x.last)+'</span></span><span>'+(x.unread>0?'<span class="badge warn">'+x.unread+' new</span> ':'')+'<span class="muted small">'+esc(shAgo(x.created_at))+'</span></span></button>').join(''):'<div class="small muted">No messages yet. Open the Online tab and tap a name.</div>');
+}
+function shThreadHtml(){
+  if(!SHP.thread.length) return '<div class="small muted">No messages yet. Say hi.</div>';
+  return SHP.thread.map(m=>{ let b='';
+    if(m.gift_name) b+='<div class="mt">'+esc(m.gift_emoji)+' <b>'+esc(m.gift_name)+'</b> '+(m.mine?'sent':'for you')+(Date.parse(m.gift_until)>Date.now()?' <span class="muted small">active until '+esc(shFmt(m.gift_until))+'</span>':' <span class="muted small">expired</span>')+'</div>';
+    if(m.body) b+='<div class="mt">'+esc(m.body)+'</div>';
+    if(m.battle_id) b+='<div class="btnrow"><button class="btn solid" data-act="bt-open" data-id="'+m.battle_id+'">Open battle</button></div>';
+    return '<div class="msg'+(m.mine?' mine':'')+'"><div class="mh"><span class="muted">'+esc(fmtClock(Date.parse(m.created_at)))+'</span></div>'+b+'</div>'; }).join('');
+}
+function shOnlineHtml(){
+  if(!SHP.on) return '<div class="small muted">Loading…</div>'; const ms=shMembers(); if(!ms.length) return '<div class="small muted">No other members yet.</div>';
+  const row=m=>'<div class="shmem">'+shDot(m.online)+'<b>'+esc(m.username)+'</b>'+(m.pass?' ⭐':'')+'<span class="small muted">'+(m.online?'online':'seen '+shAgo(m.last_seen))+'</span><span class="shacts">'+
+    '<button class="btn" data-act="sh-msg-user" data-id="'+m.id+'" data-n="'+esc(m.username)+'">Message</button><button class="btn" data-act="sh-challenge" data-id="'+m.id+'" data-n="'+esc(m.username)+'">Send a battle</button><button class="btn" data-act="profile" data-u="'+esc(m.username)+'">Profile</button></span></div>';
+  return ms.filter(m=>m.online).map(row).join('')+ms.filter(m=>!m.online).map(row).join('');
+}
+function shVisHtml(){
+  const v=SHP.vis; if(!v) return '<div class="small muted">Loading…</div>';
+  if(v.locked) return '<div class="small">'+(v.count?'<b>'+v.count+'</b> player'+(v.count===1?'':'s')+' looked at your profile in the last 30 days. ':'')+'The 30-day pass shows you exactly who.</div><div class="btnrow"><button class="btn solid" data-act="sh-tab" data-k="shop">See the pass</button></div>';
+  return (v.list&&v.list.length)?v.list.map(x=>'<div class="shmem"><b>'+uLink(x.username)+'</b><span class="small muted">'+esc(shAgo(x.last_at))+(x.n>1?' · '+x.n+' visits':'')+'</span></div>').join(''):'<div class="small muted">Nobody has visited your profile yet.</div>';
+}
+
+/* ---------- profile: online dot, pass badge, active gifts, message / gift / battle buttons ---------- */
+function shProfileBlock(d){
+  if(SHP.missing||!SOC.user||!SOC.me) return '';
+  const x=SHP.pex[d.id]; if(!x){ shLoadPex(d); return ''; }
+  const mine=SOC.me.id===d.id;
+  const g=(x.gifts||[]).map(i=>'<span class="vc">'+esc(i.emoji)+' '+esc(i.name)+' <span class="muted">from '+esc(i.from_name||'?')+' · until '+esc(shFmt(i.until))+'</span></span>').join('');
+  return '<div class="shprof"><div class="small">'+shDot(x.online)+(x.online?'Online now':'Last seen '+shAgo(x.last_seen))+(x.pass?' · ⭐ Pass holder':'')+'</div>'+(g?'<h4 class="sub">Gifts right now</h4><div class="vcs">'+g+'</div>':'')+
+    (mine?'':'<div class="btnrow"><button class="btn" data-act="sh-msg-user" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Message</button><button class="btn" data-act="sh-gift-user" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Send a gift</button><button class="btn" data-act="sh-challenge" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Send a battle</button></div>')+'</div>';
+}
+function shLoadPex(d){
+  if(SHP.pexBusy[d.id]) return; SHP.pexBusy[d.id]=1;
+  if(SOC.me&&SOC.me.id!==d.id) shCall('record_visit',{p_profile:d.id}).catch(shErr);
+  shCall('profile_extras',{p_user:d.id}).then(x=>{ SHP.pex[d.id]=x||{gifts:[]}; const el=document.getElementById('prof-body'); if(el&&S.view==='profile') el.innerHTML=profileBodyHtml(S.profName); }).catch(e=>{ shErr(e); SHP.pex[d.id]={gifts:[]}; });
+}
+
+/* ---------- send a battle to a person ---------- */
+function shInviteHtml(b){
+  if(SHP.missing||!shReady()||!SHP.on) { if(!SHP.on) shLoadOnline(); return ''; }
+  const mem=shMembers(); if(!mem.length) return '';
+  return '<div class="shinvite"><b>Send this battle to a player</b><div class="small muted">Only they can accept it, and they get a message with a link.</div><div class="btnrow"><select data-in="sh-binv" aria-label="Player">'+mem.map(p=>'<option value="'+p.id+'"'+(SHP.invite&&SHP.invite.id===p.id?' selected':'')+'>'+(p.online?'● ':'○ ')+esc(p.username)+'</option>').join('')+'</select><button class="btn solid" data-act="sh-invite" data-id="'+b.id+'">Send battle</button></div>'+(b.invited?'<div class="small ok">Already sent to a player.</div>':'')+'</div>';
+}
+function shAfterCreate(id){ if(!SHP.invite) return; const t=SHP.invite; SHP.invite=null; shCall('invite_battle',{p_battle:id,p_user:t.id}).then(()=>{ S.flash='Battle sent to '+t.name; renderBank(); }).catch(e=>{ S.flash=shErr(e); renderBank(); }); }
+
+/* ---------- events (capture phase, own acts only) ---------- */
+document.addEventListener('click',function(e){
+  const t=e.target.closest&&e.target.closest('[data-act^="sh-"]'); if(!t) return; const act=t.getAttribute('data-act'); const stop=()=>{ e.stopPropagation(); e.preventDefault(); };
+  if(!shReady()){ if(act.indexOf('sh-')===0){ stop(); if(SOC.sb) openModal('in'); } return; }
+  const id=t.getAttribute('data-id'), nm=t.getAttribute('data-n');
+  if(act==='sh-tab'){ stop(); SHP.tab=t.getAttribute('data-k'); SHP.msg=''; if(S.view!=='shop'){ S.view='shop'; render(); } else shPaint(); shLoadTab(); return; }
+  if(act==='sh-back'){ stop(); SHP.with=null; SHP.thread=[]; shLoadInbox(); shPaint(); return; }
+  if(act==='sh-open'||act==='sh-msg-user'){ stop(); SHP.with={id:id,name:nm}; SHP.thread=[]; SHP.tab='msg'; SHP.msg=''; if(S.view!=='shop'){ S.view='shop'; render(); window.scrollTo(0,0); } else shPaint(); shLoadThread(); return; }
+  if(act==='sh-gift-user'){ stop(); SHP.tab='shop'; SHP.msg='Pick an item below and choose '+nm+' in the list.'; if(!SHP.on) shLoadOnline(); SHP.giftTo=id; S.view='shop'; render(); window.scrollTo(0,0); return; }
+  if(act==='sh-challenge'){ stop(); SHP.invite={id:id,name:nm}; S.view='battle'; S.flash='Create a battle below. It will be sent to '+nm+'.'; render(); window.scrollTo(0,0); return; }
+  if(act==='sh-dm-send'){ stop(); const inp=document.getElementById('shdm'); const body=(inp&&inp.value||'').trim(); if(!body||!SHP.with) return; if(inp) inp.value=''; SHP.dm=''; shCall('send_dm',{p_to:SHP.with.id,p_body:body}).then(()=>shLoadThread()).catch(er=>{ SHP.msg=shErr(er); if(inp) inp.value=body; shPaint(); }); return; }
+  if(act==='sh-buy'){ stop(); if(SHP.busy) return; SHP.busy=true; shCall('buy_item',{p_item:id}).then(d=>{ SHP.busy=false; SHP.msg='Bought. You have '+d.days+' days to send it.'; shLoadShop(); }).catch(er=>{ SHP.busy=false; SHP.msg=shErr(er); shPaint(); }); return; }
+  if(act==='sh-pass'){ stop(); if(SHP.busy) return; SHP.busy=true; shCall('buy_pass').then(()=>{ SHP.busy=false; SHP.msg='Pass active for 30 more days.'; shLoadShop(); }).catch(er=>{ SHP.busy=false; SHP.msg=shErr(er); shPaint(); }); return; }
+  if(act==='sh-send'){ stop(); const inv=t.getAttribute('data-inv'); const to=SHP.to[inv]||(document.querySelector('select[data-inv="'+inv+'"]')||{}).value; if(!to){ SHP.msg='Pick who to send it to.'; shPaint(); return; }
+    shCall('send_item',{p_inv:+inv,p_to:to,p_note:SHP.note[inv]||''}).then(()=>{ SHP.msg='Sent. It is in the chat and on their profile.'; delete SHP.to[inv]; delete SHP.note[inv]; shLoadShop(); }).catch(er=>{ SHP.msg=shErr(er); shPaint(); }); return; }
+  if(act==='sh-invite'){ stop(); const sel=document.querySelector('select[data-in="sh-binv"]'); if(!sel||!sel.value) return; shCall('invite_battle',{p_battle:+id,p_user:sel.value}).then(()=>{ BT.msg='Battle sent.'; if(typeof btOpen==='function') btOpen(+id); }).catch(er=>{ BT.msg=shErr(er); btRender(); }); return; }
+},true);
+document.addEventListener('input',function(e){ const t=e.target; if(!t.getAttribute) return; const k=t.getAttribute('data-in'); if(k==='sh-note') SHP.note[t.getAttribute('data-inv')]=t.value; if(k==='sh-dm') SHP.dm=t.value; });
+document.addEventListener('change',function(e){ const t=e.target; if(!t.getAttribute) return; if(t.getAttribute('data-in')==='sh-to') SHP.to[t.getAttribute('data-inv')]=t.value; });
+document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e.target.id==='shdm'){ e.preventDefault(); const b=document.querySelector('[data-act="sh-dm-send"]'); if(b) b.click(); } });
+
 /* Sportsbook lines (SportsGameOdds -> data/odds.json, written by the bot when the ODDS_API_KEY secret is set).
    Adds a "Sportsbook lines" box to each game card that matches an event: best price per side plus every book's price, with links to the books.
    Optional: with no key / no file nothing is added. Checked every 60 s (the bot itself pulls at most every ODDS_MIN_GAP_MIN minutes). */
@@ -5540,7 +5711,7 @@ function odFetch(){
 function odKey(s){ return String(s||'').toLowerCase().replace(/[^a-z]/g,''); }
 function odFind(g){
   if(!OD.data) return null;
-  const lg=String(g.lg||g.key||'').toUpperCase(), h=g.teams.home, a=g.teams.away;
+  const lg=String(({cfb:'NCAAF',cbb:'NCAAB'})[g.key||g.lg]||g.key||g.lg||'').toUpperCase(), h=g.teams.home, a=g.teams.away;
   return OD.data.events.find(e=>String(e.league||'').toUpperCase()===lg&&((odKey(e.home)===odKey(h.abbr)&&odKey(e.away)===odKey(a.abbr))||(odKey(e.homeName)===odKey(h.name)&&odKey(e.awayName)===odKey(a.name))))||null;
 }
 function odFmt(o){ return o==null?'–':(o>0?'+'+o:String(o)); }
@@ -5575,6 +5746,204 @@ function odPaint(){
 }
 let odT=null; new MutationObserver(()=>{ if(!OD.data) return; clearTimeout(odT); odT=setTimeout(odPaint,120); }).observe(document.body,{childList:true,subtree:true});
 setInterval(()=>{ if(!document.hidden) odFetch(); },60e3); odFetch();
+
+/* ---------- bet slip deep links: each leg's own selection link from the odds feed, combined per book, so the slip arrives with the picks already in it ---------- */
+function odLegLinks(l){
+  const g=G[l.gid]; if(!g) return null; let e=null; try{ e=(typeof bkEvent==='function'&&bkEvent(g))||(typeof odFind==='function'&&odFind(g))||null; }catch(err){} if(!e) return null;
+  const sp=l.spec||{}, out={}, M=e.main||{};
+  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link) return; if(line!=null&&b.line!=null&&Math.abs(+b.line-line)>0.01) return; out[k]=b.link; }); };
+  if(sp.k==='ml') take(M.ml&&M.ml[sp.side]);
+  else if(sp.k==='spr') take(M.spread&&M.spread[sp.side],+sp.line);
+  else if(sp.k==='tot') take(M.total&&M.total[sp.dir],+sp.line);
+  else if(sp.k==='prop'){ const pl=(typeof findPlayer==='function')?findPlayer(g,sp.pid):null; if(pl){ const nm=odKey(pl.name); const side=sp.dir==='lt'?'under':'over'; const line=side==='over'?sp.T-0.5:sp.T-0.5;
+      (e.props||[]).forEach(p=>{ if(odKey(p.name)!==nm||p.stat!==sp.stat||p.side!==side) return; take(p,line); }); } }
+  if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]) out[k]=l.links[k]; });
+  return out;
+}
+function odCombine(book,ls){
+  try{
+    const U=ls.map(u=>new URL(u)), q=(u,k)=>u.searchParams.get(k);
+    if(book==='fanduel'){ const v=U.map(u=>({m:q(u,'marketId'),s:q(u,'selectionId')})); if(v.every(x=>x.m&&x.s)) return 'https://sportsbook.fanduel.com/addToBetslip?'+v.map((x,i)=>'marketId['+i+']='+encodeURIComponent(x.m)+'&selectionId['+i+']='+encodeURIComponent(x.s)).join('&'); }
+    if(book==='draftkings'){ const o=U.map(u=>q(u,'outcomes')); if(o.every(Boolean)&&U.every(u=>u.pathname===U[0].pathname)) return U[0].origin+U[0].pathname+'?outcomes='+o.map(encodeURIComponent).join('%7C'); }
+    if(book==='caesars'){ const o=U.map(u=>q(u,'selectionIds')); if(o.every(Boolean)&&U.every(u=>u.pathname===U[0].pathname)) return U[0].origin+U[0].pathname+'?selectionIds='+o.map(encodeURIComponent).join(','); }
+    if(book==='espnbet'){ const v=U.map(u=>({s:q(u,'market_selection_id[0]'),n:q(u,'odds_numerator[0]'),d:q(u,'odds_denominator[0]')})); if(v.every(x=>x.s&&x.n&&x.d)) return U[0].origin+'/?'+v.map((x,i)=>'market_selection_id['+i+']='+encodeURIComponent(x.s)+'&odds_numerator['+i+']='+x.n+'&odds_denominator['+i+']='+x.d).join('&'); }
+  }catch(err){}
+  return null;
+}
+/* {url, n, total}: n = how many of the slip's legs are inside the link */
+function slipDeepLink(book){
+  const legs=S.slip||[]; if(!legs.length) return null;
+  const links=legs.map(l=>{ const m=odLegLinks(l); return (m&&m[book])||null; }).filter(u=>u&&/^https:\/\//i.test(u)); if(!links.length) return null;
+  let url=links[0], n=1; if(links.length>1){ const c=odCombine(book,links); if(c){ url=c; n=links.length; } }
+  return {url:url,n:n,total:legs.length};
+}
+
+/* ================= Home screen picks built from the sportsbook feed (data/odds.json, SportsGameOdds) =================
+   Same-game parlays for every sport (NFL, college football, NBA, WNBA, college basketball, MLB), "safe" legs chosen from the feed's own lines and
+   no-vig fair prices, first basket (NBA / WNBA), no run in the first inning (MLB), collapsible sections, height / skill matchup for basketball.
+   Prices on every leg are the best sportsbook price in the feed. Chances blend the feed's no-vig price with the model when the model has the player.
+   Practice only. */
+const HP={min:0.6,list:[],cache:{},open:{sgp:true}};
+if(!S.fold) S.fold={};
+const HP_BK={draftkings:'DK',fanduel:'FD',betmgm:'MGM',caesars:'CZR',espnbet:'ESPN',fanatics:'FAN',bovada:'BOV',betrivers:'BR',hardrockbet:'HR'};
+const hpImp=o=>o==null?null:(o<0?(-o)/(-o+100):100/(o+100));
+const hpAm=p=>{ p=clamp(p,0.01,0.99); return p>=0.5?Math.round(-100*p/(1-p)):Math.round(100*(1-p)/p); };
+const hpKey=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
+function hpOdds(){ try{ const O=window.__LSDATA&&window.__LSDATA.odds; return O&&Array.isArray(O.events)?O:null; }catch(e){ return null; } }
+/* best price on the most common line among the books (never mixes lines) */
+function hpBest(x){
+  if(!x||!x.books) return null; const ks=Object.keys(x.books).filter(k=>x.books[k]&&x.books[k].odds!=null); if(!ks.length) return null;
+  const cnt={}; ks.forEach(k=>{ const l=String(x.books[k].line); cnt[l]=(cnt[l]||0)+1; });
+  const main=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]; let best=null;
+  ks.forEach(k=>{ const v=x.books[k]; if(String(v.line)!==main) return; if(!best||v.odds>best.odds) best={book:k,odds:v.odds,line:v.line,link:v.link,n:cnt[main]}; });
+  return best;
+}
+/* no-vig chance: the feed's fair price when it is on the same line, otherwise the two best prices with the margin removed */
+function hpFair(x,opp,b){
+  if(x&&x.fair&&x.fair.odds!=null&&(x.fair.line==null||b.line==null||Math.abs(+x.fair.line-Math.abs(+b.line))<0.6||Math.abs(+x.fair.line-(+b.line))<0.6)) return hpImp(x.fair.odds);
+  const bo=hpBest(opp); const a=hpImp(b.odds); if(a==null) return null; if(!bo) return a*0.96; const c=hpImp(bo.odds); return a/(a+c);
+}
+
+/* ---------- basketball: opponent height and skill ---------- */
+const HP_HT={nba:{avg:79,big:82},wnba:{avg:75.5,big:77}};
+function hpMatchup(g,pl,stKey){
+  const key=keyOf(g), base=HP_HT[key]; if(!base||!pl) return {f:1,why:''};
+  const opp=pl.side==='home'?'away':'home', ot=g.teams[opp]&&g.teams[opp].ht; let f=1; const why=[];
+  if(ot){ const d=ot.avg-base.avg;
+    if(stKey==='reb'){ const k=clamp(1-0.018*d,0.9,1.1); f*=k; if(Math.abs(k-1)>=0.015) why.push(g.teams[opp].abbr+' rotation avg '+ot.avg+' in: '+(k<1?'taller, fewer boards':'shorter, more boards')); }
+    else if(stKey==='pts'||stKey==='pra'||stKey==='pr'||stKey==='pa'){ const k=clamp(1-0.008*d,0.94,1.06); f*=k; if(Math.abs(k-1)>=0.01) why.push(g.teams[opp].abbr+' height '+(k<1?'cuts':'helps')+' inside scoring'); }
+    else if(stKey==='fg3'){ const k=clamp(1+0.004*d,0.96,1.04); f*=k; }
+    if(pl.ht&&(stKey==='reb'||stKey==='pts')){ const gap=pl.ht-ot.big; const k=clamp(1+0.006*gap,0.95,1.05); f*=k; if(Math.abs(k-1)>=0.02) why.push(pl.name.split(' ').pop()+' is '+Math.abs(gap)+' in '+(gap>0?'taller':'shorter')+' than their tallest'); }
+  }
+  const m=g.crossroads&&g.crossroads.matchups&&g.crossroads.matchups[pl.side==='home'?1:0];       // the opposing defense rating (50 = average)
+  if(m&&m.dfn!=null&&(stKey==='pts'||stKey==='pra'||stKey==='pr'||stKey==='pa'||stKey==='ast')){ const k=clamp(1-(m.dfn-50)/50*0.06,0.94,1.06); f*=k; if(Math.abs(k-1)>=0.02) why.push('their defense rates '+Math.round(m.dfn)+'/100'); }
+  return {f:f,why:why.join('; ')};
+}
+function hpHtBlock(g){
+  const key=keyOf(g); if(key!=='nba'&&key!=='wnba') return '';
+  const a=g.teams.away, h=g.teams.home; if(!(a.ht||h.ht)) return '<div class="small muted">Height and skill matchup: waiting for roster heights from the next data refresh.</div>';
+  const row=(t,o)=>t.ht?'<div class="small"><b>'+esc(t.abbr)+'</b> rotation averages <b>'+t.ht.avg+' in</b>, tallest '+t.ht.big+' in'+(o.ht?(t.ht.avg-o.ht.avg>=0.5?' (taller than '+esc(o.abbr)+' by '+(t.ht.avg-o.ht.avg).toFixed(1)+')':t.ht.avg-o.ht.avg<=-0.5?' (shorter than '+esc(o.abbr)+' by '+(o.ht.avg-t.ht.avg).toFixed(1)+')':' (even)'):'')+'</div>':'';
+  return '<div class="shprof"><b>Height &amp; skill matchup</b>'+row(a,h)+row(h,a)+'<div class="small muted">Used in the parlay picks below: rebounds and inside scoring move up to about 10% with the opposing rotation\'s height, a player taller than their tallest gets a small boost, and scoring props move up to 6% with the opposing defense rating.</div></div>';
+}
+
+/* ---------- legs for one game, all from the feed ---------- */
+function hpLegs(g){
+  const O=hpOdds(); if(!O) return []; const ck=g.id+'|'+O.generatedAt+'|'+CALV; if(HP.cache[ck]) return HP.cache[ck];
+  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ HP.cache[ck]=out; return out; }
+  const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
+  const abbrBk=b=>HP_BK[b]||b;
+  const push=(tok,kind,label,x,opp,pModel,spec,group,extra)=>{ const b=hpBest(x); if(!b) return; const pf=hpFair(x,opp,b); if(pf==null) return;
+    const p0=pModel==null?pf:0.5*pf+0.5*pModel; const p=adjP(clamp(p0*((extra&&extra.avail)||1),0.02,0.97),kind==='prop'?'prop':'team');
+    out.push(Object.assign({id:tok,tok:tok,gid:g.id,kind:kind,label:label,price:b.odds,book:b.book,bk:abbrBk(b.book),link:b.link,nBooks:b.n,line:b.line,pFair:pf,pModel:pModel,p:p,ps:p,avail:1,src:abbrBk(b.book),spec:spec,group:group},extra||{})); };
+  const L={mlH:M.ml&&M.ml.home,mlA:M.ml&&M.ml.away};
+  ['home','away'].forEach(s=>{ const t=s==='home'?H:A, x=M.ml&&M.ml[s], o=M.ml&&M.ml[s==='home'?'away':'home'];
+    push('o:'+g.id+':ml:'+s,'ml',t.abbr+' moneyline',x,o,cr?(s==='home'?cr.pHome:1-cr.pHome):null,{k:'ml',side:s},g.id+':ml'); });
+  ['home','away'].forEach(s=>{ const x=M.spread&&M.spread[s], o=M.spread&&M.spread[s==='home'?'away':'home']; const b=hpBest(x); if(!b||b.line==null) return;
+    const lineH=s==='home'?+b.line:-b.line; let pm=null; if(cr&&typeof LOGI!=='undefined'&&LOGI[key]){ const ph=logistic((cr.projMargin+lineH)/LOGI[key]); pm=s==='home'?ph:1-ph; }
+    push('o:'+g.id+':spr:'+s,'spr',(s==='home'?H:A).abbr+' '+sg(+b.line),x,o,pm,{k:'spr',side:s,line:+b.line},g.id+':spr'); });
+  ['over','under'].forEach(d=>{ const x=M.total&&M.total[d], o=M.total&&M.total[d==='over'?'under':'over']; const b=hpBest(x); if(!b||b.line==null) return;
+    let pm=null; if(cr&&typeof TOTS!=='undefined'&&TOTS[key]){ const po=logistic((cr.projTotal-(+b.line))/TOTS[key]); pm=d==='over'?po:1-po; }
+    push('o:'+g.id+':tot:'+d,'tot',(d==='over'?'Over ':'Under ')+b.line,x,o,pm,{k:'tot',dir:d,line:+b.line},g.id+':tot'); });
+  // player props: only players the slate knows (so the bet can be graded), priced from the feed
+  const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
+  Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p) return; const o=pair[side==='over'?'under':'over'];
+    const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')) return;
+    const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
+    let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
+    const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
+    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why}); }); });
+  HP.cache[ck]=out; return out;
+}
+function hpLeg(tok){ const p=String(tok).split(':'); const g=G[p[1]]; if(!g) return null; const l=hpLegs(g).find(x=>x.tok===tok); return l?Object.assign({},l):null; }
+
+/* games from the selected day through the next 3 days (a Friday home screen still shows Sunday's NFL slate) */
+function hpInWin(g){ if(!g.day) return true; const a=Date.parse(S.date+'T12:00:00Z'), d=Date.parse(g.day+'T12:00:00Z'); return d>=a&&d<=a+3*864e5; }
+/* ---------- same-game parlays ---------- */
+function hpBuild(g){
+  const legs=hpLegs(g).slice().sort((a,b)=>b.p-a.p); if(legs.length<2) return [];
+  const pickN=n=>{ const out=[],grp={},per={}; let team=false;
+    for(const l of legs){ if(out.length>=n) break; if(l.p<HP.min) break; if(grp[l.group]) continue;
+      if(l.kind==='ml'||l.kind==='spr'){ if(team) continue; team=true; }
+      if(l.kind==='prop'){ if(per[l.pid]) continue; per[l.pid]=1; }
+      out.push(l); grp[l.group]=1; }
+    return out; };
+  const res=[]; [2,3].forEach(n=>{ const ls=pickN(n); if(ls.length===n){ const dec=ls.reduce((d,l)=>d*decOf(l.price),1); res.push({g:g,n:n,legs:ls,dec:dec,am:amerOfDec(dec),p:ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,n-1)}); } });
+  return res;
+}
+function hpAllSgp(){
+  const gs=boardGames().filter(g=>(S.league==='all'||keyOf(g)===S.league)&&hpInWin(g)&&preOK(g)); const all=[];
+  gs.forEach(g=>{ hpBuild(g).forEach(s=>all.push(s)); });
+  all.sort((a,b)=>b.p-a.p); return all;
+}
+function hpSgpCard(s,i){
+  const g=s.g, on=s.legs.every(l=>inSlip(l.tok));
+  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+esc(g.teams.away.abbr)+' @ '+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.n+'-leg</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
+    s.legs.map(l=>'<div class="small">'+esc(l.label)+' <span class="mono">'+fo(l.price)+'</span> <span class="muted">'+esc(l.bk)+' · '+Math.round(l.p*100)+'%'+(l.why?' · '+esc(l.why):'')+'</span></div>').join('')+
+    '<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="hp-add" data-i="'+i+'">'+(on?'Remove from slip':'Add to slip')+'</button></div></div>';
+}
+function hpSgpHtml(){
+  if(!hpOdds()) return '<div class="small muted">Sportsbook lines have not loaded yet, so no parlays can be built. They refresh about every hour.</div>';
+  const all=hpAllSgp(); HP.list=all; if(!all.length) return '<div class="small muted">No same-game parlay clears '+Math.round(HP.min*100)+'% right now'+(S.league==='all'?'':' in this league')+'. That is normal when lines are tight or a league has no props posted.</div>';
+  const per={}; const show=[]; all.forEach((s,i)=>{ const k=keyOf(s.g)+s.n; per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<8) show.push([s,i]); });
+  return show.map(x=>hpSgpCard(x[0],x[1])).join('')+'<div class="small muted">Every leg is a sportsbook line with its best price and a chance that blends the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book.</div>';
+}
+
+/* ---------- first basket (NBA / WNBA) ---------- */
+function hpFirstHtml(){
+  const O=hpOdds(); const gs=boardGames().filter(g=>(keyOf(g)==='nba'||keyOf(g)==='wnba')&&(S.league==='all'||keyOf(g)===S.league)&&hpInWin(g)&&preOK(g)); if(!gs.length) return '';
+  const rows=gs.map(g=>{ const e=O&&bkEvent(g); const f=(e&&e.first||[]).filter(x=>x.pid&&x.name); let lines='';
+    if(f.length){ const bt=f.map(x=>({n:x.name,b:hpBest(x),team:x.team})).filter(x=>x.b).sort((a,b)=>hpImp(b.b.odds)-hpImp(a.b.odds)).slice(0,5);
+      lines=bt.map(x=>'<div class="small">'+esc(x.n)+' <span class="mono">'+fo(x.b.odds)+'</span> <span class="muted">'+esc(HP_BK[x.b.book]||x.b.book)+'</span></div>').join(''); }
+    else if((g.players||[]).length){ const w=(side)=>(g.players||[]).filter(p=>p.side===side&&!(p.status&&p.status.kind==='out')).map(p=>{ const st=(p.stats||[]).find(s=>s.key==='pts'); return {p:p,w:st&&st.avg?Math.pow(st.avg,1.5)*(p.avail==null?1:p.avail):0}; }).filter(x=>x.w>0).sort((a,b)=>b.w-a.w).slice(0,6);
+      const cr=g.crossroads, pH=cr?cr.pHome:0.5, tHome=clamp(0.5+(pH-0.5)*0.15,0.4,0.6); const ws={home:w('home'),away:w('away')}; const tot={home:ws.home.reduce((s,x)=>s+x.w,0),away:ws.away.reduce((s,x)=>s+x.w,0)};
+      const c=[]; ['home','away'].forEach(sd=>{ ws[sd].forEach(x=>{ c.push({n:x.p.name,p:(sd==='home'?tHome:1-tHome)*x.w/(tot[sd]||1)*0.9}); }); }); c.sort((a,b)=>b.p-a.p);
+      lines=c.slice(0,5).map(x=>'<div class="small">'+esc(x.n)+' <span class="mono">'+fo(hpAm(x.p))+'</span> <span class="muted">model estimate · '+(x.p*100).toFixed(1)+'%</span></div>').join(''); }
+    if(!lines) return '<div class="small muted"><b>'+esc(g.teams.away.abbr)+' @ '+esc(g.teams.home.abbr)+'</b>: no first-basket prices posted yet.</div>';
+    return '<div class="rg"><div class="rgh"><b>'+esc(g.teams.away.abbr)+' @ '+esc(g.teams.home.abbr)+'</b></div>'+lines+'</div>'; }).join('');
+  return rows+'<div class="small muted">Prices come from the sportsbook feed when it lists first basket; otherwise a model estimate is shown (starters\' scoring, scaled by who is likelier to score first). A long shot by nature: even the favourite is rarely above 15%.</div>';
+}
+
+/* ---------- no run in the first inning (MLB) ---------- */
+function hpNrfiHtml(){
+  const O=hpOdds(); const gs=boardGames().filter(g=>keyOf(g)==='mlb'&&(S.league==='all'||S.league==='mlb')&&hpInWin(g)&&preOK(g)); if(!gs.length) return '';
+  return gs.map(g=>{ const e=O&&bkEvent(g); const n=e&&e.nrfi; const cr=g.crossroads; const A=g.teams.away, H=g.teams.home;
+    const mdl=cr?{a:Math.exp(-0.66*(cr.projAway/4.5)),h:Math.exp(-0.66*(cr.projHome/4.5))}:null;
+    const cell=(label,x,pm)=>{ const b=x&&hpBest(x.under); if(b) return '<span class="shchip"><b>'+esc(label)+'</b> '+fo(b.odds)+' <span class="muted">'+esc(HP_BK[b.book]||b.book)+' · '+(hpFair(x.under,x.over,b)*100).toFixed(0)+'%</span></span>';
+      return pm!=null?'<span class="shchip"><b>'+esc(label)+'</b> '+fo(hpAm(pm))+' <span class="muted">model · '+Math.round(pm*100)+'%</span></span>':''; };
+    const both=mdl?mdl.a*mdl.h:null;
+    return '<div class="rg"><div class="rgh"><b>'+esc(A.abbr)+' @ '+esc(H.abbr)+'</b></div><div class="shrow">'+cell('NRFI (both)',n&&n.all,both)+cell(A.abbr+' scoreless',n&&n.away,mdl&&mdl.a)+cell(H.abbr+' scoreless',n&&n.home,mdl&&mdl.h)+'</div></div>'; }).join('')+
+    '<div class="small muted">NRFI means neither team scores in the 1st inning. Book prices are shown when the feed has them; otherwise a model estimate from each team\'s projected runs.</div>';
+}
+
+/* ---------- collapsible sections ---------- */
+function hpFold(key,title,sum,inner,startOpen){
+  if(!inner) return ''; const open=S.fold[key]!=null?S.fold[key]:!!startOpen;
+  return '<details class="d hpfold" data-fold="'+esc(key)+'"'+(open?' open':'')+'><summary><b>'+esc(title)+'</b>'+(sum?' <span class="muted small">'+esc(sum)+'</span>':'')+'</summary>'+inner+'</details>';
+}
+function hpHomeHtml(){
+  const sgp=hpSgpHtml(), n=HP.list.length; const fb=hpFirstHtml(), nr=hpNrfiHtml();
+  return '<section class="game hpsec"><div class="sec">'+hpFold('sgp','Best same-game parlays',n?Math.min(n,8)+' picks · sportsbook lines':'sportsbook lines',sgp,true)+
+    hpFold('fb','First basket (NBA and WNBA)','',fb,false)+hpFold('nrfi','No run first inning (MLB)','',nr,false)+'</div></section>';
+}
+document.addEventListener('toggle',function(e){ const d=e.target; if(d&&d.getAttribute&&d.getAttribute('data-fold')) S.fold[d.getAttribute('data-fold')]=d.open; },true);
+
+/* ---------- slip: add a parlay, and translate feed legs for the practice server ---------- */
+document.addEventListener('click',function(e){
+  const t=e.target.closest&&e.target.closest('[data-act="hp-add"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
+  const s=HP.list[+t.getAttribute('data-i')]; if(!s) return;
+  if(s.legs.every(l=>inSlip(l.tok))){ S.slip=S.slip.filter(l=>!s.legs.some(x=>x.tok===l.id)); S.slipMsg=''; }
+  else { S.slip=s.legs.map(l=>legFor(l.tok)).filter(Boolean); S.betMode='parlay'; S.slipOpen=true; S.slipMsg='Loaded '+s.n+' legs. Prices are the best in the sportsbook feed; the book will price the combo lower.'; }
+  renderSlip(); syncLegButtons(); render();
+},true);
+/* signed-in practice bets are priced by the server from the slate; a feed leg goes through only when the slate offers the same line */
+function hpServerTok(l){
+  const g=G[l.gid]; if(!g||!l.spec) return null; const sp=l.spec, L=g.lines||{};
+  if(sp.k==='ml') return 'g:'+g.id+':ml:'+sp.side;
+  if(sp.k==='spr'){ const ln=sp.side==='home'?L.sprHome:L.sprAway; return ln!=null&&Math.abs(ln-sp.line)<0.01?'g:'+g.id+':spr:'+sp.side:null; }
+  if(sp.k==='tot') return L.total!=null&&Math.abs(L.total-sp.line)<0.01?'g:'+g.id+':tot:'+sp.dir:null;
+  if(sp.k==='prop'&&sp.dir==='ge'){ const pl=findPlayer(g,sp.pid); const st=pl&&pl.stats.find(s=>s.key===sp.stat); return st&&st.line!=null&&Math.floor(st.line)+1===sp.T?'p:'+g.id+':'+pl.id+':'+st.key+':over':null; }
+  return null;
+}
 
 const $app=document.getElementById('app');
 document.addEventListener('click',function(e){
