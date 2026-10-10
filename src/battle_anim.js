@@ -9,7 +9,7 @@ const AN_LABEL={fd:'FIRST DOWN',flag:'FLAG',sack:'SACK',foul:'FOUL',steal:'STEAL
 const AN_ICON={fd:'⬆',flag:'🚩',sack:'💥',foul:'🛑',steal:'🖐',block:'✋',run:'🔥',strikeout:'K',walk:'🚶',safe:'🟢',out:'🔴',score:'★',final:'🏁'};
 function anReduced(){ try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } }
 function anEl(tag,at,parent){ const n=document.createElementNS(AN_NS,tag); for(const k in (at||{})) n.setAttribute(k,at[k]); if(parent) parent.appendChild(n); return n; }
-function anFam(sport){ return sport==='nfl'||sport==='cfb'?'fb':sport==='mlb'?'bb':'bk'; }
+function anFam(sport){ return sport==='nfl'||sport==='cfb'?'fb':sport==='mlb'?'bb':sport==='nhl'?'hk':sport==='tennis'?'tn':'bk'; }
 function anColor(b,side){ try{ return teamOf(b.sport,side==='home'?b.home:b.away).color||'#4d98ff'; }catch(e){ return '#4d98ff'; } }
 
 /* ---- scenes (viewBox 320 x 120) ---- */
@@ -20,6 +20,15 @@ function anScene(b){
     for(let i=0;i<=10;i++){ const x=38+i*24.4; s+='<line x1="'+x+'" y1="10" x2="'+x+'" y2="110" stroke="#fff" stroke-opacity="'+(i%5===0?.8:.35)+'" stroke-width="'+(i%5===0?1.4:.8)+'"/>'; }
     s+='<text x="23" y="64" font-size="9" font-weight="800" fill="#fff" text-anchor="middle" transform="rotate(-90 23 60)">'+esc(b.away)+'</text><text x="297" y="64" font-size="9" font-weight="800" fill="#fff" text-anchor="middle" transform="rotate(90 297 60)">'+esc(b.home)+'</text>';
     s+='<rect x="2" y="50" width="6" height="2" fill="#ffd23a"/><rect x="312" y="50" width="6" height="2" fill="#ffd23a"/>';
+  } else if(f==='hk'){
+    s+='<rect x="0" y="0" width="320" height="120" rx="30" fill="#e9f2fb"/><rect x="2" y="2" width="316" height="116" rx="30" fill="none" stroke="#bfd0e3" stroke-width="3"/>';
+    s+='<line x1="160" y1="2" x2="160" y2="118" stroke="#d8454c" stroke-width="2"/><circle cx="160" cy="60" r="17" fill="none" stroke="#2f6fd6"/><line x1="104" y1="2" x2="104" y2="118" stroke="#2f6fd6" stroke-width="2"/><line x1="216" y1="2" x2="216" y2="118" stroke="#2f6fd6" stroke-width="2"/>';
+    s+='<line x1="28" y1="8" x2="28" y2="112" stroke="#d8454c" stroke-width=".8"/><line x1="292" y1="8" x2="292" y2="112" stroke="#d8454c" stroke-width=".8"/>';
+    s+='<path d="M28 44 A16 16 0 0 1 28 76 Z" fill="'+ca+'" fill-opacity=".3" stroke="#d8454c"/><path d="M292 44 A16 16 0 0 0 292 76 Z" fill="'+ch+'" fill-opacity=".3" stroke="#d8454c"/>';
+    s+='<rect x="20" y="52" width="8" height="16" fill="#fff" stroke="#7b8aa3"/><rect x="292" y="52" width="8" height="16" fill="#fff" stroke="#7b8aa3"/>';
+  } else if(f==='tn'){
+    s+='<rect x="0" y="0" width="320" height="120" fill="#2c5e8a"/><rect x="24" y="12" width="272" height="96" fill="#3f8a5c" stroke="#fff" stroke-width="1.5"/><rect x="24" y="26" width="272" height="68" fill="none" stroke="#fff"/>';
+    s+='<line x1="160" y1="8" x2="160" y2="112" stroke="#fff" stroke-width="2.5" stroke-dasharray="3 2"/><line x1="92" y1="26" x2="92" y2="94" stroke="#fff"/><line x1="228" y1="26" x2="228" y2="94" stroke="#fff"/><line x1="92" y1="60" x2="228" y2="60" stroke="#fff"/>';
   } else if(f==='bk'){
     s+='<rect x="0" y="0" width="320" height="120" fill="#c58a4a"/><rect x="8" y="8" width="304" height="104" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="1.5"/><line x1="160" y1="8" x2="160" y2="112" stroke="#fff" stroke-opacity=".8"/><circle cx="160" cy="60" r="14" fill="none" stroke="#fff" stroke-opacity=".8"/>';
     s+='<rect x="8" y="38" width="46" height="44" fill="'+ca+'" fill-opacity=".35" stroke="#fff" stroke-opacity=".8"/><rect x="266" y="38" width="46" height="44" fill="'+ch+'" fill-opacity=".35" stroke="#fff" stroke-opacity=".8"/>';
@@ -50,6 +59,8 @@ function anClassify(sport,e){
   if(k==='run') return {type:'run',pri:2};
   if(k==='score'){
     if(f==='fb') return /touchdown/i.test(t)?{type:'td',pri:3}:/field goal/i.test(t)?{type:'fg',pri:2}:{type:'td',pri:3};
+    if(f==='hk') return {type:'goal',pri:3};
+    if(f==='tn') return {type:'game',pri:2};
     if(f==='bk') return /three/i.test(t)?{type:'three',pri:3}:/throws it down/i.test(t)?{type:'dunk',pri:2}:/at the line/i.test(t)?{type:'ft',pri:1}:{type:'bucket',pri:2};
     return /walk-off/i.test(t)?{type:'walkoff',pri:3}:/homers|grand slam/i.test(t)?{type:'hr',pri:3}:{type:'runscore',pri:3};
   }
@@ -98,6 +109,8 @@ function anSound(b,ty,e){
   if(typeof sfx!=='function'||!SND.on) return; const f=anFam(b.sport);
   const S=(n,ms)=>sfx(n,ms||0);
   if(ty==='final'){ if(f==='bk') S('buzzer'); else S('whistle2'); S('fanfare',500); crowdFor(true,true); return; }
+  if(f==='hk'){ if(ty==='goal'){ S('buzzer'); S('fanfare',300); crowdFor(true,true); } return; }
+  if(f==='tn'){ if(ty==='game'){ S('crack'); } return; }
   if(f==='fb'){
     if(ty==='td'){ S('fanfare'); }
     else if(ty==='fg'){ S('kick'); }
@@ -154,6 +167,13 @@ function anPlay(b,d,e,done0,scale){
     else if(ty==='int'||ty==='fumble'){ const ball=anBall(fx,160,60,3.8); anMove(ball,[[160,60],[away?60:260,40],[away?30:290,70]],900,'ease-in-out'); anBanner(st,ty==='int'?'INTERCEPTED!':'FUMBLE!','bad'); ms=1300; }
     else if(ty==='punt'){ const ball=anBall(fx,x0,y,3.4); anMove(ball,anArc([x0,y],[away?260:60,60],40,18),1000); anBanner(st,'PUNT','sm'); ms=1100; }
     else if(ty==='fgmiss'||ty==='stop'){ anBanner(st,ty==='stop'?'STOPPED!':'NO GOOD','bad'); ms=900; }
+    else { done(); return; }
+  } else if(f==='hk'){
+    const gx=away?24:296;                                          // the away team shoots at the left net, the home team at the right
+    if(ty==='goal'){ const y=60+(Math.random()-.5)*16, from=[away?150:170,60+(Math.random()-.5)*50]; if(who) afPlayer(fx,from[0]+(away?10:-10),from[1]+4,col,{name:who,r:4}); const puck=anBall(fx,from[0],from[1],3,'#111'); anMove(puck,[from,[gx,y]],620,'ease-in',()=>{ anBurst(fx,gx,y,'#ffb62e',14); }); anBanner(st,'GOAL!','big'); ms=1500; }
+    else { done(); return; }
+  } else if(f==='tn'){
+    if(ty==='game'){ const from=[away?60:260,60+(Math.random()-.5)*30], to=[away?260:60,60+(Math.random()-.5)*40]; const ball=anBall(fx,from[0],from[1],3,'#d7f542'); anMove(ball,anArc(from,to,26,14),700,'linear',()=>{ anBurst(fx,to[0],to[1],'#fff',6); }); anBanner(st,(e.text||'GAME').split(' ').slice(0,3).join(' ').toUpperCase(),'sm'); ms=1000; }
     else { done(); return; }
   } else if(f==='bk'){
     const tx=away?22:298;                                          // the away team shoots at the left hoop, the home team at the right

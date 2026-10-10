@@ -23,7 +23,7 @@ def set_odds(o):
 def book(lg, g):
     o = ODDS.get(g["id"])
     if not o: return None
-    spr = o.get("sprH") if lg != "mlb" else None
+    spr = o.get("sprH") if lg not in ("mlb", "nhl") else None
     pml = None
     if o.get("mlH") is not None and o.get("mlA") is not None:
         h, a = ml_prob(o["mlH"]), ml_prob(o["mlA"]); pml = h / (h + a)
@@ -37,6 +37,7 @@ GRID = {
     "nba":  dict(k=[0.03, 0.05, 0.08, 0.12], hfa=[2.0, 3.0], boost=[0, 3], reg=[0.5, 0.7]),
     "cfb":  dict(k=[0.05, 0.08, 0.12, 0.18], hfa=[2.0, 3.0, 4.0], boost=[0, 3], reg=[0.5, 0.7]),
     "cbb":  dict(k=[0.04, 0.06, 0.09, 0.13], hfa=[3.0, 4.5], boost=[0, 3], reg=[1.0]),
+    "nhl":  dict(k=[0.01, 0.02, 0.035, 0.055], hfa=[0.1, 0.25], boost=[0, 3], reg=[0.6, 0.8]),
 }
 
 class Model:
@@ -76,7 +77,7 @@ def walk(lg, games, p, collect=False):
     for g in games: by_day[et_date(g["date"])].append(g)
     for day in sorted(by_day):
         # season boundary (ratings regress toward the mean when a new season starts)
-        if lg in ("nfl", "nba", "cfb"):
+        if lg in ("nfl", "nba", "cfb", "nhl"):
             sd_ = by_day[day][0].get("season")
             if cur_season is None: cur_season = sd_
             elif sd_ != cur_season: m.new_season(); cur_season = sd_

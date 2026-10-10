@@ -461,9 +461,10 @@ function drawer(g){
       gl('ml','away',a.abbr+' moneyline')+gl('ml','home',h.abbr+' moneyline')+
       gl('spr','away',a.abbr+' '+sg(g.lines.sprAway))+gl('spr','home',h.abbr+' '+sg(g.lines.sprHome))+
       gl('tot','over','Over '+g.lines.total)+gl('tot','under','Under '+g.lines.total)+'</div>'+
-    '<h4 class="sub">Highest safe points vs the line</h4><div class="safelist">'+(bs||'<div class="small muted">No player has a safe point in this window.</div>')+'</div>'+
+    (g.players.length?'<h4 class="sub">Highest safe points vs the line</h4><div class="safelist">'+(bs||'<div class="small muted">No player has a safe point in this window.</div>')+'</div>'+
     '<div class="btnrow"><button class="btn pri" data-act="build" data-gid="'+g.id+'">Build 8-player SGP</button><button class="btn" data-act="clear">Clear slip</button></div>'+
-    byTeam('away')+byTeam('home')+'</div>';
+    byTeam('away')+byTeam('home')
+    :'<div class="small muted" style="margin-top:8px">Pick two or more game lines above to build a same-game parlay. The sportsbook feed has no player props for this league.</div><div class="btnrow"><button class="btn" data-act="clear">Clear slip</button></div>')+'</div>';
 }
 
 function gameCard(g){

@@ -61,15 +61,17 @@ function gauss(rng){ let u=0; while(u===0) u=rng(); const v=rng(); return Math.s
 function poisson(rng,l){ if(l<=0) return 0; const L=Math.exp(-l); let k=0,p=1; do{ k++; p*=rng(); }while(p>L&&k<80); return k-1; }
 
 /* ================= game clock ================= */
-const SDM={nfl:13.5,wnba:11.5,mlb:4.3,cfb:18,nba:14.5,cbb:13.5};      // sd of a final margin
-const SDT={nfl:13.5,wnba:17,mlb:4.4,cfb:16.5,nba:18.8,cbb:17.5};        // sd of a final total
-const TEAM_SD={nfl:9.5,wnba:10.5,mlb:2.9,cfb:12,nba:11,cbb:9.5};
-const SECS={nfl:3600,wnba:2400,cfb:3600,nba:2880,cbb:2400};
+const SDM={nfl:13.5,wnba:11.5,mlb:4.3,cfb:18,nba:14.5,cbb:13.5,nhl:2.4,tennis:5.2};      // sd of a final margin
+const SDT={nfl:13.5,wnba:17,mlb:4.4,cfb:16.5,nba:18.8,cbb:17.5,nhl:2.4,tennis:4.6};        // sd of a final total
+const TEAM_SD={nfl:9.5,wnba:10.5,mlb:2.9,cfb:12,nba:11,cbb:9.5,nhl:1.7,tennis:3.4};
+const SECS={nfl:3600,wnba:2400,cfb:3600,nba:2880,cbb:2400,nhl:3600,tennis:3600};
 const KAPPA_T=0.6;
 function clockLabel(lg,f){
   if(f>=1) return 'Final';
   if(f<=0) return 'Pregame';
   if(lg==='mlb'){ const h=Math.floor(f*18+1e-9); const inn=Math.floor(h/2)+1; const outs=Math.min(2,Math.floor((f*18-h)*3+1e-9)); return (h%2?'Bot ':'Top ')+inn+(inn===1?'st':inn===2?'nd':inn===3?'rd':'th')+', '+outs+' out'+(outs===1?'':'s'); }
+  if(lg==='nhl'){ const el=f*3600, p=Math.min(3,Math.floor(el/1200)+1); const rem=Math.max(0,Math.round(1200-(el-(p-1)*1200))); return 'P'+p+' '+Math.floor(rem/60)+':'+String(rem%60).padStart(2,'0'); }
+  if(lg==='tennis') return 'Set '+Math.min(3,Math.floor(f*3)+1);
   const tot=SECS[lg], len=tot/4, el=f*tot; const q=Math.min(4,Math.floor(el/len)+1); const rem=Math.max(0,Math.round(len-(el-(q-1)*len)));
   return 'Q'+q+' '+Math.floor(rem/60)+':'+String(rem%60).padStart(2,'0');
 }
@@ -131,7 +133,7 @@ function genSim(g,seed){
   const means={home:0.65*cr.projHome+0.35*bH, away:0.65*cr.projAway+0.35*bA};
   ['home','away'].forEach(side=>{
     const m=Math.max(0.5,means[side]); let T;
-    if(lg==='mlb') T=poisson(rng,m*Math.exp(0.25*gauss(rng))); else T=Math.max(0,Math.round(m+TEAM_SD[lg]*gauss(rng)));
+    if(lg==='mlb'||lg==='nhl') T=poisson(rng,m*Math.exp((lg==='nhl'?0.12:0.25)*gauss(rng))); else T=Math.max(0,Math.round(m+TEAM_SD[lg]*gauss(rng)));
     const plays=sim.plays[side];
     if(lg==='nfl'){
       if(T===1) T=rng()<0.5?0:3;
@@ -179,7 +181,9 @@ function buildTimeline(g,sim){
   if(lg==='nfl') ['home','away'].forEach(side=>{ sim.plays[side].forEach(x=>{ tl.push({t:x.t,text:g.teams[side].abbr+' '+(x.d>=6?'touchdown':x.d===3?'field goal':'score')+' (+'+x.d+')',kind:'score'}); }); });
   if(lg==='mlb') ['home','away'].forEach(side=>{ sim.plays[side].forEach(x=>{ tl.push({t:x.t,text:g.teams[side].abbr+' run scores',kind:'score'}); }); });
   if(lg==='wnba') ['home','away'].forEach(side=>{ sim.plays[side].forEach(x=>{ if(!x.pid) tl.push({t:x.t,text:g.teams[side].abbr+' bench '+(x.d===3?'three':x.d===1?'free throw':'basket')+' (+'+x.d+')',kind:'score'}); }); });
-  if(sim.ot) tl.push({t:1,text:'Tied after regulation: decided in overtime',kind:'score'});
+  if(lg==='nhl') ['home','away'].forEach(side=>{ sim.plays[side].forEach(x=>{ tl.push({t:x.t,text:g.teams[side].abbr+' GOAL (+'+x.d+')',kind:'score'}); }); });
+  if(lg==='tennis') ['home','away'].forEach(side=>{ sim.plays[side].forEach(x=>{ tl.push({t:x.t,text:g.teams[side].abbr+' wins a game',kind:'score'}); }); });
+  if(sim.ot) tl.push({t:1,text:lg==='nhl'?'Tied after 60 minutes: decided in overtime / shootout':lg==='tennis'?'Games tied: the extra game goes to the match winner':'Tied after regulation: decided in overtime',kind:'score'});
   return tl.sort((a,b)=>a.t-b.t);
 }
 function LS(gid){

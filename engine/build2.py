@@ -8,9 +8,9 @@ import ctxfactors as CF
 from games_all import load
 from espn import curl, D, SP, gamelog, SB, CORE
 ET = B1.ET; clamp = B1.clamp; r1 = B1.r1
-FAM = {"cfb": "nfl", "nba": "wnba", "cbb": "wnba", "nfl": "nfl", "wnba": "wnba", "mlb": "mlb"}
-NAME = {"cfb": "College Football", "nba": "NBA", "cbb": "College Basketball", "nfl": "NFL", "wnba": "WNBA", "mlb": "MLB"}
-SPREAD_T = dict(LEX.SPREAD_T); SPREAD_T["mlb"] = 99.0; TOTAL_T = LEX.TOTAL_T; ML_T = LEX.ML_T
+FAM = {"cfb": "nfl", "nba": "wnba", "cbb": "wnba", "nfl": "nfl", "wnba": "wnba", "mlb": "mlb", "nhl": "nhl"}
+NAME = {"cfb": "College Football", "nba": "NBA", "cbb": "College Basketball", "nfl": "NFL", "wnba": "WNBA", "mlb": "MLB", "nhl": "NHL"}
+SPREAD_T = dict(LEX.SPREAD_T); SPREAD_T["mlb"] = 99.0; SPREAD_T["nhl"] = 99.0; TOTAL_T = LEX.TOTAL_T; ML_T = LEX.ML_T
 CTX_ON = True
 
 def am(x):
@@ -25,7 +25,7 @@ def team_blocks(lg, LR, games):
         cnt[g["home"]] += 1; cnt[g["away"]] += 1
         if g["season"] != cur: continue
         pf[g["home"]] += g["hs"]; pa[g["home"]] += g["as_"]; pf[g["away"]] += g["as_"]; pa[g["away"]] += g["hs"]; gp[g["home"]] += 1; gp[g["away"]] += 1
-    minn = {"cfb": 6, "cbb": 20, "nba": 20, "nfl": 1, "wnba": 1, "mlb": 1}[lg]
+    minn = {"cfb": 6, "cbb": 20, "nba": 20, "nfl": 1, "wnba": 1, "mlb": 1, "nhl": 1}[lg]
     big = [t for t in LR["model"].o if cnt[t] >= minn]
     m = LR["model"]
     so = statistics.pstdev([m.o[t] for t in big]) or 1; sd_ = statistics.pstdev([m.d[t] for t in big]) or 1
@@ -45,7 +45,7 @@ def parse_core(core, lg=None):
     cur_h, cur_a = ho.get("current") or {}, ao.get("current") or {}
     spr_h = float(cur_h["pointSpread"]["american"]); spr_a = float(cur_a["pointSpread"]["american"])
     pr_h = am((cur_h.get("spread") or {}).get("american")) or -110; pr_a = am((cur_a.get("spread") or {}).get("american")) or -110
-    if lg == "mlb" and ml_h is not None and ml_a is not None:   # feed labels conflict with the moneyline; give the -1.5 to the moneyline favorite
+    if lg in ("mlb", "nhl") and ml_h is not None and ml_a is not None:   # feed labels conflict with the moneyline; give the -1.5 to the moneyline favorite
         fav_home = ml_h < ml_a; plus = max(pr_h, pr_a); minus = min(pr_h, pr_a)
         if fav_home: spr_h, spr_a, pr_h, pr_a = -1.5, 1.5, plus, minus
         else: spr_h, spr_a, pr_h, pr_a = 1.5, -1.5, minus, plus
@@ -91,6 +91,10 @@ def injury_impact(lg, inj, tg):
         if lg == "mlb":
             if i["pos"] in ("2B", "SS", "3B", "1B", "LF", "CF", "RF", "C", "DH") and not B1.baked_in("mlb", dict(_tg=tg), i):
                 imp = 0.12 * w; off += imp; notes.append(f"{i['name']} ({i['pos']}) {i['label']}: -{imp:.2f} runs")
+        elif lg == "nhl":
+            if i["pos"] in ("G",): d = 0.30 * w; deff += d; notes.append(f"{i['name']} (G) {i['label']}: +{d:.2f} goals allowed")
+            elif i["pos"] in ("C", "LW", "RW", "W", "F"): imp = 0.07 * w; off += imp; notes.append(f"{i['name']} ({i['pos']}) {i['label']}: -{imp:.2f} goals")
+            elif i["pos"] in ("D",): d = 0.04 * w; deff += d; notes.append(f"{i['name']} (D) {i['label']}: +{d:.2f} goals allowed")
         elif lg in ("cfb", "nfl"):
             if i["pos"] == "QB": offp = 4.0 * w; off += offp; notes.append(f"{i['name']} (QB) {i['label']}: −{offp:.1f} pts")
             elif i["pos"] in ("RB", "WR", "TE"): offp = 0.6 * w; off += offp; notes.append(f"{i['name']} ({i['pos']}) {i['label']}: −{offp:.1f} pts")
@@ -104,7 +108,7 @@ def injury_impact(lg, inj, tg):
                     ppg = statistics.mean(B1.v(g, "points") for g in gl); apg = statistics.mean(B1.v(g, "assists") for g in gl); mpg = statistics.mean(B1.v(g, "minutes") for g in gl)
                     imp = 0.55 * (ppg + apg) * w * clamp(mpg / 30, 0.3, 1.0)
                     if imp >= 0.1: off += imp; notes.append(f"{i['name']} ({ppg:.0f} pts, {apg:.0f} ast) {i['label']}: −{imp:.1f} pts")
-    cap = {"cfb": 6.0, "nba": 8.0, "cbb": 8.0, "nfl": 6.0, "wnba": 8.0, "mlb": 0.6}[lg]
+    cap = {"cfb": 6.0, "nba": 8.0, "cbb": 8.0, "nfl": 6.0, "wnba": 8.0, "mlb": 0.6, "nhl": 0.5}[lg]
     return dict(off=round(min(off, cap), 2), deff=round(min(deff, cap / 2), 2), notes=notes)
 
 def make_game(lg, e, comp, ch, ca, ha, aa, ln, LR, TB, games, C, inj_all):
@@ -145,7 +149,7 @@ def make_game(lg, e, comp, ch, ca, ha, aa, ln, LR, TB, games, C, inj_all):
     else: bookH = LEX.phi(-ln["spr_h"] / LR["sd"]["m"])
     book_marg = -ln["spr_h"]; total = ln["total"]
     raw_m = (lph - lpa) + dm; raw_t = (lph + lpa) + dt
-    fin = LEX.final_proj(lg, LR, raw_m, raw_t, dict(spr=(ln["spr_h"] if lg != "mlb" else None), total=total, pml=bookH), calib=True)
+    fin = LEX.final_proj(lg, LR, raw_m, raw_t, dict(spr=(ln["spr_h"] if lg not in ("mlb", "nhl") else None), total=total, pml=bookH), calib=True)
     marg, pt, pH = fin["fm"], fin["ft"], fin["fp"]
     projH = (pt + marg) / 2; projA = (pt - marg) / 2
     projH0 = lph; projA0 = lpa
@@ -157,7 +161,7 @@ def make_game(lg, e, comp, ch, ca, ha, aa, ln, LR, TB, games, C, inj_all):
         st = LR["leanStats"].get(kind); return not st or st["n"] < 50 or st["hit"] / st["n"] >= 0.52
     leans = []
     d_sp = raw_m - book_marg
-    if lg == "mlb" or not lean_ok("spread"): d_sp = 0     # baseball run lines are not expected margins
+    if lg in ("mlb", "nhl") or not lean_ok("spread"): d_sp = 0     # baseball run lines are not expected margins
     if abs(d_sp) >= SPREAD_T[lg]:
         if d_sp > 0: leans.append(dict(kind="spread", text=f"Spread lean: {h['abbr']} {ln['spr_h']:+g}", why=f"model margin {h['abbr']} {raw_m:+.1f} vs book {book_marg:+.1f}"))
         else: leans.append(dict(kind="spread", text=f"Spread lean: {a['abbr']} {ln['spr_a']:+g}", why=f"model margin {h['abbr']} {raw_m:+.1f} vs book {book_marg:+.1f}"))
@@ -165,7 +169,7 @@ def make_game(lg, e, comp, ch, ca, ha, aa, ln, LR, TB, games, C, inj_all):
     if not lean_ok("total"): d_t = 0
     if abs(d_t) >= TOTAL_T[lg]: leans.append(dict(kind="total", text=f"Total lean: {'Over' if d_t > 0 else 'Under'} {total:g}", why=f"model total {pt:.1f} vs book {total:g}"))
     pH_raw = LEX.phi(raw_m / LR["sd"]["m"])
-    if lg == "mlb" and not lean_ok("mlLean"): pH_raw = bookH
+    if lg in ("mlb", "nhl") and not lean_ok("mlLean"): pH_raw = bookH
     if ml_h is not None:
         if pH_raw - bookH >= ML_T[lg]: leans.append(dict(kind="ml", text=f"Moneyline lean: {h['abbr']} {ml_h:+d}", why=f"model {pH_raw*100:.0f}% vs book {bookH*100:.0f}%"))
         elif bookH - pH_raw >= ML_T[lg]: leans.append(dict(kind="ml", text=f"Moneyline lean: {a['abbr']} {ml_a:+d}", why=f"model {(1-pH_raw)*100:.0f}% vs book {(1-bookH)*100:.0f}%"))
@@ -181,7 +185,7 @@ def make_game(lg, e, comp, ch, ca, ha, aa, ln, LR, TB, games, C, inj_all):
     venue = (comp.get("venue") or {}).get("fullName") or ""
     pre_note = None
     if (e.get("season") or {}).get("type") == 1: pre_note = "Preseason"
-    elif (e.get("season") or {}).get("type") == 3 and lg in ("nba", "nfl", "wnba", "mlb"): pre_note = "Postseason"
+    elif (e.get("season") or {}).get("type") == 3 and lg in ("nba", "nfl", "wnba", "mlb", "nhl"): pre_note = "Postseason"
     g = dict(id=e["id"], lg=fam, key=lg, league=NAME[lg], title=f"{a['name']} at {h['name']}", start=start.strftime("%-I:%M %p ET"), startDate=start.strftime("%a %b %-d"), iso=start.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), day=start.strftime("%Y-%m-%d"), venue=venue,
              tv=", ".join(sum([b.get("names", []) for b in comp.get("broadcasts", [])], [])) if comp.get("broadcasts") and isinstance(comp["broadcasts"][0], dict) and "names" in comp["broadcasts"][0] else "",
              series=pre_note, note=((comp.get("notes") or [{}])[0].get("headline") if comp.get("notes") else None), n=TB["N"],

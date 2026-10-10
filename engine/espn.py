@@ -9,7 +9,7 @@ CACHE = os.environ.get("LS_CACHE") or os.path.join(ROOT, ".cache")      # scratc
 D = CACHE                                                                  # legacy name used by the old scripts
 os.makedirs(CACHE + "/gl", exist_ok=True)
 
-SP = {"nfl": ("football", "nfl"), "wnba": ("basketball", "wnba"), "mlb": ("baseball", "mlb"), "nba": ("basketball", "nba"),
+SP = {"nfl": ("football", "nfl"), "wnba": ("basketball", "wnba"), "mlb": ("baseball", "mlb"), "nba": ("basketball", "nba"), "nhl": ("hockey", "nhl"),
       "cfb": ("football", "college-football"), "cbb": ("basketball", "mens-college-basketball")}
 UA = os.environ.get("LS_UA") or "Mozilla/5.0 (compatible; LineScout/1.0)"      # note: a UA containing the word "bot" is rejected by some proxies
 SB = "https://site.api.espn.com/apis/site/v2/sports/"

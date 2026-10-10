@@ -21,9 +21,10 @@ import concurrent.futures as cf
 from espn import curl, ROOT, CACHE
 
 SPORTS = ("nfl", "nba", "wnba", "mlb", "cfb", "cbb")
+ALLSPORTS = SPORTS + ("nhl",)            # hockey is team-level only (no player stat lines): it gets a team list, never the player/roster steps
 FB = ("nfl", "cfb"); BB = ("nba", "wnba", "cbb")
 SPN = {"nfl": ("football", "nfl"), "nba": ("basketball", "nba"), "wnba": ("basketball", "wnba"), "mlb": ("baseball", "mlb"),
-       "cfb": ("football", "college-football"), "cbb": ("basketball", "mens-college-basketball")}
+       "cfb": ("football", "college-football"), "cbb": ("basketball", "mens-college-basketball"), "nhl": ("hockey", "nhl")}
 BYATH = "https://site.web.api.espn.com/apis/common/v3/sports/{s}/{l}/statistics/byathlete?region=us&lang=en&contentorigin=espn&isqualified=false&page={p}&limit={n}&sort={sort}&season={y}&seasontype=2"
 SB = "https://site.api.espn.com/apis/site/v2/sports/{s}/{l}/"
 PLAYER_TTL = 20 * 3600
@@ -428,7 +429,7 @@ def extend_college(now, log, root, c):
 def refresh(now, log, max_leagues=1, root=None):
     """refresh the stalest league's player averages (and missing team lists), then the injury report + a slice of rosters. Returns the cache."""
     c = load_cache(root); changed = False; t_now = time.time()
-    for lg in SPORTS:
+    for lg in ALLSPORTS:
         tm = c["teams"].get(lg)
         if not tm or t_now - tm.get("ts", 0) > TEAM_TTL:
             ts = fetch_teams(lg)
@@ -582,11 +583,11 @@ def compose_team(lg, abbr, cands, out_ids, q_ids, inj_items, today=None):
     return res, info
 
 # ------------------------------------------------------------------------------------------------ page + Supabase output
-def build(learn_out, cache, live=None, today=None):
+def build(learn_out, cache, live=None, today=None, tennis=None):
     """-> sim.json dict (page) ; also used for the Supabase rows"""
     live = live if live is not None else load_live()
     out = {"sports": {}}
-    for lg in SPORTS:
+    for lg in ALLSPORTS:
         L = (learn_out.get("leagues") or {}).get(lg)
         if not L or not L.get("ratings"): continue
         tmeta = (cache["teams"].get(lg) or {}).get("teams", [])
@@ -632,6 +633,7 @@ def build(learn_out, cache, live=None, today=None):
             if pl:
                 players[ab] = [dict(pid=p["pid"], name=p["name"], pos=p["pos"], role=p["role"], rk=p["rk"], stats=p["stats"], **({"inj": p["inj"], "note": p.get("note", "")} if p.get("inj") else {})) for p in pl]
         out["sports"][lg] = dict(L=L.get("L"), hfa=(L.get("params") or {}).get("hfa", 0), season=pc.get("season"), teams=teams, players=players)
+    if tennis: out["sports"]["tennis"] = tennis
     return out
 
 def rows(sim):

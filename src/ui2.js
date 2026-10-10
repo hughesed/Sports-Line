@@ -96,10 +96,10 @@ function sgpRecapHtml(g){
 }
 
 /* ---------- reports (past days) ---------- */
-const LN_DEF={nfl:32,wnba:15,mlb:30};
+const LN_DEF={nfl:32,wnba:15,mlb:30,nhl:32};
 const lnOf=lg=>((LEARN.leagues[lg]||{}).nTeams)||LN_DEF[lg]||30;
-const LGN={nfl:'NFL',wnba:'WNBA',mlb:'MLB',nba:'NBA',cfb:'College football',cbb:'College basketball'};
-const LGT=[['all','All'],['nfl','NFL'],['cfb','CFB'],['nba','NBA'],['cbb','CBB'],['wnba','WNBA'],['mlb','MLB']];
+const LGN={nfl:'NFL',wnba:'WNBA',mlb:'MLB',nba:'NBA',cfb:'College football',cbb:'College basketball',nhl:'NHL',tennis:'Tennis'};
+const LGT=[['all','All'],['nfl','NFL'],['cfb','CFB'],['nba','NBA'],['cbb','CBB'],['wnba','WNBA'],['mlb','MLB'],['nhl','NHL'],['tennis','Tennis']];
 const keyOf=g=>g.key||g.lg;
 function fmtLine(x){ return x==null?'n/a':(x>0?'+'+x:String(x)); }
 function chipOk(label,ok,tip){ const cls=ok===true?'ok':ok===false?'bad':''; return '<span class="vc '+cls+'" title="'+esc(tip||'')+'">'+(ok===true?'✓ ':ok===false?'✗ ':'– ')+esc(label)+'</span>'; }
@@ -199,7 +199,7 @@ function previewView(date){
 
 /* ---------- shell ---------- */
 function oddsGrid(g){
-  const L=g.lines,a=g.teams.away,h=g.teams.home; const lgName=g.lg==='mlb'?'Run line':'Spread';
+  const L=g.lines,a=g.teams.away,h=g.teams.home; const lgName=g.lg==='mlb'?'Run line':g.lg==='nhl'?'Puck line':g.lg==='tennis'?'Game spread':'Spread';
   const btn=(tok,top,sub)=>{ const on=inSlip(tok); return '<button class="odd'+(on?' on':'')+'" data-act="leg" data-tok="'+esc(tok)+'" aria-pressed="'+on+'"><span class="o1">'+esc(top)+'</span><span class="o2 mono">'+esc(sub)+'</span></button>'; };
   const row=(t,side)=>{
     const sp=side==='home'?L.sprHome:L.sprAway, pr=side==='home'?L.prHome:L.prAway, ml=side==='home'?L.mlHome:L.mlAway;
@@ -211,22 +211,35 @@ function oddsGrid(g){
 }
 /* ---------- sportsbook comparison (data/odds.json, written by the bot from the SportsGameOdds key) ---------- */
 const BK_NAME={draftkings:'DraftKings',fanduel:'FanDuel',betmgm:'BetMGM',caesars:'Caesars',espnbet:'ESPN BET',bovada:'Bovada',pointsbet:'PointsBet',unibet:'Unibet',williamhill:'William Hill',fanatics:'Fanatics',betrivers:'BetRivers',hardrock:'Hard Rock',betonline:'BetOnline',mybookie:'MyBookie',fliff:'Fliff',prizepicks:'PrizePicks',underdog:'Underdog'};
-const BK_LG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'NCAAF',cbb:'NCAAB',wnba:'WNBA'};
-const bkNorm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const BK_LG={nfl:'NFL',nba:'NBA',mlb:'MLB',cfb:'NCAAF',cbb:'NCAAB',wnba:'WNBA',nhl:'NHL'};
+/* team names: lower case, no accents, a trailing "St" is "State" ("Florida St" = "Florida State"), letters and digits only */
+const bkNorm=s=>{ let x=String(s||''); try{ x=x.normalize('NFD').replace(/[\u0300-\u036f]/g,''); }catch(e){} return x.toLowerCase().trim().replace(/\bst\.?$/,'state').replace(/[^a-z0-9]/g,''); };
+/* does the odds feed's home/away side match this team? The feed often has no short code and names colleges without the mascot ("Louisville"),
+   so compare its name with the slate team's full name, short name and location, and its code with the slate abbreviation */
+function bkTeamEq(e,side,t){ if(!t||!e) return false; const ab=bkNorm(e[side]), nm=bkNorm(e[side+'Name']);
+  if(ab&&ab===bkNorm(t.abbr)) return true;
+  if(!nm) return false; return nm===bkNorm(t.name)||nm===bkNorm(t.short)||(!!t.loc&&nm===bkNorm(t.loc)); }
 function bkEvent(g){
   try{ const O=window.__LSDATA&&window.__LSDATA.odds; if(!O||!Array.isArray(O.events)) return null;
-    const lg=BK_LG[g.key||g.lg]; const hn=bkNorm(g.teams.home.name), an=bkNorm(g.teams.away.name), ha=bkNorm(g.teams.home.abbr), aa=bkNorm(g.teams.away.abbr), gt=Date.parse(g.iso);
+    if(g.oddsId) return O.events.find(e=>e.id===g.oddsId)||null;     /* tennis cards come from the feed itself */
+    const lg=BK_LG[g.key||g.lg]; const gt=Date.parse(g.iso);
     return O.events.find(e=>{ if(lg&&e.league!==lg) return false; const st=Date.parse(e.start); if(isFinite(gt)&&isFinite(st)&&Math.abs(st-gt)>30*3600e3) return false;
-      return (bkNorm(e.homeName)===hn&&bkNorm(e.awayName)===an)||(bkNorm(e.home)===ha&&bkNorm(e.away)===aa); })||null;
+      return bkTeamEq(e,'home',g.teams.home)&&bkTeamEq(e,'away',g.teams.away); })||null;
   }catch(e){ return null; }
 }
+/* the odds feed gives BetMGM and Caesars links for ONE state (New Jersey). Those pages do not open from anywhere else, so the state is swapped for yours */
+const BK_STATES=[['az','Arizona'],['co','Colorado'],['ct','Connecticut'],['dc','Washington DC'],['ia','Iowa'],['il','Illinois'],['in','Indiana'],['ks','Kansas'],['ky','Kentucky'],['la','Louisiana'],['ma','Massachusetts'],['md','Maryland'],['mi','Michigan'],['nc','North Carolina'],['nh','New Hampshire'],['nj','New Jersey'],['ny','New York'],['oh','Ohio'],['pa','Pennsylvania'],['tn','Tennessee'],['va','Virginia'],['vt','Vermont'],['wv','West Virginia'],['wy','Wyoming']];
+function bkState(){ let s=''; try{ s=localStorage.getItem('ls_state')||''; }catch(e){} if(!s){ try{ const tz=(Intl.DateTimeFormat().resolvedOptions()||{}).timeZone||''; if(tz==='America/Detroit') s='mi'; }catch(e){} } return BK_STATES.some(x=>x[0]===s)?s:''; }
+function bkSetState(v){ try{ localStorage.setItem('ls_state',v||''); }catch(e){} }
+function bkRegion(u){ const st=bkState(); if(!st||typeof u!=='string') return u;
+  return u.replace(/(\/\/sports\.)[a-z]{2}(\.betmgm\.com)/i,'$1'+st+'$2').replace(/(sportsbook\.caesars\.com\/us\/)[a-z]{2}(\/)/i,'$1'+st+'$2'); }
 function bkBlock(g){
   const e=bkEvent(g); if(!e||!e.main) return '';
   const M=e.main, names={}; ['ml','spread','total'].forEach(k=>Object.keys(M[k]||{}).forEach(s=>Object.keys(M[k][s].books||{}).forEach(b=>{ names[b]=1; })));
   const books=Object.keys(names).sort((x,y)=>(BK_NAME[x]||x).localeCompare(BK_NAME[y]||y)); if(!books.length) return '';
   const cell=(k,s,b,withLine)=>{ const x=M[k]&&M[k][s]&&M[k][s].books&&M[k][s].books[b]; if(!x) return '<td class="mono muted">–</td>';
     const ln=withLine&&x.line!=null?(k==='total'?(s==='over'?'O ':'U ')+x.line:sg(x.line))+' ':''; return '<td class="mono">'+ln+fo(x.odds)+'</td>'; };
-  const link=b=>{ const l=(e.eventLinks||{})[b]||''; const name=esc(BK_NAME[b]||b); return /^https:\/\//.test(l)?'<a href="'+esc(l)+'" target="_blank" rel="noopener noreferrer">'+name+'</a>':name; };
+  const link=b=>{ const l=bkRegion((e.eventLinks||{})[b]||''); const name=esc(BK_NAME[b]||b); return /^https:\/\//.test(l)?'<a href="'+esc(l)+'" target="_blank" rel="noopener noreferrer">'+name+'</a>':name; };
   const rows=books.map(b=>'<tr><td class="bkn">'+link(b)+'</td>'+cell('ml','away',b)+cell('ml','home',b)+cell('spread','away',b,1)+cell('spread','home',b,1)+cell('total','over',b,1)+cell('total','under',b,1)+'</tr>').join('');
   const when=window.__LSDATA.odds.generatedAt?new Date(window.__LSDATA.odds.generatedAt):null;
   return '<details class="bkbox"><summary>Sportsbook lines <span class="muted small">'+books.length+' books'+(when&&isFinite(when)?' · '+Math.max(0,Math.round((Date.now()-when)/60000))+' min old':'')+'</span></summary><div class="xscroll"><table class="bkt"><thead><tr><th>Book</th><th>'+esc(g.teams.away.abbr)+' ML</th><th>'+esc(g.teams.home.abbr)+' ML</th><th>'+esc(g.teams.away.abbr)+' spread</th><th>'+esc(g.teams.home.abbr)+' spread</th><th>Over</th><th>Under</th></tr></thead><tbody>'+rows+'</tbody></table></div><div class="small muted">Real sportsbook prices for comparison only. Practice coins only: this page cannot place a bet.</div></details>';
@@ -250,7 +263,7 @@ function learnedBox(g){
 function commNav(){
   const on=!!(typeof COMM_VIEWS!=='undefined'&&COMM_VIEWS[S.view]); const men=typeof socUnseen==='function'?socUnseen():0;
   const badge=men?'@'+men:((typeof chatNew==='function'&&chatNew())||(typeof shBadge==='function'&&shBadge())||'');
-  return '<button class="nv" data-act="view" data-k="'+esc(on?S.view:(S.comm||'chat'))+'" aria-pressed="'+on+'">'+IC.chat+'<span>Community</span>'+(badge?'<i class="nb">'+badge+'</i>':'')+'</button>';
+  return '<button class="nv" data-act="'+(on?'view':'comm')+'" data-k="'+esc(on?S.view:(S.comm||'profile'))+'" aria-pressed="'+on+'">'+IC.chat+'<span>Community</span>'+(badge?'<i class="nb">'+badge+'</i>':'')+'</button>';
 }
 function navHtml(){
   const pend=(typeof socPending==='function'&&socPending()!=null)?socPending():P.bets.filter(b=>b.status==='pending').length;
@@ -284,7 +297,7 @@ function render(){
   const showLeague=S.view==='pre'||S.view==='live';
   const dlabel=S.date===TODAY?'Today':wd(S.date)+' '+mon(S.date)+' '+dnum(S.date);
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
-    (S.calOpen?calHtml():'')+'<div class="hd-tools">'+(showLeague?'<div class="tabwrap"><div class="slhint"><span>Slide for more sports</span><span>‹ ›</span></div><div class="slbar"><i id="slthumb"></i></div><div class="tabs" id="ltabs" role="group" aria-label="League">'+ltabs+'</div></div>':'<div></div>')+'<button class="themebtn" data-act="theme" aria-label="Switch light or dark mode">'+themeLabel()+'</button></div></div>';
+    (S.calOpen?calHtml():'')+(showLeague?'<div class="hd-tools"><div class="tabwrap"><div class="slhint"><span>Slide for more sports</span><span>‹ ›</span></div><div class="slline"><div class="slbar"><i id="slthumb"></i></div>'+(S.view==='pre'?'<button class="themebtn" data-act="theme" aria-label="Switch light or dark mode">'+themeLabel()+'</button>':'')+'</div><div class="tabs" id="ltabs" role="group" aria-label="League">'+ltabs+'</div></div></div>':'')+'</div>';
   slFit();
   $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+hpHomeHtml()+hpFold('potd','Pick of the day','',potdHtml(),false)+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
     '<div class="foot"><div>Source: ESPN game logs (up to 15 games shown, last 10 feed the model), standings, results, live play-by-play, injury reports and DraftKings lines. Pregame numbers are a snapshot, so lines and injury news will change before game time.</div>'+
@@ -344,3 +357,14 @@ themeApply(themeGet());
 function slFit(){ const t=document.getElementById('ltabs'), th=document.getElementById('slthumb'); if(!t||!th) return; const w=Math.max(0.2,Math.min(1,t.clientWidth/Math.max(1,t.scrollWidth))); th.style.width=(w*100)+'%'; const max=t.scrollWidth-t.clientWidth; th.style.left=(max>0?(t.scrollLeft/max)*(100-w*100):0)+'%'; }
 document.addEventListener('scroll',function(e){ if(e.target&&e.target.id==='ltabs') slFit(); },true);
 window.addEventListener('resize',slFit);
+
+/* Book-only cards (tennis): there is no ratings model, so Crossroads shows what the sportsbook says instead of an offense-vs-defense matchup */
+function bookOnlyBox(g){
+  const cr=g.crossroads, a=g.teams.away, h=g.teams.home, L=g.lines;
+  return '<div class="sec"><h3>The market <span class="hint">sportsbook consensus</span></h3>'+
+    '<div class="proj">'+
+      '<div class="kv"><div class="k">'+esc(h.short||h.abbr)+' win chance</div><div class="v">'+pct(cr.pHome)+'</div><div class="s">book, no vig</div></div>'+
+      '<div class="kv"><div class="k">'+esc(a.short||a.abbr)+' win chance</div><div class="v">'+pct(1-cr.pHome)+'</div><div class="s">book, no vig</div></div>'+
+      '<div class="kv"><div class="k">Game total</div><div class="v">'+n1(L.total)+'</div><div class="s">expected games</div></div>'+
+    '</div><div class="small muted">'+esc(g.note||'Book lines only. There is no ratings model for this sport.')+'</div></div>';
+}

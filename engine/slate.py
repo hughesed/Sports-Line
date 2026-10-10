@@ -6,8 +6,8 @@ import feeds
 import build as B1
 import build2 as B2
 
-PRIORITY = ["nfl", "cfb", "nba", "wnba", "mlb", "cbb"]          # who wins a place when the slate is over its cap
-CAPS = dict(nfl=12, cfb=8, nba=8, wnba=6, mlb=8, cbb=6)         # per-league cap
+PRIORITY = ["nfl", "cfb", "nba", "wnba", "mlb", "nhl", "cbb"]          # who wins a place when the slate is over its cap
+CAPS = dict(nfl=12, cfb=8, nba=8, wnba=6, mlb=8, nhl=8, cbb=6)         # per-league cap
 TOTAL_CAP = 24
 PLAYER_CAP = dict(nfl=10, wnba=6, mlb=8)                         # most events per league that get the (slower) player-level build
 HORIZON_H = 48
@@ -85,7 +85,7 @@ def build_slate(now, today, boards, store, prev, budget_s=840, log=print, learn_
     t0 = time.time()
     prev_games = (prev or {}).get("games", [])
     prev_by_id = {g["id"]: g for g in prev_games}
-    status = {lg: dict(status="ok", games=0, playerLevel=0, teamLevel=0, carried=0, error=None) for lg in ("nfl", "wnba", "mlb", "nba", "cfb", "cbb")}
+    status = {lg: dict(status="ok", games=0, playerLevel=0, teamLevel=0, carried=0, error=None) for lg in ("nfl", "wnba", "mlb", "nba", "cfb", "cbb", "nhl")}
     cands = {}; prep = {}
     for lg in status:
         evs = boards.get(lg)

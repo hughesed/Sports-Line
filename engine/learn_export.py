@@ -14,9 +14,9 @@ def tg_of(games, ab):
 def brief(cx):
     return dict(net=round(-(cx["off"] + cx["deff"]), 2), items=[dict(kind=i["kind"], text=i["text"][:110], pts=i["pts"]) for i in cx["items"]][:4], stars=[dict(name=s["name"], pos=s["pos"], cat=s["cats"][0]["label"], rank=s["cats"][0]["rank"], pts=s["pts"], unit=s["unit"]) for s in cx["stars"]][:2])
 
-LEAGUES = ("nfl", "wnba", "mlb", "nba", "cfb", "cbb")
-SPREAD_T = {"nfl": 3.0, "wnba": 2.5, "nba": 2.5, "cfb": 3.5, "cbb": 3.0}; TOTAL_T = {"nfl": 4.0, "wnba": 4.0, "mlb": 0.6, "nba": 5.0, "cfb": 4.5, "cbb": 5.0}; ML_T = {"nfl": 0.06, "wnba": 0.05, "mlb": 0.04, "nba": 0.05, "cfb": 0.06, "cbb": 0.05}
-CLOSE_T = {"nfl": 8, "wnba": 8, "mlb": 2, "nba": 8, "cfb": 8, "cbb": 8}       # "one-score game" margin
+LEAGUES = ("nfl", "wnba", "mlb", "nba", "cfb", "cbb", "nhl")
+SPREAD_T = {"nfl": 3.0, "wnba": 2.5, "nba": 2.5, "cfb": 3.5, "cbb": 3.0, "nhl": 99.0}; TOTAL_T = {"nhl": 0.5, "nfl": 4.0, "wnba": 4.0, "mlb": 0.6, "nba": 5.0, "cfb": 4.5, "cbb": 5.0}; ML_T = {"nfl": 0.06, "wnba": 0.05, "mlb": 0.04, "nba": 0.05, "cfb": 0.06, "cbb": 0.05, "nhl": 0.04}
+CLOSE_T = {"nfl": 8, "wnba": 8, "mlb": 2, "nba": 8, "cfb": 8, "cbb": 8, "nhl": 1}       # "one-score game" margin
 FLOOR_W = 0.15                                    # keep a minimum share of the model so it can still disagree with the book
 CALIB = {}                                        # per-league win-chance slope learned from the bot's own graded predictions (set by refresh.py)
 CALIB_BOUNDS = (0.85, 1.15)
@@ -71,7 +71,7 @@ def verdicts(lg, r, fin, b):
         if abs(gap) >= TOTAL_T[lg]:
             over = gap > 0
             v["tot"] = dict(pick="Over" if over else "Under", line=b["total"], gap=round(gap, 1), ok=None if total == b["total"] else ((total > b["total"]) == over))
-    if b and b.get("pml") is not None and lg == "mlb":
+    if b and b.get("pml") is not None and lg in ("mlb", "nhl"):
         gap = r["pH"] - b["pml"]
         if abs(gap) >= ML_T[lg]:
             h = gap > 0; v["mlLean"] = dict(pick=r["home"] if h else r["away"], gap=round(gap, 3), ok=(margin > 0) == h)
@@ -95,7 +95,7 @@ def lean_stats(lg, rows):
             gap = r["mt"] - b["total"]
             if abs(gap) >= TOTAL_T[lg] and total != b["total"]:
                 t[1] += 1; t[0] += ((total > b["total"]) == (gap > 0))
-        if b.get("pml") is not None and lg == "mlb":
+        if b.get("pml") is not None and lg in ("mlb", "nhl"):
             gap = r["pH"] - b["pml"]
             if abs(gap) >= ML_T[lg]: m[1] += 1; m[0] += ((margin > 0) == (gap > 0))
     if s[1]: out["spread"] = dict(hit=s[0], n=s[1])
@@ -198,7 +198,7 @@ def league_block(lg, today, WIN0, events):
     for g in R["games"]: by_day[et_date(g["date"])].append(g)
     mo = Model(R["params"]); mo.big = getattr(m, "big", None); cs = None; snaps = {}
     for day in sorted(by_day):
-        if lg in ("nfl", "nba", "cfb"):
+        if lg in ("nfl", "nba", "cfb", "nhl"):
             sd_ = by_day[day][0].get("season")
             if cs is None: cs = sd_
             elif sd_ != cs: mo.new_season(); cs = sd_

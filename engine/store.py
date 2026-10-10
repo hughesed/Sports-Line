@@ -3,9 +3,9 @@ import json, os, re, datetime, time
 from espn import curl, pmap, SP, SB, CORE, ROOT
 from timeutil import et_date_of
 
-LEAGUES = ("nfl", "wnba", "mlb", "nba", "cfb", "cbb")
-GR = {"cfb": "&groups=80&limit=300", "cbb": "&groups=50&limit=400", "nba": "&limit=100", "nfl": "&limit=100", "wnba": "&limit=100", "mlb": "&limit=100"}
-ODDS_LEAGUES = ("nfl", "wnba", "mlb", "nba", "cfb")        # same as the original build: no closing lines are kept for college basketball
+LEAGUES = ("nfl", "wnba", "mlb", "nba", "cfb", "cbb", "nhl")
+GR = {"cfb": "&groups=80&limit=300", "cbb": "&groups=50&limit=400", "nba": "&limit=100", "nfl": "&limit=100", "wnba": "&limit=100", "mlb": "&limit=100", "nhl": "&limit=100"}
+ODDS_LEAGUES = ("nfl", "wnba", "mlb", "nba", "cfb", "nhl")        # same as the original build: no closing lines are kept for college basketball
 KEEP_DAYS = 1100
 BACKFILL_CAP_DAYS = 120
 
@@ -27,7 +27,7 @@ def event_to_game(lg, e):
         if "TBD" in (ha, aa): return None
         se = e.get("season") or {}
         st = se.get("type")
-        if lg in ("nfl", "wnba", "mlb", "nba") and st not in (2, 3): return None      # preseason / exhibition games do not count for ratings
+        if lg in ("nfl", "wnba", "mlb", "nba", "nhl") and st not in (2, 3): return None      # preseason / exhibition games do not count for ratings
         return dict(id=str(e["id"]), date=e["date"], home=ha, away=aa, hs=hs, as_=as_, neutral=bool(c.get("neutralSite")), post=(st == 3), season=se.get("year"))
     except Exception:
         return None

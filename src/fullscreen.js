@@ -4,7 +4,7 @@ function fsHeadHtml(g){
   const f=FEED[g.id], st=stateOf(g), a=g.teams.away, h=g.teams.home; const live=f&&f.st.s==='in';
   const poss=g.lg==='nfl'&&f&&f.sit&&f.sit.poss?f.sit.poss:''; const sub=g.lg==='nfl'&&f&&f.sit&&f.sit.dn?f.sit.dn:'';
   return '<div class="fsscore"><div class="fst"><span class="ab">'+esc(a.abbr)+(poss===a.abbr?' <i class="posb">●</i>':'')+'</span><b class="mono">'+st.away+'</b></div>'+
-    '<div class="fsc">'+(live?'<span class="liveb"><i class="livedot"></i>LIVE</span>':'')+'<span class="mono">'+esc((g.lg==='nfl'||g.lg==='wnba')&&f&&f.st.s==='in'?((g.key==='cbb'?'H':'Q')+f.st.per+' '+(f.st.clk||'')):pbLabel(g,f))+'</span>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>'+
+    '<div class="fsc">'+(live?'<span class="liveb"><i class="livedot"></i>LIVE</span>':'')+'<span class="mono">'+esc((g.lg==='nfl'||g.lg==='wnba'||g.lg==='nhl')&&f&&f.st.s==='in'?((g.key==='cbb'?'H':g.lg==='nhl'?'P':'Q')+f.st.per+' '+(f.st.clk||'')):pbLabel(g,f))+'</span>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>'+
     '<div class="fst r"><b class="mono">'+st.home+'</b><span class="ab">'+esc(h.abbr)+(poss===h.abbr?' <i class="posb">●</i>':'')+'</span></div></div>';
 }
 function fsBetsHtml(g){

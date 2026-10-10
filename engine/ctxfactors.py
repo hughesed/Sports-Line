@@ -4,14 +4,15 @@ import json, os, re, sys, datetime, time
 sys.path.insert(0, os.path.dirname(__file__))
 from espn import curl, SP, D
 
-UNIT = {"nfl": 1.0, "cfb": 1.0, "nba": 1.0, "wnba": 1.0, "cbb": 1.0, "mlb": 0.12}       # points -> this sport's scoring unit
-STAR_SCALE = {"nfl": 1.6, "cfb": 1.8, "nba": 1.8, "wnba": 1.8, "cbb": 1.8, "mlb": 0.25}
+UNIT = {"nfl": 1.0, "cfb": 1.0, "nba": 1.0, "wnba": 1.0, "cbb": 1.0, "mlb": 0.12, "nhl": 0.1}       # points -> this sport's scoring unit
+STAR_SCALE = {"nfl": 1.6, "cfb": 1.8, "nba": 1.8, "wnba": 1.8, "cbb": 1.8, "mlb": 0.25, "nhl": 0.2}
 KEYCATS = {
     "nfl": {"passingYards": "O", "rushingYards": "O", "receivingYards": "O", "passingTouchdowns": "O", "quarterbackRating": "O", "sacks": "D"},
     "cfb": {"passingYards": "O", "rushingYards": "O", "receivingYards": "O", "passingTouchdowns": "O", "quarterbackRating": "O", "sacks": "D"},
     "nba": {"pointsPerGame": "O", "assistsPerGame": "O", "reboundsPerGame": "O", "PER": "O", "3PointsMadePerGame": "O"},
     "wnba": {"pointsPerGame": "O", "assistsPerGame": "O", "reboundsPerGame": "O", "PER": "O", "3PointsMadePerGame": "O"},
     "cbb": {"pointsPerGame": "O", "assistsPerGame": "O", "reboundsPerGame": "O", "PER": "O", "3PointsMadePerGame": "O"},
+    "nhl": {"goals": "O", "assists": "O", "points": "O", "savePct": "P", "goalsAgainstAverage": "P"},
     "mlb": {"avg": "O", "homeRuns": "O", "OPS": "O", "RBIs": "O", "ERA": "P", "strikeouts": "P", "WHIP": "P"},
 }
 CATLABEL = {"passingYards": "passing yards", "rushingYards": "rushing yards", "receivingYards": "receiving yards", "passingTouchdowns": "passing touchdowns", "quarterbackRating": "QB rating", "sacks": "sacks",
@@ -68,7 +69,10 @@ def rest_effect(lg, ri, is_home):
     if ri.get("days") is None: return 0.0, None
     d = ri["days"]; pts = 0.0; bits = []
     if d > 21: return 0.0, None   # offseason gap, not a rest edge
-    if lg in ("nba", "wnba", "cbb"):
+    if lg == "nhl":
+        if ri["b2b"]: pts -= 0.12 if is_home else 0.2; bits.append("second game in two nights" + ("" if is_home else " on the road"))
+        elif 3 <= d <= 7: pts += 0.04; bits.append(f"{d} days of rest")
+    elif lg in ("nba", "wnba", "cbb"):
         if ri["b2b"]:
             pts -= 1.3 if is_home else 1.8; bits.append("second game in two nights" + ("" if is_home else " on the road"))
         elif ri["n4"] >= 3 and lg != "cbb": pts -= 0.5; bits.append(f"{ri['n4']} games in 4 days")

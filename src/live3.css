@@ -97,3 +97,30 @@
 @media (prefers-reduced-motion: reduce){.vz-pill.pop,.vz-plate b.pop{animation:none}}
 .vz-field>svg,.vz-field>.mlbviz{transform:rotateX(9deg) scale(1.02)}
 .viz .fshint{top:auto!important;bottom:70px!important;right:12px!important;left:auto!important;background:rgba(10,18,40,.8);color:#cfe0ff;border-radius:999px;padding:2px 9px;font-size:10px}
+
+/* ===== mockup polish: logos, CHIP pill, action pill, stripes, scoreboard ===== */
+.vz-plate em{display:inline-flex;align-items:center;gap:5px}
+.vz-plate .vzl{width:16px;height:16px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+.vz-plate{background:rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,.4)}
+.vz-ball{left:12px;bottom:12px;border-radius:999px;padding:4px 12px;background:rgba(10,18,40,.88)}
+.vz-ball b{font-size:12px;letter-spacing:.08em}
+.vz-act{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;background:#2f7bff;color:#fff;font-weight:900;letter-spacing:.06em;font-size:15px;padding:6px 16px;border-radius:999px;border:2px solid #fff;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.vz-act.on{animation:vzact 1.7s ease-out forwards}
+@keyframes vzact{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}20%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+@media (prefers-reduced-motion: reduce){.vz-act.on{animation:none;opacity:1}}
+.dia .grs3{fill:#34933f}
+.crt .sbs{fill:#10192e}.crt .sbt{fill:#fff;font-size:2.2px;font-weight:800;font-family:var(--f-body);letter-spacing:.1em}
+.crt .bkb{fill:#fff}
+.fld .ez{font-size:4px}
+/* hockey rink and tennis court */
+.rnk,.tnc{width:100%;display:block;border-radius:10px}
+.rnk .ice{fill:#e9f2fb}.rnk .boards{stroke:#bfd0e3;stroke-width:1.4}
+.rnk .rl{stroke:#d8454c;stroke-width:.9}.rnk .bl{stroke:#2f6fd6;stroke-width:.9}.rnk .gl{stroke:#d8454c;stroke-width:.35}
+.rnk .rc{stroke:#2f6fd6;stroke-width:.35}.rnk .rcd{fill:#d8454c}
+.rnk .crease{fill:rgba(76,140,240,.35);stroke:#d8454c;stroke-width:.3}.rnk .net{fill:#fff;stroke:#7b8aa3;stroke-width:.3}
+.rnk .rtx,.tnc .rtx{fill:rgba(20,40,70,.35);font-size:6px;font-weight:800;letter-spacing:.16em;font-family:var(--f-body)}
+.rnk .puck{fill:#111;stroke:#fff;stroke-width:.3}
+.rnk .sm{fill:#ffb62e;stroke:#fff;stroke-width:.4}.rnk .sx{fill:#7a8aa6;stroke:#fff;stroke-width:.3}
+.rnk .pop{transform-box:fill-box;transform-origin:center;animation:dpop .5s cubic-bezier(.2,1.6,.4,1)}
+.tnc .tout{fill:#2c5e8a}.tnc .tin{fill:#3f8a5c}.tnc .tl{stroke:#fff;stroke-width:.5}.tnc .tnet{stroke:#fff;stroke-width:1.1;stroke-dasharray:1.2 1}
+.tnc .tfl{stroke:#fff;stroke-width:.5}

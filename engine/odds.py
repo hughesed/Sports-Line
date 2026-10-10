@@ -4,7 +4,7 @@ Free plans are small, so it pulls on a budget: ODDS_MIN_GAP_MIN minutes between 
 import os, json, time, datetime, urllib.request, urllib.parse, urllib.error
 
 API = "https://api.sportsgameodds.com/v2/events"
-LEAGUES = os.environ.get("ODDS_LEAGUES", "NFL,NCAAF,NBA,NCAAB,MLB,WNBA")
+LEAGUES = os.environ.get("ODDS_LEAGUES", "NFL,NCAAF,NBA,NCAAB,MLB,WNBA,NHL,ATP,WTA")
 # SportsGameOdds stat ids -> the stat names used by the battle picker
 STAT = {"points": "pts", "rebounds": "reb", "assists": "ast", "threePointersMade": "fg3", "points+rebounds+assists": "pra",
         "points+rebounds": "pr", "points+assists": "pa", "rebounds+assists": "ra", "doubleDouble": "dd", "tripleDouble": "td",

@@ -10,8 +10,9 @@ function odFetch(){
 function odKey(s){ return String(s||'').toLowerCase().replace(/[^a-z]/g,''); }
 function odFind(g){
   if(!OD.data) return null;
-  const lg=String(({cfb:'NCAAF',cbb:'NCAAB'})[g.key||g.lg]||g.key||g.lg||'').toUpperCase(), h=g.teams.home, a=g.teams.away;
-  return OD.data.events.find(e=>String(e.league||'').toUpperCase()===lg&&((odKey(e.home)===odKey(h.abbr)&&odKey(e.away)===odKey(a.abbr))||(odKey(e.homeName)===odKey(h.name)&&odKey(e.awayName)===odKey(a.name))))||null;
+  if(g.oddsId) return OD.data.events.find(e=>e.id===g.oddsId)||null;
+  const lg=String(BK_LG[g.key||g.lg]||g.key||g.lg||'').toUpperCase();
+  return OD.data.events.find(e=>String(e.league||'').toUpperCase()===lg&&bkTeamEq(e,'home',g.teams.home)&&bkTeamEq(e,'away',g.teams.away))||null;
 }
 function odFmt(o){ return o==null?'–':(o>0?'+'+o:String(o)); }
 function odSg(n){ return n==null?'':(n>0?'+'+n:String(n)); }
@@ -25,11 +26,11 @@ function odCell(x,pre){ const b=odBest(x); if(!b) return '<span class="muted">�
   const all=Object.keys(x.books).map(k=>(OD_BOOKS[k]||k)+' '+(x.books[k].line!=null?(pre||'')+(pre?x.books[k].line:odSg(x.books[k].line))+' ':'')+odFmt(x.books[k].odds)).join(' · ');
   const ln=b.line!=null?(pre?pre+b.line:odSg(b.line))+' ':'';
   const inner='<b class="mono">'+esc(ln)+odFmt(b.odds)+'</b><span class="small muted">'+esc(OD_BOOKS[b.book]||b.book)+' · '+b.n+' book'+(b.n>1?'s':'')+'</span>';
-  return '<span class="odc" title="'+esc(all)+'">'+(b.link?'<a href="'+esc(b.link)+'" target="_blank" rel="noopener">'+inner+'</a>':inner)+'</span>'; }
+  return '<span class="odc" title="'+esc(all)+'">'+(b.link?'<a href="'+esc(bkRegion(b.link))+'" target="_blank" rel="noopener">'+inner+'</a>':inner)+'</span>'; }
 function odBox(g,e){
   const m=e.main||{}, A=g.teams.away, H=g.teams.home, T=m.total||{};
   const row=(side,T1)=>'<div class="odr"><div class="odt">'+esc(T1.abbr)+'</div>'+odCell((m.spread||{})[side])+odCell(side==='away'?T.over:T.under,side==='away'?'O ':'U ')+odCell((m.ml||{})[side])+'</div>';
-  const links=e.eventLinks||{}; const lk=['draftkings','fanduel','betmgm','caesars'].filter(k=>links[k]).map(k=>'<a href="'+esc(links[k])+'" target="_blank" rel="noopener">'+esc(OD_BOOKS[k])+'</a>').join(' · ');
+  const links=e.eventLinks||{}; const lk=['draftkings','fanduel','betmgm','caesars'].filter(k=>links[k]).map(k=>'<a href="'+esc(bkRegion(links[k]))+'" target="_blank" rel="noopener">'+esc(OD_BOOKS[k])+'</a>').join(' · ');
   const when=OD.data.generatedAt?new Date(OD.data.generatedAt):null;
   return '<div class="odbox" data-od="'+esc(g.id)+'"><div class="odh"><b>Sportsbook lines</b><span class="small muted">best price shown, tap for the book'+(when?' · pulled '+when.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'')+'</span></div>'+
     '<div class="odr odhd"><div class="odt"></div><span>Spread</span><span>Total</span><span>Money</span></div>'+row('away',A)+row('home',H)+(lk?'<div class="small muted">Open at: '+lk+'</div>':'')+
@@ -51,13 +52,13 @@ function odLegLinks(l,info){
   const g=G[l.gid]; if(!g) return null; let e=null; try{ e=(typeof bkEvent==='function'&&bkEvent(g))||(typeof odFind==='function'&&odFind(g))||null; }catch(err){} if(!e) return null;
   const sp=l.spec||{}, out={}, M=e.main||{}, diff={};
   /* each book's own link for this pick; when a book does not list the exact line, use the closest line that book does list (the price will differ, the pick is the same) */
-  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=b.link; } }); };
+  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=bkRegion(b.link); } }); };
   if(sp.k==='ml') take(M.ml&&M.ml[sp.side]);
   else if(sp.k==='spr') take(M.spread&&M.spread[sp.side],+sp.line);
   else if(sp.k==='tot') take(M.total&&M.total[sp.dir],+sp.line);
   else if(sp.k==='prop'){ const pl=(typeof findPlayer==='function')?findPlayer(g,sp.pid):null; if(pl){ const nm=odKey(pl.name); const side=sp.dir==='lt'?'under':'over'; const line=sp.T-0.5;
       (e.props||[]).forEach(p=>{ if(odKey(p.name)!==nm||p.stat!==sp.stat||p.side!==side) return; take(p,line); }); } }
-  if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]){ out[k]=l.links[k]; diff[k]=0; } });
+  if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]){ out[k]=bkRegion(l.links[k]); diff[k]=0; } });
   if(info) Object.keys(diff).forEach(k=>{ info[k]=diff[k]; });
   return out;
 }
@@ -80,3 +81,6 @@ function slipDeepLink(book){
   let url=links[0], n=1; if(links.length>1){ const c=odCombine(book,links); if(c){ url=c; n=links.length; } }
   return {url:url,n:n,total:legs.length,subs:subs,miss:miss};
 }
+
+/* "Your state" picker in the slip: BetMGM and Caesars links are state pages */
+document.addEventListener('change',function(e){ const t=e.target; if(!t||!t.getAttribute||t.getAttribute('data-in')!=='bkstate') return; bkSetState(t.value); S.forceSlip=true; try{ renderSlip(); }catch(err){} S.forceSlip=false; });

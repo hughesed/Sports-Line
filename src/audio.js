@@ -41,7 +41,7 @@ const SFX={
   crowd(long){ const d=long?3.2:1.8; sNoise(d,long?.5:.28,'bandpass',650,1100,.7,0,.5); sNoise(d,long?.3:.15,'bandpass',1800,2600,.8,.1,.6); if(long){ sTone(523,523,.18,.12,'triangle',.5); sTone(659,659,.18,.12,'triangle',.7); sTone(784,784,.35,.14,'triangle',.9); } },
   whistle2(){ SFX.whistle(); setTimeout(()=>{ if(SND.on&&SND.ctx) SFX.whistle(); },520); },
   boo(){ const c=SND.ctx; if(!c) return; const t=c.currentTime, d=2.4; [104,109,115,98].forEach((f,i)=>{ const o=c.createOscillator(), g=c.createGain(), fl=c.createBiquadFilter(), v=c.createOscillator(), vg=c.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(f*1.18,t); o.frequency.exponentialRampToValueAtTime(f*.82,t+d); v.frequency.value=5+i; vg.gain.value=3; v.connect(vg); vg.connect(o.frequency); fl.type='lowpass'; fl.frequency.value=420; fl.Q.value=2; g.gain.setValueAtTime(.0001,t+i*.05); g.gain.exponentialRampToValueAtTime(.11,t+.6); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(fl); fl.connect(g); g.connect(SND.master); o.start(t); v.start(t); o.stop(t+d+.1); v.stop(t+d+.1); }); sNoise(d,.18,'bandpass',420,300,.9,0,.5); },
-  cheer(){ sCrowdVox(2.4,.9,1.12); sNoise(2.2,.2,'bandpass',900,1500,.8,0,.35); sNoise(2.2,.22,'bandpass',2200,3200,.9,.05,.4); for(let i=0;i<7;i++) sNoise(.08,.18,'highpass',1800,1800,.7,.2+i*.22+Math.random()*.1); },
+  cheer(){ const vb=sndVerbBus(); sCrowdVox(2.4,.9,1.12); sNoise(2.2,.2,'bandpass',900,1500,.8,0,.35,vb); sNoise(2.2,.22,'bandpass',2200,3200,.9,.05,.4,vb); for(let i=0;i<9;i++) sNoise(.07,.2,'bandpass',1500+Math.random()*1400,1700,.9,.2+i*.2+Math.random()*.12,.003,vb); },
   groan(){ sNoise(1.1,.22,'bandpass',500,260,.8,0,.3); },
   crack(){ sNoise(.06,.7,'highpass',1800,1800,.7,0); sTone(1100,500,.08,.3,'square',0); },
   swish(){ sNoise(.35,.25,'bandpass',2800,1200,1.1,0,.05); },
@@ -84,7 +84,7 @@ Object.assign(SFX,{
   horn(){ sTone(330,330,.55,.2,'sawtooth',0,null,1500); sTone(415,415,.55,.16,'sawtooth',0,null,1500); sTone(330,330,.7,.2,'sawtooth',.62,null,1500); sTone(415,415,.7,.16,'sawtooth',.62,null,1500); },
   firework(){ sNoise(.5,.18,'bandpass',600,2500,1,0,.3); sNoise(.5,.5,'lowpass',900,150,.9,.55,.005); sNoise(.9,.14,'highpass',3000,5000,.8,.6,.1); },
   wave(){ sNoise(2.6,.3,'bandpass',500,1500,.7,0,1.1); sNoise(2.6,.18,'bandpass',1800,2600,.8,.2,1.2); },
-  cheerBig(){ sCrowdVox(3.6,1.2,1.2); SFX.cheer(); sNoise(3.2,.3,'bandpass',700,1300,.7,.15,.5); SFX.clap(8); },
+  cheerBig(){ const vb=sndVerbBus(); sCrowdVox(3.6,1.2,1.2); SFX.cheer(); sCrowdVox(3.2,.8,.95,.35); sNoise(3.2,.3,'bandpass',700,1300,.7,.15,.5,vb); SFX.clap(10); },
   booBig(){ SFX.boo(); sNoise(2.8,.2,'bandpass',380,280,.9,.2,.5); },
   awww(){ sNoise(1.3,.16,'bandpass',480,240,.8,0,.25); },
   /* a heavy wooden door slammed shut: frame crack, body boom, wood slap, panel ring, latch rattle, room tail */
@@ -114,29 +114,57 @@ function sndPink(){ const c=SND.ctx; if(SND_PINK) return SND_PINK; const n=c.sam
    If a real recording is placed at audio/crowd.mp3 (or .ogg) it is loaded and used instead (see sndLoadCrowdFile). ---------- */
 let SND_BAB=null, SND_BABP=false, SND_FILE=null, SND_FILEP=false;
 const BAB_VOWELS=[[730,1090],[530,1840],[270,2290],[570,840],[300,870],[660,1720],[440,1020]];
+/* a made-up stadium: a 2.4 s stereo impulse response (dense early reflections, then a tail that gets darker as it fades). Used baked into the crowd loop
+   and live on the cheers, so a roar sounds like it fills a bowl instead of coming out of a speaker. */
+function sndMakeIR(c,sr,len,decay){
+  const n=Math.floor(sr*len), b=c.createBuffer(2,n,sr);
+  for(let ch=0;ch<2;ch++){ const d=b.getChannelData(ch); let lp=0;
+    for(let i=0;i<n;i++){ const t=i/n; const att=i<sr*.018?i/(sr*.018):1; lp+=((Math.random()*2-1)-lp)*(.42-.34*t); d[i]=lp*att*Math.pow(1-t,decay)*2.4; } }
+  return b;
+}
+let SND_VERB=null;
+function sndVerbBus(){            // a mixing point: whatever is sent here is heard dry and through the stadium
+  const c=SND.ctx; if(!c) return null; if(SND_VERB&&SND_VERB.ctx===c) return SND_VERB.bus;
+  try{ const bus=c.createGain(), conv=c.createConvolver(), wet=c.createGain(), dry=c.createGain(); conv.buffer=sndMakeIR(c,c.sampleRate,2.4,2.6); wet.gain.value=.55; dry.gain.value=.8;
+    bus.connect(dry); dry.connect(SND.master); bus.connect(conv); conv.connect(wet); wet.connect(SND.master); SND_VERB={ctx:c,bus:bus}; return bus; }catch(e){ return null; }
+}
 function sndMakeBabble(){
   if(SND_BAB||SND_BABP) return; const c=SND.ctx; if(!c) return;
   const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext; if(!OC) return; SND_BABP=true;
   try{
-    const sr=22050, dur=8, oc=new OC(1,sr*dur,sr), mix=oc.createGain(); mix.gain.value=.085; mix.connect(oc.destination);
-    const rnd=(a,b)=>a+Math.random()*(b-a);
-    for(let v=0;v<46;v++){
-      const o=oc.createOscillator(); o.type='sawtooth'; const base=rnd(85,255); o.frequency.setValueAtTime(base,0);
-      for(let t=0;t<dur;t+=.2) o.frequency.setValueAtTime(base*rnd(.9,1.12),t);
-      const f1=oc.createBiquadFilter(), f2=oc.createBiquadFilter(); f1.type=f2.type='bandpass'; f1.Q.value=5; f2.Q.value=7;
-      const g1=oc.createGain(), g2=oc.createGain(), env=oc.createGain(); g1.gain.value=1; g2.gain.value=.55; env.gain.setValueAtTime(0,0);
-      o.connect(f1); o.connect(f2); f1.connect(g1); f2.connect(g2); g1.connect(env); g2.connect(env); env.connect(mix);
-      let t=rnd(0,.9); const talk=rnd(.5,.9);
+    const sr=22050, dur=10, oc=new OC(2,sr*dur,sr), rnd=(a,b)=>a+Math.random()*(b-a);
+    /* signal path: voices + roar bed -> mix -> (dry + stadium reverb) -> soft top end -> out */
+    const mix=oc.createGain(); mix.gain.value=.1;
+    const dry=oc.createGain(); dry.gain.value=.62; const conv=oc.createConvolver(), wet=oc.createGain(); wet.gain.value=.7; conv.buffer=sndMakeIR(oc,sr,2.4,2.6);
+    const tone=oc.createBiquadFilter(); tone.type='lowpass'; tone.frequency.value=5200; tone.Q.value=.5;
+    mix.connect(dry); mix.connect(conv); conv.connect(wet); dry.connect(tone); wet.connect(tone); tone.connect(oc.destination);
+    const nz=oc.createBuffer(1,sr*3,sr), nd=nz.getChannelData(0); for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
+    /* the roar bed: the wash of thousands of people too far away to pick out, slowly breathing */
+    [[420,.5,.5],[1100,.6,.28],[2600,.8,.1]].forEach((x,k)=>{ const s=oc.createBufferSource(); s.buffer=nz; s.loop=true; const f=oc.createBiquadFilter(); f.type='bandpass'; f.frequency.value=x[0]; f.Q.value=x[1]; const g=oc.createGain(); g.gain.value=x[2];
+      const l=oc.createOscillator(), lg=oc.createGain(); l.frequency.value=.11+k*.07; lg.gain.value=x[2]*.45; l.connect(lg); lg.connect(g.gain); l.start(0); s.connect(f); f.connect(g); g.connect(mix); s.start(0,rnd(0,2)); });
+    /* the people: each one a buzzing pitch plus breath, shaped by three vowel formants, in short syllables with pitch glides, spread left to right */
+    for(let v=0;v<66;v++){
+      const o=oc.createOscillator(); o.type='sawtooth'; const kid=Math.random()<.18, base=kid?rnd(240,400):(Math.random()<.4?rnd(165,260):rnd(88,150));
+      const f1=oc.createBiquadFilter(), f2=oc.createBiquadFilter(), f3=oc.createBiquadFilter(); f1.type=f2.type=f3.type='bandpass'; f1.Q.value=5; f2.Q.value=7; f3.Q.value=9;
+      const g1=oc.createGain(), g2=oc.createGain(), g3=oc.createGain(), env=oc.createGain(), br=oc.createBufferSource(), bg=oc.createGain();
+      g1.gain.value=1; g2.gain.value=.55; g3.gain.value=.22; env.gain.setValueAtTime(0,0);
+      br.buffer=nz; br.loop=true; bg.gain.value=.45; br.connect(bg); o.connect(f1); o.connect(f2); o.connect(f3); bg.connect(f1); bg.connect(f2);
+      f1.connect(g1); f2.connect(g2); f3.connect(g3); g1.connect(env); g2.connect(env); g3.connect(env);
+      let out=env; if(oc.createStereoPanner){ const pn=oc.createStereoPanner(); pn.pan.value=rnd(-.85,.85); env.connect(pn); out=pn; } out.connect(mix);
+      const vib=oc.createOscillator(), vg=oc.createGain(); vib.frequency.value=rnd(4.5,6.5); vg.gain.value=base*.012; vib.connect(vg); vg.connect(o.frequency); vib.start(0);
+      o.frequency.setValueAtTime(base,0); br.start(0,rnd(0,2));
+      let t=rnd(0,1.1); const talk=rnd(.45,.9), loud=Math.random()<.25?rnd(.9,1.4):rnd(.25,.8);
       while(t<dur){
-        const vw=BAB_VOWELS[Math.floor(Math.random()*BAB_VOWELS.length)], sy=rnd(.1,.28), amp=rnd(.25,1);
-        f1.frequency.setValueAtTime(vw[0]*rnd(.9,1.1),t); f2.frequency.setValueAtTime(vw[1]*rnd(.9,1.1),t);
+        const vw=BAB_VOWELS[Math.floor(Math.random()*BAB_VOWELS.length)], sy=rnd(.09,.3), amp=rnd(.3,1)*loud, w3=rnd(2400,3100), p0=base*rnd(.9,1.12);
+        f1.frequency.setValueAtTime(vw[0]*rnd(.9,1.1),t); f2.frequency.setValueAtTime(vw[1]*rnd(.9,1.1),t); f3.frequency.setValueAtTime(w3,t);
+        o.frequency.setValueAtTime(p0,t); o.frequency.linearRampToValueAtTime(p0*rnd(.88,1.14),t+sy);
         env.gain.setValueAtTime(0,t); env.gain.linearRampToValueAtTime(amp,t+sy*.3); env.gain.linearRampToValueAtTime(0,t+sy);
-        t+=sy+(Math.random()<talk?rnd(.02,.12):rnd(.3,1.1));
+        t+=sy+(Math.random()<talk?rnd(.02,.1):rnd(.3,1.2));
       }
       o.start(0); o.stop(dur);
     }
-    const done=b=>{ try{ const d=b.getChannelData(0), f=Math.floor(sr*.25); for(let i=0;i<f;i++){ const k=i/f; d[i]*=k; d[d.length-1-i]*=k; } }catch(e){} SND_BAB=b; SND_BABP=false; };   // fade the ends so the loop does not click
-    const p=oc.startRendering(); if(p&&p.then) p.then(done).catch(()=>{ SND_BABP=false; }); else oc.oncomplete=e=>done(e.renderedBuffer);
+    const done=b=>{ try{ for(let ch=0;ch<b.numberOfChannels;ch++){ const d=b.getChannelData(ch), f=Math.floor(sr*.3); for(let i=0;i<f;i++){ const k=i/f; d[i]*=k; d[d.length-1-i]*=k; } } }catch(e){} SND_BAB=b; SND_BABP=false; };   // fade the ends so the loop does not click
+    const pr=oc.startRendering(); if(pr&&pr.then) pr.then(done).catch(()=>{ SND_BABP=false; }); else oc.oncomplete=e=>done(e.renderedBuffer);
   }catch(e){ SND_BABP=false; }
 }
 function sndLoadCrowdFile(){
@@ -285,6 +313,7 @@ function otherCall(g,p){
   const t=cleanTx(p.tx); if(!t) return '';
   if(g.lg==='mlb'){ if(/^(ball|strike|foul|pitch)\b/i.test(t)&&!p.sc) return ''; if(!/struck out|strikes out|grounds|flies|lines|pops|single|double|triple|homer|walk|hit by pitch|out at|scores|steal|stole|double play|reaches|fouled out|sacrifice|lined|fanned/i.test(t)) return ''; }
   if(g.lg==='wnba'){ if(!p.sc&&!/block|steal|turnover|foul/i.test(t)) return ''; }
+  if(g.lg==='nhl'){ if(!p.sc&&!/save|penalty|hit|block/i.test(t)) return ''; }
   return t.slice(0,130);
 }
 /* called when a play starts in big screen mode: voice, effects, pace */
@@ -308,6 +337,7 @@ function announce(g,p,backlog){
     text=otherCall(g,p);
     if(g.lg==='mlb'){ if(/single|double|triple|homer/i.test(p.tx||'')) sfx('crack',0); if(p.sc) sfx('crowd',400,/homer/i.test(p.tx||'')); }
     else if(g.lg==='wnba'){ if(p.sc) { sfx('swish',0); sfx('crowd',250,false); } }
+    else if(g.lg==='nhl'){ if(p.sc){ sfx('horn',0); sfx('crowd',300,true); } else if(p.sh) sfx('crack',0); }
   }
   if(!text||backlog>10) return 0;
   const hi=!!p.sc;

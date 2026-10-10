@@ -1,5 +1,5 @@
 /* ===== standalone live feed: ESPN -> compact docs, in the browser (port of feed.py) ===== */
-const ESP={nfl:'football/nfl',wnba:'basketball/wnba',mlb:'baseball/mlb',nba:'basketball/nba',cfb:'football/college-football',cbb:'basketball/mens-college-basketball'};
+const ESP={nfl:'football/nfl',wnba:'basketball/wnba',mlb:'baseball/mlb',nba:'basketball/nba',cfb:'football/college-football',cbb:'basketball/mens-college-basketball',nhl:'hockey/nhl',tennis:'tennis/atp'};
 const ESPFAM={cfb:'nfl',nba:'wnba',cbb:'wnba'};
 const ESPQ={cfb:'?groups=80&limit=300',cbb:'?groups=50&limit=400'};
 const ESPB='https://site.api.espn.com/apis/site/v2/sports/';
@@ -34,6 +34,7 @@ function sTeamStats(lg,s,home,away){
 }
 
 function espnBuild(key,gid,sbEv){
+  if(key==='tennis') return tennisBuild(gid);
   const lg=ESPFAM[key]||key;
   return sGet(ESPB+ESP[key]+'/summary?event='+gid).then(s=>{
     if(!s||!s.header) return null;
@@ -93,6 +94,10 @@ function espnBuild(key,gid,sbEv){
         const co=pl.coordinate||{}; const ok=Math.abs(co.x==null?9999:co.x)<200&&Math.abs(co.y==null?9999:co.y)<200&&pl.shootingPlay;
         plays.push({i:pl.id,q:(pl.period||{}).number,c:(pl.clock||{}).displayValue||'',tm:ab[(pl.team||{}).id]||'',tx:(pl.text||'').trim(),ty:(pl.type||{}).text||'',sc:!!pl.scoringPlay,v:pl.scoreValue||0,sh:!!pl.shootingPlay,co:(ok?[co.x,co.y]:null),pa:pl.pointsAttempted||0,hs:sToi(pl.homeScore),as:sToi(pl.awayScore)});
       });
+    } else if(lg==='nhl'){
+      (s.plays||[]).slice(-60).forEach(pl=>{
+        plays.push({i:pl.id,q:(pl.period||{}).number,c:(pl.clock||{}).displayValue||'',tm:ab[(pl.team||{}).id]||'',tx:(pl.text||'').trim(),ty:(pl.type||{}).text||'',sc:!!pl.scoringPlay,v:pl.scoreValue||1,sh:!!pl.shootingPlay||/shot|save|goal/i.test((pl.type||{}).text||''),hs:sToi(pl.homeScore),as:sToi(pl.awayScore)});
+      });
     } else if(lg==='mlb'){
       const tb={};
       (s.plays||[]).forEach(pl=>{
@@ -122,6 +127,28 @@ function espnBuild(key,gid,sbEv){
     doc.wp=wp;
     return doc;
   });
+}
+
+/* ---- tennis: ESPN's tennis scoreboards (ATP + WTA). The match is found by the players' surnames; games won are added up over all sets.
+   If the match is not on the boards (or the feed shape is different) nothing is returned and the practice bets on it simply stay pending. ---- */
+function tnSur(s){ const w=String(s||'').toLowerCase().replace(/[^a-z ]/g,' ').split(/\s+/).filter(Boolean); return w.length?w[w.length-1]:''; }
+function tennisBuild(gid){
+  const g=G[gid]; if(!g) return Promise.resolve(null);
+  const hs_=tnSur(g.teams.home.name), as_=tnSur(g.teams.away.name); if(!hs_||!as_) return Promise.resolve(null);
+  return Promise.all(['atp','wta'].map(t=>sGet(ESPB+'tennis/'+t+'/scoreboard').catch(()=>null))).then(bs=>{
+    let found=null;
+    bs.forEach(b=>{ ((b&&b.events)||[]).forEach(ev=>{ ((ev.groupings)||[{competitions:ev.competitions}]).forEach(gr=>{ (gr.competitions||[]).forEach(c=>{
+      const cs=c.competitors||[]; if(cs.length!==2) return;
+      const nm=cs.map(x=>tnSur(((x.athlete||{}).displayName)||((x.team||{}).displayName)||''));
+      if(nm.indexOf(hs_)>=0&&nm.indexOf(as_)>=0) found={c:c,cs:cs,nm:nm};
+    }); }); }); });
+    if(!found) return null;
+    const c=found.c, ty=(c.status&&c.status.type)||{}; const games=x=>(x.linescores||[]).reduce((a,l)=>a+sToi(l.value!=null?l.value:l.displayValue),0);
+    const hi=found.nm.indexOf(hs_), ai=found.nm.indexOf(as_);
+    const doc={gid:gid,lg:'tennis',st:{s:ty.state||'pre',per:(c.status&&c.status.period)||0,clk:'',det:ty.detail||'',pre:''},hs:games(found.cs[hi]),as:games(found.cs[ai]),p:{},dnp:[],plays:[],nm:{},ts:{},ab:{home:g.teams.home.abbr,away:g.teams.away.abbr},sit:{},wp:[]};
+    if(doc.st.s==='post'&&doc.hs===doc.as){ const w=found.cs[hi].winner?'h':found.cs[ai].winner?'a':''; if(w==='h') doc.hs++; else if(w==='a') doc.as++; }
+    return doc;
+  }).catch(()=>null);
 }
 
 const POLL={sig:{},sb:{},timer:null,fails:0,stop:{}};

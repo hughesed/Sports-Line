@@ -4,8 +4,10 @@
    Spectators can bet on the game lines and on who wins the battle until the game starts. Rosters and injuries are frozen into the battle when it is created. */
 const BT={lobby:null,id:null,det:null,timer:null,tick:null,sim:null,simTried:false,form:{sport:'nfl',home:'',pick:'',wager:'50',fmt:'parlay',q:'',vs:'players'},
   draft:{},saveT:null,spec:{tok:'',stake:'25'},msg:'',busy:false,seen:{},html:{},lastTick:0,skew:0,quote:{},acc:{},all:{},sawLive:{},flashed:{}};
-const SPORTS3=[['nfl','NFL'],['nba','NBA'],['wnba','WNBA'],['mlb','MLB'],['cfb','CFB'],['cbb','CBB']];
-const SPLONG={nfl:'NFL',nba:'NBA',wnba:'WNBA',mlb:'MLB',cfb:'College football',cbb:"Men's college basketball"};
+const SPORTS3_ALL=[['nfl','NFL'],['nba','NBA'],['wnba','WNBA'],['mlb','MLB'],['nhl','NHL'],['tennis','Tennis'],['cfb','CFB'],['cbb','CBB']];
+const SPLONG={nfl:'NFL',nba:'NBA',wnba:'WNBA',mlb:'MLB',nhl:'NHL hockey',tennis:'Tennis (games won)',cfb:'College football',cbb:"Men's college basketball"};
+/* hockey and tennis are offered once the bot has published their teams / players (and they need the one-time database update, supabase/patch_hockey_tennis.sql) */
+function sports3(){ return SPORTS3_ALL.filter(([k])=>(k!=='nhl'&&k!=='tennis')||(typeof simTeams==='function'&&simTeams(k).length)); }
 function btLiveDot(){ return !!(BT.lobby&&BT.lobby.live&&BT.lobby.live.length); }
 function btNow(){ return Date.now()+BT.skew; }
 function loadSim(){
@@ -136,13 +138,13 @@ function btFmtNote(fmt,legs){
 }
 function btCreateHtml(){
   const f=BT.form; const ts=simTeams(f.sport); const big=ts.length>40; const q=(f.q||'').trim().toLowerCase();
-  const seg='<button type="button" class="ssnav l" data-act="bt-sslide" data-k="-1" aria-label="Show earlier sports">&#8249;</button><div class="sstrack" id="bt-sstrack" tabindex="-1">'+SPORTS3.map(([k,l])=>'<button type="button" class="ssb" data-act="bt-sport" data-k="'+k+'" aria-pressed="'+(f.sport===k)+'" title="'+esc(SPLONG[k])+'">'+l+'</button>').join('')+'</div><button type="button" class="ssnav r" data-act="bt-sslide" data-k="1" aria-label="Show more sports">&#8250;</button>';
+  const seg='<button type="button" class="ssnav l" data-act="bt-sslide" data-k="-1" aria-label="Show earlier sports">&#8249;</button><div class="sstrack" id="bt-sstrack" tabindex="-1">'+sports3().map(([k,l])=>'<button type="button" class="ssb" data-act="bt-sport" data-k="'+k+'" aria-pressed="'+(f.sport===k)+'" title="'+esc(SPLONG[k])+'">'+l+'</button>').join('')+'</div><button type="button" class="ssnav r" data-act="bt-sslide" data-k="1" aria-label="Show more sports">&#8250;</button>';
   if(f.legs==null) f.legs=8; if(f.mins==null) f.mins=4;
   const H=teamOf(f.sport,f.home);
   const wchips=[10,50,100,250].map(v=>'<button class="x2" data-act="bt-wager" data-v="'+v+'">'+v+'</button>').join('');
   const fseg='<div class="seg" role="group" aria-label="Battle format"><button data-act="bt-fmt" data-k="parlay" aria-pressed="'+(f.fmt==='parlay')+'">Parlay</button><button data-act="bt-fmt" data-k="sgp" aria-pressed="'+(f.fmt==='sgp')+'">Same Game Parlay <span class="sgpb">SGP</span></button></div>';
   const noProps=ts.length&&H.props===false;
-  const sp=(BT.sim&&BT.sim.sports[f.sport])||{}; const off=((f.sport==='nba'||f.sport==='cbb')&&[6,7,8,9].indexOf(new Date().getMonth())>=0)||(f.sport==='wnba'&&[10,11,0,1,2,3].indexOf(new Date().getMonth())>=0);
+  const sp=(BT.sim&&BT.sim.sports[f.sport])||{}; const off=((f.sport==='nba'||f.sport==='cbb')&&[6,7,8,9].indexOf(new Date().getMonth())>=0)||(f.sport==='wnba'&&[10,11,0,1,2,3].indexOf(new Date().getMonth())>=0)||(f.sport==='nhl'&&[6,7,8].indexOf(new Date().getMonth())>=0);
   const cpu=(f.vs==='cpu');
   const vseg='<div class="fld">Play against<div class="seg" role="group" aria-label="Opponent"><button data-act="bt-vs" data-k="players" aria-pressed="'+(!cpu)+'">Players</button><button data-act="bt-vs" data-k="cpu" aria-pressed="'+cpu+'">🤖 Computer</button></div>'+(cpu?cpuNote():'')+'</div>';
   return '<section class="game"><div class="sec"><h3>Start a battle <span class="hint">practice coins</span></h3>'+vseg+
@@ -507,7 +509,7 @@ setInterval(()=>{ try{
 
 
 /* ---------- team logo dropdowns, profile pictures ---------- */
-const LOGO_LG={nfl:'nfl',nba:'nba',wnba:'wnba',mlb:'mlb'};
+const LOGO_LG={nfl:'nfl',nba:'nba',wnba:'wnba',mlb:'mlb',nhl:'nhl'};
 /* ESPN team logo: pro leagues are filed by abbreviation, college teams (CFB / CBB) by ESPN team id */
 function logoUrl(sport,t){ if(!t) return ''; if(sport==='cfb'||sport==='cbb') return /^\d+$/.test(String(t.id||''))?'https://a.espncdn.com/i/teamlogos/ncaa/500/'+t.id+'.png':''; const lg=LOGO_LG[sport]; return lg?'https://a.espncdn.com/i/teamlogos/'+lg+'/500/'+String(t.abbr||'').toLowerCase()+'.png':''; }
 function tlogo(sport,t,sz){ sz=sz||30; if(!t) return ''; const u=logoUrl(sport,t); const ab=String(t.abbr||'');

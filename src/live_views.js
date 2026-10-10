@@ -4,7 +4,7 @@ function bookUrl(b){
   if(b[0]==='fanaticsapp') return b[2];
   try{ const dl=(typeof slipDeepLink==='function')?slipDeepLink(b[0]):null; if(dl&&dl.url) return dl.url; }catch(err){}
   /* when every leg is in one game and the odds feed knows that game, open the book on THAT game's page (the closest a web page can get to the slip) */
-  try{ const gids=Array.from(new Set(S.slip.map(l=>l.gid))); if(gids.length===1&&G[gids[0]]&&typeof odFind==='function'){ const ev=odFind(G[gids[0]]); const lk=ev&&ev.eventLinks&&ev.eventLinks[b[0]]; if(lk&&/^https:\/\//i.test(lk)) return lk; } }catch(err){}
+  try{ const gids=Array.from(new Set(S.slip.map(l=>l.gid))); if(gids.length===1&&G[gids[0]]&&typeof odFind==='function'){ const ev=odFind(G[gids[0]]); const lk0=ev&&ev.eventLinks&&ev.eventLinks[b[0]]; const lk=lk0?bkRegion(lk0):''; if(lk&&/^https:\/\//i.test(lk)) return lk; } }catch(err){}
   const t=(P.tpl||'').trim();
   if(!/^https:\/\//i.test(t)) return b[2];
   const legs=encodeURIComponent(S.slip.map(l=>l.label+' '+fo(l.price)).join(' | '));
@@ -41,9 +41,10 @@ function slipHtml(){
     '<div class="slipnote" id="slipmsg">'+esc(S.slipMsg||'')+'</div>'+
     '<div class="small" style="opacity:.9"><b>Step 1.</b> Copy the slip. <b>Step 2.</b> Open Gambly and paste it into the chat box (Gambly cannot receive bets from a link, only pasted text or a screenshot).</div><div class="btnrow"><button class="btn solid" data-act="copyslip">Copy slip text</button></div>'+
     '<label class="small" style="display:block;opacity:.8" for="sliptxt">Slip text (if copying is blocked on your device, press and hold in this box, Select All, Copy)</label><textarea id="sliptxt" readonly rows="'+Math.min(6,legs.length+1)+'" style="width:100%;box-sizing:border-box;font:12px/1.4 ui-monospace,monospace" aria-label="Slip text to paste">'+esc(slipText(legs))+'</textarea>'+
-    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div>'+pickByPick()+'<div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
+    '<div class="small" style="opacity:.8">Take this slip to a sportsbook (opens in a new tab and copies the slip text; Gambly builds the slip from pasted text, then you choose the book):</div><div class="btnrow">'+books+'</div>'+stateRow()+pickByPick()+'<div class="small" style="opacity:.85">A ✓ means the book opens with that many of your picks already in its slip. Odds will be different at each sportsbook, and if a book does not list your exact line, its closest line is added (check it before you bet). Fanatics does not publish bet links, so its picks have to be entered by hand; the slip text is copied for that. Tap the link itself (do not long-press) so your phone can hand it to the book\'s app. The slip text is also copied as a backup.</div>'+
     '<div class="slipnote">Prices here are model estimates or ESPN/DraftKings numbers from this snapshot, so the book will price it differently. Same-game legs are correlated. Real-money betting is for adults 21+ (call 1-800-GAMBLER for help).</div></div></div>';
 }
+function stateRow(){ const cur=bkState(); return '<label class="small bkst" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;opacity:.95">Your state <select data-in="bkstate" aria-label="Your state">'+(cur?'':'<option value="" selected>Choose…</option>')+BK_STATES.map(x=>'<option value="'+x[0]+'"'+(cur===x[0]?' selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select><span class="muted">BetMGM and Caesars open your state\'s page</span></label>'; }
 /* one pick at a time: every pick's own link at each book (the one-tap version of the whole slip is above). * = that book's closest line */
 function pickByPick(){
   if(typeof odLegLinks!=='function') return '';
@@ -105,7 +106,7 @@ function slipsView(){
 function render(){
   const gs = DATA.games.filter(g=>S.league==='all'||(g.key||g.lg)===S.league);
   const counts={all:DATA.games.length}; DATA.games.forEach(g=>{counts[g.lg]=(counts[g.lg]||0)+1;});
-  const ltabs=[['all','All'],['nfl','NFL'],['wnba','WNBA'],['mlb','MLB']].map(([k,l])=>'<button class="tab" data-act="league" data-k="'+k+'" aria-pressed="'+(S.league===k)+'">'+l+' '+(counts[k]||0)+'</button>').join('');
+  const ltabs=[['all','All'],['nfl','NFL'],['wnba','WNBA'],['mlb','MLB'],['nhl','NHL'],['tennis','Tennis']].map(([k,l])=>'<button class="tab" data-act="league" data-k="'+k+'" aria-pressed="'+(S.league===k)+'">'+l+' '+(counts[k]||0)+'</button>').join('');
   const pend=P.bets.filter(b=>b.status==='pending').length;
   const vtabs=[['pre','Pregame'],['live','Live'],['slips','Slips'+(pend?' ('+pend+')':'')]].map(([k,l])=>'<button class="vtab" data-act="view" data-k="'+k+'" aria-pressed="'+(S.view===k)+'">'+l+'</button>').join('');
   let body='';

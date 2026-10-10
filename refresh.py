@@ -220,7 +220,12 @@ def main():
     # ---------------------------------------------------------------- social: battle data file, uploads, wait for the background work
     social_info = runner.finish(((T0 + deadline + 3) - time.time()) if deadline else 90)
     try:
-        sim = simdata.build(learn_out, sim_cache.get("c") or simdata.load_cache())
+        try:       # tennis players come from the book lines of the matches that are on the board (a problem here only drops tennis from battles)
+            import tennis as TEN
+            ten_sim = TEN.sim_sport(TEN.cards(read_json(f"{DATA}/odds.json", {}), now))
+        except Exception as ex:
+            ten_sim = None; social_info.setdefault("errors", []).append(f"tennis battle data: {ex}"[:200])
+        sim = simdata.build(learn_out, sim_cache.get("c") or simdata.load_cache(), tennis=ten_sim)
         write_json(f"{DATA}/sim.json", sim)
         social_info["simTeams"] = {lg: len(v["teams"]) for lg, v in sim["sports"].items()}
         if supa_on and not (deadline and time.time() > T0 + deadline): runner.uploads(games, sim)
@@ -237,11 +242,19 @@ def main():
     try: odds_status = ODDS.refresh(f"{DATA}/odds.json", log)
     except Exception as ex: odds_status = "error"
     log(f"  odds: {odds_status}")
+    tennis_note = None
+    try:      # tennis: book-only match cards from the odds feed (isolated: a problem here never touches the other leagues)
+        import tennis as TEN
+        tc = TEN.cards(read_json(f"{DATA}/odds.json", {}), now)
+        games.extend(tc); tennis_note = dict(status="ok", games=len(tc), playerLevel=0, teamLevel=len(tc), carried=0, error=None)
+        log(f"  tennis: {len(tc)} match cards")
+    except Exception as ex:
+        tennis_note = dict(status="error", games=0, playerLevel=0, teamLevel=0, carried=0, error=f"{type(ex).__name__}: {ex}"[:160])
     run_no = int(os.environ.get("GITHUB_RUN_NUMBER") or (prev_meta.get("runNumber") or 0) + 1)
     meta = dict(schema=SCHEMA, runNumber=run_no, deadlineHit=bool(espn.STATS["skipped"]), generatedAt=now.strftime("%Y-%m-%dT%H:%M:%SZ"), generatedAtET=now.astimezone(ET).strftime("%a %b %-d, %-I:%M %p ET"), today=str(today),
                 lastRunAt=now.strftime("%Y-%m-%dT%H:%M:%SZ"), lastRunError=None,
                 ok=not any(v["status"] in ("error", "stale") for lg, v in lstat.items() if lg in leagues),
-                leagues={lg: lstat[lg] for lg in LEAGUES},
+                leagues={**{lg: lstat[lg] for lg in LEAGUES}, **({'tennis': tennis_note} if tennis_note else {})},
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),

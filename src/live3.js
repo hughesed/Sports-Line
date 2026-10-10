@@ -56,7 +56,7 @@ function subLive(db){
 }
 
 /* ---------- visuals ---------- */
-const vis=gid=>VIS[gid]||(VIS[gid]={seen:new Set(),queue:[],shown:[],next:0,mh:[],vs:{nfl:{x:50,y:28,los:null,fd:null,pts:[],dr:null,o:'a'},mlb:{ab:null,dots:[],on:[false,false,false]},wnba:{shots:[]}}});
+const vis=gid=>VIS[gid]||(VIS[gid]={seen:new Set(),queue:[],shown:[],next:0,mh:[],vs:{nfl:{x:50,y:28,los:null,fd:null,pts:[],dr:null,o:'a'},mlb:{ab:null,dots:[],on:[false,false,false]},wnba:{shots:[]},nhl:{shots:[]}}});
 const restart=(el,cls)=>{ if(!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
 const hashN=s=>{ let h=0; String(s).split('').forEach(c=>{ h=(h*31+c.charCodeAt(0))|0; }); return Math.abs(h); };
 const E=id=>document.getElementById(id);
@@ -106,6 +106,8 @@ function nflLabel(p){
   if(f.punt) return 'PUNT'; if(f.fg) return f.miss?'FIELD GOAL NO GOOD':'FIELD GOAL';
   return (p.ty||'PLAY').toUpperCase();
 }
+function vzAct(gid,txt){ const el=E('vact-'+gid); if(!el) return; el.textContent=txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),1700); }
+function vzLogo(g,t){ try{ return typeof logoUrl==='function'?logoUrl(g.lg,t):''; }catch(e){ return ''; } }
 function nflViz(g){
   const a=g.teams.away,h=g.teams.home; let s='<svg id="fld-'+g.id+'" class="fld" viewBox="0 0 120 56" role="img" aria-label="Football field showing the ball position and the current drive">';
   s+='<defs><linearGradient id="tg-'+g.id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient></defs>';
@@ -117,6 +119,7 @@ function nflViz(g){
   for(let k=10;k<=110;k+=1){ if((k-10)%5===0) continue; s+='<line x1="'+k+'" y1="20.2" x2="'+k+'" y2="21.2" class="hm"/><line x1="'+k+'" y1="34.8" x2="'+k+'" y2="35.8" class="hm"/>'; }
   for(let k=1;k<10;k++){ const v=k<=5?k*10:100-k*10; s+='<text x="'+(10+10*k)+'" y="12" class="yn" text-anchor="middle">'+v+'</text><text x="'+(10+10*k)+'" y="49" class="yn" text-anchor="middle" transform="rotate(180 '+(10+10*k)+' 47.8)">'+v+'</text>'; }
   s+='<text x="5" y="28" class="ez" text-anchor="middle" transform="rotate(-90 5 28)">'+esc(a.abbr)+'</text><text x="115" y="28" class="ez" text-anchor="middle" transform="rotate(90 115 28)">'+esc(h.abbr)+'</text>';
+  [[a,5],[h,115]].forEach(([t_,cx])=>{ const u=vzLogo(g,t_); if(u) s+='<image href="'+esc(u)+'" x="'+(cx-3.6)+'" y="10" width="7.2" height="7.2" preserveAspectRatio="xMidYMid meet" onerror="this.remove()"/><image href="'+esc(u)+'" x="'+(cx-3.6)+'" y="38.8" width="7.2" height="7.2" preserveAspectRatio="xMidYMid meet" onerror="this.remove()"/>'; });
   s+='<polyline id="drv-'+g.id+'" class="drv" points=""/><line id="los-'+g.id+'" class="los" x1="0" y1="3" x2="0" y2="53" style="opacity:0"/><line id="fd-'+g.id+'" class="fdl" x1="0" y1="3" x2="0" y2="53" style="opacity:0"/>';
   s+='<g id="fx-'+g.id+'"></g>';
   s+='<ellipse id="shd-'+g.id+'" class="shd" rx="1.8" ry=".7" style="transform:translate(60px,28px);opacity:0"/>';
@@ -270,6 +273,7 @@ function nflPlay(g,p,instant){
   /* ---- results ---- */
   if(f.int||(p.to&&!f.ko&&!f.punt)){ setTimeout(()=>{ ripple(g.id,X1,yBase,RED,0,12); shakeFld(g.id); },moveMs); popText(g.id,X1,yBase-11,f.int?'INTERCEPTED':'TURNOVER',RED,moveMs,6.4); }
   if(f.td&&scorer){ setTimeout(()=>{ flashZone(g.id,scorer==='a',GOLD); ripple(g.id,X1,yBase,GOLD,0,16); },Math.max(0,moveMs-100)); shakeFld(g.id); }
+  vzAct(g.id,'HUT HUT!');
   chip(g.id,nflLabel(p),(p.dn?p.dn+' · ':'')+(p.tx||'').replace(/\s+/g,' ').slice(0,110),(+p.y>=10&&f.pass&&!f.inc&&!p.sc)?'big':k);
   if(k==='score'){ setTimeout(()=>celebrate(g.id,nflLabel(p),scorer),Math.max(0,moveMs-200)); }
   camFollow(g.id,Math.max(0,Math.min(100,x1)),false);
@@ -279,7 +283,7 @@ function nflPlay(g,p,instant){
 const HOME=[125,205], BASES=[[167,163],[125,121],[83,163]];
 function mlbViz(g){
   let s='<div class="mlbviz"><svg id="dia-'+g.id+'" class="dia" viewBox="0 0 250 250" role="img" aria-label="Baseball diamond with runners and the last batted ball">';
-  s+='<path d="M125 205 L10 90 A165 165 0 0 1 240 90 Z" class="grs"/><path d="M125 205 L50 130 A105 105 0 0 1 200 130 Z" class="drt"/><path d="M125 205 L167 163 L125 121 L83 163 Z" class="grs2"/>';
+  s+='<path d="M125 205 L10 90 A165 165 0 0 1 240 90 Z" class="grs"/><clipPath id="gc-'+g.id+'"><path d="M125 205 L10 90 A165 165 0 0 1 240 90 Z"/></clipPath><g clip-path="url(#gc-'+g.id+')">'+[0,2,4,6].map(i=>{ const xa=-40+i*40, xb=xa+40; return '<path d="M125 205 L'+(125+2*(xa-125))+' -25 L'+(125+2*(xb-125))+' -25 Z" class="grs3"/>'; }).join('')+'</g><path d="M125 205 L50 130 A105 105 0 0 1 200 130 Z" class="drt"/><path d="M125 205 L167 163 L125 121 L83 163 Z" class="grs2"/>';
   s+='<line x1="125" y1="205" x2="10" y2="90" class="fl"/><line x1="125" y1="205" x2="240" y2="90" class="fl"/>';
   BASES.forEach((b,i)=>{ s+='<rect id="bs'+i+'-'+g.id+'" class="bs" x="'+(b[0]-7)+'" y="'+(b[1]-7)+'" width="14" height="14" transform="rotate(45 '+b[0]+' '+b[1]+')"/>'; });
   s+='<polygon points="125,199 131,205 128,211 122,211 119,205" class="hp"/><circle id="hit-'+g.id+'" class="hit" r="4.5" cx="0" cy="0" style="opacity:0"/><g id="hsp-'+g.id+'"></g></svg>';
@@ -320,9 +324,13 @@ function mlbPlay(g,p,instant){
 
 /* --- basketball (shots are in ESPN's half-court frame: basket at x=25, y=0, feet) --- */
 function wnbaViz(g){
-  let s='<svg id="crt-'+g.id+'" class="crt" viewBox="0 0 50 42" role="img" aria-label="Half court with shot locations">';
+  const a=g.teams.away,h=g.teams.home;
+  let s='<svg id="crt-'+g.id+'" class="crt" viewBox="0 -6 50 48" role="img" aria-label="Half court with shot locations">';
+  s+='<rect x="0" y="-6" width="50" height="6" class="sbs"/>';
+  [[a,2.2],[h,41.2]].forEach(([t_,x])=>{ const u=vzLogo(g,t_); s+='<rect x="'+x+'" y="-5.2" width="6.6" height="4.4" rx="1" fill="'+esc(t_.color||'#2a3a5c')+'" opacity=".9"/>'+(u?'<image href="'+esc(u)+'" x="'+(x+.6)+'" y="-5" width="5.4" height="4" preserveAspectRatio="xMidYMid meet" onerror="this.remove()"/>':'<text x="'+(x+3.3)+'" y="-2.4" class="sbt" text-anchor="middle">'+esc(String(t_.abbr||'').slice(0,3))+'</text>'); });
+  s+='<text x="25" y="-2.2" class="sbt" text-anchor="middle">'+esc(a.abbr)+'  vs  '+esc(h.abbr)+'</text>';
   s+='<rect x="0" y="0" width="50" height="42" class="cfl"/><rect x="17" y="0" width="16" height="19" class="paint"/><circle cx="25" cy="19" r="6" class="cl" fill="none"/>';
-  s+='<path d="M3 0 L3 14.2 A23.75 23.75 0 0 0 47 14.2 L47 0" class="cl" fill="none"/><line x1="22" y1="4" x2="28" y2="4" class="cl"/><circle cx="25" cy="5.25" r=".95" class="rim"/><path d="M19 0 A6 6 0 0 0 31 0" class="cl" fill="none"/>';
+  s+='<path d="M3 0 L3 14.2 A23.75 23.75 0 0 0 47 14.2 L47 0" class="cl" fill="none"/><rect x="21" y="3.2" width="8" height=".8" class="bkb"/><line x1="22" y1="4" x2="28" y2="4" class="cl"/><circle cx="25" cy="5.25" r=".95" class="rim"/><path d="M19 0 A6 6 0 0 0 31 0" class="cl" fill="none"/>';
   s+='<g id="shots-'+g.id+'"></g><circle id="ballb-'+g.id+'" class="bb" r="1.3" cx="0" cy="0" style="opacity:0"/></svg>';
   return s;
 }
@@ -341,30 +349,66 @@ function wnbaPlay(g,p,instant){
   if(made&&p.pa===3) celebrate(g.id,'THREE!');
 }
 
+/* --- hockey: a rink. Plays carry no usable coordinates, so each shot is drawn in the attacking team's zone (home attacks right) --- */
+function nhlViz(g){
+  const a=g.teams.away,h=g.teams.home; let s='<svg id="rnk-'+g.id+'" class="rnk" viewBox="0 0 120 50" role="img" aria-label="Hockey rink with the latest shots and goals">';
+  s+='<rect x="1" y="1" width="118" height="48" rx="13" class="ice"/><rect x="1" y="1" width="118" height="48" rx="13" class="boards" fill="none"/>';
+  s+='<line x1="60" y1="1" x2="60" y2="49" class="rl"/><circle cx="60" cy="25" r="7" class="rc" fill="none"/><circle cx="60" cy="25" r="1" class="rcd"/>';
+  s+='<line x1="38" y1="1" x2="38" y2="49" class="bl"/><line x1="82" y1="1" x2="82" y2="49" class="bl"/><line x1="10" y1="3" x2="10" y2="47" class="gl"/><line x1="110" y1="3" x2="110" y2="47" class="gl"/>';
+  [[22,12],[22,38],[98,12],[98,38]].forEach(c=>{ s+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="6" class="rc" fill="none"/><circle cx="'+c[0]+'" cy="'+c[1]+'" r=".9" class="rcd"/>'; });
+  s+='<path d="M10 20 A6 6 0 0 1 10 30 Z" class="crease"/><path d="M110 20 A6 6 0 0 0 110 30 Z" class="crease"/><rect x="7.5" y="22.5" width="2.5" height="5" class="net"/><rect x="110" y="22.5" width="2.5" height="5" class="net"/>';
+  const lu=vzLogo(g,h), lw=vzLogo(g,a);
+  if(lw) s+='<image href="'+esc(lw)+'" x="53" y="18" width="14" height="14" opacity=".28" onerror="this.remove()"/>'; else if(lu) s+='<image href="'+esc(lu)+'" x="53" y="18" width="14" height="14" opacity=".28" onerror="this.remove()"/>';
+  s+='<text x="20" y="27" class="rtx" text-anchor="middle">'+esc(a.abbr)+'</text><text x="100" y="27" class="rtx" text-anchor="middle">'+esc(h.abbr)+'</text>';
+  s+='<g id="rshots-'+g.id+'"></g><circle id="puck-'+g.id+'" class="puck" r="1.4" cx="0" cy="0" style="opacity:0"/></svg>';
+  return s;
+}
+function nhlShotXY(g,p){ const home=(p.tm&&p.tm===g.teams.home.abbr); const jit=((hashN(p.i)%17)-8)/8; return [home?(96+jit*3):(24+jit*3), 25+jit*9]; }
+function nhlShotEl(sh,fresh){ return '<circle cx="'+sh.x+'" cy="'+sh.y+'" r="'+(sh.m?2.1:1.2)+'" class="'+(sh.m?'sm':'sx')+(fresh?' pop':'')+'"/>'; }
+function nhlApply(g){ const V=vis(g.id).vs.nhl; const el=E('rshots-'+g.id); if(el) el.innerHTML=V.shots.map(s=>nhlShotEl(s,false)).join(''); }
+function nhlPlay(g,p,instant){
+  const V=vis(g.id).vs.nhl; const made=!!p.sc; const xy=nhlShotXY(g,p);
+  if(p.sh||made){ V.shots.push({x:xy[0],y:xy[1],m:made}); if(V.shots.length>14) V.shots.shift(); }
+  if(instant){ nhlApply(g); return; }
+  const els=E('rshots-'+g.id), pk=E('puck-'+g.id);
+  if(pk&&(p.sh||made)){ pk.style.opacity=1; pk.animate([{transform:'translate(60px,25px)'},{transform:'translate('+xy[0]+'px,'+xy[1]+'px)'}],{duration:800,easing:'ease-in',fill:'forwards'}).onfinish=()=>{ pk.style.opacity=0; if(els) els.insertAdjacentHTML('beforeend',nhlShotEl({x:xy[0],y:xy[1],m:made},true)); }; }
+  chip(g.id,made?'GOAL!':(p.sh?'SHOT':(p.ty||'PLAY').toUpperCase()),(p.tm?p.tm+' · ':'')+(p.tx||'').slice(0,110),made?'score':(p.sh?'run':'other'));
+  if(made) celebrate(g.id,'GOAL!');
+}
+/* --- tennis: a court with the match score (games come from the plates above) --- */
+function tennisViz(g){
+  let s='<svg id="tnc-'+g.id+'" class="tnc" viewBox="0 0 120 60" role="img" aria-label="Tennis court">';
+  s+='<rect x="0" y="0" width="120" height="60" class="tout"/><rect x="10" y="6" width="100" height="48" class="tin"/><rect x="10" y="12" width="100" height="36" class="tfl" fill="none"/>';
+  s+='<line x1="60" y1="6" x2="60" y2="54" class="tnet"/><line x1="30" y1="12" x2="30" y2="48" class="tl"/><line x1="90" y1="12" x2="90" y2="48" class="tl"/><line x1="30" y1="30" x2="90" y2="30" class="tl"/>';
+  s+='<text x="30" y="33" class="rtx" text-anchor="middle">'+esc(g.teams.away.abbr)+'</text><text x="90" y="33" class="rtx" text-anchor="middle">'+esc(g.teams.home.abbr)+'</text></svg>';
+  return s;
+}
+function vzKind(g){ return g.lg==='nfl'?'nfl':g.lg==='mlb'?'mlb':g.lg==='nhl'?'nhl':g.lg==='tennis'?'tnn':'bkb'; }
 function vizHtml(g){
-  const kind=g.lg==='nfl'?nflViz(g):g.lg==='mlb'?mlbViz(g):wnbaViz(g);
-  const a=g.teams.away,h=g.teams.home, k=g.lg==='nfl'?'nfl':g.lg==='mlb'?'mlb':'bkb';
-  const plate=(t,side)=>'<div class="vz-plate '+side+'" style="--c:'+esc(t.color||'#4d98ff')+'"><i>SCORE</i><span><em>'+esc(t.abbr)+'</em><b id="vs'+side[0]+'-'+g.id+'">0</b></span></div>';
-  const first=k==='nfl'?'KICKOFF':k==='mlb'?'AT BAT':'TIP-OFF';
+  const k=vzKind(g); const kind=k==='nfl'?nflViz(g):k==='mlb'?mlbViz(g):k==='nhl'?nhlViz(g):k==='tnn'?tennisViz(g):wnbaViz(g);
+  const a=g.teams.away,h=g.teams.home;
+  const plate=(t,side)=>'<div class="vz-plate '+side+'" style="--c:'+esc(t.color||'#4d98ff')+'"><i>SCORE</i><span><em>'+(vzLogo(g,t)?'<img class="vzl" alt="" src="'+esc(vzLogo(g,t))+'" onerror="this.remove()">':'')+esc(t.abbr)+'</em><b id="vs'+side[0]+'-'+g.id+'">0</b></span></div>';
+  const first=k==='nfl'?'KICKOFF':k==='mlb'?'AT BAT':k==='nhl'?'PUCK DROP':k==='tnn'?'FIRST SERVE':'TIP-OFF';
   return '<div class="viz vz-'+k+'" id="viz-'+g.id+'" data-act="fs" data-g="'+g.id+'" role="button" tabindex="0" aria-label="Open full screen"><div class="vz-field">'+kind+'<div class="vz-vig"></div></div>'+
     '<div class="vz-top">'+plate(a,'away')+'<div class="vz-pill" id="pill-'+g.id+'">'+first+'</div>'+plate(h,'home')+'</div>'+
-    '<div class="vz-ball" id="vball-'+g.id+'"><span>'+(k==='nfl'?'🏈':k==='mlb'?'⚾':'🏀')+'</span><em id="vclk-'+g.id+'"></em></div>'+
+    '<div class="vz-act" id="vact-'+g.id+'"></div><div class="vz-ball" id="vball-'+g.id+'"><b>Chip</b><span>'+(k==='nfl'?'🏈':k==='mlb'?'⚾':k==='nhl'?'🏒':k==='tnn'?'🎾':'🏀')+'</span><em id="vchp-'+g.id+'">'+money(P.bank)+'</em><em id="vclk-'+g.id+'"></em></div>'+
     '<span class="fshint">Full screen</span><div class="playchip" id="chip-'+g.id+'"><b>Waiting for a play</b><span></span></div><div class="cel" id="cel-'+g.id+'"></div></div>';
 }
 function vzScores(){
   Object.keys(G).forEach(id=>{ const a=E('vsa-'+id); if(!a) return; const h=E('vsh-'+id); let st=null; try{ st=stateOf(G[id]); }catch(e){} if(st){ if(a.textContent!==String(st.away)){ a.textContent=st.away; restart(a,'pop'); } if(h&&h.textContent!==String(st.home)){ h.textContent=st.home; restart(h,'pop'); } }
+    const cp=E('vchp-'+id); if(cp){ const m=money(P.bank); if(cp.textContent!==m) cp.textContent=m; }
     const c=E('vclk-'+id); if(c){ let t=''; try{ t=pbLabel(G[id],FEED[id]); }catch(e){} if(t==='Not started') t=''; c.textContent=t; } });
 }
 setInterval(vzScores,1000);
 function vizRestore(g){
-  if(g.lg==='nfl') nflApply(g,true); else if(g.lg==='mlb') mlbApply(g,true); else wnbaApply(g);
+  if(g.lg==='nfl') nflApply(g,true); else if(g.lg==='mlb') mlbApply(g,true); else if(g.lg==='nhl') nhlApply(g); else if(g.lg==='tennis') {} else wnbaApply(g);
   const V=vis(g.id); const last=V.shown[0]; if(last){ chip(g.id,g.lg==='nfl'?nflLabel(last):(last.ty||'Play').toUpperCase(),(last.tx||'').slice(0,110),g.lg==='nfl'?nflKind(last):'other'); }
 }
 function ingestPlays(g,doc,first){
   const V=vis(g.id); const fresh=doc.plays.filter(p=>!V.seen.has(p.i));
   if(first){
     doc.plays.forEach(p=>V.seen.add(p.i));
-    doc.plays.slice(-30).forEach(p=>{ if(g.lg==='nfl') nflPlay(g,p,true); else if(g.lg==='mlb') mlbPlay(g,p,true); else wnbaPlay(g,p,true); });
+    doc.plays.slice(-30).forEach(p=>{ if(g.lg==='nfl') nflPlay(g,p,true); else if(g.lg==='mlb') mlbPlay(g,p,true); else if(g.lg==='nhl') nhlPlay(g,p,true); else if(g.lg==='tennis') {} else wnbaPlay(g,p,true); });
     V.shown=doc.plays.slice(-18).reverse();
     if(g.lg==='mlb') mlbApply(g,true);
     return;
@@ -373,15 +417,15 @@ function ingestPlays(g,doc,first){
   if(V.queue.length>80) V.queue=V.queue.slice(-80);
   if(g.lg==='mlb') mlbApply(g,false);
 }
-const DUR={nfl:2300,wnba:1500,mlb:1300};
-function playDur(g,p){ if(g.lg==='mlb') return p.hc?2000:(p.pt?1000:700); if(g.lg==='wnba') return p.sh?1700:800; const f=nflFlags(p); if(p.sc) return 3800; if(f.ko) return 3300; if(f.sack) return 2600; if(f.pass&&!f.inc) return (+p.y>5?3000:2300); if(f.inc) return 2400; if(f.fg||f.punt) return 2900; return 2500; }
+const DUR={nfl:2300,wnba:1500,mlb:1300,nhl:1500,tennis:1000};
+function playDur(g,p){ if(g.lg==='nhl') return p.sc?3000:(p.sh?1500:700); if(g.lg==='tennis') return 500; if(g.lg==='mlb') return p.hc?2000:(p.pt?1000:700); if(g.lg==='wnba') return p.sh?1700:800; const f=nflFlags(p); if(p.sc) return 3800; if(f.ko) return 3300; if(f.sack) return 2600; if(f.pass&&!f.inc) return (+p.y>5?3000:2300); if(f.inc) return 2400; if(f.fg||f.punt) return 2900; return 2500; }
 function vizTick(){
   const now=Date.now();
   Object.keys(VIS).forEach(gid=>{
     const V=VIS[gid]; if(!V.queue.length||now<V.next) return; const g=G[gid]; const p=V.queue.shift();
     const show=S.view==='live'&&E('viz-'+gid)&&document.visibilityState==='visible';
     const turbo=V.queue.length>40;
-    if(g.lg==='nfl') nflPlay(g,p,!show||turbo); else if(g.lg==='mlb') mlbPlay(g,p,!show||turbo); else wnbaPlay(g,p,!show||turbo);
+    if(g.lg==='nfl') nflPlay(g,p,!show||turbo); else if(g.lg==='mlb') mlbPlay(g,p,!show||turbo); else if(g.lg==='nhl') nhlPlay(g,p,!show||turbo); else if(g.lg==='tennis') {} else wnbaPlay(g,p,!show||turbo);
     V.shown.unshift(p); if(V.shown.length>30) V.shown.length=30; V.fresh=p.i;
     let d=playDur(g,p); if(V.queue.length>12) d*=0.4; let sp=0; if(show&&!turbo&&FSV.gid===gid) sp=announce(g,p,V.queue.length)||0; if(sp&&V.queue.length<=8) d=Math.max(d,sp); if(show&&FSV.gid===gid&&SND.on&&V.queue.length<=3&&/timeout|two-minute warning/i.test((p.ty||'')+' '+(p.tx||''))) d=Math.max(d,12000); if(!show||turbo) d=0; V.next=now+d;
     if(show){ RF('lv-log-'+gid,logHtml(G[gid])); if(FSV.gid===gid) RF('fs-log',logHtml(G[gid])); }

@@ -1,14 +1,14 @@
 /* ================= shop, 30-day pass, gifts, direct messages, online/offline, profile visitors, battle invites =================
    Practice coins only. Needs supabase/patch_shop_v8.sql in the project; until it is applied every call fails with "function not found" and the
    screens show a setup note instead (nothing else in the app is affected). */
-const SHP={pick:'',tab:'shop',st:null,on:null,inbox:null,with:null,thread:[],msg:'',busy:false,vis:null,missing:false,unread:0,invite:null,to:{},note:{},pex:{},pexBusy:{},dailyFor:'',dm:''};
+const SHP={pick:'',tab:'shop',ctab:'msg',cmode:'room',st:null,on:null,inbox:null,with:null,thread:[],msg:'',busy:false,vis:null,missing:false,unread:0,invite:null,to:{},note:{},pex:{},pexBusy:{},dailyFor:'',dm:''};
 const shFmt=t=>{ try{ return new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }catch(e){ return ''; } };
 const shAgo=t=>{ if(!t) return 'a while ago'; const m=Math.max(0,Math.round((Date.now()-Date.parse(t))/60000)); return m<2?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'; };
 function shErr(e){ const m=String((e&&e.message)||e||''); if(/could not find|schema cache|does not exist|not exist/i.test(m)) SHP.missing=true; return m; }
 function shCall(fn,args){ return SOC.sb.rpc(fn,args||{}).then(r=>{ if(r.error) throw r.error; return r.data; }); }
 function shReady(){ return !!(SOC.on&&SOC.sb&&SOC.user&&SOC.me); }
 function shBadge(){ return SHP.unread||''; }
-function shPaint(){ if(S.view==='shop'){ const b=document.getElementById('sh-body'); if(b&&!(document.activeElement&&b.contains(document.activeElement)&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) b.innerHTML=shBody(); const t=document.getElementById('sh-tabs'); if(t) t.innerHTML=shTabs(); }
+function shPaint(force){ if(S.view==='shop'||S.view==='chat'){ const room=S.view==='chat'&&SHP.ctab==='msg'&&SHP.cmode==='room'; const b=document.getElementById('sh-body'); if(b&&(force||!room)&&!(!force&&document.activeElement&&b.contains(document.activeElement)&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) b.innerHTML=(S.view==='chat'?chBody():shBody()); const t=document.getElementById('sh-tabs'); if(t) t.innerHTML=(S.view==='chat'?chTabs():shTabs()); }
   const s=document.getElementById('sh-strip'); if(s) s.innerHTML=shStripInner(); const bx=document.getElementById('sh-thread'); if(bx){ const atEnd=bx.scrollHeight-bx.scrollTop-bx.clientHeight<60; bx.innerHTML=shThreadHtml(); if(atEnd) bx.scrollTop=bx.scrollHeight; } }
 function shFlash(m){ SHP.msg=m; shPaint(); }
 
@@ -18,11 +18,12 @@ function shLoadOnline(){ if(!shReady()||SHP.missing) return; shCall('who_online'
 function shLoadInbox(){ if(!shReady()) return; shCall('dm_inbox').then(d=>{ SHP.inbox=d||[]; SHP.unread=SHP.inbox.reduce((n,x)=>n+(+x.unread||0),0); navRefresh(); shPaint(); }).catch(e=>{ SHP.msg=shErr(e); shPaint(); }); }
 function shLoadThread(){ if(!shReady()||!SHP.with) return; const w=SHP.with.id; shCall('dm_thread',{p_with:w,p_after:0}).then(d=>{ if(!SHP.with||SHP.with.id!==w) return; const n=(d||[]).length; const changed=n!==SHP.thread.length; SHP.thread=d||[]; if(changed){ shPaint(); const bx=document.getElementById('sh-thread'); if(bx) bx.scrollTop=bx.scrollHeight; } }).catch(e=>{ SHP.msg=shErr(e); shPaint(); }); }
 function shLoadVis(){ if(!shReady()) return; shCall('my_visitors').then(d=>{ SHP.vis=d; shPaint(); }).catch(e=>{ SHP.msg=shErr(e); shPaint(); }); }
-function shLoadTab(){ if(SHP.tab==='shop'){ shLoadShop(); shLoadOnline(); } else if(SHP.tab==='msg'){ if(SHP.with) shLoadThread(); else shLoadInbox(); } else if(SHP.tab==='online') shLoadOnline(); else if(SHP.tab==='vis') shLoadVis(); }
+function shLoadTab(){ if(S.view==='chat') return shLoadCTab(); shLoadShop(); shLoadOnline(); }
+function shLoadCTab(){ if(SHP.ctab==='msg'){ if(SHP.cmode==='dm'){ if(SHP.with) shLoadThread(); else shLoadInbox(); } } else if(SHP.ctab==='online') shLoadOnline(); else if(SHP.ctab==='vis') shLoadVis(); }
 function shAfterRender(){
   if(S.view!=='profile'){ SHP.pex={}; SHP.pexBusy={}; SHP.room={}; SHP.roomBusy={}; }
   if(S.view==='vault'&&SOC.user) vtLoad();
-  if(S.view==='chat') shLoadOnline();
+  if(S.view==='chat'&&SOC.user){ shLoadOnline(); shLoadCTab(); }
   if(S.view==='shop'&&SOC.user) shLoadTab();
 }
 /* presence, the daily coins and the unread badge */
@@ -31,11 +32,11 @@ function shTick(){
   shCall('touch_presence').catch(shErr);
   if(SHP.dailyFor!==SOC.user.id){ SHP.dailyFor=SOC.user.id; shCall('claim_daily').then(d=>{ if(d&&d.claimed){ S.flash='+'+d.amount+' daily coins'+(d.pass?' (pass bonus)':''); if(SOC.me) SOC.me.balance=+d.balance; renderBank(); } }).catch(shErr); }
   shCall('dm_unread').then(n=>{ const v=+n||0; if(v!==SHP.unread){ SHP.unread=v; navRefresh(); } }).catch(shErr);
-  if(S.view==='chat'||(S.view==='shop'&&SHP.tab!=='msg')) shLoadOnline();
-  if(S.view==='shop'&&SHP.tab==='msg'&&!SHP.with) shLoadInbox();
+  if(S.view==='chat'||S.view==='shop') shLoadOnline();
+  if(S.view==='chat'&&SHP.ctab==='msg'&&SHP.cmode==='dm'&&!SHP.with) shLoadInbox();
 }
 setInterval(shTick,45000); setTimeout(shTick,3500);
-setInterval(()=>{ if(S.view==='shop'&&SHP.tab==='msg'&&SHP.with&&!document.hidden) shLoadThread(); },5000);
+setInterval(()=>{ if(S.view==='chat'&&SHP.ctab==='msg'&&SHP.cmode==='dm'&&SHP.with&&!document.hidden) shLoadThread(); },5000);
 
 /* ---------- online / offline ---------- */
 const shDot=on=>'<i class="shdot '+(on?'on':'off')+'" title="'+(on?'online':'offline')+'"></i>';
@@ -49,17 +50,28 @@ function shStripInner(){
 function shChatStrip(){ return '<div id="sh-strip">'+shStripInner()+'</div>'; }
 
 /* ---------- views ---------- */
-function shTabs(){ return [['shop','Shop'],['msg','Messages'+(SHP.unread?' ('+SHP.unread+')':'')],['online','Online'],['vis','Visitors']].map(x=>'<button data-act="sh-tab" data-k="'+x[0]+'" aria-pressed="'+(SHP.tab===x[0])+'">'+x[1]+'</button>').join(''); }
+function shTabs(){ return ''; }
 function shopView(){
   const h='<section class="game"><div class="sec">';
   if(!SOC.on||SOC.state!=='ready') return h+socNote()+'</div></section>';
-  if(!SOC.user) return h+'<div class="small">Sign in to use the shop, messages, and the online list.</div><div class="btnrow"><button class="btn solid" data-act="signin">Sign in</button></div></div></section>';
-  return h+'<div class="seg" id="sh-tabs" role="group" aria-label="Section">'+shTabs()+'</div><div id="sh-body">'+shBody()+'</div></div></section>';
+  if(!SOC.user) return h+'<div class="small">Sign in to use the shop and buy gifts.</div><div class="btnrow"><button class="btn solid" data-act="signin">Sign in</button></div></div></section>';
+  SHP.tab='shop';
+  return h+'<div id="sh-body">'+shBody()+'</div></div></section>';
 }
 function shBody(){
-  if(SHP.missing) return '<div class="flash">The shop needs a one-time database update (supabase/patch_shop_v8.sql). Until it is applied you can look around but not buy. Everything else in the app works.</div>'+(SHP.tab==='shop'?shShopHtml():'');
+  if(SHP.missing) return '<div class="flash">The shop needs a one-time database update (supabase/patch_shop_v8.sql). Until it is applied you can look around but not buy. Everything else in the app works.</div>'+shShopHtml();
   const m=SHP.msg?'<div class="flash">'+esc(SHP.msg)+'</div>':'';
-  return m+(SHP.tab==='shop'?shShopHtml():SHP.tab==='msg'?shMsgHtml():SHP.tab==='online'?shOnlineHtml():shVisHtml());
+  return m+shShopHtml();
+}
+/* ---------- Chat: Messages (everyone + direct), Online, Visitors ---------- */
+function chTabs(){ return [['msg','Messages'+(SHP.unread?' ('+SHP.unread+')':'')],['online','Online'],['vis','Visitors']].map(x=>'<button data-act="sh-ctab" data-k="'+x[0]+'" aria-pressed="'+(SHP.ctab===x[0])+'">'+x[1]+'</button>').join(''); }
+function chModes(){ return '<div class="seg sub" id="ch-modes" role="group" aria-label="Messages">'+[['room','Everyone'],['dm','Direct'+(SHP.unread?' ('+SHP.unread+')':'')]].map(x=>'<button data-act="sh-cmode" data-k="'+x[0]+'" aria-pressed="'+(SHP.cmode===x[0])+'">'+x[1]+'</button>').join('')+'</div>'; }
+function chBody(){
+  const m=SHP.msg?'<div class="flash">'+esc(SHP.msg)+'</div>':'';
+  if(SHP.missing&&SHP.ctab!=='msg'||SHP.missing&&SHP.cmode==='dm') return '<div class="flash">Direct messages, the online list and visitors need a one-time database update (supabase/patch_shop_v8.sql). Everyone chat still works.</div>';
+  if(SHP.ctab==='online') return m+shOnlineHtml();
+  if(SHP.ctab==='vis') return m+shVisHtml();
+  return m+chModes()+(SHP.cmode==='dm'?shMsgHtml():'<div id="chat-body">'+chatBodyHtml()+'</div>');
 }
 const SH_CAT=[['corn',"It's corn",'🌽',5,'fun'],['wink','Wink wink','😉',5,'fun'],['heart','Heart','❤️',10,'fun'],['clap','Clap clap','👏',10,'fun'],['icecream','Ice cream','🍦',10,'fun'],['chili','Chili','🌶️',15,'fun'],['rose','Rose','🌹',25,'fun'],['donut','Doughnut','🍩',30,'fun'],['pizza','Pizza slice','🍕',40,'fun'],['cook','Let em cook','👨‍🍳',50,'fun'],['fire','Hot streak','🔥',60,'fun'],['rocket','Rocket','🚀',80,'fun'],['trophy','Trophy','🏆',100,'fun'],['diamond','Diamond','💎',120,'fun'],['goat','GOAT','🐐',150,'fun'],['crown','Crown','👑',250,'fun'],['car','Sports car','🏎️',400,'fun'],['football','Football','🏈',15,'sport'],['basketball','Basketball','🏀',15,'sport'],['baseball','Baseball','⚾',15,'sport'],['hockey','Hockey stick','🏒',15,'sport'],['soccer','Soccer ball','⚽',15,'sport'],['golf','Golf flag','⛳',20,'sport'],['glove','Boxing glove','🥊',30,'sport'],['sneakers','Sneakers','👟',40,'sport'],['gold','Gold medal','🥇',60,'sport'],['belt','Champ belt','🏅',90,'sport'],['hotdog','Hot dog','🌭',10,'fan'],['popcorn','Popcorn','🍿',10,'fan'],['nachos','Nachos','🌮',10,'fan'],['finger','Foam finger','👆',15,'fan'],['bell','Cowbell','🔔',15,'fan'],['paint','Face paint','🎨',15,'fan'],['flag','Pennant','🚩',20,'fan'],['mega','Megaphone','📣',20,'fan'],['cap','Fan cap','🧢',30,'fan'],['scarf','Team scarf','🧣',35,'fan'],['ticket','Season ticket','🎟️',40,'fan'],['jersey','Jersey','👕',60,'fan'],['ring','Champion ring','💍',300,'fan'],['stadium','Stadium','🏟️',200,'fan'],['lion','Blue Lion','🦁',75,'team'],['eagle','Gridiron Eagle','🦅',75,'team'],['bear','Prairie Bear','🐻',75,'team'],['cheese','Cheese Hat','🧀',40,'team'],['cowboy','Lone Star Cowboy','🤠',75,'team'],['dolphin','Dolphin','🐬',75,'team'],['raven','Raven','🐦‍⬛',75,'team'],['tiger','Tiger','🐯',75,'team'],['bull','Bull','🐂',75,'team'],['pirate','Pirate Flag','🏴‍☠️',75,'team'],['ram','Ram','🐏',75,'team'],['panther','Panther','🐆',75,'team'],['horse','Wild Horse','🐎',75,'team'],['bat','Night Bat','🦇',75,'team'],['gear','Motor City Gear','⚙️',50,'team']];
 const SH_TABS=[['all','All'],['sport','Sports'],['fan','Fan gear'],['team','Teams'],['fun','Fun']];
@@ -141,11 +153,13 @@ document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act^="sh-"]'); if(!t) return; const act=t.getAttribute('data-act'); const stop=()=>{ e.stopPropagation(); e.preventDefault(); };
   if(!shReady()){ if(act.indexOf('sh-')===0){ stop(); if(SOC.sb) openModal('in'); } return; }
   const id=t.getAttribute('data-id'), nm=t.getAttribute('data-n');
-  if(act==='sh-tab'){ stop(); SHP.tab=t.getAttribute('data-k'); SHP.msg=''; S.comm='shop'; if(S.view!=='shop'){ S.view='shop'; render(); } else shPaint(); shLoadTab(); return; }
+  if(act==='sh-tab'){ stop(); SHP.tab='shop'; SHP.msg=''; S.comm='shop'; if(S.view!=='shop'){ S.view='shop'; render(); window.scrollTo(0,0); } else shPaint(); shLoadTab(); return; }
+  if(act==='sh-ctab'){ stop(); SHP.ctab=t.getAttribute('data-k'); SHP.msg=''; S.comm='chat'; if(S.view!=='chat'){ S.view='chat'; render(); } else { shPaint(true); if(SHP.ctab==='msg'&&SHP.cmode==='room'){ renderChat(true); } } shLoadCTab(); return; }
+  if(act==='sh-cmode'){ stop(); SHP.cmode=t.getAttribute('data-k'); SHP.ctab='msg'; SHP.msg=''; shPaint(true); if(SHP.cmode==='room'){ renderChat(true); } shLoadCTab(); return; }
   if(act==='sh-cat'){ stop(); SHP.cat=id; shPaint(); return; }
   if(act==='sh-pick'){ stop(); SHP.pick=(SHP.pick===id?'':id); shPaint(); return; }
   if(act==='sh-back'){ stop(); SHP.with=null; SHP.thread=[]; shLoadInbox(); shPaint(); return; }
-  if(act==='sh-open'||act==='sh-msg-user'){ stop(); SHP.with={id:id,name:nm}; SHP.thread=[]; SHP.tab='msg'; SHP.msg=''; if(S.view!=='shop'){ S.view='shop'; render(); window.scrollTo(0,0); } else shPaint(); shLoadThread(); return; }
+  if(act==='sh-open'||act==='sh-msg-user'){ stop(); SHP.with={id:id,name:nm}; SHP.thread=[]; SHP.ctab='msg'; SHP.cmode='dm'; SHP.msg=''; S.comm='chat'; if(S.view!=='chat'){ S.view='chat'; render(); window.scrollTo(0,0); } else shPaint(); shLoadThread(); return; }
   if(act==='sh-gift-user'){ stop(); SHP.tab='shop'; SHP.msg='Pick an item below and choose '+nm+' in the list.'; if(!SHP.on) shLoadOnline(); SHP.giftTo=id; S.view='shop'; render(); window.scrollTo(0,0); return; }
   if(act==='sh-challenge'){ stop(); SHP.invite={id:id,name:nm}; S.view='battle'; S.flash='Create a battle below. It will be sent to '+nm+'.'; render(); window.scrollTo(0,0); return; }
   if(act==='sh-dm-send'){ stop(); const inp=document.getElementById('shdm'); const body=(inp&&inp.value||'').trim(); if(!body||!SHP.with) return; if(inp) inp.value=''; SHP.dm=''; shCall('send_dm',{p_to:SHP.with.id,p_body:body}).then(()=>shLoadThread()).catch(er=>{ SHP.msg=shErr(er); if(inp) inp.value=body; shPaint(); }); return; }
@@ -164,13 +178,13 @@ document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e
   try{ const n=document.getElementById('nav'); if(n) new MutationObserver(fit).observe(n,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed']}); }catch(e){} })();
 
 
-/* ---------- Community: Chat, Shop and your Profile in one tab ---------- */
+/* ---------- Community: Profile, Chat (Messages / Online / Visitors), Shop and Vault in one tab ---------- */
 const COMM_VIEWS={chat:1,shop:1,vault:1,profile:1};
 function commBar(){
   const mine=SOC.me&&SOC.me.username; const own=S.view==='profile'&&mine&&S.profName===mine;
   const b=(k,l,on,badge)=>'<button data-act="comm" data-k="'+k+'" aria-pressed="'+on+'">'+l+(badge?'<i class="nb">'+badge+'</i>':'')+'</button>';
   const men=typeof socUnseen==='function'?socUnseen():0;
-  return '<div class="commbar" role="group" aria-label="Community">'+b('chat','💬 Chat',S.view==='chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''))+b('shop','🎁 Shop',S.view==='shop',shBadge())+b('vault','🗄️ Vault',S.view==='vault')+b('profile','🙂 Profile',S.view==='profile')+'</div>';
+  return '<div class="commbar" role="group" aria-label="Community">'+b('profile','🙂 Profile',S.view==='profile')+b('chat','💬 Chat',S.view==='chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||shBadge()||''))+b('shop','🎁 Shop',S.view==='shop')+b('vault','🗄️ Vault',S.view==='vault')+'</div>';
 }
 document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act="comm"]'); if(!t) return; e.stopPropagation(); e.preventDefault();

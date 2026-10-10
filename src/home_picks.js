@@ -97,7 +97,7 @@ function hpAllSgp(){
 }
 function hpSgpCard(s,i){
   const g=s.g, on=s.legs.every(l=>inSlip(l.tok));
-  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+esc(g.teams.away.abbr)+' @ '+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.n+'-leg</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
+  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.away,20)+' ':'')+esc(g.teams.away.abbr)+' @ '+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.home,20)+' ':'')+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.n+'-leg</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
     s.legs.map(l=>'<div class="small">'+esc(l.label)+' <span class="mono">'+fo(l.price)+'</span> <span class="muted">'+esc(l.bk)+' · '+Math.round(l.p*100)+'%'+(l.why?' · '+esc(l.why):'')+'</span></div>').join('')+
     '<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="hp-add" data-i="'+i+'">'+(on?'Remove from slip':'Add to slip')+'</button></div></div>';
 }

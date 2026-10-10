@@ -89,13 +89,13 @@ t = cut(t, '/* ================= shell ================= */\nfunction render(){'
 t = cut(t, 'function linesTable(g){', 'function crossroads(g){')
 t = rep(t, "'<div class=\"sec\"><h3>Lines <span class=\"hint\">DraftKings via ESPN</span></h3>'+linesTable(g)+'</div>'", "'<div class=\"sec\"><h3>Lines <span class=\"hint\">DraftKings via ESPN · tap to add to slip</span></h3>'+linesTable(g)+'</div>'")
 t = rep(t, "'</div>'+leans+notesHtml+", "'</div>'+leans+ctxBox(g)+learnedBox(g)+notesHtml+")
-t = rep(t, "const LEAGUE_N = {nfl:32,wnba:15,mlb:30};", "const LEAGUE_N = {nfl:32,wnba:15,mlb:30,nba:30,cfb:136,cbb:362};")
-t = rep(t, "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5};", "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5,cfb:11.1,nba:8.9,cbb:8.2};")
-t = rep(t, "const TOTS = {nfl:5.6,wnba:9,mlb:3};", "const TOTS = {nfl:5.6,wnba:9,mlb:3,cfb:6.9,nba:7.9,cbb:7.4};")
-t = rep(t, "const cr=g.crossroads,a=g.teams.away,h=g.teams.home,N=LEAGUE_N[g.lg];", "const cr=g.crossroads,a=g.teams.away,h=g.teams.home,N=g.n||LEAGUE_N[g.lg];")
+t = rep(t, "const LEAGUE_N = {nfl:32,wnba:15,mlb:30};", "const LEAGUE_N = {nfl:32,wnba:15,mlb:30,nba:30,cfb:136,cbb:362,nhl:32,tennis:2};")
+t = rep(t, "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5};", "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5,cfb:11.1,nba:8.9,cbb:8.2,nhl:1.45,tennis:3.4};")
+t = rep(t, "const TOTS = {nfl:5.6,wnba:9,mlb:3};", "const TOTS = {nfl:5.6,wnba:9,mlb:3,cfb:6.9,nba:7.9,cbb:7.4,nhl:1.7,tennis:2.6};")
+t = rep(t, "const cr=g.crossroads,a=g.teams.away,h=g.teams.home,N=LEAGUE_N[g.lg];", "const cr=g.crossroads,a=g.teams.away,h=g.teams.home,N=g.n||LEAGUE_N[g.lg];\n  if(g.bookOnly) return bookOnlyBox(g);")
 t = rep(t, """    '<button class="drawerbtn" data-act="drawer" data-gid="'+g.id+'" aria-expanded="'+open+'"><span>SGP builder</span><span class="mono">'+countSelections(g)+' selections '+(open?'(hide)':'(open)')+'</span></button>'+
-    (open?drawer(g):'')+'</article>';""", """    (g.players.length?'<button class="drawerbtn" data-act="drawer" data-gid="'+g.id+'" aria-expanded="'+open+'"><span>SGP builder</span><span class="mono">'+countSelections(g)+' selections '+(open?'(hide)':'(open)')+'</span></button>':'<div class="sec"><div class="small muted">The book feed does not publish player props for this league, so there is no SGP builder here. Lines, the model, and the live view still work.</div></div>')+
-    (open&&g.players.length?drawer(g):'')+'</article>';""")
+    (open?drawer(g):'')+'</article>';""", """    '<button class="drawerbtn" data-act="drawer" data-gid="'+g.id+'" aria-expanded="'+open+'"><span>SGP builder</span><span class="mono">'+countSelections(g)+' selections '+(open?'(hide)':'(open)')+'</span></button>'+
+    (open?drawer(g):'')+'</article>';""")
 t = rep(t, "const P={bank:1000,start:1000,bets:[],saved:[],tpl:'',seq:1,live:{}};", "const P={bank:1000,start:1000,bets:[],saved:[],tpl:'',seq:1,live:{},nick:'',boardOn:false,chatOn:false};")
 t = rep(t, "  if(d.live&&typeof d.live==='object') P.live=d.live;", "  if(d.live&&typeof d.live==='object') P.live=d.live;\n  if(typeof d.nick==='string') P.nick=d.nick.slice(0,18);\n  if(typeof d.boardOn==='boolean') P.boardOn=d.boardOn;\n  if(typeof d.chatOn==='boolean') P.chatOn=d.chatOn;")
 t = rep(t, "function persist(){ clearTimeout(saveT); saveT=setTimeout(doSave,600); }", "function persist(){ clearTimeout(saveT); saveT=setTimeout(doSave,600); if(typeof syncBoardSoon==='function') syncBoardSoon(false); }")
@@ -126,9 +126,9 @@ js = rd("live3.js") + "\n" + rd("fullscreen.js") + "\n" + rd("audio.js") + "\n" 
 t = rep(t, "const $app=document.getElementById('app');", js + "\nconst $app=document.getElementById('app');")
 
 # ============================== stage 3 (was assemble_standalone.py): data comes from data/*.json ==============================
-t = rep(t, "const DATA = __DATA__;", "const DATA = window.__LSDATA.slate; try{ (DATA.games||[]).forEach(g=>{ ['home','away'].forEach(s=>{ if(g.teams&&g.teams[s]) g.teams[s].lg=g.lg||g.key; }); }); }catch(e){}")
+t = rep(t, "const DATA = __DATA__;", "const DATA = window.__LSDATA.slate; try{ (DATA.games||[]).forEach(g=>{ ['home','away'].forEach(s=>{ if(g.teams&&g.teams[s]) g.teams[s].lg=g.key||g.lg; }); }); }catch(e){}")
 OLD_CHIP = """function chipOf(t){ return '<div class="chip" style="background:'+esc(t.color)+';border-color:'+esc(t.alt)+'">'+esc(t.abbr.length>3?t.abbr.slice(0,3):t.abbr)+'</div>'; }"""
-NEW_CHIP = """function chipOf(t){ const u=(t.lg==='cfb'||t.lg==='cbb')&&typeof logoUrl==='function'?logoUrl(t.lg,t):''; return '<div class="chip'+(u?' haslogo':'')+'" style="background:'+esc(t.color)+';border-color:'+esc(t.alt)+'">'+(u?'<img alt="" loading="lazy" src="'+esc(u)+'" onerror="this.remove()">':'')+'<span>'+esc(t.abbr.length>3?t.abbr.slice(0,3):t.abbr)+'</span></div>'; }"""
+NEW_CHIP = """function chipOf(t){ const u=typeof logoUrl==='function'?logoUrl(t.lg,t):''; return '<div class="chip'+(u?' haslogo':'')+'" style="background:'+esc(t.color)+';border-color:'+esc(t.alt)+'">'+(u?'<img alt="" loading="lazy" src="'+esc(u)+'" onerror="this.remove()">':'')+'<span>'+esc(t.abbr.length>3?t.abbr.slice(0,3):t.abbr)+'</span></div>'; }"""
 t = rep(t, OLD_CHIP, NEW_CHIP)
 t = rep(t, "const LEARN=__LEARN__;", "const LEARN=window.__LSDATA.learn;")
 t = rep(t, "const PASTP=__PASTP__;", "const PASTP=window.__LSDATA.pastp;")

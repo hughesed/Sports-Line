@@ -268,10 +268,10 @@ function localSelfCard(){ const pend=P.bets.filter(b=>b.status==='pending'); con
 /* ---------- chat (signed-in), realtime with a polling fallback ---------- */
 const CHAT_MAX=120, IMG_MAX=122880;
 function chatView(){
-  let h='<section class="game"><div class="sec"><h3>Chat <span class="hint" id="chatmode">'+chatModeText()+'</span></h3>';
-  if(!SOC.on||SOC.state!=='ready') return h+socNote()+'</div></section>';
-  if(!SOC.user) return h+'<div class="small">Chat is for signed-in players. Sign in to read and write messages, @mention people and see who mentioned you.</div><div class="btnrow"><button class="btn solid" data-act="signin">Sign in</button></div></div></section>';
-  return h+'<div id="chat-body">'+chatBodyHtml()+'</div></div></section>';
+  const h='<section class="game"><div class="sec">';
+  if(!SOC.on||SOC.state!=='ready') return h+'<h3>Chat</h3>'+socNote()+'</div></section>';
+  if(!SOC.user) return h+'<h3>Chat</h3><div class="small">Chat is for signed-in players. Sign in to read and write messages, @mention people, see who is online and who visited your profile.</div><div class="btnrow"><button class="btn solid" data-act="signin">Sign in</button></div></div></section>';
+  return h+'<div class="seg" id="sh-tabs" role="group" aria-label="Chat">'+chTabs()+'</div><div id="sh-body">'+chBody()+'</div></div></section>';
 }
 function chatModeText(){ return SOC.chatMode==='rt'?'<span class="livedot"></span> live':SOC.chatMode==='poll'?'updates every 4 s':''; }
 function mentionHtml(t){
@@ -289,7 +289,7 @@ function msgHtml(m){
 function fmtClock(t){ return new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
 function chatBodyHtml(){
   const un=socUnseen(); const lastM=SOC.mentions[0];
-  return shChatStrip()+(SOC.chatErr?'<div class="flash">'+esc(SOC.chatErr)+'</div>':'')+
+  return '<div class="small muted" style="margin:2px 0 6px">Everyone chat <span id="chatmode">'+chatModeText()+'</span></div>'+(SOC.chatErr?'<div class="flash">'+esc(SOC.chatErr)+'</div>':'')+
     (un&&lastM?'<div class="menbar">'+lastM.from_name+' mentioned you'+(un>1?' (+'+(un-1)+' more)':'')+'</div>':'')+
     '<div class="chatbox" id="chatbox" aria-live="polite">'+(SOC.chat.length?SOC.chat.map(msgHtml).join(''):'<div class="small muted">No messages yet. Say hi.</div>')+'</div>'+
     '<div class="sugg" id="chatsugg" role="listbox" aria-label="Usernames"></div>'+
@@ -379,14 +379,14 @@ function profileView(){
   if(!SOC.on||SOC.state!=='ready') return '<section class="game"><div class="sec"><h3>Profile</h3>'+socNote()+'</div></section>';
   return '<section class="game"><div class="sec"><div class="btnrow"><button class="btn" data-act="view" data-k="board">‹ Board</button></div><div id="prof-body">'+profileBodyHtml(S.profName)+'</div></div></section>';
 }
-const SPN={nfl:'NFL',nba:'NBA',wnba:'WNBA',mlb:'MLB',cfb:'CFB',cbb:'CBB'};
+const SPN={nfl:'NFL',nba:'NBA',wnba:'WNBA',mlb:'MLB',nhl:'NHL',tennis:'Tennis',cfb:'CFB',cbb:'CBB'};
 function profileBodyHtml(name){
   const c=SOC.prof[(name||'').toLowerCase()]; if(!c) return '<div class="small muted">Loading '+esc(name)+'…</div>';
   const d=c.d; if(d.error) return '<div class="flash">'+esc(d.error)+'</div>'; if(d.missing) return '<div class="small muted">No player called '+esc(name)+'.</div>';
   const mine=SOC.me&&SOC.me.id===d.id;
   const bl=Object.keys(d.badges||{}); const bh=bl.length?'<div class="vcs">'+['champion','trash','active','convo','king','hot'].filter(k=>d.badges[k]).map(k=>badgeChip(k,d.badges[k])).join('')+'</div>':'<div class="small muted">No badges yet.</div>';
   const kings=(d.badge_list||[]).filter(b=>b.kind==='king'); const kingBy={}; kings.forEach(b=>{ kingBy[b.sport]=(kingBy[b.sport]||0)+1; });
-  const bt=d.battle||{}; const recs=['nfl','nba','wnba','mlb','cfb','cbb'].map(s=>{ const r=bt[s]; return '<div class="kv"><div class="k">'+SPN[s]+' battles</div><div class="v">'+(r?r.w+'-'+r.l+(r.t?'-'+r.t:''):'0-0')+'</div><div class="s">Elo '+(r?Math.round(r.elo):1200)+(kingBy[s]?' · 👑×'+kingBy[s]:'')+'</div></div>'; }).join('');
+  const bt=d.battle||{}; const recs=['nfl','nba','wnba','mlb','nhl','tennis','cfb','cbb'].filter(s=>s!=='nhl'&&s!=='tennis'||bt[s]).map(s=>{ const r=bt[s]; return '<div class="kv"><div class="k">'+SPN[s]+' battles</div><div class="v">'+(r?r.w+'-'+r.l+(r.t?'-'+r.t:''):'0-0')+'</div><div class="s">Elo '+(r?Math.round(r.elo):1200)+(kingBy[s]?' · 👑×'+kingBy[s]:'')+'</div></div>'; }).join('');
   const bats=(d.battles||[]).map(b=>{ const res=b.status==='final'?(b.result&&b.result.split?'Split':(b.winner===d.id?'Won':'Lost')):b.status==='live'?'Live':b.status==='cancelled'?'Cancelled':'Open';
     return '<button class="rlink" data-act="bt-open" data-id="'+b.id+'"><span><b>'+esc(SPN[b.sport]||b.sport)+'</b> '+esc(b.away)+' @ '+esc(b.home)+(b.vs?' vs '+esc(b.vs):'')+'</span><span class="badge '+(res==='Won'?'ok':res==='Lost'?'bad':'')+'">'+res+(b.result&&b.status==='final'?' · '+b.result.as+'-'+b.result.hs:'')+'</span></button>'; }).join('');
   const sl=d.slips||{}; const slips=(sl.recent||[]).map((s,ix)=>'<div class="bl">'+legStatusIcon({res:s.status==='won'?'W':s.status==='lost'?'L':s.status==='void'?'V':null})+'<span>'+esc((s.legs||[]).map(l=>l.label).join(' + '))+'<br><span class="muted small">'+cn(s.stake)+' coins · '+esc(s.status)+(s.status==='won'?' '+cn(s.payout):'')+'</span></span></div>').join('');
