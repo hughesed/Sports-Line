@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 52,
+ "runNumber": 53,
  "deadlineHit": false,
- "generatedAt": "2026-10-10T11:06:21Z",
- "generatedAtET": "Sat Oct 10, 7:06 AM ET",
+ "generatedAt": "2026-10-10T16:13:15Z",
+ "generatedAtET": "Sat Oct 10, 12:13 PM ET",
  "today": "2026-10-10",
- "lastRunAt": "2026-10-10T11:06:21Z",
+ "lastRunAt": "2026-10-10T16:13:15Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -13,8 +13,8 @@
    "status": "ok",
    "games": 12,
    "playerLevel": 10,
-   "teamLevel": 2,
-   "carried": 0,
+   "teamLevel": 0,
+   "carried": 2,
    "error": null,
    "newFinals": 0,
    "storeGames": 350,
@@ -56,10 +56,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 13,
+   "games": 14,
    "playerLevel": 0,
    "teamLevel": 8,
-   "carried": 5,
+   "carried": 6,
    "error": null,
    "newFinals": 0,
    "storeGames": 1360,
@@ -77,16 +77,15 @@
    "lastFinal": "2026-04-07"
   },
   "nhl": {
-   "status": "ok",
-   "games": 10,
+   "status": "empty",
+   "games": 0,
    "playerLevel": 0,
-   "teamLevel": 10,
+   "teamLevel": 0,
    "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 71,
-   "lastFinal": "2026-10-10",
-   "note": "book lines only (ESPN had no cards)"
+   "lastFinal": "2026-10-10"
   },
   "tennis": {
    "status": "ok",
@@ -98,9 +97,9 @@
   }
  },
  "counts": {
-  "slate": 31,
-  "playerCards": 10,
-  "teamCards": 21,
+  "slate": 34,
+  "playerCards": 15,
+  "teamCards": 19,
   "window": 151,
   "sched": 136,
   "pastp": 37,
@@ -123,9 +122,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 16,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 4.5,
+  "seconds": 4.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -135,15 +134,16 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 16,
-  "simPlayersUploaded": 2295,
+  "gamesUploaded": 27,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2287,
   "configured": true
  },
- "odds": "ok: 45 events (plan limit: Response is missing 31648 bookmaker odds. Upgrade your API key to access all dat)",
+ "odds": "ok: 75 events",
+ "fanduel": "ok: FanDuel lines on 12 cards, 314 player stats, FanDuel-only players on 0 cards",
  "errors": [],
- "requests": 1004,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 53.9,
- "fanduel": "ok (applied locally from the last odds pull)"
+ "requests": 907,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 47.1
 }
