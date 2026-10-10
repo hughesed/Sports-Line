@@ -749,6 +749,27 @@ body.vchat .foot{display:none}
 .chip{position:relative;overflow:hidden}
 .chip.haslogo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
 
+/* sport picker: a swipeable strip, so no sport (CFB, CBB) is ever cut off */
+.sslider{position:relative;display:flex;align-items:center;gap:4px;max-width:100%}
+.sstrack{display:flex;gap:8px;flex:1 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:4px 18px 4px 2px;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent 100%);overscroll-behavior-x:contain}
+.sstrack::-webkit-scrollbar{display:none}
+.sstrack .ssb{flex:0 0 auto;scroll-snap-align:center;min-width:64px;padding:9px 18px;font-size:14px;font-weight:700;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);white-space:nowrap}
+.sstrack .ssb[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.ssnav{flex:0 0 auto;width:30px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:20px;line-height:1;display:none}
+@media (hover:hover) and (pointer:fine){.ssnav{display:inline-grid;place-items:center}}
+.ssh{margin-top:2px;font-size:11.5px}
+@media (hover:hover) and (pointer:fine){.ssh{display:none}}
+.fld .seg{overflow-x:auto;scrollbar-width:none;max-width:100%}.fld .seg::-webkit-scrollbar{display:none}.fld .seg button{flex:0 0 auto;white-space:nowrap}
+
+/* play by play | box score tabs */
+.btabs{display:flex;gap:6px;margin:0 0 8px;border-bottom:1px solid var(--line)}
+.btab{flex:1 1 0;border:0;background:transparent;color:var(--muted);font-weight:700;font-size:14px;padding:9px 6px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.btab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.btab .hint{font-weight:600;font-size:11px;margin-left:4px}
+.bxwrap{max-height:460px;overflow-y:auto}
+.bxkey{margin-bottom:2px}
+
 /* battle animations */
 .stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#1d3b2a;line-height:0}
 .stage[data-f="bk"]{background:#7a5428}.stage[data-f="bb"]{background:#1d3b2a}
@@ -766,6 +787,10 @@ body.vchat .foot{display:none}
 .fe.flag .fc{color:#c98700}.fe.sack,.fe.foul,.fe.out,.fe.strikeout{color:var(--under)}.fe.run{font-weight:700}
 .playchip.pop{animation:chpop .45s cubic-bezier(.2,1.4,.4,1)}
 @media (prefers-reduced-motion: reduce){.stbanner{transition:none}}
+
+/* the stage button that appears while the browser is still blocking sound */
+.sndtap{position:absolute;right:8px;bottom:8px;z-index:3;border:1px solid rgba(255,255,255,.7);background:rgba(8,14,28,.82);color:#fff;font-weight:800;font-size:12px;line-height:1.2;padding:7px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.stbanner.top{top:17%}
 
 /* ===== who is winning bar, finish flash, share sheet ===== */
 :root{--p1:#2f7bff;--p2:#ff7a2f}
@@ -802,7 +827,7 @@ body.vchat .foot{display:none}
 .vsf-vs{font-weight:900;font-size:22px;color:rgba(255,255,255,.7)}
 .vsf-p{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;padding:16px 6px 10px;border-radius:16px;border:2px solid transparent}
 .vsf-p.c1{background:linear-gradient(180deg,rgba(47,123,255,.45),rgba(47,123,255,.1))}.vsf-p.c2{background:linear-gradient(180deg,rgba(255,122,47,.45),rgba(255,122,47,.1))}
-.vsf-av{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:900;background:rgba(5,10,20,.55);border:4px solid rgba(255,255,255,.7)}
+.vsf-av,.vsf-av.av{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:900;background:rgba(5,10,20,.55);border:4px solid rgba(255,255,255,.7);overflow:hidden;position:relative}
 .vsf-nm{font-weight:800;font-size:17px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vsf-tag{font-weight:900;font-size:13px;letter-spacing:.1em;padding:3px 12px;border-radius:999px;background:#2b3547;color:#aab4c3}
 .vsf-pay{font-size:12px;opacity:.85;line-height:1.35}
@@ -830,7 +855,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="3a78628bbc">
+<body data-build="e233320601">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -2569,7 +2594,84 @@ const SFX={
   buzzer(){ sTone(220,220,.9,.38,'sawtooth',0,null,1400); sTone(233,233,.9,.3,'sawtooth',0,null,1400); },
   organ(){ [[392,0],[523,.14],[659,.28],[784,.42],[659,.56],[784,.70],[1047,.84]].forEach(a=>{ sTone(a[0],a[0],.2,.12,'square',a[1],null,1800); sTone(a[0]*2,a[0]*2,.2,.05,'triangle',a[1]); }); }
 };
-function sfx(name,delay,a){ if(!SND.on||!SND.ctx) return; const f=SFX[name]; if(!f) return; if(delay>0) setTimeout(()=>{ if(SND.on&&SND.ctx) try{ f(a); }catch(e){} },delay); else try{ f(a); }catch(e){} }
+function sfx(name,delay,a){
+  if(!SND.on) return; const f=SFX[name]; if(!f) return; const c=SND.ctx||sndCtx(); if(!c) return;
+  const go=()=>{ if(SND.on&&SND.ctx&&SND.ctx.state==='running'){ try{ f(a); }catch(e){} } };
+  const run=()=>{ if(delay>0) setTimeout(go,delay); else go(); };
+  if(c.state==='running') run();
+  else if(c.resume){ try{ const p=c.resume(); if(p&&p.then) p.then(()=>{ if(c.state==='running') run(); }).catch(()=>{}); }catch(e){} }   // a context made outside a tap starts suspended: start it, then play
+}
+
+/* ---------- more sounds: ball, court, field, diamond, crowd ---------- */
+Object.assign(SFX,{
+  dribble(n){ n=n||3; for(let i=0;i<n;i++){ sTone(120,55,.11,.5,'sine',i*.26); sNoise(.05,.18,'lowpass',700,300,1,i*.26,.004); } },
+  thud(){ sTone(95,42,.16,.55,'sine',0); sNoise(.1,.3,'lowpass',500,200,1,0,.004); },
+  rim(){ sTone(1750,1500,.35,.16,'triangle',0); sTone(2650,2400,.25,.07,'triangle',.01); sNoise(.06,.4,'highpass',2500,2500,.8,0,.003); },
+  clang(){ sTone(1200,900,.5,.2,'triangle',0); sTone(1810,1500,.4,.1,'triangle',0); sNoise(.05,.5,'highpass',2000,2000,.8,0,.003); },
+  rebound(){ sNoise(.12,.35,'bandpass',900,500,1,0,.004); sTone(140,70,.14,.45,'sine',.02); },
+  pass(){ sNoise(.16,.2,'bandpass',1200,2200,1.1,0,.03); sNoise(.06,.4,'bandpass',900,600,1,.2,.004); },
+  slam(){ sNoise(.2,.5,'lowpass',900,150,.9,0,.005); sTone(70,32,.45,.8,'sine',0); sTone(1500,700,.18,.2,'square',.02); },
+  huddle(){ sNoise(.5,.2,'bandpass',500,380,1,0,.12); },
+  hut(){ sNoise(.06,.5,'bandpass',1100,800,1.2,0,.004); sTone(210,150,.12,.28,'sawtooth',0,null,900); },
+  pads(){ sNoise(.14,.65,'lowpass',700,180,.9,0,.004); sTone(90,40,.2,.6,'sine',0); sNoise(.05,.3,'highpass',2400,2400,.8,.02,.003); },
+  snap(){ sNoise(.05,.5,'highpass',2000,2000,.8,0,.003); sTone(170,80,.1,.4,'sine',0); },
+  whoosh(){ sNoise(.4,.22,'bandpass',500,2600,1,0,.2); },
+  pitch(){ sNoise(.34,.2,'bandpass',700,2400,1.2,0,.18); },
+  foulball(){ sNoise(.05,.5,'highpass',2400,2400,.7,0); sTone(1100,500,.07,.25,'square',0); },
+  clap(n){ n=n||6; for(let i=0;i<n;i++) sNoise(.045,.4,'bandpass',1700+Math.random()*900,1700,1.1,i*.11+Math.random()*.03,.002); },
+  chant(){ sTone(100,48,.2,.7,'sine',0); sTone(100,48,.2,.7,'sine',.3); sNoise(.1,.5,'highpass',1600,1600,.7,.6,.003); sNoise(.1,.5,'bandpass',1500,1500,1,.62,.003); sTone(100,48,.2,.7,'sine',1.2); sTone(100,48,.2,.7,'sine',1.5); sNoise(.1,.5,'highpass',1600,1600,.7,1.8,.003); },
+  horn(){ sTone(330,330,.55,.2,'sawtooth',0,null,1500); sTone(415,415,.55,.16,'sawtooth',0,null,1500); sTone(330,330,.7,.2,'sawtooth',.62,null,1500); sTone(415,415,.7,.16,'sawtooth',.62,null,1500); },
+  firework(){ sNoise(.5,.18,'bandpass',600,2500,1,0,.3); sNoise(.5,.5,'lowpass',900,150,.9,.55,.005); sNoise(.9,.14,'highpass',3000,5000,.8,.6,.1); },
+  wave(){ sNoise(2.6,.3,'bandpass',500,1500,.7,0,1.1); sNoise(2.6,.18,'bandpass',1800,2600,.8,.2,1.2); },
+  cheerBig(){ SFX.cheer(); sNoise(3.2,.3,'bandpass',700,1300,.7,.15,.5); SFX.clap(8); },
+  booBig(){ SFX.boo(); sNoise(2.8,.2,'bandpass',380,280,.9,.2,.5); },
+  awww(){ sNoise(1.3,.16,'bandpass',480,240,.8,0,.25); }
+});
+
+/* ---------- constant crowd noise (battle): a looping murmur that swells on big plays ---------- */
+const AMB={on:false,out:null,t:null,bits:null,base:.1,lvl:1};
+let SND_PINK=null;
+function sndPink(){ const c=SND.ctx; if(SND_PINK) return SND_PINK; const n=c.sampleRate*4, b=c.createBuffer(1,n,c.sampleRate), d=b.getChannelData(0); let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for(let i=0;i<n;i++){ const w=Math.random()*2-1; b0=.99886*b0+w*.0555179; b1=.99332*b1+w*.0750759; b2=.969*b2+w*.153852; b3=.8665*b3+w*.3104856; b4=.55*b4+w*.5329522; b5=-.7616*b5-w*.016898; d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11; b6=w*.115926; }
+  const f=Math.min(n,Math.floor(c.sampleRate*.05)); for(let i=0;i<f;i++){ d[i]*=i/f; d[n-1-i]*=i/f; }       // short fade so the loop point does not click
+  SND_PINK=b; return b; }
+function ambStart(sport){
+  if(!SND.on||AMB.on) return; const c=SND.ctx; if(!c||c.state!=='running') return;
+  AMB.on=true; AMB.base=sport==='mlb'?.075:sport==='nfl'||sport==='cfb'?.12:.1; AMB.lvl=1;
+  const out=c.createGain(); out.gain.setValueAtTime(.0001,c.currentTime); out.gain.exponentialRampToValueAtTime(AMB.base,c.currentTime+1.6); out.connect(SND.master); AMB.out=out;
+  const mk=(f,q,g,type)=>{ const s=c.createBufferSource(); s.buffer=sndPink(); s.loop=true; const fl=c.createBiquadFilter(); fl.type=type||'bandpass'; fl.frequency.value=f; fl.Q.value=q; const gg=c.createGain(); gg.gain.value=g; s.connect(fl); fl.connect(gg); gg.connect(out); s.start(0,Math.random()*3); return {s:s,fl:fl,gg:gg}; };
+  const L=[mk(420,.5,1),mk(900,.7,.9),mk(1900,.8,.45),mk(3600,.9,.12,'highpass')];
+  const lfo=c.createOscillator(), lg=c.createGain(); lfo.frequency.value=.13; lg.gain.value=AMB.base*.28; lfo.connect(lg); lg.connect(out.gain); lfo.start();
+  AMB.bits={L:L,lfo:lfo};
+  AMB.t=setInterval(()=>{ if(!AMB.on||!SND.on||c.state!=='running') return;
+    const k=AMB.lvl*(0.85+Math.random()*.35); try{ out.gain.setTargetAtTime(AMB.base*k,c.currentTime,.9); L[1].fl.frequency.setTargetAtTime(800+Math.random()*500+(AMB.lvl-1)*400,c.currentTime,.8); }catch(e){}
+    if(Math.random()<.55) sNoise(.22+Math.random()*.25,.05,'bandpass',650+Math.random()*700,500+Math.random()*500,2.2,0,.06);        // a voice or two out of the crowd
+    if(Math.random()<.07) SFX.clap(3+Math.floor(Math.random()*3));
+  },1200);
+}
+function ambStop(){
+  if(!AMB.on) return; AMB.on=false; clearInterval(AMB.t); const c=SND.ctx, o=AMB.out, b=AMB.bits; AMB.out=null; AMB.bits=null;
+  if(c&&o){ try{ o.gain.cancelScheduledValues(c.currentTime); o.gain.setValueAtTime(Math.max(.0001,o.gain.value),c.currentTime); o.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.8); }catch(e){} setTimeout(()=>{ try{ if(b){ b.lfo.stop(); b.L.forEach(x=>x.s.stop()); } o.disconnect(); }catch(e){} },1000); }
+}
+/* the crowd gets louder (k > 1) for a few seconds, then settles back */
+function ambSwell(k,secs){
+  const c=SND.ctx; if(!AMB.on||!AMB.out||!c) return; AMB.lvl=k; const o=AMB.out;
+  try{ o.gain.cancelScheduledValues(c.currentTime); o.gain.setValueAtTime(Math.max(.0001,o.gain.value),c.currentTime); o.gain.linearRampToValueAtTime(AMB.base*k,c.currentTime+.25); }catch(e){}
+  clearTimeout(AMB._r); AMB._r=setTimeout(()=>{ AMB.lvl=1; try{ if(AMB.on&&AMB.out) AMB.out.gain.setTargetAtTime(AMB.base,SND.ctx.currentTime,1.2); }catch(e){} },(secs||2.5)*1000);
+}
+/* the home crowd roars for its team and boos the visitors */
+function crowdFor(home,big){
+  if(!SND.on) return;
+  if(home){ sfx(big?'cheerBig':'cheer',0); ambSwell(big?3:2,big?4:2.6); }
+  else { sfx(big?'booBig':'boo',0); ambSwell(big?2.1:1.6,big?3.4:2.4); }
+}
+
+/* ---------- unlocking audio on phones: a tap starts the context, and a silent <audio> keeps iOS from muting Web Audio with the ring switch ---------- */
+let SND_SIL=null;
+function sndSilentWav(){ const n=1600,sr=8000,b=new Uint8Array(44+n*2),dv=new DataView(b.buffer),w=(o,t)=>{ for(let i=0;i<t.length;i++) b[o+i]=t.charCodeAt(i); };
+  w(0,'RIFF'); dv.setUint32(4,36+n*2,true); w(8,'WAVE'); w(12,'fmt '); dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true); dv.setUint32(24,sr,true); dv.setUint32(28,sr*2,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true); w(36,'data'); dv.setUint32(40,n*2,true);
+  return URL.createObjectURL(new Blob([b],{type:'audio/wav'})); }
+function sndSilentKeep(){ try{ if(!SND_SIL){ const a=document.createElement('audio'); a.setAttribute('playsinline',''); a.loop=true; a.volume=.02; a.src=sndSilentWav(); SND_SIL=a; } if(SND_SIL.paused){ const p=SND_SIL.play(); if(p&&p.catch) p.catch(()=>{}); } }catch(e){} }
 
 
 /* ---------- waiting music (timeouts, halftime) ---------- */
@@ -2631,8 +2733,8 @@ function say(text,hi){
   if(hi){ SND.q=SND.q.filter(x=>x.hi); } else if(SND.q.length>=2){ SND.q=SND.q.filter(x=>x.hi); }
   SND.q.push({t:text,hi:!!hi}); drainSpeech(); return speechMs(text);
 }
-function sndStop(){ musicStop(); SND.q=[]; SND.busy=false; try{ if(HAS_TTS) speechSynthesis.cancel(); }catch(e){} }
-function sndUnlock(){ sndCtx(); if(HAS_TTS){ try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); }catch(e){} } }
+function sndStop(){ try{ ambStop(); }catch(e){} musicStop(); SND.q=[]; SND.busy=false; try{ if(HAS_TTS) speechSynthesis.cancel(); }catch(e){} }
+function sndUnlock(){ const c=sndCtx(); if(c){ try{ const b=c.createBuffer(1,1,22050), z=c.createBufferSource(); z.buffer=b; z.connect(c.destination); z.start(0); }catch(e){} } sndSilentKeep(); if(HAS_TTS){ try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); }catch(e){} } }
 
 /* ---------- broadcaster-style callouts ---------- */
 const ABAL={CLV:'CLE',JAC:'JAX',WAS:'WSH',LVR:'LV',ARZ:'ARI',BLT:'BAL',HST:'HOU',SD:'LAC',STL:'LAR',OAK:'LV'};
@@ -2699,7 +2801,9 @@ function announce(g,p,backlog){
 /* ================= v3: boosts, calendar, reports, nav ================= */
 const LEARN=window.__LSDATA.learn;
 const PASTP=window.__LSDATA.pastp;
-const TODAY=(LEARN.days.find(d=>d.kind==='today')||{}).date||new Date().toISOString().slice(0,10);
+const TODAY=(function(){ /* the ET calendar date wins when it is later than the data's own "today", so the board rolls over at midnight ET instead of waiting for the next refresh */
+  const L=(LEARN.days.find(d=>d.kind==='today')||{}).date||''; let c=''; try{ c=new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'}); }catch(e){}
+  return (c&&/^\d{4}-\d{2}-\d{2}$/.test(c)&&c>L)?c:(L||new Date().toISOString().slice(0,10)); })();
 const IC={
   cal:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
   home:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
@@ -2949,12 +3053,20 @@ function navHtml(){
   const men=typeof socUnseen==='function'?socUnseen():0;
   return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+it('chat','chat','Chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''));
 }
+/* the home board: today's games, then later days under "Coming up". Yesterday's games stay out of it: the slate keeps them for ~30 h so open slips can settle, and Past (calendar) has their recaps */
+function boardGames(){ return DATA.games.filter(g=>!g.ghost&&(!g.day||g.day>=TODAY)); }
+function todayBody(gs){
+  const now=gs.filter(g=>!g.day||g.day===TODAY), later=gs.filter(g=>g.day&&g.day>TODAY);
+  if(!now.length&&!later.length) return '<section class="game"><div class="sec"><h3>No games on the board yet</h3><div class="small muted">Nothing is listed for today'+(S.league==='all'?'':' in this league')+'. The board refreshes every few minutes; pick another league or day, or check back soon.</div></div></section>';
+  return now.map(safeCard).join('')+(later.length?'<div class="sec comingup"><h3>Coming up <span class="hint">'+later.length+' game'+(later.length===1?'':'s')+' on later days</span></h3></div>'+later.map(safeCard).join(''):'');
+}
 function render(){
-  const gs = DATA.games.filter(g=>S.league==='all'||keyOf(g)===S.league);
-  const counts={all:DATA.games.length}; DATA.games.forEach(g=>{counts[keyOf(g)]=(counts[keyOf(g)]||0)+1;});
+  const bg=boardGames();
+  const gs = bg.filter(g=>S.league==='all'||keyOf(g)===S.league);
+  const counts={all:bg.length}; bg.forEach(g=>{counts[keyOf(g)]=(counts[keyOf(g)]||0)+1;});
   const ltabs=LGT.map(([k,l])=>'<button class="tab" data-act="league" data-k="'+k+'" aria-pressed="'+(S.league===k)+'">'+l+'</button>').join('');
   let body='';
-  if(S.view==='pre') body = S.date===TODAY?gs.map(safeCard).join(''):(S.date<TODAY?reportView(S.date):previewView(S.date));
+  if(S.view==='pre') body = S.date===TODAY?todayBody(gs):(S.date<TODAY?reportView(S.date):previewView(S.date));
   else if(S.view==='live') body=liveView();
   else if(S.view==='slips') body=slipsView();
   else if(S.view==='board') body=boardView();
@@ -3967,7 +4079,7 @@ const BX_COLS={nfl:{QB:[['passYds','Pass'],['passTD','PaTD'],['rushYds','Rush']]
 BX_COLS.cfb=BX_COLS.nfl; BX_COLS.cbb=BX_COLS.nba; BX_COLS.wnba=BX_COLS.nba;
 const BX_GROUPS={nfl:[['QB','RB','WR']],nba:[['P']],mlb:[['H'],['SP']]}; BX_GROUPS.cfb=BX_GROUPS.nfl; BX_GROUPS.cbb=BX_GROUPS.nba; BX_GROUPS.wnba=BX_GROUPS.nba;
 function btBox(b,d,last){
-  const ro=b.markets&&b.markets.roster; if(!ro||!last) return '';
+  const ro=b.markets&&b.markets.roster; if(!ro||!last) return '<div class="small muted">The box score fills in once the first play happens.</div>';
   const st=last.stats||{}, cols=BX_COLS[b.sport]||{}, groups=BX_GROUPS[b.sport]||[];
   const star=new Set(); (d.parlays||[]).forEach(p=>(p.graded||p.legs||[]).forEach(l=>{ if(l.pid) star.add(l.pid); }));
   const fmtv=(k,v)=>k==='outs'?Math.floor(v/3)+'.'+(v%3):String(v);
@@ -3984,7 +4096,7 @@ function btBox(b,d,last){
           return '<tr'+(star.has(x.pid)?' class="mine"':'')+'><td class="bxn">'+esc(surname(x.n))+(star.has(x.pid)?' <span title="In a slip">★</span>':'')+'</td>'+ks.map(c=>'<td class="mono">'+(have.indexOf(c[0])<0?'<span class="muted">–</span>':fmtv(c[0],s[c[0]]||0))+'</td>').join('')+'</tr>'; }).join('')+'</tbody></table></div>';
     });
   });
-  return '<div class="sec"><h3>Box score <span class="hint">★ = in a slip</span></h3>'+out+'</div>';
+  return '<div class="small muted bxkey">★ = in a slip</div>'+out;
 }
 function btSchedule(){
   clearTimeout(BT.timer); BT.timer=null;
@@ -3994,10 +4106,10 @@ function btSchedule(){
   BT.timer=setTimeout(()=>{ if(BT.id) loadDetail(); else loadLobby(); btSchedule(); },ms);
 }
 function btAfterRender(){
-  if(S.view!=='battle'){ clearTimeout(BT.timer); BT.timer=null; return; }
+  if(S.view!=='battle'){ clearTimeout(BT.timer); BT.timer=null; try{ if(AMB.on) ambStop(); }catch(e){} return; }
   if(!SOC.sb) return;
   loadSim();
-  if(BT.id){ if(!BT.det||BT.det.battle.id!==BT.id) loadDetail(); } else loadLobby();
+  if(BT.id){ if(!BT.det||BT.det.battle.id!==BT.id) loadDetail(); } else { loadLobby(); btSliderFix(null); }
   btSchedule();
   if(!BT.tick) BT.tick=setInterval(btTickClocks,1000);
 }
@@ -4016,7 +4128,13 @@ function btRender(){
   if(S.view!=='battle') return; const el=document.getElementById('bt-body'); if(!el) return;
   if(BT.id){ btPatchDetail(el); return; }
   if(isTypingNow()&&el.contains(document.activeElement)) return;
-  const h=btLobbyHtml(); if(h!==BT.html.lobby){ BT.html.lobby=h; el.innerHTML=h; }
+  const h=btLobbyHtml(); if(h!==BT.html.lobby){ const tr=document.getElementById('bt-sstrack'); const sl=tr?tr.scrollLeft:null; BT.html.lobby=h; el.innerHTML=h; btSliderFix(sl); }
+}
+/* the sport picker is a swipeable strip: keep its scroll position across re-renders and bring the chosen sport into view */
+function btSliderFix(prev){
+  const tr=document.getElementById('bt-sstrack'); if(!tr) return; if(prev!=null) tr.scrollLeft=prev;
+  const on=tr.querySelector('.ssb[aria-pressed="true"]'); if(!on) return;
+  const l=on.offsetLeft, r=l+on.offsetWidth; if(l<tr.scrollLeft+8||r>tr.scrollLeft+tr.clientWidth-8){ try{ tr.scrollTo({left:Math.max(0,l-(tr.clientWidth-on.offsetWidth)/2),behavior:prev==null?'auto':'smooth'}); }catch(e){ tr.scrollLeft=Math.max(0,l-(tr.clientWidth-on.offsetWidth)/2); } }
 }
 function injLine(T,ab){
   const i=(T&&T.inj)||{}; const out=(i.out||[]), q=(i.q||[]); if(!out.length&&!q.length) return '';
@@ -4032,7 +4150,7 @@ function btFmtNote(fmt,legs){
 }
 function btCreateHtml(){
   const f=BT.form; const ts=simTeams(f.sport); const big=ts.length>40; const q=(f.q||'').trim().toLowerCase();
-  const seg=SPORTS3.map(([k,l])=>'<button data-act="bt-sport" data-k="'+k+'" aria-pressed="'+(f.sport===k)+'" title="'+esc(SPLONG[k])+'">'+l+'</button>').join('');
+  const seg='<button type="button" class="ssnav l" data-act="bt-sslide" data-k="-1" aria-label="Show earlier sports">&#8249;</button><div class="sstrack" id="bt-sstrack" tabindex="-1">'+SPORTS3.map(([k,l])=>'<button type="button" class="ssb" data-act="bt-sport" data-k="'+k+'" aria-pressed="'+(f.sport===k)+'" title="'+esc(SPLONG[k])+'">'+l+'</button>').join('')+'</div><button type="button" class="ssnav r" data-act="bt-sslide" data-k="1" aria-label="Show more sports">&#8250;</button>';
   if(f.legs==null) f.legs=8; if(f.mins==null) f.mins=4;
   const H=teamOf(f.sport,f.home);
   const wchips=[10,50,100,250].map(v=>'<button class="x2" data-act="bt-wager" data-v="'+v+'">'+v+'</button>').join('');
@@ -4042,7 +4160,7 @@ function btCreateHtml(){
   const cpu=(f.vs==='cpu');
   const vseg='<div class="fld">Play against<div class="seg" role="group" aria-label="Opponent"><button data-act="bt-vs" data-k="players" aria-pressed="'+(!cpu)+'">Players</button><button data-act="bt-vs" data-k="cpu" aria-pressed="'+cpu+'">🤖 Computer</button></div>'+(cpu?cpuNote():'')+'</div>';
   return '<section class="game"><div class="sec"><h3>Start a battle <span class="hint">practice coins</span></h3>'+vseg+
-    '<div class="seg" role="group" aria-label="Sport">'+seg+'</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
+    '<div class="sslider" role="group" aria-label="Sport: swipe to see more">'+seg+'</div><div class="small muted ssh">Swipe sideways for more sports</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
     (ts.length?(big?'<label class="fld">Find a team<input class="num wide" data-bt="q" value="'+esc(f.q||'')+'" placeholder="Type a school" aria-label="Find a team" autocomplete="off"></label>':'')+
       tpHtml(f,'home',ts,q,'Your team',null)+
       (cpu?tpHtml(f,'cpuAway',ts,q,'Computer\'s team',f.home,true):'')+
@@ -4223,9 +4341,11 @@ function btSections(){
       '<div class="wp" role="img" aria-label="'+esc(b.home+' win chance '+wp+' percent')+'"><div class="wpa" style="width:'+(100-wp)+'%;background:'+esc(A.color)+'">'+(100-wp>=14?esc(b.away)+' '+(100-wp)+'%':'')+'</div><div class="wph" style="width:'+wp+'%;background:'+esc(H.color)+'">'+(wp>=14?esc(b.home)+' '+wp+'%':'')+'</div></div>'+
       '<div class="playchip" id="chip-b'+b.id+'"><b>'+esc(last?anLabelOf(last):'')+'</b><span>'+esc(last?last.text:'Waiting for the first play…')+'</span></div><div class="cel" id="cel-b'+b.id+'"></div></div>'+
       (fin?btWinnerHtml(b,d):'<div class="small muted">Plays appear as their time comes; the server keeps future plays hidden.</div>')+'</div>';
-    sec.box=btBox(b,d,last);
+    sec.box='';
     if((d.parlays||[]).length>1) sec.stand=btStandHtml(b,d,last,fin);
-    sec.feed='<div class="sec"><h3>Play by play <span class="hint">'+evs.length+' plays</span></h3><div class="feed">'+evs.slice().reverse().map(e=>'<div class="fe '+esc(e.kind)+'"><span class="mono fc">'+esc(e.clock||'')+'</span><span>'+(anIconOf(e)?'<i class="fi">'+anIconOf(e)+'</i> ':'')+esc(e.text)+'</span><span class="mono fs">'+e.as_+'-'+e.hs+'</span></div>').join('')+'</div></div>';
+    const tab=BT.tab==='box'?'box':'pbp';
+    const feedBody=tab==='box'?'<div class="bxwrap">'+btBox(b,d,last)+'</div>':'<div class="feed">'+evs.slice().reverse().map(e=>'<div class="fe '+esc(e.kind)+'"><span class="mono fc">'+esc(e.clock||'')+'</span><span>'+(anIconOf(e)?'<i class="fi">'+anIconOf(e)+'</i> ':'')+esc(e.text)+'</span><span class="mono fs">'+e.as_+'-'+e.hs+'</span></div>').join('')+'</div>';
+    sec.feed='<div class="sec feedtabs"><div class="btabs" role="tablist" aria-label="Game detail"><button role="tab" class="btab" data-act="bt-tab" data-k="pbp" aria-selected="'+(tab==='pbp')+'" aria-pressed="'+(tab==='pbp')+'">Play by play <span class="hint">'+evs.length+'</span></button><button role="tab" class="btab" data-act="bt-tab" data-k="box" aria-selected="'+(tab==='box')+'" aria-pressed="'+(tab==='box')+'">Box score</button></div>'+feedBody+'</div>';
     sec.parl='<div class="sec"><h3>Parlays <span class="hint">100-coin slips</span></h3>'+(d.parlays||[]).sort((x,y)=>x.user_id===b.creator?-1:1).map(p=>parlayCard(b,p,last,fin)).join('')+'</div>';
   } else if(b.status==='open'||b.status==='building'){
     let act='';
@@ -4271,7 +4391,7 @@ function btWinnerHtml(b,d){
   return '<div class="winbar">'+(r.split?'🤝 Tied: the pot is split and both wagers go back.':'🏆 '+esc(wn)+' wins '+cn(b.wager*2)+' coins'+(r.bonus>0?' + '+cn(r.bonus)+' bonus coins':'') )+'<div class="small">'+esc(b.creator_name)+': slip pays '+cn(r.creator.payout)+' ('+r.creator.hits+' hit) · '+esc(b.opponent_name)+': '+cn(r.opponent.payout)+' ('+r.opponent.hits+' hit)'+(r.bonus>0?' · winner gets 10% of the winning parlay payout as a bonus':'')+'</div>'+
     '<div class="btnrow"><button class="btn solid" data-act="sh-open" data-k="battle">Share result</button><button class="btn" data-act="vsf-open">Replay finish</button></div></div>';
 }
-const BT_ORDER=['head','board','box','stand','act','mk','spec','parl','feed','bets'];
+const BT_ORDER=['head','board','feed','box','stand','act','mk','spec','parl','bets'];
 function btDetailHtml(){
   const sec=btSections(); if(!sec) return '<section class="game"><div class="sec"><div class="btnrow"><button class="btn" data-act="bt-back">‹ All battles</button></div><div class="small muted">Loading the battle…</div></div></section>';
   BT.html={}; return '<section class="game">'+BT_ORDER.map(k=>sec[k]?'<div id="bts-'+k+'">'+(BT.html[k]=sec[k])+'</div>':'<div id="bts-'+k+'"></div>').join('')+'</section>';
@@ -4295,6 +4415,7 @@ function btAnimate(){
   if(b.status==='final'&&b.result&&b.result.creator&&!BT.flashed[b.id]){ BT.flashed[b.id]=true; // the finish flash: when you watched it end, or opened a battle that ended in the last 10 minutes
     const fresh=BT.sawLive[b.id]||(b.ends_at&&btNow()-Date.parse(b.ends_at)<600000); if(fresh) setTimeout(()=>{ if(S.view==='battle'&&BT.id===b.id) vsfShow(); },BT.sawLive[b.id]?1500:300); }
   if(b.status==='live'||b.status==='final') anEnsureStage(b);
+  btAmbience();
   if(!last) return;
   const seen=BT.seen[b.id]; BT.seen[b.id]=last.seq;
   if(seen==null||seen>=last.seq) return;
@@ -4321,7 +4442,9 @@ document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act]'); if(!t) return; const act=t.getAttribute('data-act'); if(act.indexOf('bt-')!==0) return;
   e.stopPropagation(); e.preventDefault();
   const f=BT.form;
+  if(act==='bt-sslide'){ const tr=document.getElementById('bt-sstrack'); if(tr){ const dx=(+t.getAttribute('data-k')||1)*Math.max(120,Math.round(tr.clientWidth*.7)); try{ tr.scrollBy({left:dx,behavior:'smooth'}); }catch(e){ tr.scrollLeft+=dx; } } return; }
   if(act==='bt-sport'){ f.sport=t.getAttribute('data-k'); f.q=''; f.cpuAway=''; btFormDefaults(); btRender(); return; }
+  if(act==='bt-tab'){ BT.tab=t.getAttribute('data-k')==='box'?'box':'pbp'; BT.html.feed=null; btRender(); return; }
   if(act==='bt-more'){ BT.moreRecent=true; btRender(); return; }
   if(act==='bt-tdd'){ const k=t.getAttribute('data-k'); BT.form.dd=(BT.form.dd===k?null:k); btRender(); return; }
   if(act==='bt-tsel'){ BT.form[t.getAttribute('data-k')]=t.getAttribute('data-v'); if(BT.form.cpuAway===BT.form.home) BT.form.cpuAway=''; BT.form.dd=null; btRender(); return; }
@@ -4337,8 +4460,9 @@ document.addEventListener('click',function(e){
   if(act==='bt-open'){ btOpen(+t.getAttribute('data-id')); return; }
   if(act==='bt-popgo'){ const id=+t.getAttribute('data-id'); btPopHide(id); btOpen(id); return; }
   if(act==='bt-popx'){ btPopHide(+t.getAttribute('data-id')); return; }
-  if(act==='bt-snd'){ SND.on=!SND.on; sndSave(); if(SND.on){ sndUnlock(); sfx('whistle',0); } else sndStop(); document.querySelectorAll('[data-act="bt-snd"]').forEach(n=>{ n.textContent=SND.on?'🔊 Sound on':'🔇 Sound off'; n.setAttribute('aria-pressed',String(!!SND.on)); }); return; }
-  if(act==='bt-back'){ BT.id=null; BT.det=null; BT.msg=''; BT.html={}; render(); return; }
+  if(act==='bt-snd'){ SND.on=!SND.on; sndSave(); if(SND.on){ sndUnlock(); sfx('whistle',0); setTimeout(btAmbience,200); } else { sndStop(); btSndHint(false); } document.querySelectorAll('[data-act="bt-snd"]').forEach(n=>{ n.textContent=SND.on?'🔊 Sound on':'🔇 Sound off'; n.setAttribute('aria-pressed',String(!!SND.on)); }); return; }
+  if(act==='bt-back'){ BT.id=null; BT.det=null; BT.msg=''; BT.html={}; try{ if(AMB.on) ambStop(); }catch(e){} render(); return; }
+  if(act==='bt-sndgo'){ SND.on=true; sndSave(); sndUnlock(); sfx('whistle',0); setTimeout(btAmbience,150); return; }
   const b=BT.det&&BT.det.battle; if(!b) return;
   if(act==='bt-accept'){ if(!b.away&&!BT.form.pick){ BT.msg='Pick your team first.'; btRender(); return; } btCall('accept_battle',{p_id:b.id,p_team:b.away?null:BT.form.pick}); return; }
   if(act==='bt-cancel'){ if(!confirm('Cancel this battle? Wagers and spectator bets are refunded.')) return; btCall('cancel_battle',{p_id:b.id}); return; }
@@ -4426,8 +4550,8 @@ function paintAv(){
 new MutationObserver(()=>{ clearTimeout(avT); avT=setTimeout(paintAv,80); }).observe(document.body,{childList:true,subtree:true});
 document.addEventListener('change',function(e){ const t=e.target; if(!t||!t.getAttribute||t.getAttribute('data-in')!=='avfile'||!t.files||!t.files[0]) return;
   const url=URL.createObjectURL(t.files[0]), img=new Image();
-  img.onload=()=>{ const c=document.createElement('canvas'); c.width=c.height=96; const g=c.getContext('2d'), m=Math.min(img.width,img.height); g.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,96,96); URL.revokeObjectURL(url);
-    const data=c.toDataURL('image/jpeg',0.75);
+  img.onload=()=>{ const c=document.createElement('canvas'); c.width=c.height=192; const g=c.getContext('2d'), m=Math.min(img.width,img.height); g.imageSmoothingQuality='high'; g.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,192,192); URL.revokeObjectURL(url);
+    let data=c.toDataURL('image/jpeg',0.82); if(data.length>38000) data=c.toDataURL('image/jpeg',0.6);
     SOC.sb.rpc('set_avatar',{p_avatar:data}).then(r=>{ if(r.error){ S.flash=r.error.message; try{ renderBank(); }catch(x){} return; } SOC.av[SOC.me.username.toLowerCase()]=data; document.querySelectorAll('.av[data-p]').forEach(el=>el.removeAttribute('data-p')); paintAv(); }); };
   img.onerror=()=>{ S.flash='That picture could not be read.'; try{ renderBank(); }catch(x){} }; img.src=url; t.value=''; });
 if(/[?&]debug=1/.test(location.search)) window.__bt={BT,SOC,S,render:()=>render()};
@@ -4470,8 +4594,27 @@ setInterval(btWatch,2500);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ BT.alerts.last=0; setTimeout(btWatch,300); } });
 
 
-/* the browser only lets sound start after a tap: the first tap on the battle screen unlocks it */
-document.addEventListener('click',function(){ try{ if(S.view==='battle'&&SND.on&&!SND.ctx) sndUnlock(); }catch(e){} },true);
+/* ---------- battle sound: unlock on any tap, constant crowd noise while a battle is live ---------- */
+/* Browsers (and iPhones most of all) only let sound start from a tap, and suspend it again when the page is hidden or the phone sleeps.
+   So every tap on the battle screen (re)starts the audio context, and a "Tap for sound" chip shows on the stage while it is still locked. */
+function btAudioGesture(){
+  try{ if(S.view!=='battle'||!SND.on) return; const c=SND.ctx; if(!c||c.state!=='running') sndUnlock(); else sndSilentKeep(); setTimeout(btAmbience,120); setTimeout(btAmbience,700); }catch(e){}
+}
+['touchend','pointerup','click','keydown'].forEach(ev=>document.addEventListener(ev,btAudioGesture,{capture:true,passive:true}));
+function btSndHint(show){
+  const st=document.querySelector('#bts-board .stage'); const cur=document.getElementById('btsnd');
+  if(!show||!st){ if(cur) cur.remove(); return; }
+  if(cur) return; st.insertAdjacentHTML('beforeend','<button type="button" id="btsnd" class="sndtap" data-act="bt-sndgo">&#128266; Tap for stadium sound</button>');
+}
+function btAmbience(){
+  try{
+    const d=BT.det, b=d&&d.battle; const want=S.view==='battle'&&BT.id&&b&&b.status==='live'&&!document.hidden;
+    if(!want||!SND.on){ if(AMB.on) ambStop(); btSndHint(false); return; }
+    const c=SND.ctx; if(!c||c.state!=='running'){ btSndHint(true); if(c&&c.resume){ try{ c.resume(); }catch(e){} } return; }
+    btSndHint(false); if(!AMB.on) ambStart(b.sport);
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',()=>{ try{ if(document.hidden){ if(AMB.on) ambStop(); } else setTimeout(btAmbience,200); }catch(e){} });
 
 /* ================= Battle animations =================
    A small SVG scene (field / court / diamond) above the play feed.  Every new play that becomes visible is classified, queued and played for
@@ -4512,9 +4655,9 @@ function anStageHtml(b){
   return '<div class="stage" id="stg-b'+b.id+'" data-f="'+anFam(b.sport)+'"><svg viewBox="0 0 320 120" class="stsvg" role="img" aria-label="Animated '+esc(SPN[b.sport]||'')+' scene">'+anScene(b)+'<g class="fx"></g></svg><div class="stbanner" aria-live="polite"></div></div>';
 }
 function anEnsureStage(b){
-  if(document.getElementById('stg-b'+b.id)) return true;
+  if(document.getElementById('stg-b'+b.id)){ try{ afStart(b); }catch(e){} return true; }
   const viz=document.querySelector('#bts-board .viz'); if(!viz) return false; const chip=viz.querySelector('.playchip'); if(!chip) return false;
-  chip.insertAdjacentHTML('beforebegin',anStageHtml(b)); return true;
+  chip.insertAdjacentHTML('beforebegin',anStageHtml(b)); try{ afStart(b); }catch(e){} return true;
 }
 
 /* ---- classify an event into an animation ---- */
@@ -4553,53 +4696,76 @@ function anBurst(fx,x,y,col,n){ if(anReduced()) return; for(let i=0;i<(n||10);i+
 function anShake(node){ if(anReduced()||!node||!node.animate) return; node.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(-3px)'},{transform:'translateX(0)'}],{duration:420}); }
 
 /* ---- the plays ---- */
-/* sound for each kind of play: stadium sounds that fit the sport (football: kicks, whistles, crowd; basketball: swish, rim, buzzer; baseball: bat crack, mitt, organ) */
+/* who gained from a play: +1 the home team, -1 the visitors, 0 nobody in particular.  e.side is the team the play is about. */
+const AN_LOSS={sack:1,int:1,fumble:1,fgmiss:1,stop:1,strikeout:1,out:1,foul:1};
+const AN_BIG={td:1,hr:1,walkoff:1,three:1,dunk:1,final:1};
+function anGainer(b,ty,e){
+  if(ty==='final') return 0;
+  if(ty==='flag'){ const m=/flag!?\s+([A-Z]{2,4})\b/i.exec(String(e&&e.text||'')); if(m){ const ab=m[1].toUpperCase(); if(ab===String(b.home).toUpperCase()) return -1; if(ab===String(b.away).toUpperCase()) return 1; } return 0; }
+  const side=e&&e.side; if(side!=='home'&&side!=='away') return 0; const sg=side==='home'?1:-1;
+  return AN_LOSS[ty]?-sg:sg;
+}
+/* the crowd: constant murmur (see ambStart), a roar when the home team gains, boos when the visitors do */
+function anCrowd(b,ty,e){
+  const g=anGainer(b,ty,e); if(!g) return; const big=!!AN_BIG[ty], minor=ty==='fd'||ty==='ft'||ty==='walk'||ty==='safe'||ty==='strikeout'||ty==='out'||ty==='foul'||ty==='punt'||ty==='hit1';
+  if(g>0){ if(minor){ sfx('crowd',0,false); ambSwell(1.5,1.8); } else crowdFor(true,big); }
+  else { if(minor){ sfx('groan',0); ambSwell(1.3,1.6); } else crowdFor(false,big); }
+}
+/* sound for each kind of play: stadium sounds that fit the sport (football: kicks, whistles, pads; basketball: swish, rim, buzzer; baseball: bat crack, mitt, organ) */
 function anSound(b,ty,e){
-  if(typeof sfx!=='function'||!SND.on||!SND.ctx) return; const f=anFam(b.sport);
+  if(typeof sfx!=='function'||!SND.on) return; const f=anFam(b.sport);
   const S=(n,ms)=>sfx(n,ms||0);
-  if(ty==='final'){ if(f==='bk') S('buzzer'); else S('whistle2'); S('crowd',300); S('fanfare',500); return; }
+  if(ty==='final'){ if(f==='bk') S('buzzer'); else S('whistle2'); S('fanfare',500); crowdFor(true,true); return; }
   if(f==='fb'){
-    if(ty==='td'){ S('fanfare'); S('crowd',150); S('cheer',500); }
-    else if(ty==='fg'){ S('kick'); S('crowd',900); }
+    if(ty==='td'){ S('fanfare'); }
+    else if(ty==='fg'){ S('kick'); }
     else if(ty==='fgmiss'||ty==='stop'){ S('groan'); }
-    else if(ty==='fd'){ S('chime'); S('crowd',100); }
-    else if(ty==='flag'){ S('whistle2'); S('boo',500); }
-    else if(ty==='sack'){ S('sack'); S('groan',200); }
-    else if(ty==='int'||ty==='fumble'){ S('catch'); S('tackle',250); S('groan',400); }
+    else if(ty==='fd'){ S('chime'); }
+    else if(ty==='flag'){ S('whistle2'); }
+    else if(ty==='sack'){ S('sack'); }
+    else if(ty==='int'||ty==='fumble'){ S('catch'); S('tackle',250); }
     else if(ty==='punt'){ S('kick'); }
   } else if(f==='bk'){
-    if(ty==='three'){ S('swish',650); S('crowd',700); S('cheer',900); }
-    else if(ty==='dunk'){ S('crack',350); S('cheer',420); S('big'); }
-    else if(ty==='bucket'){ S('swish',500); S('crowd',550); }
-    else if(ty==='ft'){ S('swish',450); }
-    else if(ty==='foul'){ S('whistle'); S('groan',200); }
-    else if(ty==='steal'){ S('squeak'); S('crowd',300); }
-    else if(ty==='block'){ S('crack',250); S('cheer',300); }
-    else if(ty==='run'){ S('big'); S('cheer',300); }
+    if(ty==='three'){ S('swish',650); }
+    else if(ty==='dunk'){ S('squeak'); S('slam',380); }
+    else if(ty==='bucket'){ S('swish',500); }
+    else if(ty==='ft'){ S('dribble',0); S('swish',650); }
+    else if(ty==='foul'){ S('whistle'); }
+    else if(ty==='steal'){ S('squeak'); S('pass',150); }
+    else if(ty==='block'){ S('crack',250); }
+    else if(ty==='run'){ S('horn'); }
   } else {
-    if(ty==='hit1'||ty==='hit2'||ty==='hit3'){ S('batcrack'); S('crowd',400); if(ty!=='hit1') S('organ',700); }
-    else if(ty==='hr'||ty==='walkoff'){ S('batcrack'); S('big',200); S('organ',900); S('cheer',900); S('crowd',1100); }
-    else if(ty==='runscore'){ S('organ'); S('cheer',200); }
-    else if(ty==='steal'){ S('slide'); S('crowd',500); }
+    if(ty==='hit1'||ty==='hit2'||ty==='hit3'){ S('batcrack'); if(ty!=='hit1') S('organ',700); }
+    else if(ty==='hr'||ty==='walkoff'){ S('batcrack'); S('big',200); S('organ',900); }
+    else if(ty==='runscore'){ S('organ'); }
+    else if(ty==='steal'){ S('slide'); }
     else if(ty==='safe'){ S('slide'); }
-    else if(ty==='out'){ S('mitt'); S('groan',300); }
+    else if(ty==='out'){ S('mitt'); }
     else if(ty==='strikeout'){ S('mitt',380); S('chime',450); }
     else if(ty==='walk'){ S('chime'); }
   }
+  anCrowd(b,ty,e);
+}
+/* a short spoken call for scoring plays and period breaks (uses the same voice as the big screen) */
+function anSay(b,e){
+  if(!e||!SND.on||typeof say!=='function'||!HAS_TTS||document.hidden) return;
+  if(e.kind==='score'){ let t=String(e.text||'').replace(/\([^)]*\)/g,' ').replace(/\s+/g,' ').trim(); if(!t||t.length>90) return; say(t+'!',true); }
+  else if(e.kind==='period'){ say(String(e.text||'').slice(0,60),false); }
+  else if(e.kind==='final'){ say('And that is the final.',true); }
 }
 function anPlay(b,d,e,done0,scale){
   const done=()=>{ done0(); };
   try{ AN.log.push(d.type); }catch(err){}
   try{ anSound(b,d.type,e); }catch(err){}
   const st=document.getElementById('stg-b'+b.id); if(!st){ done(); return; }
-  const fx=st.querySelector('.fx'); fx.innerHTML=''; const side=e.side||'home'; const f=anFam(b.sport); const col=anColor(b,side);
+  const fx=st.querySelector('.fx'); fx.innerHTML=''; const side=e.side||'home'; let who=''; try{ who=anWho(b,e); }catch(err){} const f=anFam(b.sport); const col=anColor(b,side);
   const away=side==='away'; const dir=away?1:-1;               // football: the away team attacks the home (right-hand) end zone
   let ms=1500, ty=d.type;
   if(ty==='final'){ anBanner(st,'FINAL','big'); try{ celebrateB(b,'','h'); }catch(err){} setTimeout(done,anReduced()?900:1900); return; }
   if(f==='fb'){
     const y=60+(Math.random()-.5)*30, x0=away?70:250;
-    if(ty==='td'){ const ball=anBall(fx,x0,y,4); anMove(ball,[[x0,y],[away?290:30,y-6]],1100,'ease-in'); setTimeout(()=>{ anBurst(fx,away?292:28,y-6,'#ffd23a',16); },1000); anBanner(st,'TOUCHDOWN!','big'); ms=1700; }
-    else if(ty==='fg'){ const x1=away?300:20; anEl('path',{d:'M'+x1+' 40 V58 M'+(x1-7)+' 42 V58 M'+(x1+7)+' 42 V58 M'+(x1-7)+' 58 H'+(x1+7),stroke:'#ffd23a','stroke-width':1.6,fill:'none'},fx); const ball=anBall(fx,x0,y,3.6); anMove(ball,anArc([x0,y],[x1,48],34,18),1000,'linear'); anBanner(st,'FIELD GOAL!','mid'); ms=1500; }
+    if(ty==='td'){ const ball=anBall(fx,x0,y,4); anMove(ball,[[x0,y],[away?290:30,y-6]],1100,'ease-in'); if(who){ const rn=afPlayer(fx,x0,y+4,col,{name:who,r:4}); anMove(rn,[[x0,y+4],[away?290:30,y-2]],1100,'ease-in'); } setTimeout(()=>{ anBurst(fx,away?292:28,y-6,'#ffd23a',16); },1000); anBanner(st,'TOUCHDOWN!','big'); ms=1700; }
+    else if(ty==='fg'){ const x1=away?300:20; anEl('path',{d:'M'+x1+' 40 V58 M'+(x1-7)+' 42 V58 M'+(x1+7)+' 42 V58 M'+(x1-7)+' 58 H'+(x1+7),stroke:'#ffd23a','stroke-width':1.6,fill:'none'},fx); const ball=anBall(fx,x0,y,3.6); anMove(ball,anArc([x0,y],[x1,48],34,18),1000,'linear'); if(who) afPlayer(fx,x0-(away?8:-8),y+4,col,{name:who,r:4}); anBanner(st,'FIELD GOAL!','mid'); ms=1500; }
     else if(ty==='fd'){ const lx=(away?150:170)+Math.random()*30; const ln=anEl('rect',{x:0,y:12,width:3,height:96,fill:'#ffd23a'},fx); anMove(ln,[[lx-30*dir,0],[lx,0]],500,'ease-out'); anBanner(st,'FIRST DOWN','sm'); ms=900; }
     else if(ty==='flag'){ const fl=anEl('g',{},fx); anEl('path',{d:'M0 -22 L0 0 M0 -22 L16 -16 L0 -10',stroke:'#ffd23a','stroke-width':3,fill:'#ffd23a'},fl); anMove(fl,[[150,-10],[150,64],[160,60],[154,64]],800,'ease-out'); anBanner(st,(e.text||'FLAG').split(':')[1]?('FLAG: '+e.text.split(':')[1].trim().split(',')[0].toUpperCase()):'FLAG','warn'); ms=1300; }
     else if(ty==='sack'){ const x=160+(Math.random()-.5)*80; anBurst(fx,x,60,'#ff5a52',14); anDot(fx,x,60,'#ff5a52',6); anBanner(st,'SACK!','bad'); anShake(st.querySelector('svg')); ms=1100; }
@@ -4609,10 +4775,10 @@ function anPlay(b,d,e,done0,scale){
     else { done(); return; }
   } else if(f==='bk'){
     const tx=away?22:298;                                          // the away team shoots at the left hoop, the home team at the right
-    const shoot=(from,peak,ms2)=>{ const ball=anBall(fx,from[0],from[1],3.6,'#e8742c'); anMove(ball,anArc(from,[tx,60],peak,18),ms2,'linear',()=>{ anBurst(fx,tx,60,'#fff',7); }); return ball; };
+    const shoot=(from,peak,ms2)=>{ if(who) afPlayer(fx,from[0]+(away?-6:6),from[1]+5,col,{name:who,r:3.8}); const ball=anBall(fx,from[0],from[1],3.6,'#e8742c'); anMove(ball,anArc(from,[tx,60],peak,18),ms2,'linear',()=>{ anBurst(fx,tx,60,'#fff',7); }); return ball; };
     const rx=away?(Math.random()<.5?70:60):(Math.random()<.5?250:260);
     if(ty==='three'){ shoot([away?86:234,24+Math.random()*72],40,950); anBanner(st,'THREE!','big'); ms=1500; }
-    else if(ty==='dunk'){ const p=anDot(fx,away?60:260,60,col,5.5); anMove(p,[[away?60:260,60],[tx+(away?14:-14),50],[tx+(away?5:-5),44],[tx+(away?14:-14),64]],700,'ease-in-out'); anBurst(fx,tx,58,'#ffd23a',10); anBanner(st,'DUNK!','big'); ms=1300; }
+    else if(ty==='dunk'){ const p=afPlayer(fx,away?60:260,60,col,{name:who||undefined,r:5.2}); anMove(p,[[away?60:260,60],[tx+(away?14:-14),50],[tx+(away?5:-5),44],[tx+(away?14:-14),64]],700,'ease-in-out'); anBurst(fx,tx,58,'#ffd23a',10); anBanner(st,'DUNK!','big'); ms=1300; }
     else if(ty==='bucket'){ shoot([away?(46+Math.random()*10):(274-Math.random()*10),44+Math.random()*34],16,650); anBanner(st,'BUCKET','mid'); ms=1000; }
     else if(ty==='ft'){ shoot([away?52:268,60],10,550); anBanner(st,'FREE THROWS','sm'); ms=900; }
     else if(ty==='foul'){ anEl('circle',{cx:160,cy:60,r:10,fill:'#ff5a52',stroke:'#fff','stroke-width':2},fx).animate(anReduced()?[]:[{transform:'scale(.2)',transformOrigin:'160px 60px',opacity:0},{transform:'scale(1.4)',transformOrigin:'160px 60px',opacity:1},{transform:'scale(1)',transformOrigin:'160px 60px',opacity:1}],{duration:500,fill:'forwards'}); anEl('text',{x:160,y:64,'text-anchor':'middle','font-size':12,'font-weight':900,fill:'#fff'},fx).textContent='!'; anBanner(st,'FOUL!','bad'); anShake(st.querySelector('svg')); ms=1200; }
@@ -4623,8 +4789,8 @@ function anPlay(b,d,e,done0,scale){
   } else {
     const home=[160,104], b1=[214,66], b2=[160,30], b3=[106,66];
     if(ty==='hit1'||ty==='hit2'||ty==='hit3'){ const tgt=ty==='hit1'?[206+Math.random()*30,50]:ty==='hit2'?[250,34]:[272,52]; const ball=anBall(fx,home[0],home[1],3,'#fff'); anMove(ball,anArc(home,tgt,ty==='hit1'?10:26,16),800,'ease-out');
-      const r=anDot(fx,home[0],home[1],col,4.5); anMove(r,ty==='hit1'?[home,b1]:ty==='hit2'?[home,b1,b2]:[home,b1,b2,b3],900,'linear'); anBanner(st,ty==='hit1'?'SINGLE':ty==='hit2'?'DOUBLE!':'TRIPLE!','mid'); ms=1300; }
-    else if(ty==='hr'||ty==='walkoff'){ const ball=anBall(fx,home[0],home[1],3.2,'#fff'); anMove(ball,anArc(home,[away?270:50,-14],64,22),1200,'linear',()=>{ anBurst(fx,away?270:50,0,'#ffd23a',18); }); const r=anDot(fx,home[0],home[1],col,4.5); anMove(r,[home,b1,b2,b3,home],1700,'linear'); anBanner(st,ty==='hr'?'HOME RUN!':'WALK-OFF!','big'); ms=2000; }
+      const r=afPlayer(fx,home[0],home[1],col,{name:who||undefined,r:4}); anMove(r,ty==='hit1'?[home,b1]:ty==='hit2'?[home,b1,b2]:[home,b1,b2,b3],900,'linear'); anBanner(st,ty==='hit1'?'SINGLE':ty==='hit2'?'DOUBLE!':'TRIPLE!','mid'); ms=1300; }
+    else if(ty==='hr'||ty==='walkoff'){ const ball=anBall(fx,home[0],home[1],3.2,'#fff'); anMove(ball,anArc(home,[away?270:50,-14],64,22),1200,'linear',()=>{ anBurst(fx,away?270:50,0,'#ffd23a',18); }); const r=afPlayer(fx,home[0],home[1],col,{name:who||undefined,r:4}); anMove(r,[home,b1,b2,b3,home],1700,'linear'); anBanner(st,ty==='hr'?'HOME RUN!':'WALK-OFF!','big'); ms=2000; }
     else if(ty==='runscore'){ const r=anDot(fx,b3[0],b3[1],col,4.5); anMove(r,[b3,home],700,'ease-in'); anBurst(fx,home[0],home[1]+2,col,8); anBanner(st,'RUN SCORES!','mid'); ms=1200; }
     else if(ty==='steal'){ const r=anDot(fx,b1[0],b1[1],col,4.5); anMove(r,[b1,b2],650,'ease-in'); setTimeout(()=>{ anBurst(fx,b2[0],b2[1],'#d9b383',8); },600); anBanner(st,'STOLEN BASE — SAFE','good'); ms=1200; }
     else if(ty==='safe'){ const r=anDot(fx,home[0],home[1],col,4.5); anMove(r,[home,b1],600,'ease-in'); setTimeout(()=>{ anBurst(fx,b1[0],b1[1],'#d9b383',9); },560); anBanner(st,'SAFE!','good'); ms=1100; }
@@ -4649,7 +4815,9 @@ function anPump(b){
 }
 function anEnqueue(b,news){
   if(document.hidden) return; const Q=AN.q[b.id]||(AN.q[b.id]={items:[],busy:false});
-  news.forEach(e=>{ const d=anClassify(b.sport,e); if(d) Q.items.push({d:d,e:e}); }); anPump(b);
+  let any=false; news.forEach(e=>{ const d=anClassify(b.sport,e); if(d){ Q.items.push({d:d,e:e}); any=true; } });
+  if(any){ try{ afCancel(b.id); }catch(e){} }          // a real play cuts in on any filler scene
+  news.forEach(e=>{ try{ anSay(b,e); }catch(err){} }); anPump(b);
 }
 function anBump(b,news){
   if(!news.some(e=>e.kind==='score')||anReduced()) return;
@@ -4659,6 +4827,399 @@ function anLabelOf(e){ return (e&&AN_LABEL[e.kind])||'PLAY'; }
 function anIconOf(e){ return (e&&AN_ICON[e.kind])||''; }
 
 AN.classify=anClassify;
+
+/* ================= Battle filler scenes =================
+   The server only sends the plays that change the game, so in a 6- or 8-minute battle the stage used to sit still between plays.
+   This director keeps the field / court / diamond alive: whenever no real play is waiting it runs a short scene (free throws, a dunk, a fast break,
+   teams lining up on the field, a snap and a pass, a kickoff, a pitch, a double play ...), with the team colors and player names from the
+   battle's own rosters, plus the odd crowd moment (the wave, fireworks).  The longer the game, the more scenes run.  Real plays always cut in at once.
+   Scenes are pure decoration: they never touch the score or the plays.  Reduced motion: no scenes. */
+const AF={d:{},tok:0};
+const AF_DECK={
+  bk:['lineup','ft','dunk','three','fast','swing','rebound','alley','huddle'],
+  fb:['lineup','pass','run','kickoff','fg','huddle','scramble','pass','run'],
+  bb:['take','pitch','pitch','pickoff','mound','dp','pitch']
+};
+function afOther(s){ return s==='home'?'away':'home'; }
+function afShuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function afR(a,b){ return a+Math.random()*(b-a); }
+function afTeamShort(b,side){ try{ const t=teamOf(b.sport,side==='home'?b.home:b.away); return t.short||t.abbr||''; }catch(e){ return ''; } }
+function afRoster(b){
+  const ro=(b.markets&&b.markets.roster)||null, n=ro?Object.keys(ro).length:0, k='r'+b.id; let r=AF.d[k]; if(r&&r.n===n) return r;
+  r={n:n,home:[],away:[]}; if(ro) Object.keys(ro).forEach(pid=>{ const x=ro[pid]; if(x&&r[x[1]]) r[x[1]].push({n:surname(String(x[0]||'')),role:x[2],rk:+x[3]||0}); });
+  ['home','away'].forEach(s=>r[s].sort((a,c)=>a.rk-c.rk)); AF.d[k]=r; return r;
+}
+/* a player's surname from the roster (the better players come up more often); roles is an optional list such as ['QB'] */
+function afName(b,side,roles,not){
+  const all=afRoster(b)[side]||[]; let pool=roles?all.filter(x=>roles.indexOf(x.role)>=0):all; if(!pool.length) pool=all; if(not&&pool.length>1) pool=pool.filter(x=>x.n!==not);
+  if(!pool.length) return afTeamShort(b,side);
+  return pool[Math.floor(Math.random()*Math.random()*pool.length*1.4)%pool.length].n;
+}
+/* the name in front of a play's text ("Jalen Brunson drains a three") */
+function anWho(b,e){
+  const t=String(e&&e.text||''); const m=t.match(/^((?:[A-Z][A-Za-z.'\-]*\s+){1,2}[A-Z][A-Za-z.'\-]*)/); if(!m) return '';
+  const w=m[1].split(/\s+/); if(w.some(q=>/^(guard|wing|forward|big|first|touchdown|field|flag|foul|sack|steal|blocked|strikeout|stolen|ball|close|out|final|end|halftime|kickoff|interception|fumble|punt|safe|scoring)$/i.test(q))||/^[A-Z]{2,4}$/.test(w[0])) return '';
+  return surname(m[1]);
+}
+
+/* ---- drawing ---- */
+function afG(parent,x,y){ const g=anEl('g',{},parent); g.style.transform='translate('+x+'px,'+y+'px)'; return g; }
+function afPlayer(fx,x,y,col,o){
+  o=o||{}; const r=o.r||4.4, g=afG(fx,x,y);
+  anEl('ellipse',{cx:0,cy:r*.95,rx:r*.95,ry:r*.32,fill:'rgba(0,0,0,.28)'},g);
+  anEl('rect',{x:-r*.78,y:-r*.7,width:r*1.56,height:r*1.7,rx:r*.5,fill:col,stroke:o.ring||'#fff','stroke-width':.8},g);
+  anEl('circle',{cx:0,cy:-r*1.3,r:r*.58,fill:o.skin||'#f1c9a0',stroke:'rgba(40,24,10,.8)','stroke-width':.4},g);
+  if(o.name) afTag(g,o.name,o.nameDy!=null?o.nameDy:-r*2.1,o.size,o.tx);
+  return g;
+}
+function afTag(g,txt,dy,size,tx){
+  const t=anEl('text',{x:tx||0,y:dy,'text-anchor':'middle','font-size':size||7.4,'font-weight':800,fill:'#fff',stroke:'rgba(8,14,28,.92)','stroke-width':2.3,'paint-order':'stroke','stroke-linejoin':'round'},g); t.textContent=txt; return t;
+}
+function afBk(fx,x,y){ const g=afG(fx,x,y); anEl('circle',{cx:0,cy:0,r:3.3,fill:'#e8742c',stroke:'#6b2800','stroke-width':.7},g); anEl('path',{d:'M-3.3 0H3.3M0 -3.3V3.3',stroke:'#6b2800','stroke-width':.5,fill:'none'},g); return g; }
+function afFb(fx,x,y){ return anBall(fx,x,y,3.4); }
+function afBase(fx,x,y){ return anBall(fx,x,y,2.5,'#fff'); }
+function afPulse(fx,x,y,col,r){ if(anReduced()) return; const c=anEl('circle',{cx:x,cy:y,r:r||6,fill:'none',stroke:col||'#fff','stroke-width':2},fx); c.animate([{transform:'scale(.4)',transformOrigin:x+'px '+y+'px',opacity:1},{transform:'scale(2.2)',transformOrigin:x+'px '+y+'px',opacity:0}],{duration:520,easing:'ease-out',fill:'forwards'}); }
+function afBounce(node,x,y,n,h,ms){ const pts=[]; for(let i=0;i<n;i++){ pts.push([x,y],[x,y-h],[x,y]); } anMove(node,pts,ms,'ease-in-out'); }
+function afHop(node,x,y,h,ms){ anMove(node,[[x,y],[x,y-h],[x,y]],ms,'ease-out'); }
+function afNote(x,txt,cls,at){ x.T(at||0,()=>anBanner(x.st,txt,(cls||'sm')+' top')); }
+
+/* broadcast camera: ease the stage's viewBox in on the action (same 8:3 shape), and back out before the scene ends */
+function afCam(x,vb,ms){
+  const svg=x.st.querySelector('svg'); if(!svg||anReduced()) return; const from=(svg.getAttribute('viewBox')||'0 0 320 120').split(/\s+/).map(Number), t0=performance.now(), tok=x.tok;
+  const step=now=>{ if(AF.tok!==tok) return; const u=Math.min(1,(now-t0)/(ms||600)), e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2; svg.setAttribute('viewBox',from.map((a,i)=>(a+(vb[i]-a)*e).toFixed(2)).join(' ')); if(u<1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function afCamReset(st){ const svg=st&&st.querySelector&&st.querySelector('svg'); if(svg) svg.setAttribute('viewBox','0 0 320 120'); }
+function afZoomHoop(x,k){ const w=320/k, h=120/k; afCam(x,[x.away?0:320-w,Math.max(0,60-h/2),w,h],700); }
+
+/* ---- the director ---- */
+function afKind(b){ return anFam(b.sport); }
+function afStart(b){
+  const k='d'+b.id; let d=AF.d[k]; if(d&&d.iv) return;
+  d=AF.d[k]=d||{deck:[],side:Math.random()<.5?'home':'away',n:0,last:Date.now(),gap:700,running:false,iv:null,prev:'',first:true,fx:null};
+  d.iv=setInterval(()=>afTick(b.id),450);
+}
+function afBattle(id){ const bt=typeof BT!=='undefined'&&BT.det&&BT.det.battle; return bt&&bt.id===id?bt:null; }
+function afTick(id){
+  const d=AF.d['d'+id]; if(!d) return; const st=document.getElementById('stg-b'+id), b=afBattle(id);
+  if(!st||!b){ clearInterval(d.iv); d.iv=null; d.running=false; return; }
+  if(b.status!=='live'||document.hidden||anReduced()) return;
+  const Q=AN.q[id]; if(Q&&(Q.busy||Q.items.length)){ d.last=Date.now(); return; }
+  if(d.running) return;
+  if(Date.now()-d.last<d.gap) return;
+  afRun(b,st,d);
+}
+function afGap(b){ const mins=+b.duration_min||4; return Math.round(afR(500,1100)*(mins>=6?.8:1)); }
+function afPick(b,d){
+  const f=afKind(b), mins=+b.duration_min||4;
+  d.n++; if(d.first){ d.first=false; return f==='bb'?'take':'lineup'; }
+  const showEvery=Math.max(4,12-mins);        // longer games get a crowd moment more often
+  if(d.n%showEvery===0) return Math.random()<.5?'wave':'fireworks';
+  if(!d.deck.length) d.deck=afShuffle(AF_DECK[f]);
+  let s=d.deck.shift(); if(s===d.prev&&d.deck.length) s=d.deck.shift();
+  if(s==='huddle'&&mins<4&&Math.random()<.6) s=d.deck.length?d.deck.shift():'lineup';
+  return s;
+}
+function afRun(b,st,d){
+  const fx=st.querySelector('.fx'); if(!fx) return;
+  const name=afPick(b,d), f=afKind(b); const fn=AF_SCENES[(name==='wave'||name==='fireworks')?name:f+'_'+name]; if(!fn){ d.last=Date.now(); return; }
+  d.side=afOther(d.side); const A=d.side, D=afOther(A); d.prev=name; d.running=true; const tok=++AF.tok;
+  fx.innerHTML='';
+  const x={b:b,st:st,fx:fx,A:A,D:D,col:anColor(b,A),colD:anColor(b,D),away:A==='away',tok:tok,
+    T:(ms,fn2)=>{ const t=setTimeout(()=>{ if(AF.tok===tok&&d.running){ try{ fn2(); }catch(e){ try{ console.error('Line Scout scene',e); }catch(_){} } } },Math.max(0,ms)); return t; },
+    S:(snd,ms)=>x.T(ms||0,()=>sfx(snd,0)),
+    crowd:(home,big,ms)=>x.T(ms||0,()=>crowdFor(home,big))};
+  let ms=2200; try{ ms=fn(x)||2200; }catch(e){ try{ console.error('Line Scout scene',name,e); }catch(_){} ms=300; }
+  d.fx=fx; d.st=st; try{ AN.log.push('fill:'+name); }catch(e){}
+  x.T(Math.max(300,ms-550),()=>afCam(x,[0,0,320,120],500));
+  setTimeout(()=>{ if(AF.tok===tok){ d.running=false; d.last=Date.now(); d.gap=afGap(b); afCamReset(st); if(fx.childNodes.length) fx.innerHTML=''; } },ms+80);
+}
+/* a real play is about to be shown: stop whatever filler is running */
+function afCancel(id){ const d=AF.d['d'+id]; if(!d||!d.running) return; AF.tok++; d.running=false; d.last=Date.now(); try{ afCamReset(d.st); if(d.fx) d.fx.innerHTML=''; }catch(e){} }
+
+/* ---- basketball (the away team shoots at the left hoop, the home team at the right) ---- */
+function afBkSet(x){ x.hx=x.away?22:298; x.sgn=x.away?-1:1; x.ft=x.away?54:266; x.m=v=>x.away?v:320-v; return x; }
+function afBkLineup(x){
+  const b=x.b, fx=x.fx, ca=anColor(b,'away'), ch=anColor(b,'home'); const na=afName(b,'away'), nh=afName(b,'home');
+  const sa=[[132,34],[132,86],[112,48],[112,72]], sh=[[188,34],[188,86],[208,48],[208,72]];
+  sa.forEach((p,i)=>{ const g=afPlayer(fx,12,p[1],ca); anMove(g,[[12,p[1]],[p[0],p[1]]],850+i*90,'ease-out'); });
+  sh.forEach((p,i)=>{ const g=afPlayer(fx,308,p[1],ch); anMove(g,[[308,p[1]],[p[0],p[1]]],850+i*90,'ease-out'); });
+  const ja=afPlayer(fx,12,60,ca,{name:na,tx:-12}), jh=afPlayer(fx,308,60,ch,{name:nh,tx:12}); afCam(x,[40,7,240,90],900); anMove(ja,[[12,60],[148,60]],1000,'ease-out'); anMove(jh,[[308,60],[172,60]],1000,'ease-out');
+  afNote(x,'TIP-OFF','mid',900); x.S('whistle',900);
+  x.T(1300,()=>{ const bl=afBk(fx,160,66); anMove(bl,[[160,66],[160,24],[160,50]],900,'ease-in-out'); afHop(ja,148,60,8,420); afHop(jh,172,60,8,420); });
+  x.T(2100,()=>{ const w=Math.random()<.5?'away':'home'; const bl=afBk(fx,160,50); anMove(bl,[[160,50],[w==='home'?186:134,58]],380,'ease-out'); x.S('pass',0); x.crowd(w==='home',false,200); });
+  x.S('chime',1250);
+  return 3000;
+}
+function afBkFt(x){
+  afBkSet(x); const b=x.b, fx=x.fx, hx=x.hx, sg=x.sgn; const nm=afName(b,x.A), sx=x.ft-sg*5;
+  [[hx-sg*10,44,x.col],[hx-sg*10,76,x.colD],[hx-sg*26,44,x.colD],[hx-sg*26,76,x.col]].forEach(p=>afPlayer(fx,p[0],p[1],p[2],{r:3.8}));
+  const sh=afPlayer(fx,sx,60,x.col,{name:nm}); const cnt=anEl('text',{x:sx,y:75,'text-anchor':'middle','font-size':6.4,'font-weight':800,fill:'#ffd23a',stroke:'rgba(8,14,28,.9)','stroke-width':2.1,'paint-order':'stroke'},fx);
+  let made=0; const res=[Math.random()<.78,Math.random()<.74]; afNote(x,'FREE THROWS','sm',0); afZoomHoop(x,2);
+  if(x.A==='away') x.S('boo',150);
+  res.forEach((ok,i)=>{ const t0=300+i*1700; if(ok) made++; let bl=null;
+    x.T(t0,()=>{ cnt.textContent='FT '+(i+1)+' of 2'; bl=afBk(fx,sx-sg*4,58); afBounce(bl,sx-sg*4,58,2,8,640); sfx('dribble',0); });
+    x.T(t0+700,()=>{ if(!bl) return; anMove(bl,anArc([sx-sg*4,58],[hx,60],20,18),760,'linear',()=>{ if(ok){ anBurst(fx,hx,60,'#fff',8); } else { anMove(bl,[[hx,60],[hx-sg*16,76]],360,'ease-out'); } }); });
+    x.T(t0+1460,()=>{ if(ok){ sfx('swish',0); if(x.A==='home') sfx('crowd',0,false); else sfx('awww',0); } else { sfx('rim',0); if(x.A==='home') sfx('awww',250); else sfx('cheer',250); } });
+    x.T(t0+1650,()=>{ if(bl&&bl.parentNode) bl.remove(); });
+  });
+  x.T(3500,()=>{ cnt.textContent=''; anBanner(x.st,made+' OF 2',made===2?'good':made?'mid':'bad'); if(x.A==='home'&&made===2) x.crowd(true,false); });
+  return 4300;
+}
+function afBkDunk(x){
+  afBkSet(x); const b=x.b, fx=x.fx, hx=x.hx, sg=x.sgn; const nm=afName(b,x.A); const y0=afR(40,80), x0=x.away?172:148;
+  const d=afPlayer(fx,x0+sg*-14,y0+4,x.colD,{r:4}); anMove(d,[[x0-sg*14,y0+4],[hx-sg*34,60],[hx-sg*24,56]],1250,'ease-in-out');
+  const p=afPlayer(fx,x0,y0,x.col,{name:nm}); const bl=afBk(p,5,-3);
+  anMove(p,[[x0,y0],[hx-sg*46,58],[hx-sg*22,50],[hx-sg*9,38],[hx-sg*14,60]],1350,'ease-in');
+  x.S('squeak',100); x.S('squeak',520); afZoomHoop(x,1.5);
+  x.T(1000,()=>{ anBanner(x.st,'SLAM DUNK!','big top'); anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('slam',0); x.crowd(x.A==='home',true,120); });
+  void bl; return 2300;
+}
+function afBkThree(x){
+  afBkSet(x); const b=x.b, fx=x.fx, hx=x.hx, sg=x.sgn; const dy=afR(-32,32); const arcx=x.away?34+Math.sqrt(2500-dy*dy):286-Math.sqrt(2500-dy*dy); const sx=arcx-sg*5, sy=60+dy;
+  const nm=afName(b,x.A), pn=afName(b,x.A,null,nm); const px=x.m(150), py=60+(dy>0?-26:26);
+  const pas=afPlayer(fx,px,py,x.col,{name:pn}); void pas; const dfn=afPlayer(fx,sx+sg*22,sy,x.colD,{r:4}); anMove(dfn,[[sx+sg*22,sy],[sx+sg*4,sy+1]],900,'ease-out');
+  const sh=afPlayer(fx,sx,sy,x.col,{name:nm}); const ok=Math.random()<.42;
+  afZoomHoop(x,1.5); const bl=afBk(fx,px,py-2); anMove(bl,[[px,py-2],[sx,sy-4]],420,'ease-in'); x.S('pass',0);
+  x.T(480,()=>{ afHop(sh,sx,sy,5,520); anMove(bl,anArc([sx,sy-4],[hx,60],38,20),900,'linear',()=>{ if(ok) anBurst(fx,hx,60,'#fff',8); else anMove(bl,[[hx,60],[hx-sg*18,80]],420,'ease-out'); }); });
+  x.T(1520,()=>{ if(ok){ sfx('swish',0); anBanner(x.st,'THREE!','big top'); x.crowd(x.A==='home',false); } else { sfx('clang',0); if(x.A==='home') sfx('awww',200); else sfx('cheer',200); } });
+  return 2700;
+}
+function afBkFast(x){
+  afBkSet(x); const b=x.b, fx=x.fx, hx=x.hx, sg=x.sgn; const x0=x.away?272:48; const n1=afName(b,x.A), n2=afName(b,x.A,null,n1);
+  [34,86].forEach((y,i)=>{ const g=afPlayer(fx,x0-sg*16,y,x.colD,{r:3.8}); anMove(g,[[x0-sg*16,y],[160-sg*14,y],[hx-sg*36,60+(i?12:-12)]],1900,'ease-in-out'); });
+  const h=afPlayer(fx,x0,60,x.col,{name:n1}); anMove(h,[[x0,60],[160,56],[hx-sg*40,58],[hx-sg*22,50]],1500,'ease-in-out');
+  const w=afPlayer(fx,x0,34,x.col,{name:n2}); anMove(w,[[x0,34],[160,36],[hx-sg*28,38],[hx-sg*12,38]],1550,'ease-in-out');
+  const bl=afBk(fx,x0,58); anMove(bl,[[x0,58],[160,54],[hx-sg*40,56]],1100,'ease-in-out');
+  afNote(x,'FAST BREAK!','mid',300); x.S('dribble',100); x.S('squeak',700); x.S('dribble',900);
+  x.T(1100,()=>{ anMove(bl,anArc([hx-sg*40,56],[hx-sg*14,40],10,12),420,'ease-out'); sfx('pass',0); });
+  x.T(1560,()=>{ anMove(bl,anArc([hx-sg*14,40],[hx,60],12,12),420,'linear',()=>anBurst(fx,hx,60,'#fff',8)); });
+  x.T(1980,()=>{ sfx('swish',0); x.crowd(x.A==='home',false); });
+  return 2800;
+}
+function afBkSwing(x){
+  afBkSet(x); const b=x.b, fx=x.fx, hx=x.hx, sg=x.sgn; const m=x.m;
+  const sp=[[m(92),60],[m(82),30],[m(82),90],[m(60),44],[m(60),76]]; const names=sp.map((_,i)=>afName(b,x.A));
+  sp.forEach((p,i)=>afPlayer(fx,p[0],p[1],x.col,{name:(i===0||i===3)?names[i]:undefined,r:4}));
+  sp.forEach((p,i)=>{ const g=afPlayer(fx,p[0]+sg*10,p[1]+(i?(p[1]>60?-3:3):0),x.colD,{r:3.8}); anMove(g,[[p[0]+sg*10,p[1]],[p[0]+sg*10+(i%2?3:-3),p[1]+(i%2?-3:3)],[p[0]+sg*10,p[1]]],2600,'ease-in-out'); });
+  const seq=[0,1,3,2,4,3]; const bl=afBk(fx,sp[0][0],sp[0][1]-3); let t=350;
+  for(let i=1;i<seq.length;i++){ const a=sp[seq[i-1]], c=sp[seq[i]]; x.T(t,()=>{ anMove(bl,[[a[0],a[1]-3],[c[0],c[1]-3]],360,'ease-out'); sfx('pass',0); }); t+=430; }
+  afNote(x,'BALL MOVEMENT','sm',0); afZoomHoop(x,1.4);
+  const last=sp[seq[seq.length-1]], ok=Math.random()<.62;
+  x.T(t+120,()=>{ anMove(bl,anArc([last[0],last[1]-3],[hx,60],26,18),760,'linear',()=>{ if(ok) anBurst(fx,hx,60,'#fff',8); else anMove(bl,[[hx,60],[hx-sg*18,70]],360,'ease-out'); }); });
+  x.T(t+880,()=>{ if(ok){ sfx('swish',0); x.crowd(x.A==='home',false); } else { sfx('rim',0); if(x.A==='home') sfx('awww',200); } });
+  return t+1700;
+}
+function afBkRebound(x){
+  afBkSet(x); const b=x.b, fx=x.fx, hx=x.hx, sg=x.sgn; const m=x.m;
+  const shooter=afPlayer(fx,m(86),60,x.col,{name:afName(b,x.A)}); void shooter; const bl=afBk(fx,m(86),56);
+  const spots=[[hx-sg*20,46,x.col],[hx-sg*28,74,x.colD],[hx-sg*14,70,x.colD],[hx-sg*30,52,x.col]];
+  const dots=spots.map(p=>afPlayer(fx,p[0],p[1],p[2],{r:4}));
+  afZoomHoop(x,1.8); anMove(bl,anArc([m(86),56],[hx,60],26,18),760,'linear'); x.S('clang',780);
+  const w=Math.random()<.5?'A':'D', wi=w==='A'?[0,3][Math.floor(Math.random()*2)]:[1,2][Math.floor(Math.random()*2)];
+  x.T(800,()=>{ dots.forEach((g,i)=>afHop(g,spots[i][0],spots[i][1],i===wi?11:8,520)); anMove(bl,[[hx,60],[hx-sg*10,40],[spots[wi][0],spots[wi][1]-9]],520,'ease-out'); });
+  x.T(1350,()=>{ sfx('rebound',0); anMove(bl,[[spots[wi][0],spots[wi][1]-9],[x.m(120),64]],520,'ease-out'); anBanner(x.st,'REBOUND','sm top'); if((w==='A')===(x.A==='home')) sfx('crowd',0,false); else sfx('awww',0); });
+  return 2300;
+}
+function afBkAlley(x){
+  afBkSet(x); const b=x.b, fx=x.fx, hx=x.hx, sg=x.sgn; const m=x.m; const n1=afName(b,x.A), n2=afName(b,x.A,null,n1);
+  const pas=afPlayer(fx,m(104),76,x.col,{name:n1}); void pas; const cut=afPlayer(fx,m(98),26,x.col,{name:n2});
+  const d=afPlayer(fx,m(70),48,x.colD,{r:4}); anMove(d,[[m(70),48],[hx-sg*16,52]],1200,'ease-in-out');
+  const bl=afBk(fx,m(104),70); x.S('whoosh',100);
+  anMove(bl,[[m(104),70],[m(88),22],[hx-sg*9,36]],900,'ease-in-out'); anMove(cut,[[m(98),26],[m(70),30],[hx-sg*22,40],[hx-sg*9,34],[hx-sg*15,62]],1350,'ease-in');
+  afZoomHoop(x,1.6); afNote(x,'ALLEY-OOP!','big',900); x.T(1000,()=>{ anBurst(fx,hx,56,'#ffd23a',14); afPulse(fx,hx,56,'#ffd23a',7); sfx('slam',0); x.crowd(x.A==='home',true,100); });
+  return 2400;
+}
+function afBkHuddle(x){
+  afBkSet(x); const fx=x.fx; const cx=160, cy=96; const coach=afPlayer(fx,cx,cy,'#e7ebf2',{r:4.6}); void coach;
+  for(let i=0;i<5;i++){ const a=i/5*Math.PI*2-Math.PI/2; const g=afPlayer(fx,cx+Math.cos(a)*15,cy+Math.sin(a)*8,x.col,{r:3.8}); afHop(g,cx+Math.cos(a)*15,cy+Math.sin(a)*8,3,500); }
+  afCam(x,[80,42,160,60],700); afNote(x,'TIMEOUT','mid',0); x.S('whistle',0); x.S('huddle',500); x.S('chant',900); x.S('clap',2300);
+  return 3000;
+}
+
+/* ---- football (the away team attacks the right-hand end zone) ---- */
+function afFbSet(x){ x.sgn=x.away?1:-1; x.los=afR(110,210); x.ox=d=>x.los-x.sgn*d; x.dx=d=>x.los+x.sgn*d; return x; }
+function afFbForm(x,from,lab){
+  const fx=x.fx, b=x.b, o={}, ox=x.ox, dx=x.dx; lab=lab||[];
+  const NM={qb:afName(b,x.A,['QB']),wr1:afName(b,x.A,['WR']),rb:afName(b,x.A,['RB'])};
+  const mk=(key,xx,yy,col,r)=>{ const sx=from?(col===x.col?ox(from):dx(from)):xx; const g=afPlayer(fx,sx,yy,col,{r:r||3.1,name:lab.indexOf(key)>=0?NM[key]:undefined,nameDy:key==='wr1'?12:undefined}); if(from) anMove(g,[[sx,yy],[xx,yy]],800+Math.random()*250,'ease-out'); o[key]=g; o[key+'_p']=[xx,yy]; return g; };
+  [47,53.5,60,66.5,73].forEach((y,i)=>mk('ol'+i,ox(3),y,x.col));
+  mk('te',ox(3),80,x.col); mk('wr1',ox(3),30,x.col); mk('wr2',ox(3),92,x.col); mk('slot',ox(9),86,x.col);
+  mk('qb',ox(12),60,x.col); mk('rb',ox(20),64,x.col);
+  [49,56.5,63.5,71].forEach((y,i)=>mk('dl'+i,dx(3),y,x.colD)); [45,60,75].forEach((y,i)=>mk('lb'+i,dx(11),y,x.colD));
+  mk('cb1',dx(8),30,x.colD); mk('cb2',dx(8),92,x.colD); mk('s1',dx(24),42,x.colD); mk('s2',dx(24),78,x.colD);
+  return o;
+}
+function afFbCam(x,k){ k=k||1.5; const w=320/k, h=120/k; const cx=Math.max(w/2,Math.min(320-w/2,x.los)); afCam(x,[cx-w/2,Math.max(0,60-h/2),w,h],800); }
+function afFbLos(x){ const l=anEl('rect',{x:x.los-.7,y:12,width:1.4,height:96,fill:'#3d8bff','fill-opacity':.8},x.fx); void l; const f=anEl('rect',{x:x.los+x.sgn*24-.7,y:12,width:1.4,height:96,fill:'#ffd23a','fill-opacity':.8},x.fx); void f; }
+function afDown(){ return ['1ST & 10','2ND & 7','3RD & 4','2ND & 10','1ST & 10','3RD & 8','4TH & 1'][Math.floor(Math.random()*7)]; }
+function afFbLineup(x){
+  afFbSet(x); afFbLos(x); afFbCam(x,1.5); const o=afFbForm(x,38,['qb']); const fx=x.fx;
+  afNote(x,afDown(),'sm',700); x.S('huddle',100);
+  x.T(1300,()=>{ const p=o.slot_p; anMove(o.slot,[[p[0],p[1]],[p[0],p[1]-18],[p[0]+x.sgn*-2,p[1]-18]],700,'ease-in-out'); });
+  x.T(1700,()=>{ anBanner(x.st,'HUT HUT!','mid'); x.S('hut',0); });
+  x.T(2350,()=>{ const bl=afFb(fx,x.los,60); anMove(bl,[[x.los,60],[x.ox(12),60]],240,'ease-out'); sfx('snap',0); ['dl0','dl1','dl2','dl3'].forEach(k=>{ anMove(o[k],[[o[k+'_p'][0],o[k+'_p'][1]],[o[k+'_p'][0]-x.sgn*3,o[k+'_p'][1]]],300,'ease-out'); }); });
+  return 3100;
+}
+function afFbPass(x){
+  afFbSet(x); afFbLos(x); afFbCam(x,1.5); const o=afFbForm(x,0,['qb','wr1']), fx=x.fx, sg=x.sgn, los=x.los;
+  const ok=Math.random()<.78; const gain=ok?Math.round(afR(5,28)):0; const tx=los+sg*(30+gain*1.1); const ty=afR(38,54);
+  afNote(x,afDown(),'sm',0); const bl=afFb(fx,los,60);
+  x.T(350,()=>{ sfx('hut',0); sfx('snap',250); anMove(bl,[[los,60],[x.ox(12),60]],260,'ease-out'); });
+  x.T(650,()=>{ anMove(o.qb,[[x.ox(12),60],[x.ox(26),60]],700,'ease-out'); ['dl0','dl1','dl2','dl3'].forEach((k,i)=>anMove(o[k],[[o[k+'_p'][0],o[k+'_p'][1]],[o[k+'_p'][0]-sg*7,o[k+'_p'][1]+(i<2?-2:2)]],900,'ease-out')); ['ol0','ol1','ol2','ol3','ol4'].forEach(k=>anMove(o[k],[[o[k+'_p'][0],o[k+'_p'][1]],[o[k+'_p'][0]-sg*4,o[k+'_p'][1]]],900,'ease-out')); sfx('pads',200); anMove(bl,[[x.ox(12),60],[x.ox(26),60]],700,'ease-out'); });
+  anMove(o.wr1,[[o.wr1_p[0],30],[los+sg*26,31],[los+sg*34,36],[tx,ty]],1500,'ease-in-out'); anMove(o.cb1,[[o.cb1_p[0],30],[los+sg*30,32],[los+sg*40,38],[tx+sg*6,ty+3]],1600,'ease-in-out');
+  x.T(1450,()=>{ sfx('throw',0); anMove(bl,anArc([x.ox(26),60],[tx,ty-3],26,18),620,'linear'); });
+  if(ok){ x.T(2070,()=>{ sfx('catch',0); anBurst(fx,tx,ty-3,'#fff',7); anBanner(x.st,(gain>=15?'BIG GAIN +':'+')+gain+' YDS',gain>=15?'good':'sm'); anMove(o.wr1,[[tx,ty],[tx+sg*8,ty+10]],520,'ease-out'); anMove(bl,[[tx,ty-3],[tx+sg*8,ty+7]],520,'ease-out'); anMove(o.cb1,[[tx+sg*6,ty+3],[tx+sg*10,ty+11]],520,'ease-out'); anMove(o.s1,[[o.s1_p[0],42],[tx+sg*14,ty+14]],700,'ease-in'); });
+    x.T(2650,()=>{ sfx('tackle',0); anBurst(fx,tx+sg*9,ty+10,'#ffd23a',10); sfx('whistle',250); if(gain>=15) x.crowd(x.A==='home',false); else sfx('crowd',0,false); });
+    return 3500; }
+  x.T(2070,()=>{ anMove(bl,[[tx,ty-3],[tx+sg*6,ty+20]],340,'ease-in'); anBanner(x.st,'INCOMPLETE','bad'); sfx('groan',200); if(x.A==='home') sfx('awww',300); else sfx('cheer',300); });
+  return 3000;
+}
+function afFbRun(x){
+  afFbSet(x); afFbLos(x); afFbCam(x,1.5); const o=afFbForm(x,0,['rb']), fx=x.fx, sg=x.sgn, los=x.los;
+  const len=Math.round(afR(6,36)), ey=60+afR(-14,14), ex=los+sg*(4+len*1.4); const gain=Math.round((ex-los)*sg/2.4); const bl=afFb(fx,los,60);
+  afNote(x,afDown(),'sm',0);
+  x.T(350,()=>{ sfx('snap',0); anMove(bl,[[los,60],[x.ox(12),60]],240,'ease-out'); });
+  x.T(650,()=>{ anMove(bl,[[x.ox(12),60],[x.ox(20),62]],300,'ease-out'); sfx('pads',150); });
+  x.T(950,()=>{ const path=[[x.ox(20),62],[x.ox(8),60],[los+sg*6,ey],[ex,ey+(ey>60?4:-4)]]; anMove(o.rb,path,1500,'ease-in'); anMove(bl,path,1500,'ease-in'); sfx('pads',400);
+    ['dl0','dl1','dl2','dl3'].forEach(k=>anMove(o[k],[[o[k+'_p'][0],o[k+'_p'][1]],[o[k+'_p'][0]-sg*3,o[k+'_p'][1]]],400,'ease-out'));
+    ['lb0','lb1','lb2'].forEach((k,i)=>anMove(o[k],[[o[k+'_p'][0],o[k+'_p'][1]],[los+sg*(10+i*4),ey+(i-1)*8],[ex+sg*3,ey+(i-1)*3]],1400,'ease-in')); anMove(o.s1,[[o.s1_p[0],42],[ex+sg*8,ey-8]],1500,'ease-in'); anMove(o.s2,[[o.s2_p[0],78],[ex+sg*8,ey+8]],1500,'ease-in'); });
+  x.T(2450,()=>{ sfx('tackle',0); anBurst(fx,ex+sg*2,ey,'#ffd23a',12); sfx('whistle',250); anBanner(x.st,(gain>=18?'BREAKAWAY +':'+')+gain+' YDS',gain>=18?'good':'sm'); if(gain>=18) x.crowd(x.A==='home',false); else sfx('crowd',0,false); });
+  return 3300;
+}
+function afFbKickoff(x){
+  afFbSet(x); const fx=x.fx, sg=x.sgn, b=x.b; const kx=x.away?72:248, rx=kx+sg*112; const nm=afTeamShort(b,x.A)+' K';
+  afNote(x,'KICKOFF','sm',0); x.S('whistle',0);
+  const line=[]; for(let i=0;i<9;i++){ const y=18+i*10.5; const g=afPlayer(fx,kx-sg*8,y,x.col,{r:3.3}); line.push([g,y]); }
+  const kick=afPlayer(fx,kx-sg*22,60,x.col,{r:3.6,name:nm}); anMove(kick,[[kx-sg*22,60],[kx-sg*6,60]],600,'ease-in');
+  const wedge=[[rx+sg*6,36],[rx+sg*6,60],[rx+sg*6,84],[rx-sg*4,48],[rx-sg*4,72]].map(p=>{ const g=afPlayer(fx,p[0],p[1],x.colD,{r:3.4}); return [g,p]; });
+  const ret=afPlayer(fx,rx+sg*30,60,x.colD,{r:3.8}); const bl=afFb(fx,kx,60);
+  x.T(650,()=>{ sfx('kick',0); anMove(bl,anArc([kx,60],[rx+sg*28,60],46,22),1150,'linear'); line.forEach((p,i)=>anMove(p[0],[[kx-sg*8,p[1]],[kx+sg*86,p[1]+(60-p[1])*.35]],1700,'ease-in')); });
+  x.T(1800,()=>{ sfx('catch',0); anMove(ret,[[rx+sg*30,60],[rx-sg*22,56]],1000,'ease-in-out'); anMove(bl,[[rx+sg*28,60],[rx-sg*22,56]],1000,'ease-in-out'); wedge.forEach(w=>anMove(w[0],[[w[1][0],w[1][1]],[w[1][0]-sg*18,w[1][1]]],900,'ease-out')); });
+  x.T(2850,()=>{ sfx('tackle',0); anBurst(fx,rx-sg*22,56,'#ffd23a',12); sfx('whistle',250); sfx('crowd',0,false); });
+  return 3500;
+}
+function afFbFg(x){
+  afFbSet(x); const fx=x.fx, sg=x.sgn, b=x.b; const los=x.away?236:84; const x1=x.away?300:20; const nm=afTeamShort(b,x.A)+' K';
+  anEl('path',{d:'M'+x1+' 40 V58 M'+(x1-7)+' 42 V58 M'+(x1+7)+' 42 V58 M'+(x1-7)+' 58 H'+(x1+7),stroke:'#ffd23a','stroke-width':1.6,fill:'none'},fx);
+  for(let i=0;i<7;i++){ const y=44+i*5; afPlayer(fx,los-sg*3,y,x.col,{r:3}); }
+  for(let i=0;i<7;i++){ const y=42+i*6; const g=afPlayer(fx,los+sg*4,y,x.colD,{r:3}); anMove(g,[[los+sg*4,y],[los+sg*2,y]],900,'ease-out'); }
+  const hold=afPlayer(fx,los-sg*14,60,x.col,{r:3.3}); void hold; const kick=afPlayer(fx,los-sg*22,66,x.col,{r:3.5,name:nm}); const bl=afFb(fx,los-sg*3,60);
+  const ok=Math.random()<.78; afNote(x,'FIELD GOAL TRY','sm',0); x.S('whistle',0); afCam(x,[x.away?120:0,22,200,75],800);
+  x.T(500,()=>{ sfx('snap',0); anMove(bl,[[los-sg*3,60],[los-sg*14,60]],220,'ease-out'); anMove(kick,[[los-sg*22,66],[los-sg*10,62]],420,'ease-in'); });
+  x.T(900,()=>{ sfx('kick',0); anMove(bl,anArc([los-sg*14,60],[x1,ok?48:(Math.random()<.5?30:84)],34,20),1000,'linear'); });
+  x.T(1950,()=>{ if(ok){ anBanner(x.st,'FIELD GOAL!','mid'); anBurst(fx,x1,48,'#ffd23a',12); x.crowd(x.A==='home',false); } else { anBanner(x.st,'NO GOOD','bad'); sfx('groan',0); if(x.A==='home') sfx('awww',250); else sfx('cheer',250); } });
+  return 3100;
+}
+function afFbHuddle(x){
+  afFbSet(x); const fx=x.fx, sg=x.sgn; const cx=x.ox(46), cy=60; const ps=[];
+  const qb=afPlayer(fx,cx,cy,x.col,{r:3.5,name:afName(x.b,x.A,['QB'])}); void qb;
+  for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; ps.push(afPlayer(fx,cx+Math.cos(a)*13,cy+Math.sin(a)*13*.8,x.col,{r:3.3})); }
+  afNote(x,'HUDDLE','sm',0); x.S('huddle',100); x.S('clap',1500);
+  x.T(1700,()=>{ ps.forEach((g,i)=>{ const a=i/10*Math.PI*2; anMove(g,[[cx+Math.cos(a)*13,cy+Math.sin(a)*13*.8],[x.ox(3+(i%4)*2),30+i*6]],900,'ease-out'); }); for(let i=0;i<8;i++){ const g=afPlayer(fx,x.dx(60),20+i*11,x.colD,{r:3.3}); anMove(g,[[x.dx(60),20+i*11],[x.dx(4+(i%3)*5),20+i*11]],900,'ease-out'); } sfx('crowd',0,false); });
+  return 2900;
+}
+function afFbScramble(x){
+  afFbSet(x); afFbLos(x); afFbCam(x,1.5); const o=afFbForm(x,0,['qb']), fx=x.fx, sg=x.sgn, los=x.los; const bl=afFb(fx,los,60); const ex=los+sg*afR(14,40), ey=afR(88,100);
+  afNote(x,afDown(),'sm',0);
+  x.T(350,()=>{ sfx('snap',0); anMove(bl,[[los,60],[x.ox(12),60]],240,'ease-out'); });
+  x.T(650,()=>{ anMove(o.qb,[[x.ox(12),60],[x.ox(24),60],[x.ox(18),72],[los+sg*4,88],[ex,ey]],1900,'ease-in-out'); anMove(bl,[[x.ox(12),60],[x.ox(24),60],[x.ox(18),72],[los+sg*4,88],[ex,ey]],1900,'ease-in-out');
+    ['dl0','dl1','dl2','dl3'].forEach((k,i)=>anMove(o[k],[[o[k+'_p'][0],o[k+'_p'][1]],[x.ox(14),60+(i-1.5)*5]],700,'ease-in')); sfx('pads',300); });
+  x.T(900,()=>{ anBanner(x.st,'SCRAMBLE!','mid'); sfx('big',0); ['lb0','lb1','lb2','cb2','s2'].forEach((k,i)=>anMove(o[k],[[o[k+'_p'][0],o[k+'_p'][1]],[ex+sg*(6+i*2),ey-6+i*2]],1700,'ease-in')); });
+  x.T(2600,()=>{ sfx('tackle',0); anBurst(fx,ex,ey,'#ffd23a',10); sfx('whistle',250); sfx('crowd',0,false); });
+  return 3400;
+}
+
+/* ---- baseball ---- */
+const AF_FLD={p:[160,66],c:[160,112],b1:[204,68],b2:[186,46],ss:[134,46],b3:[116,68],lf:[86,30],cf:[160,16],rf:[234,30]};
+function afBbField(x,from){
+  const fx=x.fx, b=x.b, o={}; const nm={}; ['p','c','b1','b2','ss','b3','lf','cf','rf'].forEach(k=>{ const p=AF_FLD[k]; nm[k]=(k==='p'||k==='ss'||k==='b3'||k==='b1')?afName(b,x.D,k==='p'?['SP']:['H']):''; const sx=from?20:p[0], sy=from?112:p[1]; const g=afPlayer(fx,sx,sy,x.colD,{r:3.6,name:(k==='p')?nm[k]:undefined}); if(from) anMove(g,[[sx,sy],[p[0],p[1]]],900+Math.random()*500,'ease-out'); o[k]=g; });
+  return {o:o,nm:nm};
+}
+function afBbTake(x){
+  const fx=x.fx, b=x.b; const F=afBbField(x,true); const bn=afName(b,x.A,['H']); const bx=x.A==='home'?172:148;
+  const bat=afPlayer(fx,106,110,x.col,{name:bn}); anMove(bat,[[106,110],[bx,100]],1500,'ease-in-out');
+  afNote(x,'PLAY BALL!','big',300); x.S('whistle',200); x.S('organ',500);
+  x.T(1700,()=>{ const bl=afBase(fx,160,66); anMove(bl,[[160,66],[160,108]],520,'ease-in'); sfx('mitt',500); });
+  x.T(2300,()=>{ anBanner(x.st,'BATTER UP','sm'); x.crowd(true,false); });
+  void F; return 3000;
+}
+function afBbPitch(x){
+  afCam(x,[60,36,200,75],800); const fx=x.fx, b=x.b; const F=afBbField(x,false); const left=Math.random()<.5, bx=left?148:172; const bn=afName(b,x.A,['H']);
+  const bat=afPlayer(fx,bx,100,x.col,{name:bn}); void bat; const bg=afG(fx,bx+(left?-1:1)*2,96); const bt=anEl('rect',{x:0,y:-1.1,width:11,height:2.2,rx:1,fill:'#e8c27a',stroke:'#7a5a1f','stroke-width':.4},bg);
+  void bt; const roll=Math.random(); const res=roll<.30?'k':roll<.50?'ground':roll<.66?'fly':roll<.80?'single':'walk';
+  const seqn=res==='walk'?['b','s','b','b','b']:res==='k'?['b','s','f','sw']:['b','s','x'];
+  let t=500, balls=0, strikes=0; const tag=anEl('text',{x:160,y:44,'text-anchor':'middle','font-size':6.6,'font-weight':800,fill:'#fff',stroke:'rgba(8,14,28,.92)','stroke-width':2.2,'paint-order':'stroke'},fx);
+  afNote(x,'AT BAT','sm',0);
+  seqn.forEach((p,i)=>{ const last=i===seqn.length-1;
+    x.T(t,()=>{ const bl=afBase(fx,160,64); const tgt=p==='b'?[left?136:184,100]:[160,102]; anMove(bl,[[160,64],tgt],400,'ease-in'); sfx('pitch',0);
+      if(p==='sw'||p==='f'||p==='x'){ if(!anReduced()) bg.animate([{transform:'translate('+(bx+(left?-1:1)*2)+'px,96px) rotate('+(left?-80:260)+'deg)'},{transform:'translate('+(bx+(left?-1:1)*2)+'px,96px) rotate('+(left?100:80)+'deg)'}],{duration:240,delay:150,fill:'forwards',easing:'ease-in'}); }
+    });
+    x.T(t+420,()=>{
+      if(p==='b'){ balls++; sfx('mitt',0); tag.textContent='BALL '+balls; }
+      else if(p==='s'){ strikes++; sfx('mitt',0); tag.textContent='STRIKE '+strikes; }
+      else if(p==='sw'){ strikes=3; sfx('mitt',0); tag.textContent=''; anBanner(x.st,'STRIKE THREE!','bad'); if(x.A==='home') sfx('awww',200); else sfx('cheer',200); }
+      else if(p==='f'){ strikes=Math.min(2,strikes+1); sfx('foulball',0); tag.textContent='FOUL'; const bl2=afBase(fx,160,102); anMove(bl2,anArc([160,102],[x.A==='home'?292:28,70],40,16),700,'linear'); }
+      else if(last){ afBbResult(x,res,tag,F,bn); }
+      if(p==='b'&&balls===4){ tag.textContent=''; anBanner(x.st,'BALL FOUR — WALK','good'); const r=afPlayer(fx,bx,100,x.col,{r:3.8}); anMove(r,[[bx,100],[214,66]],900,'ease-in-out'); sfx('chime',0); sfx('crowd',200,false); }
+    });
+    t+=900; });
+  return t+1500;
+}
+function afBbResult(x,res,tag,F,bn){
+  const fx=x.fx; tag.textContent=''; const home=[160,104];
+  if(res==='single'){ sfx('batcrack',0); const bl=afBase(fx,160,100); anMove(bl,anArc([160,100],[196,40],26,16),800,'ease-out'); const r=afPlayer(fx,160,102,x.col,{r:3.8}); anMove(r,[[160,102],[214,66]],900,'linear'); anBanner(x.st,'BASE HIT!','good'); x.crowd(x.A==='home',false,300); }
+  else if(res==='ground'){ sfx('batcrack',0); const bl=afBase(fx,160,100); anMove(bl,[[160,100],[134,50]],520,'ease-out'); const r=afPlayer(fx,160,102,x.col,{r:3.8}); anMove(r,[[160,102],[210,72]],1000,'linear'); x.T(700,()=>{ anMove(bl,[[134,50],[204,66]],420,'ease-in'); sfx('mitt',380); anBanner(x.st,'GROUNDOUT','bad'); if(x.A==='home') sfx('awww',200); else sfx('cheer',200); }); }
+  else { sfx('batcrack',0); const tx=afR(110,210); const bl=afBase(fx,160,100); anMove(bl,anArc([160,100],[tx,24],70,20),1300,'linear'); const f=F.o[tx<135?'lf':tx>185?'rf':'cf']; const p=tx<135?AF_FLD.lf:tx>185?AF_FLD.rf:AF_FLD.cf; anMove(f,[[p[0],p[1]],[tx,26]],1200,'ease-out'); x.T(1350,()=>{ sfx('mitt',0); anBanner(x.st,'FLY OUT','bad'); if(x.A==='home') sfx('awww',200); else sfx('cheer',200); }); }
+  void bn;
+}
+function afBbPickoff(x){
+  const fx=x.fx, b=x.b; const F=afBbField(x,false); const run=afPlayer(fx,214,66,x.col,{r:3.8,name:afName(b,x.A,['H'])}); afPlayer(fx,148,100,x.col,{r:3.6});
+  afNote(x,'PICKOFF THROW','sm',0); afCam(x,[110,24,180,67.5],700);
+  x.T(500,()=>{ anMove(run,[[214,66],[226,60]],400,'ease-out'); });
+  x.T(900,()=>{ const bl=afBase(fx,160,66); anMove(bl,[[160,66],[204,68]],360,'ease-in'); sfx('whoosh',0); sfx('mitt',340); anMove(run,[[226,60],[214,66]],360,'ease-in'); });
+  x.T(1400,()=>{ anBanner(x.st,'SAFE!','good'); sfx('slide',0); anBurst(fx,214,66,'#d9b383',9); });
+  x.T(2000,()=>{ const bl=afBase(fx,204,68); anMove(bl,[[204,68],[160,66]],360,'ease-out'); sfx('mitt',340); });
+  void F; return 2800;
+}
+function afBbMound(x){
+  const fx=x.fx, b=x.b; const nm=afName(b,x.D,['SP']); const cx=160, cy=66; afPlayer(fx,cx,cy,x.colD,{r:3.8,name:nm});
+  [AF_FLD.c,AF_FLD.b1,AF_FLD.b2,AF_FLD.ss,AF_FLD.b3].forEach((p,i)=>{ const g=afPlayer(fx,p[0],p[1],x.colD,{r:3.5}); const a=i/5*Math.PI*2; anMove(g,[[p[0],p[1]],[cx+Math.cos(a)*14,cy+Math.sin(a)*9]],900+i*80,'ease-out'); });
+  afNote(x,'MOUND VISIT','sm',0); afCam(x,[85,30,150,56],700); x.S('organ',200); x.S('clap',1600);
+  return 2800;
+}
+function afBbDp(x){
+  const fx=x.fx, b=x.b; const F=afBbField(x,false); void F; const r1=afPlayer(fx,214,66,x.col,{r:3.8}); const bat=afPlayer(fx,150,100,x.col,{r:3.8});
+  const sn=afName(b,x.D,['H']), tn=afName(b,x.D,['H'],sn); afNote(x,'DOUBLE PLAY!','mid',1200);
+  const bl=afBase(fx,160,100); x.T(500,()=>{ sfx('batcrack',0); anMove(bl,[[160,100],[134,48]],480,'ease-out'); anMove(r1,[[214,66],[162,34]],900,'linear'); anMove(bat,[[150,100],[208,70]],1500,'linear'); });
+  x.T(1000,()=>{ anMove(bl,[[134,48],[170,36]],300,'ease-in'); sfx('mitt',280); const g=afG(fx,134,38); afTag(g,sn,-4); });
+  x.T(1500,()=>{ anMove(bl,[[170,36],[204,66]],360,'ease-in'); sfx('mitt',340); sfx('slide',0); anBurst(fx,162,34,'#d9b383',9); const g=afG(fx,184,38); afTag(g,tn,-4); });
+  x.T(1900,()=>{ sfx('organ',0); x.crowd(x.D==='home',false); });
+  return 3000;
+}
+
+/* ---- crowd moments, any sport ---- */
+function afWave(x){
+  const fx=x.fx; const n=26; const cols=[anColor(x.b,'away'),anColor(x.b,'home')];
+  for(let r=0;r<2;r++) for(let i=0;i<n;i++){ const px=10+i*(300/(n-1)), py=r?113:7; const g=afG(fx,px,py); anEl('circle',{cx:0,cy:0,r:3,fill:cols[i%2],stroke:'#fff','stroke-width':.6},g); anEl('circle',{cx:0,cy:-3.8,r:2,fill:'#f1c9a0'},g);
+    if(!anReduced()) g.animate([{transform:'translate('+px+'px,'+py+'px)'},{transform:'translate('+px+'px,'+(py+(r?-9:9))+'px)',offset:.4},{transform:'translate('+px+'px,'+py+'px)'}],{duration:620,delay:300+i*70,easing:'ease-in-out',fill:'forwards'}); }
+  afNote(x,'THE WAVE','sm',300); x.S('wave',250); x.T(300,()=>ambSwell(1.8,3));
+  return 3200;
+}
+function afFireworks(x){
+  const fx=x.fx; const cols=[anColor(x.b,'away'),anColor(x.b,'home'),'#ffd23a','#fff'];
+  [[70,34,0],[160,26,520],[250,36,1000],[115,50,1450]].forEach((p,i)=>x.T(p[2],()=>{ anBurst(fx,p[0],p[1],cols[i%4],20); anBurst(fx,p[0],p[1],cols[(i+1)%4],12); sfx('firework',0); }));
+  afNote(x,'FIREWORKS','sm',100); x.T(200,()=>ambSwell(1.6,3));
+  return 2800;
+}
+
+const AF_SCENES={
+  bk_lineup:afBkLineup,bk_ft:afBkFt,bk_dunk:afBkDunk,bk_three:afBkThree,bk_fast:afBkFast,bk_swing:afBkSwing,bk_rebound:afBkRebound,bk_alley:afBkAlley,bk_huddle:afBkHuddle,
+  fb_lineup:afFbLineup,fb_pass:afFbPass,fb_run:afFbRun,fb_kickoff:afFbKickoff,fb_fg:afFbFg,fb_huddle:afFbHuddle,fb_scramble:afFbScramble,
+  bb_take:afBbTake,bb_pitch:afBbPitch,bb_pickoff:afBbPickoff,bb_mound:afBbMound,bb_dp:afBbDp,
+  wave:afWave,fireworks:afFireworks
+};
+try{ window.__AF=AF; window.__AF_SCENES=AF_SCENES; }catch(e){}
 
 /* ================= SHARE: result cards (rivalry, tie, badge, winning slip) + the finish flash =================
    Cards are drawn on a canvas (1080x1350, the 4:5 shape Instagram, Facebook, X and Reddit all show well) and shared three ways:
@@ -4720,7 +5281,9 @@ function shDrawBattle(c,W,H,sp){
   [[A,250],[B,830]].forEach(([P,cx])=>{ const cy=250, r=P.win?96:84;
     if(P.win) shCrown(c,cx,cy-r-62,92);
     c.save(); c.beginPath(); c.arc(cx,cy,r,0,7); c.fillStyle='rgba(5,10,20,.55)'; c.fill(); c.lineWidth=P.win?10:5; c.strokeStyle=P.win?SH_GOLD:'rgba(255,255,255,.7)'; c.stroke(); c.restore();
-    shTxt(c,(P.name||'?').slice(0,1).toUpperCase(),cx,cy+4,{size:r*1.05,weight:800,align:'center',base:'middle',color:'#fff'});
+    if(P.img){ c.save(); c.beginPath(); c.arc(cx,cy,r-3,0,7); c.clip(); const iw=P.img.naturalWidth||P.img.width||1, ih=P.img.naturalHeight||P.img.height||1, m=Math.min(iw,ih); c.imageSmoothingQuality='high'; c.drawImage(P.img,(iw-m)/2,(ih-m)/2,m,m,cx-r+3,cy-r+3,(r-3)*2,(r-3)*2); if(!P.win&&!tie){ c.fillStyle='rgba(5,10,20,.28)'; c.fillRect(cx-r,cy-r,r*2,r*2); } c.restore();
+      c.save(); c.beginPath(); c.arc(cx,cy,r,0,7); c.lineWidth=P.win?10:5; c.strokeStyle=P.win?SH_GOLD:'rgba(255,255,255,.7)'; c.stroke(); c.restore(); }
+    else shTxt(c,(P.name||'?').slice(0,1).toUpperCase(),cx,cy+4,{size:r*1.05,weight:800,align:'center',base:'middle',color:'#fff'});
     shTxt(c,P.name,cx,cy+r+62,{size:P.win?58:50,weight:800,align:'center',maxW:440,shadow:8,min:28});
     shTxt(c,P.side?'backed '+P.side:'',cx,cy+r+100,{size:27,weight:600,align:'center',color:'rgba(255,255,255,.85)',maxW:420});
     const tag=tie?'TIE':P.win?'WINNER':'LOST'; c.font='800 28px '+SH_FONT; const tw=c.measureText(tag).width+56; shRR(c,cx-tw/2,cy+r+120,tw,48,24); c.fillStyle=tie?'#e8edf5':P.win?SH_GOLD:'#2b3547'; c.fill();
@@ -4822,10 +5385,19 @@ function shModalHtml(sp,ready){
     '<div class="small muted" id="shnote">'+esc(SH.note||'')+'</div>'+
     '<div class="small muted">X, Facebook and Reddit open a pre-filled post. Instagram, Snapchat and Twitch have no web posting link, so those save the card and copy your text, then open the site: add the picture there. On a phone, <b>Share…</b> sends the card straight into any installed app.</div></div>';
 }
+/* the winner's (and loser's) real profile pictures for the battle card: fetched if the page has not seen them yet, then decoded for the canvas */
+async function shLoadAvatars(sp){
+  if(!sp||sp.kind!=='battle') return; SOC.av=SOC.av||{};
+  const key=n=>String(n||'').toLowerCase(); const need=[sp.a.name,sp.b.name].filter(n=>n&&SOC.av[key(n)]===undefined);
+  if(need.length&&SOC.sb){ try{ const r=await SOC.sb.rpc('get_avatars',{p_names:need}); need.forEach(n=>{ SOC.av[key(n)]=''; }); if(!r.error) (r.data||[]).forEach(x=>{ SOC.av[key(x.username)]=x.avatar||''; }); }catch(e){} }
+  await Promise.all([sp.a,sp.b].map(P=>new Promise(res=>{ const u=SOC.av[key(P.name)]; if(!u){ res(); return; } const im=new Image(); im.onload=()=>{ P.img=im; res(); }; im.onerror=()=>res(); im.src=u; })));
+}
 async function shOpen(sp){
   if(!sp){ S.flash='Nothing to share yet.'; renderBank(); return; }
   shClose(); SH.spec=sp; SH.note=''; const m=document.createElement('div'); m.id='shmodal'; m.className='shm'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','Share'); m.innerHTML=shModalHtml(sp,false); document.body.appendChild(m);
   try{ if(document.fonts&&document.fonts.load) await Promise.race([document.fonts.load('800 40px Inter'),new Promise(r=>setTimeout(r,900))]); }catch(e){}
+  if(SH.spec!==sp) return;
+  try{ await Promise.race([shLoadAvatars(sp),new Promise(r=>setTimeout(r,3000))]); }catch(e){}
   if(SH.spec!==sp) return;
   try{
     const cv=shDraw(sp); const blob=await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('no image')),'image/png'));
@@ -4868,7 +5440,7 @@ function vsfShow(){
   const P=[{name:b.creator_name||'?',uid:b.creator,side:b[b.creator_side],res:r.creator,c:'c1'},{name:b.opponent_name||'?',uid:b.opponent,side:b[b.opponent_side],res:r.opponent,c:'c2'}];
   const W1=tie?null:(cw?P[0]:P[1]);
   const title=tie?'DEAD HEAT':(me&&W1.uid===me?'YOU WIN':me&&(P[0].uid===me||P[1].uid===me)?'TOUGH ONE':'FINAL');
-  const card=x=>{ const win=!tie&&x===W1, lose=!tie&&!win; return '<div class="vsf-p '+(tie?'tie':win?'win':'lose')+' '+x.c+'">'+(win?'<svg class="vsf-crown" viewBox="0 0 64 40" aria-hidden="true"><path d="M4 38V10l14 13L32 2l14 21 14-13v28z" fill="#ffc83d"/></svg>':'')+'<div class="vsf-av">'+esc(x.name.slice(0,1).toUpperCase())+'</div><div class="vsf-nm">'+esc(x.name)+'</div><div class="vsf-tag">'+(tie?'TIE':win?'WINNER':'LOST')+'</div><div class="vsf-pay mono">slip paid '+cn(x.res.payout)+'<br>'+x.res.hits+' hit</div></div>'; };
+  const card=x=>{ const win=!tie&&x===W1, lose=!tie&&!win; return '<div class="vsf-p '+(tie?'tie':win?'win':'lose')+' '+x.c+'">'+(win?'<svg class="vsf-crown" viewBox="0 0 64 40" aria-hidden="true"><path d="M4 38V10l14 13L32 2l14 21 14-13v28z" fill="#ffc83d"/></svg>':'')+'<div class="vsf-av av" data-n="'+esc(x.name)+'"><i>'+esc(x.name.slice(0,1).toUpperCase())+'</i></div><div class="vsf-nm">'+esc(x.name)+'</div><div class="vsf-tag">'+(tie?'TIE':win?'WINNER':'LOST')+'</div><div class="vsf-pay mono">slip paid '+cn(x.res.payout)+'<br>'+x.res.hits+' hit</div></div>'; };
   let conf=''; if(!tie){ const cols=['#ffc83d','#2f7bff','#ff7a2f','#2fcb7e','#fff']; for(let i=0;i<46;i++){ const a=Math.random()*360, dd=90+Math.random()*230, dl=(0.25+Math.random()*.35).toFixed(2); conf+='<i style="--a:'+a.toFixed(0)+'deg;--d:'+dd.toFixed(0)+'px;--dl:'+dl+'s;--c:'+cols[i%5]+'"></i>'; } }
   const el=document.createElement('div'); el.id='vsflash'; el.className='vsflash'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','Battle result');
   el.innerHTML='<div class="vsf-conf" aria-hidden="true">'+conf+'</div><div class="vsf-in"><div class="vsf-t">'+title+'</div><div class="vsf-row">'+card(P[0])+'<div class="vsf-vs">VS</div>'+card(P[1])+'</div>'+

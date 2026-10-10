@@ -33,7 +33,7 @@
 .vsf-vs{font-weight:900;font-size:22px;color:rgba(255,255,255,.7)}
 .vsf-p{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;padding:16px 6px 10px;border-radius:16px;border:2px solid transparent}
 .vsf-p.c1{background:linear-gradient(180deg,rgba(47,123,255,.45),rgba(47,123,255,.1))}.vsf-p.c2{background:linear-gradient(180deg,rgba(255,122,47,.45),rgba(255,122,47,.1))}
-.vsf-av{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:900;background:rgba(5,10,20,.55);border:4px solid rgba(255,255,255,.7)}
+.vsf-av,.vsf-av.av{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:900;background:rgba(5,10,20,.55);border:4px solid rgba(255,255,255,.7);overflow:hidden;position:relative}
 .vsf-nm{font-weight:800;font-size:17px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vsf-tag{font-weight:900;font-size:13px;letter-spacing:.1em;padding:3px 12px;border-radius:999px;background:#2b3547;color:#aab4c3}
 .vsf-pay{font-size:12px;opacity:.85;line-height:1.35}

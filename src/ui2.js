@@ -1,7 +1,9 @@
 /* ================= v3: boosts, calendar, reports, nav ================= */
 const LEARN=__LEARN__;
 const PASTP=__PASTP__;
-const TODAY=(LEARN.days.find(d=>d.kind==='today')||{}).date||new Date().toISOString().slice(0,10);
+const TODAY=(function(){ /* the ET calendar date wins when it is later than the data's own "today", so the board rolls over at midnight ET instead of waiting for the next refresh */
+  const L=(LEARN.days.find(d=>d.kind==='today')||{}).date||''; let c=''; try{ c=new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'}); }catch(e){}
+  return (c&&/^\d{4}-\d{2}-\d{2}$/.test(c)&&c>L)?c:(L||new Date().toISOString().slice(0,10)); })();
 const IC={
   cal:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
   home:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
@@ -251,12 +253,20 @@ function navHtml(){
   const men=typeof socUnseen==='function'?socUnseen():0;
   return it('pre','home','Games')+it('live','live','Live',null,anyLive())+it('slips','slip','My bets',pend||'')+it('battle','swords','Battle',(typeof btPending==='function'&&btPending())||'',typeof btLiveDot==='function'&&btLiveDot())+it('board','board','Board')+it('chat','chat','Chat',men?'@'+men:((typeof chatNew==='function'&&chatNew())||''));
 }
+/* the home board: today's games, then later days under "Coming up". Yesterday's games stay out of it: the slate keeps them for ~30 h so open slips can settle, and Past (calendar) has their recaps */
+function boardGames(){ return DATA.games.filter(g=>!g.ghost&&(!g.day||g.day>=TODAY)); }
+function todayBody(gs){
+  const now=gs.filter(g=>!g.day||g.day===TODAY), later=gs.filter(g=>g.day&&g.day>TODAY);
+  if(!now.length&&!later.length) return '<section class="game"><div class="sec"><h3>No games on the board yet</h3><div class="small muted">Nothing is listed for today'+(S.league==='all'?'':' in this league')+'. The board refreshes every few minutes; pick another league or day, or check back soon.</div></div></section>';
+  return now.map(safeCard).join('')+(later.length?'<div class="sec comingup"><h3>Coming up <span class="hint">'+later.length+' game'+(later.length===1?'':'s')+' on later days</span></h3></div>'+later.map(safeCard).join(''):'');
+}
 function render(){
-  const gs = DATA.games.filter(g=>S.league==='all'||keyOf(g)===S.league);
-  const counts={all:DATA.games.length}; DATA.games.forEach(g=>{counts[keyOf(g)]=(counts[keyOf(g)]||0)+1;});
+  const bg=boardGames();
+  const gs = bg.filter(g=>S.league==='all'||keyOf(g)===S.league);
+  const counts={all:bg.length}; bg.forEach(g=>{counts[keyOf(g)]=(counts[keyOf(g)]||0)+1;});
   const ltabs=LGT.map(([k,l])=>'<button class="tab" data-act="league" data-k="'+k+'" aria-pressed="'+(S.league===k)+'">'+l+'</button>').join('');
   let body='';
-  if(S.view==='pre') body = S.date===TODAY?gs.map(safeCard).join(''):(S.date<TODAY?reportView(S.date):previewView(S.date));
+  if(S.view==='pre') body = S.date===TODAY?todayBody(gs):(S.date<TODAY?reportView(S.date):previewView(S.date));
   else if(S.view==='live') body=liveView();
   else if(S.view==='slips') body=slipsView();
   else if(S.view==='board') body=boardView();

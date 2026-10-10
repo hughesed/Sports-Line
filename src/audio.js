@@ -49,7 +49,84 @@ const SFX={
   buzzer(){ sTone(220,220,.9,.38,'sawtooth',0,null,1400); sTone(233,233,.9,.3,'sawtooth',0,null,1400); },
   organ(){ [[392,0],[523,.14],[659,.28],[784,.42],[659,.56],[784,.70],[1047,.84]].forEach(a=>{ sTone(a[0],a[0],.2,.12,'square',a[1],null,1800); sTone(a[0]*2,a[0]*2,.2,.05,'triangle',a[1]); }); }
 };
-function sfx(name,delay,a){ if(!SND.on||!SND.ctx) return; const f=SFX[name]; if(!f) return; if(delay>0) setTimeout(()=>{ if(SND.on&&SND.ctx) try{ f(a); }catch(e){} },delay); else try{ f(a); }catch(e){} }
+function sfx(name,delay,a){
+  if(!SND.on) return; const f=SFX[name]; if(!f) return; const c=SND.ctx||sndCtx(); if(!c) return;
+  const go=()=>{ if(SND.on&&SND.ctx&&SND.ctx.state==='running'){ try{ f(a); }catch(e){} } };
+  const run=()=>{ if(delay>0) setTimeout(go,delay); else go(); };
+  if(c.state==='running') run();
+  else if(c.resume){ try{ const p=c.resume(); if(p&&p.then) p.then(()=>{ if(c.state==='running') run(); }).catch(()=>{}); }catch(e){} }   // a context made outside a tap starts suspended: start it, then play
+}
+
+/* ---------- more sounds: ball, court, field, diamond, crowd ---------- */
+Object.assign(SFX,{
+  dribble(n){ n=n||3; for(let i=0;i<n;i++){ sTone(120,55,.11,.5,'sine',i*.26); sNoise(.05,.18,'lowpass',700,300,1,i*.26,.004); } },
+  thud(){ sTone(95,42,.16,.55,'sine',0); sNoise(.1,.3,'lowpass',500,200,1,0,.004); },
+  rim(){ sTone(1750,1500,.35,.16,'triangle',0); sTone(2650,2400,.25,.07,'triangle',.01); sNoise(.06,.4,'highpass',2500,2500,.8,0,.003); },
+  clang(){ sTone(1200,900,.5,.2,'triangle',0); sTone(1810,1500,.4,.1,'triangle',0); sNoise(.05,.5,'highpass',2000,2000,.8,0,.003); },
+  rebound(){ sNoise(.12,.35,'bandpass',900,500,1,0,.004); sTone(140,70,.14,.45,'sine',.02); },
+  pass(){ sNoise(.16,.2,'bandpass',1200,2200,1.1,0,.03); sNoise(.06,.4,'bandpass',900,600,1,.2,.004); },
+  slam(){ sNoise(.2,.5,'lowpass',900,150,.9,0,.005); sTone(70,32,.45,.8,'sine',0); sTone(1500,700,.18,.2,'square',.02); },
+  huddle(){ sNoise(.5,.2,'bandpass',500,380,1,0,.12); },
+  hut(){ sNoise(.06,.5,'bandpass',1100,800,1.2,0,.004); sTone(210,150,.12,.28,'sawtooth',0,null,900); },
+  pads(){ sNoise(.14,.65,'lowpass',700,180,.9,0,.004); sTone(90,40,.2,.6,'sine',0); sNoise(.05,.3,'highpass',2400,2400,.8,.02,.003); },
+  snap(){ sNoise(.05,.5,'highpass',2000,2000,.8,0,.003); sTone(170,80,.1,.4,'sine',0); },
+  whoosh(){ sNoise(.4,.22,'bandpass',500,2600,1,0,.2); },
+  pitch(){ sNoise(.34,.2,'bandpass',700,2400,1.2,0,.18); },
+  foulball(){ sNoise(.05,.5,'highpass',2400,2400,.7,0); sTone(1100,500,.07,.25,'square',0); },
+  clap(n){ n=n||6; for(let i=0;i<n;i++) sNoise(.045,.4,'bandpass',1700+Math.random()*900,1700,1.1,i*.11+Math.random()*.03,.002); },
+  chant(){ sTone(100,48,.2,.7,'sine',0); sTone(100,48,.2,.7,'sine',.3); sNoise(.1,.5,'highpass',1600,1600,.7,.6,.003); sNoise(.1,.5,'bandpass',1500,1500,1,.62,.003); sTone(100,48,.2,.7,'sine',1.2); sTone(100,48,.2,.7,'sine',1.5); sNoise(.1,.5,'highpass',1600,1600,.7,1.8,.003); },
+  horn(){ sTone(330,330,.55,.2,'sawtooth',0,null,1500); sTone(415,415,.55,.16,'sawtooth',0,null,1500); sTone(330,330,.7,.2,'sawtooth',.62,null,1500); sTone(415,415,.7,.16,'sawtooth',.62,null,1500); },
+  firework(){ sNoise(.5,.18,'bandpass',600,2500,1,0,.3); sNoise(.5,.5,'lowpass',900,150,.9,.55,.005); sNoise(.9,.14,'highpass',3000,5000,.8,.6,.1); },
+  wave(){ sNoise(2.6,.3,'bandpass',500,1500,.7,0,1.1); sNoise(2.6,.18,'bandpass',1800,2600,.8,.2,1.2); },
+  cheerBig(){ SFX.cheer(); sNoise(3.2,.3,'bandpass',700,1300,.7,.15,.5); SFX.clap(8); },
+  booBig(){ SFX.boo(); sNoise(2.8,.2,'bandpass',380,280,.9,.2,.5); },
+  awww(){ sNoise(1.3,.16,'bandpass',480,240,.8,0,.25); }
+});
+
+/* ---------- constant crowd noise (battle): a looping murmur that swells on big plays ---------- */
+const AMB={on:false,out:null,t:null,bits:null,base:.1,lvl:1};
+let SND_PINK=null;
+function sndPink(){ const c=SND.ctx; if(SND_PINK) return SND_PINK; const n=c.sampleRate*4, b=c.createBuffer(1,n,c.sampleRate), d=b.getChannelData(0); let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for(let i=0;i<n;i++){ const w=Math.random()*2-1; b0=.99886*b0+w*.0555179; b1=.99332*b1+w*.0750759; b2=.969*b2+w*.153852; b3=.8665*b3+w*.3104856; b4=.55*b4+w*.5329522; b5=-.7616*b5-w*.016898; d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11; b6=w*.115926; }
+  const f=Math.min(n,Math.floor(c.sampleRate*.05)); for(let i=0;i<f;i++){ d[i]*=i/f; d[n-1-i]*=i/f; }       // short fade so the loop point does not click
+  SND_PINK=b; return b; }
+function ambStart(sport){
+  if(!SND.on||AMB.on) return; const c=SND.ctx; if(!c||c.state!=='running') return;
+  AMB.on=true; AMB.base=sport==='mlb'?.075:sport==='nfl'||sport==='cfb'?.12:.1; AMB.lvl=1;
+  const out=c.createGain(); out.gain.setValueAtTime(.0001,c.currentTime); out.gain.exponentialRampToValueAtTime(AMB.base,c.currentTime+1.6); out.connect(SND.master); AMB.out=out;
+  const mk=(f,q,g,type)=>{ const s=c.createBufferSource(); s.buffer=sndPink(); s.loop=true; const fl=c.createBiquadFilter(); fl.type=type||'bandpass'; fl.frequency.value=f; fl.Q.value=q; const gg=c.createGain(); gg.gain.value=g; s.connect(fl); fl.connect(gg); gg.connect(out); s.start(0,Math.random()*3); return {s:s,fl:fl,gg:gg}; };
+  const L=[mk(420,.5,1),mk(900,.7,.9),mk(1900,.8,.45),mk(3600,.9,.12,'highpass')];
+  const lfo=c.createOscillator(), lg=c.createGain(); lfo.frequency.value=.13; lg.gain.value=AMB.base*.28; lfo.connect(lg); lg.connect(out.gain); lfo.start();
+  AMB.bits={L:L,lfo:lfo};
+  AMB.t=setInterval(()=>{ if(!AMB.on||!SND.on||c.state!=='running') return;
+    const k=AMB.lvl*(0.85+Math.random()*.35); try{ out.gain.setTargetAtTime(AMB.base*k,c.currentTime,.9); L[1].fl.frequency.setTargetAtTime(800+Math.random()*500+(AMB.lvl-1)*400,c.currentTime,.8); }catch(e){}
+    if(Math.random()<.55) sNoise(.22+Math.random()*.25,.05,'bandpass',650+Math.random()*700,500+Math.random()*500,2.2,0,.06);        // a voice or two out of the crowd
+    if(Math.random()<.07) SFX.clap(3+Math.floor(Math.random()*3));
+  },1200);
+}
+function ambStop(){
+  if(!AMB.on) return; AMB.on=false; clearInterval(AMB.t); const c=SND.ctx, o=AMB.out, b=AMB.bits; AMB.out=null; AMB.bits=null;
+  if(c&&o){ try{ o.gain.cancelScheduledValues(c.currentTime); o.gain.setValueAtTime(Math.max(.0001,o.gain.value),c.currentTime); o.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.8); }catch(e){} setTimeout(()=>{ try{ if(b){ b.lfo.stop(); b.L.forEach(x=>x.s.stop()); } o.disconnect(); }catch(e){} },1000); }
+}
+/* the crowd gets louder (k > 1) for a few seconds, then settles back */
+function ambSwell(k,secs){
+  const c=SND.ctx; if(!AMB.on||!AMB.out||!c) return; AMB.lvl=k; const o=AMB.out;
+  try{ o.gain.cancelScheduledValues(c.currentTime); o.gain.setValueAtTime(Math.max(.0001,o.gain.value),c.currentTime); o.gain.linearRampToValueAtTime(AMB.base*k,c.currentTime+.25); }catch(e){}
+  clearTimeout(AMB._r); AMB._r=setTimeout(()=>{ AMB.lvl=1; try{ if(AMB.on&&AMB.out) AMB.out.gain.setTargetAtTime(AMB.base,SND.ctx.currentTime,1.2); }catch(e){} },(secs||2.5)*1000);
+}
+/* the home crowd roars for its team and boos the visitors */
+function crowdFor(home,big){
+  if(!SND.on) return;
+  if(home){ sfx(big?'cheerBig':'cheer',0); ambSwell(big?3:2,big?4:2.6); }
+  else { sfx(big?'booBig':'boo',0); ambSwell(big?2.1:1.6,big?3.4:2.4); }
+}
+
+/* ---------- unlocking audio on phones: a tap starts the context, and a silent <audio> keeps iOS from muting Web Audio with the ring switch ---------- */
+let SND_SIL=null;
+function sndSilentWav(){ const n=1600,sr=8000,b=new Uint8Array(44+n*2),dv=new DataView(b.buffer),w=(o,t)=>{ for(let i=0;i<t.length;i++) b[o+i]=t.charCodeAt(i); };
+  w(0,'RIFF'); dv.setUint32(4,36+n*2,true); w(8,'WAVE'); w(12,'fmt '); dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true); dv.setUint32(24,sr,true); dv.setUint32(28,sr*2,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true); w(36,'data'); dv.setUint32(40,n*2,true);
+  return URL.createObjectURL(new Blob([b],{type:'audio/wav'})); }
+function sndSilentKeep(){ try{ if(!SND_SIL){ const a=document.createElement('audio'); a.setAttribute('playsinline',''); a.loop=true; a.volume=.02; a.src=sndSilentWav(); SND_SIL=a; } if(SND_SIL.paused){ const p=SND_SIL.play(); if(p&&p.catch) p.catch(()=>{}); } }catch(e){} }
 
 
 /* ---------- waiting music (timeouts, halftime) ---------- */
@@ -111,8 +188,8 @@ function say(text,hi){
   if(hi){ SND.q=SND.q.filter(x=>x.hi); } else if(SND.q.length>=2){ SND.q=SND.q.filter(x=>x.hi); }
   SND.q.push({t:text,hi:!!hi}); drainSpeech(); return speechMs(text);
 }
-function sndStop(){ musicStop(); SND.q=[]; SND.busy=false; try{ if(HAS_TTS) speechSynthesis.cancel(); }catch(e){} }
-function sndUnlock(){ sndCtx(); if(HAS_TTS){ try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); }catch(e){} } }
+function sndStop(){ try{ ambStop(); }catch(e){} musicStop(); SND.q=[]; SND.busy=false; try{ if(HAS_TTS) speechSynthesis.cancel(); }catch(e){} }
+function sndUnlock(){ const c=sndCtx(); if(c){ try{ const b=c.createBuffer(1,1,22050), z=c.createBufferSource(); z.buffer=b; z.connect(c.destination); z.start(0); }catch(e){} } sndSilentKeep(); if(HAS_TTS){ try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); }catch(e){} } }
 
 /* ---------- broadcaster-style callouts ---------- */
 const ABAL={CLV:'CLE',JAC:'JAX',WAS:'WSH',LVR:'LV',ARZ:'ARI',BLT:'BAL',HST:'HOU',SD:'LAC',STL:'LAR',OAK:'LV'};

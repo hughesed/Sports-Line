@@ -37,9 +37,9 @@ function anStageHtml(b){
   return '<div class="stage" id="stg-b'+b.id+'" data-f="'+anFam(b.sport)+'"><svg viewBox="0 0 320 120" class="stsvg" role="img" aria-label="Animated '+esc(SPN[b.sport]||'')+' scene">'+anScene(b)+'<g class="fx"></g></svg><div class="stbanner" aria-live="polite"></div></div>';
 }
 function anEnsureStage(b){
-  if(document.getElementById('stg-b'+b.id)) return true;
+  if(document.getElementById('stg-b'+b.id)){ try{ afStart(b); }catch(e){} return true; }
   const viz=document.querySelector('#bts-board .viz'); if(!viz) return false; const chip=viz.querySelector('.playchip'); if(!chip) return false;
-  chip.insertAdjacentHTML('beforebegin',anStageHtml(b)); return true;
+  chip.insertAdjacentHTML('beforebegin',anStageHtml(b)); try{ afStart(b); }catch(e){} return true;
 }
 
 /* ---- classify an event into an animation ---- */
@@ -78,53 +78,76 @@ function anBurst(fx,x,y,col,n){ if(anReduced()) return; for(let i=0;i<(n||10);i+
 function anShake(node){ if(anReduced()||!node||!node.animate) return; node.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(-3px)'},{transform:'translateX(0)'}],{duration:420}); }
 
 /* ---- the plays ---- */
-/* sound for each kind of play: stadium sounds that fit the sport (football: kicks, whistles, crowd; basketball: swish, rim, buzzer; baseball: bat crack, mitt, organ) */
+/* who gained from a play: +1 the home team, -1 the visitors, 0 nobody in particular.  e.side is the team the play is about. */
+const AN_LOSS={sack:1,int:1,fumble:1,fgmiss:1,stop:1,strikeout:1,out:1,foul:1};
+const AN_BIG={td:1,hr:1,walkoff:1,three:1,dunk:1,final:1};
+function anGainer(b,ty,e){
+  if(ty==='final') return 0;
+  if(ty==='flag'){ const m=/flag!?\s+([A-Z]{2,4})\b/i.exec(String(e&&e.text||'')); if(m){ const ab=m[1].toUpperCase(); if(ab===String(b.home).toUpperCase()) return -1; if(ab===String(b.away).toUpperCase()) return 1; } return 0; }
+  const side=e&&e.side; if(side!=='home'&&side!=='away') return 0; const sg=side==='home'?1:-1;
+  return AN_LOSS[ty]?-sg:sg;
+}
+/* the crowd: constant murmur (see ambStart), a roar when the home team gains, boos when the visitors do */
+function anCrowd(b,ty,e){
+  const g=anGainer(b,ty,e); if(!g) return; const big=!!AN_BIG[ty], minor=ty==='fd'||ty==='ft'||ty==='walk'||ty==='safe'||ty==='strikeout'||ty==='out'||ty==='foul'||ty==='punt'||ty==='hit1';
+  if(g>0){ if(minor){ sfx('crowd',0,false); ambSwell(1.5,1.8); } else crowdFor(true,big); }
+  else { if(minor){ sfx('groan',0); ambSwell(1.3,1.6); } else crowdFor(false,big); }
+}
+/* sound for each kind of play: stadium sounds that fit the sport (football: kicks, whistles, pads; basketball: swish, rim, buzzer; baseball: bat crack, mitt, organ) */
 function anSound(b,ty,e){
-  if(typeof sfx!=='function'||!SND.on||!SND.ctx) return; const f=anFam(b.sport);
+  if(typeof sfx!=='function'||!SND.on) return; const f=anFam(b.sport);
   const S=(n,ms)=>sfx(n,ms||0);
-  if(ty==='final'){ if(f==='bk') S('buzzer'); else S('whistle2'); S('crowd',300); S('fanfare',500); return; }
+  if(ty==='final'){ if(f==='bk') S('buzzer'); else S('whistle2'); S('fanfare',500); crowdFor(true,true); return; }
   if(f==='fb'){
-    if(ty==='td'){ S('fanfare'); S('crowd',150); S('cheer',500); }
-    else if(ty==='fg'){ S('kick'); S('crowd',900); }
+    if(ty==='td'){ S('fanfare'); }
+    else if(ty==='fg'){ S('kick'); }
     else if(ty==='fgmiss'||ty==='stop'){ S('groan'); }
-    else if(ty==='fd'){ S('chime'); S('crowd',100); }
-    else if(ty==='flag'){ S('whistle2'); S('boo',500); }
-    else if(ty==='sack'){ S('sack'); S('groan',200); }
-    else if(ty==='int'||ty==='fumble'){ S('catch'); S('tackle',250); S('groan',400); }
+    else if(ty==='fd'){ S('chime'); }
+    else if(ty==='flag'){ S('whistle2'); }
+    else if(ty==='sack'){ S('sack'); }
+    else if(ty==='int'||ty==='fumble'){ S('catch'); S('tackle',250); }
     else if(ty==='punt'){ S('kick'); }
   } else if(f==='bk'){
-    if(ty==='three'){ S('swish',650); S('crowd',700); S('cheer',900); }
-    else if(ty==='dunk'){ S('crack',350); S('cheer',420); S('big'); }
-    else if(ty==='bucket'){ S('swish',500); S('crowd',550); }
-    else if(ty==='ft'){ S('swish',450); }
-    else if(ty==='foul'){ S('whistle'); S('groan',200); }
-    else if(ty==='steal'){ S('squeak'); S('crowd',300); }
-    else if(ty==='block'){ S('crack',250); S('cheer',300); }
-    else if(ty==='run'){ S('big'); S('cheer',300); }
+    if(ty==='three'){ S('swish',650); }
+    else if(ty==='dunk'){ S('squeak'); S('slam',380); }
+    else if(ty==='bucket'){ S('swish',500); }
+    else if(ty==='ft'){ S('dribble',0); S('swish',650); }
+    else if(ty==='foul'){ S('whistle'); }
+    else if(ty==='steal'){ S('squeak'); S('pass',150); }
+    else if(ty==='block'){ S('crack',250); }
+    else if(ty==='run'){ S('horn'); }
   } else {
-    if(ty==='hit1'||ty==='hit2'||ty==='hit3'){ S('batcrack'); S('crowd',400); if(ty!=='hit1') S('organ',700); }
-    else if(ty==='hr'||ty==='walkoff'){ S('batcrack'); S('big',200); S('organ',900); S('cheer',900); S('crowd',1100); }
-    else if(ty==='runscore'){ S('organ'); S('cheer',200); }
-    else if(ty==='steal'){ S('slide'); S('crowd',500); }
+    if(ty==='hit1'||ty==='hit2'||ty==='hit3'){ S('batcrack'); if(ty!=='hit1') S('organ',700); }
+    else if(ty==='hr'||ty==='walkoff'){ S('batcrack'); S('big',200); S('organ',900); }
+    else if(ty==='runscore'){ S('organ'); }
+    else if(ty==='steal'){ S('slide'); }
     else if(ty==='safe'){ S('slide'); }
-    else if(ty==='out'){ S('mitt'); S('groan',300); }
+    else if(ty==='out'){ S('mitt'); }
     else if(ty==='strikeout'){ S('mitt',380); S('chime',450); }
     else if(ty==='walk'){ S('chime'); }
   }
+  anCrowd(b,ty,e);
+}
+/* a short spoken call for scoring plays and period breaks (uses the same voice as the big screen) */
+function anSay(b,e){
+  if(!e||!SND.on||typeof say!=='function'||!HAS_TTS||document.hidden) return;
+  if(e.kind==='score'){ let t=String(e.text||'').replace(/\([^)]*\)/g,' ').replace(/\s+/g,' ').trim(); if(!t||t.length>90) return; say(t+'!',true); }
+  else if(e.kind==='period'){ say(String(e.text||'').slice(0,60),false); }
+  else if(e.kind==='final'){ say('And that is the final.',true); }
 }
 function anPlay(b,d,e,done0,scale){
   const done=()=>{ done0(); };
   try{ AN.log.push(d.type); }catch(err){}
   try{ anSound(b,d.type,e); }catch(err){}
   const st=document.getElementById('stg-b'+b.id); if(!st){ done(); return; }
-  const fx=st.querySelector('.fx'); fx.innerHTML=''; const side=e.side||'home'; const f=anFam(b.sport); const col=anColor(b,side);
+  const fx=st.querySelector('.fx'); fx.innerHTML=''; const side=e.side||'home'; let who=''; try{ who=anWho(b,e); }catch(err){} const f=anFam(b.sport); const col=anColor(b,side);
   const away=side==='away'; const dir=away?1:-1;               // football: the away team attacks the home (right-hand) end zone
   let ms=1500, ty=d.type;
   if(ty==='final'){ anBanner(st,'FINAL','big'); try{ celebrateB(b,'','h'); }catch(err){} setTimeout(done,anReduced()?900:1900); return; }
   if(f==='fb'){
     const y=60+(Math.random()-.5)*30, x0=away?70:250;
-    if(ty==='td'){ const ball=anBall(fx,x0,y,4); anMove(ball,[[x0,y],[away?290:30,y-6]],1100,'ease-in'); setTimeout(()=>{ anBurst(fx,away?292:28,y-6,'#ffd23a',16); },1000); anBanner(st,'TOUCHDOWN!','big'); ms=1700; }
-    else if(ty==='fg'){ const x1=away?300:20; anEl('path',{d:'M'+x1+' 40 V58 M'+(x1-7)+' 42 V58 M'+(x1+7)+' 42 V58 M'+(x1-7)+' 58 H'+(x1+7),stroke:'#ffd23a','stroke-width':1.6,fill:'none'},fx); const ball=anBall(fx,x0,y,3.6); anMove(ball,anArc([x0,y],[x1,48],34,18),1000,'linear'); anBanner(st,'FIELD GOAL!','mid'); ms=1500; }
+    if(ty==='td'){ const ball=anBall(fx,x0,y,4); anMove(ball,[[x0,y],[away?290:30,y-6]],1100,'ease-in'); if(who){ const rn=afPlayer(fx,x0,y+4,col,{name:who,r:4}); anMove(rn,[[x0,y+4],[away?290:30,y-2]],1100,'ease-in'); } setTimeout(()=>{ anBurst(fx,away?292:28,y-6,'#ffd23a',16); },1000); anBanner(st,'TOUCHDOWN!','big'); ms=1700; }
+    else if(ty==='fg'){ const x1=away?300:20; anEl('path',{d:'M'+x1+' 40 V58 M'+(x1-7)+' 42 V58 M'+(x1+7)+' 42 V58 M'+(x1-7)+' 58 H'+(x1+7),stroke:'#ffd23a','stroke-width':1.6,fill:'none'},fx); const ball=anBall(fx,x0,y,3.6); anMove(ball,anArc([x0,y],[x1,48],34,18),1000,'linear'); if(who) afPlayer(fx,x0-(away?8:-8),y+4,col,{name:who,r:4}); anBanner(st,'FIELD GOAL!','mid'); ms=1500; }
     else if(ty==='fd'){ const lx=(away?150:170)+Math.random()*30; const ln=anEl('rect',{x:0,y:12,width:3,height:96,fill:'#ffd23a'},fx); anMove(ln,[[lx-30*dir,0],[lx,0]],500,'ease-out'); anBanner(st,'FIRST DOWN','sm'); ms=900; }
     else if(ty==='flag'){ const fl=anEl('g',{},fx); anEl('path',{d:'M0 -22 L0 0 M0 -22 L16 -16 L0 -10',stroke:'#ffd23a','stroke-width':3,fill:'#ffd23a'},fl); anMove(fl,[[150,-10],[150,64],[160,60],[154,64]],800,'ease-out'); anBanner(st,(e.text||'FLAG').split(':')[1]?('FLAG: '+e.text.split(':')[1].trim().split(',')[0].toUpperCase()):'FLAG','warn'); ms=1300; }
     else if(ty==='sack'){ const x=160+(Math.random()-.5)*80; anBurst(fx,x,60,'#ff5a52',14); anDot(fx,x,60,'#ff5a52',6); anBanner(st,'SACK!','bad'); anShake(st.querySelector('svg')); ms=1100; }
@@ -134,10 +157,10 @@ function anPlay(b,d,e,done0,scale){
     else { done(); return; }
   } else if(f==='bk'){
     const tx=away?22:298;                                          // the away team shoots at the left hoop, the home team at the right
-    const shoot=(from,peak,ms2)=>{ const ball=anBall(fx,from[0],from[1],3.6,'#e8742c'); anMove(ball,anArc(from,[tx,60],peak,18),ms2,'linear',()=>{ anBurst(fx,tx,60,'#fff',7); }); return ball; };
+    const shoot=(from,peak,ms2)=>{ if(who) afPlayer(fx,from[0]+(away?-6:6),from[1]+5,col,{name:who,r:3.8}); const ball=anBall(fx,from[0],from[1],3.6,'#e8742c'); anMove(ball,anArc(from,[tx,60],peak,18),ms2,'linear',()=>{ anBurst(fx,tx,60,'#fff',7); }); return ball; };
     const rx=away?(Math.random()<.5?70:60):(Math.random()<.5?250:260);
     if(ty==='three'){ shoot([away?86:234,24+Math.random()*72],40,950); anBanner(st,'THREE!','big'); ms=1500; }
-    else if(ty==='dunk'){ const p=anDot(fx,away?60:260,60,col,5.5); anMove(p,[[away?60:260,60],[tx+(away?14:-14),50],[tx+(away?5:-5),44],[tx+(away?14:-14),64]],700,'ease-in-out'); anBurst(fx,tx,58,'#ffd23a',10); anBanner(st,'DUNK!','big'); ms=1300; }
+    else if(ty==='dunk'){ const p=afPlayer(fx,away?60:260,60,col,{name:who||undefined,r:5.2}); anMove(p,[[away?60:260,60],[tx+(away?14:-14),50],[tx+(away?5:-5),44],[tx+(away?14:-14),64]],700,'ease-in-out'); anBurst(fx,tx,58,'#ffd23a',10); anBanner(st,'DUNK!','big'); ms=1300; }
     else if(ty==='bucket'){ shoot([away?(46+Math.random()*10):(274-Math.random()*10),44+Math.random()*34],16,650); anBanner(st,'BUCKET','mid'); ms=1000; }
     else if(ty==='ft'){ shoot([away?52:268,60],10,550); anBanner(st,'FREE THROWS','sm'); ms=900; }
     else if(ty==='foul'){ anEl('circle',{cx:160,cy:60,r:10,fill:'#ff5a52',stroke:'#fff','stroke-width':2},fx).animate(anReduced()?[]:[{transform:'scale(.2)',transformOrigin:'160px 60px',opacity:0},{transform:'scale(1.4)',transformOrigin:'160px 60px',opacity:1},{transform:'scale(1)',transformOrigin:'160px 60px',opacity:1}],{duration:500,fill:'forwards'}); anEl('text',{x:160,y:64,'text-anchor':'middle','font-size':12,'font-weight':900,fill:'#fff'},fx).textContent='!'; anBanner(st,'FOUL!','bad'); anShake(st.querySelector('svg')); ms=1200; }
@@ -148,8 +171,8 @@ function anPlay(b,d,e,done0,scale){
   } else {
     const home=[160,104], b1=[214,66], b2=[160,30], b3=[106,66];
     if(ty==='hit1'||ty==='hit2'||ty==='hit3'){ const tgt=ty==='hit1'?[206+Math.random()*30,50]:ty==='hit2'?[250,34]:[272,52]; const ball=anBall(fx,home[0],home[1],3,'#fff'); anMove(ball,anArc(home,tgt,ty==='hit1'?10:26,16),800,'ease-out');
-      const r=anDot(fx,home[0],home[1],col,4.5); anMove(r,ty==='hit1'?[home,b1]:ty==='hit2'?[home,b1,b2]:[home,b1,b2,b3],900,'linear'); anBanner(st,ty==='hit1'?'SINGLE':ty==='hit2'?'DOUBLE!':'TRIPLE!','mid'); ms=1300; }
-    else if(ty==='hr'||ty==='walkoff'){ const ball=anBall(fx,home[0],home[1],3.2,'#fff'); anMove(ball,anArc(home,[away?270:50,-14],64,22),1200,'linear',()=>{ anBurst(fx,away?270:50,0,'#ffd23a',18); }); const r=anDot(fx,home[0],home[1],col,4.5); anMove(r,[home,b1,b2,b3,home],1700,'linear'); anBanner(st,ty==='hr'?'HOME RUN!':'WALK-OFF!','big'); ms=2000; }
+      const r=afPlayer(fx,home[0],home[1],col,{name:who||undefined,r:4}); anMove(r,ty==='hit1'?[home,b1]:ty==='hit2'?[home,b1,b2]:[home,b1,b2,b3],900,'linear'); anBanner(st,ty==='hit1'?'SINGLE':ty==='hit2'?'DOUBLE!':'TRIPLE!','mid'); ms=1300; }
+    else if(ty==='hr'||ty==='walkoff'){ const ball=anBall(fx,home[0],home[1],3.2,'#fff'); anMove(ball,anArc(home,[away?270:50,-14],64,22),1200,'linear',()=>{ anBurst(fx,away?270:50,0,'#ffd23a',18); }); const r=afPlayer(fx,home[0],home[1],col,{name:who||undefined,r:4}); anMove(r,[home,b1,b2,b3,home],1700,'linear'); anBanner(st,ty==='hr'?'HOME RUN!':'WALK-OFF!','big'); ms=2000; }
     else if(ty==='runscore'){ const r=anDot(fx,b3[0],b3[1],col,4.5); anMove(r,[b3,home],700,'ease-in'); anBurst(fx,home[0],home[1]+2,col,8); anBanner(st,'RUN SCORES!','mid'); ms=1200; }
     else if(ty==='steal'){ const r=anDot(fx,b1[0],b1[1],col,4.5); anMove(r,[b1,b2],650,'ease-in'); setTimeout(()=>{ anBurst(fx,b2[0],b2[1],'#d9b383',8); },600); anBanner(st,'STOLEN BASE — SAFE','good'); ms=1200; }
     else if(ty==='safe'){ const r=anDot(fx,home[0],home[1],col,4.5); anMove(r,[home,b1],600,'ease-in'); setTimeout(()=>{ anBurst(fx,b1[0],b1[1],'#d9b383',9); },560); anBanner(st,'SAFE!','good'); ms=1100; }
@@ -174,7 +197,9 @@ function anPump(b){
 }
 function anEnqueue(b,news){
   if(document.hidden) return; const Q=AN.q[b.id]||(AN.q[b.id]={items:[],busy:false});
-  news.forEach(e=>{ const d=anClassify(b.sport,e); if(d) Q.items.push({d:d,e:e}); }); anPump(b);
+  let any=false; news.forEach(e=>{ const d=anClassify(b.sport,e); if(d){ Q.items.push({d:d,e:e}); any=true; } });
+  if(any){ try{ afCancel(b.id); }catch(e){} }          // a real play cuts in on any filler scene
+  news.forEach(e=>{ try{ anSay(b,e); }catch(err){} }); anPump(b);
 }
 function anBump(b,news){
   if(!news.some(e=>e.kind==='score')||anReduced()) return;

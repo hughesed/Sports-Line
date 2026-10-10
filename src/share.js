@@ -58,7 +58,9 @@ function shDrawBattle(c,W,H,sp){
   [[A,250],[B,830]].forEach(([P,cx])=>{ const cy=250, r=P.win?96:84;
     if(P.win) shCrown(c,cx,cy-r-62,92);
     c.save(); c.beginPath(); c.arc(cx,cy,r,0,7); c.fillStyle='rgba(5,10,20,.55)'; c.fill(); c.lineWidth=P.win?10:5; c.strokeStyle=P.win?SH_GOLD:'rgba(255,255,255,.7)'; c.stroke(); c.restore();
-    shTxt(c,(P.name||'?').slice(0,1).toUpperCase(),cx,cy+4,{size:r*1.05,weight:800,align:'center',base:'middle',color:'#fff'});
+    if(P.img){ c.save(); c.beginPath(); c.arc(cx,cy,r-3,0,7); c.clip(); const iw=P.img.naturalWidth||P.img.width||1, ih=P.img.naturalHeight||P.img.height||1, m=Math.min(iw,ih); c.imageSmoothingQuality='high'; c.drawImage(P.img,(iw-m)/2,(ih-m)/2,m,m,cx-r+3,cy-r+3,(r-3)*2,(r-3)*2); if(!P.win&&!tie){ c.fillStyle='rgba(5,10,20,.28)'; c.fillRect(cx-r,cy-r,r*2,r*2); } c.restore();
+      c.save(); c.beginPath(); c.arc(cx,cy,r,0,7); c.lineWidth=P.win?10:5; c.strokeStyle=P.win?SH_GOLD:'rgba(255,255,255,.7)'; c.stroke(); c.restore(); }
+    else shTxt(c,(P.name||'?').slice(0,1).toUpperCase(),cx,cy+4,{size:r*1.05,weight:800,align:'center',base:'middle',color:'#fff'});
     shTxt(c,P.name,cx,cy+r+62,{size:P.win?58:50,weight:800,align:'center',maxW:440,shadow:8,min:28});
     shTxt(c,P.side?'backed '+P.side:'',cx,cy+r+100,{size:27,weight:600,align:'center',color:'rgba(255,255,255,.85)',maxW:420});
     const tag=tie?'TIE':P.win?'WINNER':'LOST'; c.font='800 28px '+SH_FONT; const tw=c.measureText(tag).width+56; shRR(c,cx-tw/2,cy+r+120,tw,48,24); c.fillStyle=tie?'#e8edf5':P.win?SH_GOLD:'#2b3547'; c.fill();
@@ -160,10 +162,19 @@ function shModalHtml(sp,ready){
     '<div class="small muted" id="shnote">'+esc(SH.note||'')+'</div>'+
     '<div class="small muted">X, Facebook and Reddit open a pre-filled post. Instagram, Snapchat and Twitch have no web posting link, so those save the card and copy your text, then open the site: add the picture there. On a phone, <b>Share…</b> sends the card straight into any installed app.</div></div>';
 }
+/* the winner's (and loser's) real profile pictures for the battle card: fetched if the page has not seen them yet, then decoded for the canvas */
+async function shLoadAvatars(sp){
+  if(!sp||sp.kind!=='battle') return; SOC.av=SOC.av||{};
+  const key=n=>String(n||'').toLowerCase(); const need=[sp.a.name,sp.b.name].filter(n=>n&&SOC.av[key(n)]===undefined);
+  if(need.length&&SOC.sb){ try{ const r=await SOC.sb.rpc('get_avatars',{p_names:need}); need.forEach(n=>{ SOC.av[key(n)]=''; }); if(!r.error) (r.data||[]).forEach(x=>{ SOC.av[key(x.username)]=x.avatar||''; }); }catch(e){} }
+  await Promise.all([sp.a,sp.b].map(P=>new Promise(res=>{ const u=SOC.av[key(P.name)]; if(!u){ res(); return; } const im=new Image(); im.onload=()=>{ P.img=im; res(); }; im.onerror=()=>res(); im.src=u; })));
+}
 async function shOpen(sp){
   if(!sp){ S.flash='Nothing to share yet.'; renderBank(); return; }
   shClose(); SH.spec=sp; SH.note=''; const m=document.createElement('div'); m.id='shmodal'; m.className='shm'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','Share'); m.innerHTML=shModalHtml(sp,false); document.body.appendChild(m);
   try{ if(document.fonts&&document.fonts.load) await Promise.race([document.fonts.load('800 40px Inter'),new Promise(r=>setTimeout(r,900))]); }catch(e){}
+  if(SH.spec!==sp) return;
+  try{ await Promise.race([shLoadAvatars(sp),new Promise(r=>setTimeout(r,3000))]); }catch(e){}
   if(SH.spec!==sp) return;
   try{
     const cv=shDraw(sp); const blob=await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('no image')),'image/png'));
@@ -206,7 +217,7 @@ function vsfShow(){
   const P=[{name:b.creator_name||'?',uid:b.creator,side:b[b.creator_side],res:r.creator,c:'c1'},{name:b.opponent_name||'?',uid:b.opponent,side:b[b.opponent_side],res:r.opponent,c:'c2'}];
   const W1=tie?null:(cw?P[0]:P[1]);
   const title=tie?'DEAD HEAT':(me&&W1.uid===me?'YOU WIN':me&&(P[0].uid===me||P[1].uid===me)?'TOUGH ONE':'FINAL');
-  const card=x=>{ const win=!tie&&x===W1, lose=!tie&&!win; return '<div class="vsf-p '+(tie?'tie':win?'win':'lose')+' '+x.c+'">'+(win?'<svg class="vsf-crown" viewBox="0 0 64 40" aria-hidden="true"><path d="M4 38V10l14 13L32 2l14 21 14-13v28z" fill="#ffc83d"/></svg>':'')+'<div class="vsf-av">'+esc(x.name.slice(0,1).toUpperCase())+'</div><div class="vsf-nm">'+esc(x.name)+'</div><div class="vsf-tag">'+(tie?'TIE':win?'WINNER':'LOST')+'</div><div class="vsf-pay mono">slip paid '+cn(x.res.payout)+'<br>'+x.res.hits+' hit</div></div>'; };
+  const card=x=>{ const win=!tie&&x===W1, lose=!tie&&!win; return '<div class="vsf-p '+(tie?'tie':win?'win':'lose')+' '+x.c+'">'+(win?'<svg class="vsf-crown" viewBox="0 0 64 40" aria-hidden="true"><path d="M4 38V10l14 13L32 2l14 21 14-13v28z" fill="#ffc83d"/></svg>':'')+'<div class="vsf-av av" data-n="'+esc(x.name)+'"><i>'+esc(x.name.slice(0,1).toUpperCase())+'</i></div><div class="vsf-nm">'+esc(x.name)+'</div><div class="vsf-tag">'+(tie?'TIE':win?'WINNER':'LOST')+'</div><div class="vsf-pay mono">slip paid '+cn(x.res.payout)+'<br>'+x.res.hits+' hit</div></div>'; };
   let conf=''; if(!tie){ const cols=['#ffc83d','#2f7bff','#ff7a2f','#2fcb7e','#fff']; for(let i=0;i<46;i++){ const a=Math.random()*360, dd=90+Math.random()*230, dl=(0.25+Math.random()*.35).toFixed(2); conf+='<i style="--a:'+a.toFixed(0)+'deg;--d:'+dd.toFixed(0)+'px;--dl:'+dl+'s;--c:'+cols[i%5]+'"></i>'; } }
   const el=document.createElement('div'); el.id='vsflash'; el.className='vsflash'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','Battle result');
   el.innerHTML='<div class="vsf-conf" aria-hidden="true">'+conf+'</div><div class="vsf-in"><div class="vsf-t">'+title+'</div><div class="vsf-row">'+card(P[0])+'<div class="vsf-vs">VS</div>'+card(P[1])+'</div>'+

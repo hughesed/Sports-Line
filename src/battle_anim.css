@@ -15,3 +15,7 @@
 .fe.flag .fc{color:#c98700}.fe.sack,.fe.foul,.fe.out,.fe.strikeout{color:var(--under)}.fe.run{font-weight:700}
 .playchip.pop{animation:chpop .45s cubic-bezier(.2,1.4,.4,1)}
 @media (prefers-reduced-motion: reduce){.stbanner{transition:none}}
+
+/* the stage button that appears while the browser is still blocking sound */
+.sndtap{position:absolute;right:8px;bottom:8px;z-index:3;border:1px solid rgba(255,255,255,.7);background:rgba(8,14,28,.82);color:#fff;font-weight:800;font-size:12px;line-height:1.2;padding:7px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.stbanner.top{top:17%}

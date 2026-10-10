@@ -65,7 +65,7 @@ const BX_COLS={nfl:{QB:[['passYds','Pass'],['passTD','PaTD'],['rushYds','Rush']]
 BX_COLS.cfb=BX_COLS.nfl; BX_COLS.cbb=BX_COLS.nba; BX_COLS.wnba=BX_COLS.nba;
 const BX_GROUPS={nfl:[['QB','RB','WR']],nba:[['P']],mlb:[['H'],['SP']]}; BX_GROUPS.cfb=BX_GROUPS.nfl; BX_GROUPS.cbb=BX_GROUPS.nba; BX_GROUPS.wnba=BX_GROUPS.nba;
 function btBox(b,d,last){
-  const ro=b.markets&&b.markets.roster; if(!ro||!last) return '';
+  const ro=b.markets&&b.markets.roster; if(!ro||!last) return '<div class="small muted">The box score fills in once the first play happens.</div>';
   const st=last.stats||{}, cols=BX_COLS[b.sport]||{}, groups=BX_GROUPS[b.sport]||[];
   const star=new Set(); (d.parlays||[]).forEach(p=>(p.graded||p.legs||[]).forEach(l=>{ if(l.pid) star.add(l.pid); }));
   const fmtv=(k,v)=>k==='outs'?Math.floor(v/3)+'.'+(v%3):String(v);
@@ -82,7 +82,7 @@ function btBox(b,d,last){
           return '<tr'+(star.has(x.pid)?' class="mine"':'')+'><td class="bxn">'+esc(surname(x.n))+(star.has(x.pid)?' <span title="In a slip">★</span>':'')+'</td>'+ks.map(c=>'<td class="mono">'+(have.indexOf(c[0])<0?'<span class="muted">–</span>':fmtv(c[0],s[c[0]]||0))+'</td>').join('')+'</tr>'; }).join('')+'</tbody></table></div>';
     });
   });
-  return '<div class="sec"><h3>Box score <span class="hint">★ = in a slip</span></h3>'+out+'</div>';
+  return '<div class="small muted bxkey">★ = in a slip</div>'+out;
 }
 function btSchedule(){
   clearTimeout(BT.timer); BT.timer=null;
@@ -92,10 +92,10 @@ function btSchedule(){
   BT.timer=setTimeout(()=>{ if(BT.id) loadDetail(); else loadLobby(); btSchedule(); },ms);
 }
 function btAfterRender(){
-  if(S.view!=='battle'){ clearTimeout(BT.timer); BT.timer=null; return; }
+  if(S.view!=='battle'){ clearTimeout(BT.timer); BT.timer=null; try{ if(AMB.on) ambStop(); }catch(e){} return; }
   if(!SOC.sb) return;
   loadSim();
-  if(BT.id){ if(!BT.det||BT.det.battle.id!==BT.id) loadDetail(); } else loadLobby();
+  if(BT.id){ if(!BT.det||BT.det.battle.id!==BT.id) loadDetail(); } else { loadLobby(); btSliderFix(null); }
   btSchedule();
   if(!BT.tick) BT.tick=setInterval(btTickClocks,1000);
 }
@@ -114,7 +114,13 @@ function btRender(){
   if(S.view!=='battle') return; const el=document.getElementById('bt-body'); if(!el) return;
   if(BT.id){ btPatchDetail(el); return; }
   if(isTypingNow()&&el.contains(document.activeElement)) return;
-  const h=btLobbyHtml(); if(h!==BT.html.lobby){ BT.html.lobby=h; el.innerHTML=h; }
+  const h=btLobbyHtml(); if(h!==BT.html.lobby){ const tr=document.getElementById('bt-sstrack'); const sl=tr?tr.scrollLeft:null; BT.html.lobby=h; el.innerHTML=h; btSliderFix(sl); }
+}
+/* the sport picker is a swipeable strip: keep its scroll position across re-renders and bring the chosen sport into view */
+function btSliderFix(prev){
+  const tr=document.getElementById('bt-sstrack'); if(!tr) return; if(prev!=null) tr.scrollLeft=prev;
+  const on=tr.querySelector('.ssb[aria-pressed="true"]'); if(!on) return;
+  const l=on.offsetLeft, r=l+on.offsetWidth; if(l<tr.scrollLeft+8||r>tr.scrollLeft+tr.clientWidth-8){ try{ tr.scrollTo({left:Math.max(0,l-(tr.clientWidth-on.offsetWidth)/2),behavior:prev==null?'auto':'smooth'}); }catch(e){ tr.scrollLeft=Math.max(0,l-(tr.clientWidth-on.offsetWidth)/2); } }
 }
 function injLine(T,ab){
   const i=(T&&T.inj)||{}; const out=(i.out||[]), q=(i.q||[]); if(!out.length&&!q.length) return '';
@@ -130,7 +136,7 @@ function btFmtNote(fmt,legs){
 }
 function btCreateHtml(){
   const f=BT.form; const ts=simTeams(f.sport); const big=ts.length>40; const q=(f.q||'').trim().toLowerCase();
-  const seg=SPORTS3.map(([k,l])=>'<button data-act="bt-sport" data-k="'+k+'" aria-pressed="'+(f.sport===k)+'" title="'+esc(SPLONG[k])+'">'+l+'</button>').join('');
+  const seg='<button type="button" class="ssnav l" data-act="bt-sslide" data-k="-1" aria-label="Show earlier sports">&#8249;</button><div class="sstrack" id="bt-sstrack" tabindex="-1">'+SPORTS3.map(([k,l])=>'<button type="button" class="ssb" data-act="bt-sport" data-k="'+k+'" aria-pressed="'+(f.sport===k)+'" title="'+esc(SPLONG[k])+'">'+l+'</button>').join('')+'</div><button type="button" class="ssnav r" data-act="bt-sslide" data-k="1" aria-label="Show more sports">&#8250;</button>';
   if(f.legs==null) f.legs=8; if(f.mins==null) f.mins=4;
   const H=teamOf(f.sport,f.home);
   const wchips=[10,50,100,250].map(v=>'<button class="x2" data-act="bt-wager" data-v="'+v+'">'+v+'</button>').join('');
@@ -140,7 +146,7 @@ function btCreateHtml(){
   const cpu=(f.vs==='cpu');
   const vseg='<div class="fld">Play against<div class="seg" role="group" aria-label="Opponent"><button data-act="bt-vs" data-k="players" aria-pressed="'+(!cpu)+'">Players</button><button data-act="bt-vs" data-k="cpu" aria-pressed="'+cpu+'">🤖 Computer</button></div>'+(cpu?cpuNote():'')+'</div>';
   return '<section class="game"><div class="sec"><h3>Start a battle <span class="hint">practice coins</span></h3>'+vseg+
-    '<div class="seg" role="group" aria-label="Sport">'+seg+'</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
+    '<div class="sslider" role="group" aria-label="Sport: swipe to see more">'+seg+'</div><div class="small muted ssh">Swipe sideways for more sports</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
     (ts.length?(big?'<label class="fld">Find a team<input class="num wide" data-bt="q" value="'+esc(f.q||'')+'" placeholder="Type a school" aria-label="Find a team" autocomplete="off"></label>':'')+
       tpHtml(f,'home',ts,q,'Your team',null)+
       (cpu?tpHtml(f,'cpuAway',ts,q,'Computer\'s team',f.home,true):'')+
@@ -321,9 +327,11 @@ function btSections(){
       '<div class="wp" role="img" aria-label="'+esc(b.home+' win chance '+wp+' percent')+'"><div class="wpa" style="width:'+(100-wp)+'%;background:'+esc(A.color)+'">'+(100-wp>=14?esc(b.away)+' '+(100-wp)+'%':'')+'</div><div class="wph" style="width:'+wp+'%;background:'+esc(H.color)+'">'+(wp>=14?esc(b.home)+' '+wp+'%':'')+'</div></div>'+
       '<div class="playchip" id="chip-b'+b.id+'"><b>'+esc(last?anLabelOf(last):'')+'</b><span>'+esc(last?last.text:'Waiting for the first play…')+'</span></div><div class="cel" id="cel-b'+b.id+'"></div></div>'+
       (fin?btWinnerHtml(b,d):'<div class="small muted">Plays appear as their time comes; the server keeps future plays hidden.</div>')+'</div>';
-    sec.box=btBox(b,d,last);
+    sec.box='';
     if((d.parlays||[]).length>1) sec.stand=btStandHtml(b,d,last,fin);
-    sec.feed='<div class="sec"><h3>Play by play <span class="hint">'+evs.length+' plays</span></h3><div class="feed">'+evs.slice().reverse().map(e=>'<div class="fe '+esc(e.kind)+'"><span class="mono fc">'+esc(e.clock||'')+'</span><span>'+(anIconOf(e)?'<i class="fi">'+anIconOf(e)+'</i> ':'')+esc(e.text)+'</span><span class="mono fs">'+e.as_+'-'+e.hs+'</span></div>').join('')+'</div></div>';
+    const tab=BT.tab==='box'?'box':'pbp';
+    const feedBody=tab==='box'?'<div class="bxwrap">'+btBox(b,d,last)+'</div>':'<div class="feed">'+evs.slice().reverse().map(e=>'<div class="fe '+esc(e.kind)+'"><span class="mono fc">'+esc(e.clock||'')+'</span><span>'+(anIconOf(e)?'<i class="fi">'+anIconOf(e)+'</i> ':'')+esc(e.text)+'</span><span class="mono fs">'+e.as_+'-'+e.hs+'</span></div>').join('')+'</div>';
+    sec.feed='<div class="sec feedtabs"><div class="btabs" role="tablist" aria-label="Game detail"><button role="tab" class="btab" data-act="bt-tab" data-k="pbp" aria-selected="'+(tab==='pbp')+'" aria-pressed="'+(tab==='pbp')+'">Play by play <span class="hint">'+evs.length+'</span></button><button role="tab" class="btab" data-act="bt-tab" data-k="box" aria-selected="'+(tab==='box')+'" aria-pressed="'+(tab==='box')+'">Box score</button></div>'+feedBody+'</div>';
     sec.parl='<div class="sec"><h3>Parlays <span class="hint">100-coin slips</span></h3>'+(d.parlays||[]).sort((x,y)=>x.user_id===b.creator?-1:1).map(p=>parlayCard(b,p,last,fin)).join('')+'</div>';
   } else if(b.status==='open'||b.status==='building'){
     let act='';
@@ -369,7 +377,7 @@ function btWinnerHtml(b,d){
   return '<div class="winbar">'+(r.split?'🤝 Tied: the pot is split and both wagers go back.':'🏆 '+esc(wn)+' wins '+cn(b.wager*2)+' coins'+(r.bonus>0?' + '+cn(r.bonus)+' bonus coins':'') )+'<div class="small">'+esc(b.creator_name)+': slip pays '+cn(r.creator.payout)+' ('+r.creator.hits+' hit) · '+esc(b.opponent_name)+': '+cn(r.opponent.payout)+' ('+r.opponent.hits+' hit)'+(r.bonus>0?' · winner gets 10% of the winning parlay payout as a bonus':'')+'</div>'+
     '<div class="btnrow"><button class="btn solid" data-act="sh-open" data-k="battle">Share result</button><button class="btn" data-act="vsf-open">Replay finish</button></div></div>';
 }
-const BT_ORDER=['head','board','box','stand','act','mk','spec','parl','feed','bets'];
+const BT_ORDER=['head','board','feed','box','stand','act','mk','spec','parl','bets'];
 function btDetailHtml(){
   const sec=btSections(); if(!sec) return '<section class="game"><div class="sec"><div class="btnrow"><button class="btn" data-act="bt-back">‹ All battles</button></div><div class="small muted">Loading the battle…</div></div></section>';
   BT.html={}; return '<section class="game">'+BT_ORDER.map(k=>sec[k]?'<div id="bts-'+k+'">'+(BT.html[k]=sec[k])+'</div>':'<div id="bts-'+k+'"></div>').join('')+'</section>';
@@ -393,6 +401,7 @@ function btAnimate(){
   if(b.status==='final'&&b.result&&b.result.creator&&!BT.flashed[b.id]){ BT.flashed[b.id]=true; // the finish flash: when you watched it end, or opened a battle that ended in the last 10 minutes
     const fresh=BT.sawLive[b.id]||(b.ends_at&&btNow()-Date.parse(b.ends_at)<600000); if(fresh) setTimeout(()=>{ if(S.view==='battle'&&BT.id===b.id) vsfShow(); },BT.sawLive[b.id]?1500:300); }
   if(b.status==='live'||b.status==='final') anEnsureStage(b);
+  btAmbience();
   if(!last) return;
   const seen=BT.seen[b.id]; BT.seen[b.id]=last.seq;
   if(seen==null||seen>=last.seq) return;
@@ -419,7 +428,9 @@ document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act]'); if(!t) return; const act=t.getAttribute('data-act'); if(act.indexOf('bt-')!==0) return;
   e.stopPropagation(); e.preventDefault();
   const f=BT.form;
+  if(act==='bt-sslide'){ const tr=document.getElementById('bt-sstrack'); if(tr){ const dx=(+t.getAttribute('data-k')||1)*Math.max(120,Math.round(tr.clientWidth*.7)); try{ tr.scrollBy({left:dx,behavior:'smooth'}); }catch(e){ tr.scrollLeft+=dx; } } return; }
   if(act==='bt-sport'){ f.sport=t.getAttribute('data-k'); f.q=''; f.cpuAway=''; btFormDefaults(); btRender(); return; }
+  if(act==='bt-tab'){ BT.tab=t.getAttribute('data-k')==='box'?'box':'pbp'; BT.html.feed=null; btRender(); return; }
   if(act==='bt-more'){ BT.moreRecent=true; btRender(); return; }
   if(act==='bt-tdd'){ const k=t.getAttribute('data-k'); BT.form.dd=(BT.form.dd===k?null:k); btRender(); return; }
   if(act==='bt-tsel'){ BT.form[t.getAttribute('data-k')]=t.getAttribute('data-v'); if(BT.form.cpuAway===BT.form.home) BT.form.cpuAway=''; BT.form.dd=null; btRender(); return; }
@@ -435,8 +446,9 @@ document.addEventListener('click',function(e){
   if(act==='bt-open'){ btOpen(+t.getAttribute('data-id')); return; }
   if(act==='bt-popgo'){ const id=+t.getAttribute('data-id'); btPopHide(id); btOpen(id); return; }
   if(act==='bt-popx'){ btPopHide(+t.getAttribute('data-id')); return; }
-  if(act==='bt-snd'){ SND.on=!SND.on; sndSave(); if(SND.on){ sndUnlock(); sfx('whistle',0); } else sndStop(); document.querySelectorAll('[data-act="bt-snd"]').forEach(n=>{ n.textContent=SND.on?'🔊 Sound on':'🔇 Sound off'; n.setAttribute('aria-pressed',String(!!SND.on)); }); return; }
-  if(act==='bt-back'){ BT.id=null; BT.det=null; BT.msg=''; BT.html={}; render(); return; }
+  if(act==='bt-snd'){ SND.on=!SND.on; sndSave(); if(SND.on){ sndUnlock(); sfx('whistle',0); setTimeout(btAmbience,200); } else { sndStop(); btSndHint(false); } document.querySelectorAll('[data-act="bt-snd"]').forEach(n=>{ n.textContent=SND.on?'🔊 Sound on':'🔇 Sound off'; n.setAttribute('aria-pressed',String(!!SND.on)); }); return; }
+  if(act==='bt-back'){ BT.id=null; BT.det=null; BT.msg=''; BT.html={}; try{ if(AMB.on) ambStop(); }catch(e){} render(); return; }
+  if(act==='bt-sndgo'){ SND.on=true; sndSave(); sndUnlock(); sfx('whistle',0); setTimeout(btAmbience,150); return; }
   const b=BT.det&&BT.det.battle; if(!b) return;
   if(act==='bt-accept'){ if(!b.away&&!BT.form.pick){ BT.msg='Pick your team first.'; btRender(); return; } btCall('accept_battle',{p_id:b.id,p_team:b.away?null:BT.form.pick}); return; }
   if(act==='bt-cancel'){ if(!confirm('Cancel this battle? Wagers and spectator bets are refunded.')) return; btCall('cancel_battle',{p_id:b.id}); return; }
@@ -524,8 +536,8 @@ function paintAv(){
 new MutationObserver(()=>{ clearTimeout(avT); avT=setTimeout(paintAv,80); }).observe(document.body,{childList:true,subtree:true});
 document.addEventListener('change',function(e){ const t=e.target; if(!t||!t.getAttribute||t.getAttribute('data-in')!=='avfile'||!t.files||!t.files[0]) return;
   const url=URL.createObjectURL(t.files[0]), img=new Image();
-  img.onload=()=>{ const c=document.createElement('canvas'); c.width=c.height=96; const g=c.getContext('2d'), m=Math.min(img.width,img.height); g.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,96,96); URL.revokeObjectURL(url);
-    const data=c.toDataURL('image/jpeg',0.75);
+  img.onload=()=>{ const c=document.createElement('canvas'); c.width=c.height=192; const g=c.getContext('2d'), m=Math.min(img.width,img.height); g.imageSmoothingQuality='high'; g.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,192,192); URL.revokeObjectURL(url);
+    let data=c.toDataURL('image/jpeg',0.82); if(data.length>38000) data=c.toDataURL('image/jpeg',0.6);
     SOC.sb.rpc('set_avatar',{p_avatar:data}).then(r=>{ if(r.error){ S.flash=r.error.message; try{ renderBank(); }catch(x){} return; } SOC.av[SOC.me.username.toLowerCase()]=data; document.querySelectorAll('.av[data-p]').forEach(el=>el.removeAttribute('data-p')); paintAv(); }); };
   img.onerror=()=>{ S.flash='That picture could not be read.'; try{ renderBank(); }catch(x){} }; img.src=url; t.value=''; });
 if(/[?&]debug=1/.test(location.search)) window.__bt={BT,SOC,S,render:()=>render()};
@@ -568,5 +580,24 @@ setInterval(btWatch,2500);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ BT.alerts.last=0; setTimeout(btWatch,300); } });
 
 
-/* the browser only lets sound start after a tap: the first tap on the battle screen unlocks it */
-document.addEventListener('click',function(){ try{ if(S.view==='battle'&&SND.on&&!SND.ctx) sndUnlock(); }catch(e){} },true);
+/* ---------- battle sound: unlock on any tap, constant crowd noise while a battle is live ---------- */
+/* Browsers (and iPhones most of all) only let sound start from a tap, and suspend it again when the page is hidden or the phone sleeps.
+   So every tap on the battle screen (re)starts the audio context, and a "Tap for sound" chip shows on the stage while it is still locked. */
+function btAudioGesture(){
+  try{ if(S.view!=='battle'||!SND.on) return; const c=SND.ctx; if(!c||c.state!=='running') sndUnlock(); else sndSilentKeep(); setTimeout(btAmbience,120); setTimeout(btAmbience,700); }catch(e){}
+}
+['touchend','pointerup','click','keydown'].forEach(ev=>document.addEventListener(ev,btAudioGesture,{capture:true,passive:true}));
+function btSndHint(show){
+  const st=document.querySelector('#bts-board .stage'); const cur=document.getElementById('btsnd');
+  if(!show||!st){ if(cur) cur.remove(); return; }
+  if(cur) return; st.insertAdjacentHTML('beforeend','<button type="button" id="btsnd" class="sndtap" data-act="bt-sndgo">&#128266; Tap for stadium sound</button>');
+}
+function btAmbience(){
+  try{
+    const d=BT.det, b=d&&d.battle; const want=S.view==='battle'&&BT.id&&b&&b.status==='live'&&!document.hidden;
+    if(!want||!SND.on){ if(AMB.on) ambStop(); btSndHint(false); return; }
+    const c=SND.ctx; if(!c||c.state!=='running'){ btSndHint(true); if(c&&c.resume){ try{ c.resume(); }catch(e){} } return; }
+    btSndHint(false); if(!AMB.on) ambStart(b.sport);
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',()=>{ try{ if(document.hidden){ if(AMB.on) ambStop(); } else setTimeout(btAmbience,200); }catch(e){} });
