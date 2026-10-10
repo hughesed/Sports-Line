@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 50,
+ "runNumber": 51,
  "deadlineHit": false,
- "generatedAt": "2026-10-10T03:05:58Z",
- "generatedAtET": "Fri Oct 9, 11:05 PM ET",
- "today": "2026-10-09",
- "lastRunAt": "2026-10-10T03:05:58Z",
+ "generatedAt": "2026-10-10T05:57:34Z",
+ "generatedAtET": "Sat Oct 10, 1:57 AM ET",
+ "today": "2026-10-10",
+ "lastRunAt": "2026-10-10T05:57:34Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -28,8 +28,8 @@
    "carried": 0,
    "error": null,
    "newFinals": 1,
-   "storeGames": 346,
-   "lastFinal": "2026-10-09"
+   "storeGames": 347,
+   "lastFinal": "2026-10-10"
   },
   "mlb": {
    "status": "ok",
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 11,
+   "games": 8,
    "playerLevel": 0,
    "teamLevel": 4,
-   "carried": 7,
+   "carried": 4,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -60,9 +60,9 @@
    "teamLevel": 8,
    "carried": 5,
    "error": null,
-   "newFinals": 1,
-   "storeGames": 1356,
-   "lastFinal": "2026-10-09"
+   "newFinals": 4,
+   "storeGames": 1360,
+   "lastFinal": "2026-10-10"
   },
   "cbb": {
    "status": "empty",
@@ -82,7 +82,7 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 71,
+   "newFinals": 0,
    "storeGames": 71,
    "lastFinal": "2026-10-10"
   },
@@ -96,41 +96,34 @@
   }
  },
  "counts": {
-  "slate": 38,
+  "slate": 35,
   "playerCards": 12,
-  "teamCards": 26,
-  "window": 149,
-  "sched": 139,
-  "pastp": 36,
+  "teamCards": 23,
+  "window": 151,
+  "sched": 136,
+  "pastp": 37,
   "predictions": 92,
-  "graded": 44,
-  "storeGames": 13507
+  "graded": 49,
+  "storeGames": 13512
  },
  "calibration": {
   "slopes": {},
-  "graded": 44,
-  "accML": 0.705,
-  "accBook": 0.705
+  "graded": 49,
+  "accML": 0.673,
+  "accBook": 0.673
  },
  "social": {
   "enabled": true,
   "errors": [],
-  "pending": 1,
-  "settled": {
-   "won": 1,
-   "legs": 2,
-   "lost": 0,
-   "void": 0,
-   "games": 1
-  },
+  "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 20,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 4.1,
+  "seconds": 4.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -142,13 +135,13 @@
   },
   "gamesUploaded": 16,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2303,
+  "simPlayersUploaded": 2295,
   "configured": true
  },
- "odds": "ok: 45 events (plan limit: Response is missing 17567 bookmaker odds. Upgrade your API key to access all dat)",
+ "odds": "ok: 45 events (plan limit: Response is missing 22810 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
- "requests": 1106,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 45.7
+ "requests": 1004,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 39.8
 }
