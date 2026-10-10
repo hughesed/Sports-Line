@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 49,
+ "runNumber": 50,
  "deadlineHit": false,
- "generatedAt": "2026-10-10T00:12:39Z",
- "generatedAtET": "Fri Oct 9, 8:12 PM ET",
+ "generatedAt": "2026-10-10T03:05:58Z",
+ "generatedAtET": "Fri Oct 9, 11:05 PM ET",
  "today": "2026-10-09",
- "lastRunAt": "2026-10-10T00:12:39Z",
+ "lastRunAt": "2026-10-10T03:05:58Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -27,9 +27,9 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 345,
-   "lastFinal": "2026-10-08"
+   "newFinals": 1,
+   "storeGames": 346,
+   "lastFinal": "2026-10-09"
   },
   "mlb": {
    "status": "ok",
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 12,
+   "games": 11,
    "playerLevel": 0,
    "teamLevel": 4,
-   "carried": 8,
+   "carried": 7,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -55,14 +55,14 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 12,
+   "games": 13,
    "playerLevel": 0,
    "teamLevel": 8,
-   "carried": 4,
+   "carried": 5,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1355,
-   "lastFinal": "2026-10-08"
+   "newFinals": 1,
+   "storeGames": 1356,
+   "lastFinal": "2026-10-09"
   },
   "cbb": {
    "status": "empty",
@@ -74,54 +74,81 @@
    "newFinals": 0,
    "storeGames": 6300,
    "lastFinal": "2026-04-07"
+  },
+  "nhl": {
+   "status": "empty",
+   "games": 0,
+   "playerLevel": 0,
+   "teamLevel": 0,
+   "carried": 0,
+   "error": null,
+   "newFinals": 71,
+   "storeGames": 71,
+   "lastFinal": "2026-10-10"
+  },
+  "tennis": {
+   "status": "ok",
+   "games": 0,
+   "playerLevel": 0,
+   "teamLevel": 0,
+   "carried": 0,
+   "error": null
   }
  },
  "counts": {
   "slate": 38,
   "playerCards": 12,
   "teamCards": 26,
-  "window": 100,
-  "sched": 99,
+  "window": 149,
+  "sched": 139,
   "pastp": 36,
-  "predictions": 91,
-  "graded": 42,
-  "storeGames": 13434
+  "predictions": 92,
+  "graded": 44,
+  "storeGames": 13507
  },
  "calibration": {
   "slopes": {},
-  "graded": 42,
-  "accML": 0.714,
-  "accBook": 0.714
+  "graded": 44,
+  "accML": 0.705,
+  "accBook": 0.705
  },
  "social": {
   "enabled": true,
   "errors": [],
-  "pending": 0,
+  "pending": 1,
+  "settled": {
+   "won": 1,
+   "legs": 2,
+   "lost": 0,
+   "void": 0,
+   "games": 1
+  },
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 20,
   "failedCalls": 0,
-  "seconds": 4.4,
+  "seconds": 4.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
    "wnba": 15,
    "mlb": 30,
    "cfb": 245,
-   "cbb": 726
+   "cbb": 726,
+   "nhl": 32
   },
-  "gamesUploaded": 15,
-  "simTeamsUploaded": 1078,
+  "gamesUploaded": 16,
+  "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2303,
   "configured": true
  },
- "odds": "kept (77 min old, pulls every 120 min)",
+ "odds": "ok: 45 events (plan limit: Response is missing 17567 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
- "requests": 909,
- "failedRequests": 5,
- "retries": 7,
- "seconds": 60.3
+ "requests": 1106,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 45.7
 }
