@@ -472,8 +472,13 @@ document.addEventListener('input',function(e){ const t=e.target; const k=t.getAt
 
 /* ---------- betslip: smaller, scrollable, with a handle you can pull down to minimize (or tap) ---------- */
 const _renderSlip0=renderSlip;
-renderSlip=function(){ _renderSlip0.apply(this,arguments); const el=document.getElementById('slip'); if(!el||el.hidden||!S.slip.length) return;
-  if(!el.querySelector('.slipgrab')) el.insertAdjacentHTML('afterbegin','<div class="slipgrab" data-act="slip" role="button" aria-label="Pull down to minimize the bet slip"><i></i></div>'); };
+renderSlip=function(){ _renderSlip0.apply(this,arguments); const el=document.getElementById('slip');
+  const open=!!(el&&!el.hidden&&S.slip.length&&S.slipOpen);
+  /* the blurred layer behind the open slip: it covers the header too, so the slip never overlaps it; tapping it closes the slip */
+  let sc=document.getElementById('slipscrim'); if(open&&!sc){ sc=document.createElement('div'); sc.id='slipscrim'; document.body.appendChild(sc); } if(sc) sc.hidden=!open; document.body.classList.toggle('slipopen',open);
+  if(!el||el.hidden||!S.slip.length) return;
+  if(!el.querySelector('.slipgrab')) el.insertAdjacentHTML('afterbegin','<div class="slipgrab" data-act="slip" role="button" aria-label="Slide down to minimize the bet slip, up to open it"><i></i></div>'); };
+document.addEventListener('click',function(e){ if(e.target&&e.target.id==='slipscrim'){ S.slipOpen=false; renderSlip(); } },true);
 (function(){ let y0=null,t0=0;
   document.addEventListener('touchstart',e=>{ const g=e.target.closest&&e.target.closest('#slip .slipgrab,#slip .slipsum'); y0=g?e.touches[0].clientY:null; t0=Date.now(); },{passive:true});
   document.addEventListener('touchend',e=>{ if(y0==null) return; const dy=e.changedTouches[0].clientY-y0; y0=null;

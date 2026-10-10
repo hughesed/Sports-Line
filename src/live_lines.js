@@ -61,7 +61,7 @@ function llInner(g){
   } else if(L.kind==='paused') body='<div class="small llnote">FanDuel has no live line posted for this game right now (the markets are paused). The lines come back by themselves.</div>';
   else if(L.kind==='notlive') body='<div class="small llnote">FanDuel\'s in-play lines are not in yet. They arrive within a few minutes of kickoff'+(L.ageMin!=null?' (last sportsbook pull '+esc(llAgeText(L.ageMin))+')':'')+'. The pregame lines are not shown once a game has started.</div>';
   else body='<div class="small llnote">This game is not in the sportsbook feed, so there are no live FanDuel lines for it.</div>';
-  return '<h3>Live lines <span class="hint">'+fdMark()+' · current, view only</span></h3>'+score+body+'<div class="small muted">Live practice bets are on the <button class="linkbtn" data-act="view" data-k="live">Live tab</button>, priced from the score and clock.</div>';
+  return '<h3>Live lines <span class="hint">'+fdMark()+' · current, view only</span></h3>'+score+body+'<div class="btnrow"><button class="btn solid" data-act="view" data-k="live" data-gid="'+esc(g.id)+'">Watch this game live ›</button></div><div class="small muted">Live practice bets are on the <button class="linkbtn" data-act="view" data-k="live" data-gid="'+esc(g.id)+'">Live tab</button>, priced from the score and clock.</div>';
 }
 /* the lines section of a game card: pregame games keep the lines grid you can tap into the slip; a game in play gets its score and FanDuel's current lines */
 function llLinesSec(g){
@@ -71,7 +71,7 @@ function llLinesSec(g){
 /* the SGP builder belongs to pregame lines; once the game is on, bets are made on the Live tab */
 function llDrawerPart(g,open){
   if(llState(g)==='pre') return '<button class="drawerbtn" data-act="drawer" data-gid="'+g.id+'" aria-expanded="'+open+'"><span>SGP builder</span><span class="mono">'+countSelections(g)+' selections '+(open?'(hide)':'(open)')+'</span></button>'+(open?drawer(g):'');
-  return '<button class="drawerbtn" data-act="view" data-k="live"><span>Bet this game live</span><span class="mono">Live tab ›</span></button>';
+  return '<button class="drawerbtn" data-act="view" data-k="live" data-gid="'+esc(g.id)+'"><span>Watch &amp; bet this game live</span><span class="mono">Open game ›</span></button>';
 }
 /* keep the score and live lines fresh in place (no full redraw): every few seconds, only the cards whose text changed */
 function llPaint(){

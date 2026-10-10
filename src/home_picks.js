@@ -74,6 +74,19 @@ function hpLegs(g){
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
     push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why}); }); });
+  /* normal-stat thresholds ("60+ rush yds", "5+ receptions", "25+ points"): the model's own ladder around the book's line, for every player the slate knows.
+     Priced from the book when the ladder has a book price for the rung, otherwise an estimate (marked est.). Over/under legs are not the only kind of leg any more. */
+  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
+    (pl.stats||[]).forEach(st=>{
+      const rungs=(st.miles||[]).filter(m=>m&&m.t!=null&&m.p!=null); if(!rungs.length||st.line==null) return;
+      const lineT=Math.floor(+st.line)+1;
+      /* meaningful thresholds only: near the book's line (not "1+ reception" for a 6-catch player), and not near-certain (those add nothing but a -600 price) */
+      const cand=rungs.filter(m=>m.t!==lineT&&m.p>=0.55&&m.p<=0.82&&m.t>=0.55*(+st.line)).sort((a,b)=>b.t-a.t);        // highest threshold first
+      const picks=[]; [cand.find(m=>m.p>=0.7),cand.find(m=>m.p<0.7)].forEach(m=>{ if(m&&picks.indexOf(m)<0) picks.push(m); });
+      picks.forEach(m=>{ const av=pl.avail==null?1:pl.avail; const p=adjP(clamp(m.p*av,0.02,0.97),'prop'); const priced=m.price!=null; const tok='o:'+g.id+':alt:'+pl.id+':'+st.key+':'+m.t;
+        out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+m.t+'+ '+String(st.label||st.key).toLowerCase(),price:priced?m.price:estPrice(m.p),book:priced?'draftkings':'est',bk:priced?'DK':'est.',link:null,nBooks:0,line:m.t-0.5,
+          pFair:null,pModel:m.p,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:m.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,why:''}); });
+    }); });
   HP.cache[ck]=out; return out;
 }
 function hpLeg(tok){ const p=String(tok).split(':'); const g=G[p[1]]; if(!g) return null; const l=hpLegs(g).find(x=>x.tok===tok); return l?Object.assign({},l):null; }
@@ -81,44 +94,75 @@ function hpLeg(tok){ const p=String(tok).split(':'); const g=G[p[1]]; if(!g) ret
 /* games from the selected day through the next 3 days (a Friday home screen still shows Sunday's NFL slate) */
 function hpInWin(g){ if(!g.day) return true; const a=Date.parse(S.date+'T12:00:00Z'), d=Date.parse(g.day+'T12:00:00Z'); return d>=a&&d<=a+3*864e5; }
 /* ---------- same-game parlays ---------- */
-const HP_SIZES=[[2,0.6],[4,0.55],[8,0.5]];     // legs wanted, and the lowest chance a leg may have to be used
+const HP_SIZES=[[2,0.58],[4,0.53],[8,0.5]];     // legs wanted, and the lowest chance a leg may have to be used
+/* what kind of bet a leg is, for mixing: a team side (moneyline / spread), the game total, a player over/under, or a stat threshold ("60+ rush yds") */
+const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.kind==='alt'?'alt':'ou';
+const hpIsUnder=l=>!!(l.spec&&(l.spec.dir==='under'||l.spec.dir==='lt'));
+/* picks up to n legs a step at a time. The score is the leg's chance, nudged so the parlay mixes kinds: at most one team side and one game total, no more than
+   ~40% unders, a stat type is not repeated more than the size allows, the first leg of each kind gets a bonus, and legs already used in a smaller parlay for the
+   same game are marked down so the 2, 4 and 8-leg builds are not the same picks. A leg still has to clear the chance floor for its size. */
+function hpPick(legs,n,floor,used){
+  const out=[],grp={},per={},kinds={},stats={}; let unders=0;
+  const maxUnder=Math.max(1,Math.floor(n*0.4)), maxStat=n>=8?3:n>=4?2:1, maxAlt=Math.max(1,Math.floor(n/3)+(n>=4?1:0));      // thresholds: 1 of 2, 2 of 4, 3 of 8
+  while(out.length<n){
+    let best=null,bs=-1;
+    for(const l of legs){
+      if(l.p<floor||grp[l.group]||out.indexOf(l)>=0) continue;
+      const c=hpCat(l); if((c==='side'||c==='total')&&kinds[c]) continue; if(c==='alt'&&(kinds.alt||0)>=maxAlt) continue;
+      if((l.kind==='prop'||l.kind==='alt')&&per[l.pid]) continue;
+      const un=hpIsUnder(l); if(un&&unders>=maxUnder) continue;
+      const sk=l.spec&&l.spec.stat; if(sk&&(stats[sk]||0)>=maxStat) continue;
+      let s=l.p*Math.pow(0.85,used[l.tok]||0);
+      if(sk) s*=Math.pow(0.93,stats[sk]||0);
+      if(un) s*=0.94;
+      if(l.book==='fanduel') s*=1.06;                  // a real FanDuel price and link beats an estimate
+      if(!kinds[c]) s*=n>=4?1.12:1.05;
+      if(s>bs){ bs=s; best=l; } }
+    if(!best) break;
+    out.push(best); grp[best.group]=1; kinds[hpCat(best)]=(kinds[hpCat(best)]||0)+1; if(best.pid) per[best.pid]=1; if(hpIsUnder(best)) unders++;
+    const sk=best.spec&&best.spec.stat; if(sk) stats[sk]=(stats[sk]||0)+1; }
+  return out;
+}
 function hpBuild(g){
-  const legs=hpLegs(g).slice().sort((a,b)=>b.p-a.p); if(legs.length<2) return [];
-  const pickN=(n,floor)=>{ const out=[],grp={},per={}; let team=false;
-    for(const l of legs){ if(out.length>=n) break; if(l.p<floor) break; if(grp[l.group]) continue;
-      if(l.kind==='ml'||l.kind==='spr'){ if(team) continue; team=true; }
-      if(l.kind==='prop'){ if(per[l.pid]) continue; per[l.pid]=1; }
-      out.push(l); grp[l.group]=1; }
-    return out; };
-  const res=[]; let prev=0;
-  HP_SIZES.forEach(sz=>{ const n=sz[0], ls=pickN(n,sz[1]);
+  const legs=hpLegs(g).slice(); if(legs.length<2) return [];
+  const res=[], used={}; let prev=0;
+  HP_SIZES.forEach(sz=>{ const n=sz[0], ls=hpPick(legs,n,sz[1],used);
     /* up to n legs: fewer are fine when the game does not have enough good ones, but a 4 or 8 that is no bigger than the size below it is not repeated */
-    if(ls.length<2||(n>2&&ls.length<=prev)) return; prev=ls.length;
-    const dec=ls.reduce((d,l)=>d*decOf(l.price),1); res.push({g:g,n:n,k:ls.length,legs:ls,dec:dec,am:amerOfDec(dec),p:ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,ls.length-1)}); });
+    if(ls.length<2||(n>2&&ls.length<=prev)) return; prev=ls.length; ls.forEach(l=>{ used[l.tok]=(used[l.tok]||0)+1; });
+    const dec=ls.reduce((d,l)=>d*decOf(l.price),1); const cats={}; ls.forEach(l=>{ cats[hpCat(l)]=(cats[hpCat(l)]||0)+1; });
+    res.push({g:g,n:n,k:ls.length,legs:ls,dec:dec,am:amerOfDec(dec),cats:cats,p:ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,ls.length-1)}); });
   return res;
 }
 function hpAllSgp(){
   const gs=boardGames().filter(g=>(S.league==='all'||keyOf(g)===S.league)&&hpInWin(g)&&preOK(g)&&(typeof llState!=='function'||llState(g)==='pre')); const all=[];
   gs.forEach(g=>{ hpBuild(g).forEach(s=>all.push(s)); });
-  all.sort((a,b)=>b.p-a.p); return all;
+  all.sort((a,b)=>b.p*(1+0.04*(Object.keys(b.cats).length-1))-a.p*(1+0.04*(Object.keys(a.cats).length-1))); return all;       // a mix of kinds ranks a little higher
 }
+const HP_CATN={side:'team side',total:'total',ou:'over/under prop',alt:'stat threshold'};
+function hpMixTxt(s){ return Object.keys(s.cats).map(k=>s.cats[k]+' '+HP_CATN[k]+(s.cats[k]>1&&k!=='side'?'s':'')).join(' · '); }
 function hpLegRow(l){
+  if(l.kind==='alt') return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <span class="mono">'+fo(l.price)+'</span> <span class="muted small">'+esc(l.bk)+' · '+Math.round(l.p*100)+'%</span></summary>'+
+    '<div class="small muted hpld">Stat threshold from the model\'s ladder around the book\'s line. '+(l.book==='est'?'Price is my estimate, not a sportsbook price (FanDuel may list this rung at a different price, or not at all).':'Price is the book\'s price for this rung.')+' Model chance '+Math.round(l.pModel*100)+'%'+(Math.abs(l.p-l.pModel)>0.005?', adjusted for availability to '+Math.round(l.p*100)+'%':'')+'. FanDuel cannot load this leg from a link: add it by hand.</div></details>';
   const isP=l.kind==='prop';
   return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <span class="mono">'+fo(l.price)+'</span> <span class="muted small">'+(l.book==='fanduel'?'<b class="fdtag">FD</b>':esc(l.bk))+' · '+Math.round(l.p*100)+'%</span></summary>'+
     '<div class="small muted hpld">'+(isP?'Player prop. ':'Game line. ')+(l.book==='fanduel'?'FanDuel\'s own price and line.':'FanDuel has not posted this one; best other book shown ('+esc(l.bk)+').')+
     ' Book no-vig chance '+Math.round(l.pFair*100)+'%'+(l.pModel!=null?', model '+Math.round(l.pModel*100)+'%':'')+', blended to '+Math.round(l.p*100)+'%.'+(l.why?' '+esc(l.why)+'.':'')+(l.link&&l.book==='fanduel'?' <a href="'+esc(l.link)+'" target="_blank" rel="noopener">Open this leg on FanDuel</a>':'')+'</div></details>';
 }
 function hpSgpCard(s,i){
-  const g=s.g, on=s.legs.every(l=>inSlip(l.tok)); const nFd=s.legs.filter(l=>l.book==='fanduel').length, allFd=nFd===s.legs.length, fdU=hpFdUrl(s), nP=s.legs.filter(l=>l.kind==='prop').length;
-  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.away,20)+' ':'')+esc(g.teams.away.abbr)+' @ '+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.home,20)+' ':'')+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.k+(s.k<s.n?' of up to '+s.n:'')+' legs'+(nP?' · '+nP+' prop'+(nP>1?'s':''):'')+'</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
+  const g=s.g, on=s.legs.every(l=>inSlip(l.tok)); const nFd=s.legs.filter(l=>l.book==='fanduel').length, allFd=nFd===s.legs.length, fdU=hpFdUrl(s), nEst=s.legs.filter(l=>l.book==='est').length;
+  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.away,20)+' ':'')+esc(g.teams.away.abbr)+' @ '+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.home,20)+' ':'')+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.k+(s.k<s.n?' of up to '+s.n:'')+' legs</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
+    '<div class="small muted hpmix">Mix: '+esc(hpMixTxt(s))+(nEst?' · '+nEst+' est. price'+(nEst>1?'s':''):'')+'</div>'+
     '<div class="hpsrc">'+(allFd?fdMark()+' same-game parlay legs':(nFd?fdMark()+' on '+nFd+' of '+s.k+' legs, the rest at the best other book':'FanDuel has not posted these legs yet, so the best other book is shown'))+'</div>'+
     '<details class="hplegs"'+(S.fold['hpl'+g.id+s.n]?' open':'')+' data-fold="hpl'+esc(g.id+s.n)+'"><summary class="small"><b>Legs</b> <span class="muted">tap to open or close, and tap a leg for its detail</span></summary>'+s.legs.map(hpLegRow).join('')+'</details>'+
-    '<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="hp-add" data-i="'+i+'">'+(on?'Remove from slip':'Add to slip')+'</button>'+(fdU?'<a class="btn" href="'+esc(fdU)+'" target="_blank" rel="noopener">Open on FanDuel</a>':'')+'</div></div>';
+    '<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="hp-add" data-i="'+i+'">'+(on?'Remove from slip':'Add to slip')+'</button>'+(fdU.url?'<a class="btn" href="'+esc(fdU.url)+'" rel="noopener">'+(fdU.n?'Open on FanDuel ('+fdU.n+' of '+s.k+' legs)':'Open game on FanDuel')+'</a>':'')+'</div>'+
+    (fdU.n&&fdU.n<s.k?'<div class="small muted">Only '+fdU.n+' of '+s.k+' legs can be loaded by link ('+(s.k-fdU.n)+' without a FanDuel link: add by hand).</div>':'')+'</div>';
 }
-/* the FanDuel page for a parlay: all legs in one betslip link when every leg has its FanDuel link, otherwise the game's FanDuel page */
+/* the FanDuel handoff for a parlay: {url, n}. n = how many legs are inside the link. Legs that have a FanDuel selection link are combined into one betslip link;
+   legs without one (estimated thresholds, other-book fallbacks) cannot be loaded, so they are left out of the link rather than breaking it. With no linkable leg, the game's FanDuel page. */
 function hpFdUrl(s){
-  try{ const ls=s.legs.map(l=>l.book==='fanduel'?l.link:null); if(ls.every(u=>u&&/^https:\/\//.test(u))){ const c=(ls.length>1&&typeof odCombine==='function')?odCombine('fanduel',ls):ls[0]; if(c) return c; }
-    const e=bkEvent(s.g); const u=e&&e.eventLinks&&e.eventLinks.fanduel; return u&&/^https:\/\//.test(u)?u:''; }catch(e){ return ''; }
+  try{ const ls=s.legs.map(l=>l.book==='fanduel'?l.link:null).filter(u=>u&&/^https:\/\/sportsbook\.fanduel\.com\//.test(u));
+    if(ls.length){ const c=(ls.length>1&&typeof odCombine==='function')?odCombine('fanduel',ls):ls[0]; if(c) return {url:c,n:ls.length}; return {url:ls[0],n:1}; }
+    const e=bkEvent(s.g); const u=e&&e.eventLinks&&e.eventLinks.fanduel; return {url:u&&/^https:\/\//.test(u)?u:'',n:0}; }catch(e){ return {url:'',n:0}; }
 }
 function hpSgpHtml(){
   if(!hpOdds()) return {err:'<div class="small muted">Sportsbook lines have not loaded yet, so no parlays can be built. They refresh about every hour.</div>'};
@@ -126,7 +170,7 @@ function hpSgpHtml(){
   HP_SIZES.forEach(sz=>{ const n=sz[0], per={}; const show=[];
     all.forEach((s,i)=>{ if(s.n!==n) return; const k=keyOf(s.g); per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<4) show.push([s,i]); });
     out[n]=show.length?show.map(x=>hpSgpCard(x[0],x[1])).join(''):'<div class="small muted">No game has enough legs at or above '+Math.round(sz[1]*100)+'% for a '+n+'-leg parlay'+(S.league==='all'?'':' in this league')+' right now.</div>'; });
-  out.note='<div class="small muted">Every leg is a FanDuel line (game lines and player props, over and under) at FanDuel\'s price; only a line FanDuel has not posted falls back to the best other book. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
+  out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
   return out;
 }
 
@@ -185,6 +229,9 @@ function hpServerTok(l){
   if(sp.k==='ml') return 'g:'+g.id+':ml:'+sp.side;
   if(sp.k==='spr'){ const ln=sp.side==='home'?L.sprHome:L.sprAway; return ln!=null&&Math.abs(ln-sp.line)<0.01?'g:'+g.id+':spr:'+sp.side:null; }
   if(sp.k==='tot') return L.total!=null&&Math.abs(L.total-sp.line)<0.01?'g:'+g.id+':tot:'+sp.dir:null;
-  if(sp.k==='prop'&&sp.dir==='ge'){ const pl=findPlayer(g,sp.pid); const st=pl&&pl.stats.find(s=>s.key===sp.stat); return st&&st.line!=null&&Math.floor(st.line)+1===sp.T?'p:'+g.id+':'+pl.id+':'+st.key+':over':null; }
+  if(sp.k==='prop'&&sp.dir==='ge'){ const pl=findPlayer(g,sp.pid); const st=pl&&pl.stats.find(s=>s.key===sp.stat); if(!st) return null;
+    if(st.line!=null&&Math.floor(st.line)+1===sp.T) return 'p:'+g.id+':'+pl.id+':'+st.key+':over';
+    if((st.miles||[]).some(m=>m.t===sp.T)) return 'p:'+g.id+':'+pl.id+':'+st.key+':m:'+sp.T;        // a threshold from the slate's own ladder
+    return null; }
   return null;
 }

@@ -52,12 +52,13 @@ function odLegLinks(l,info){
   const g=G[l.gid]; if(!g) return null; let e=null; try{ e=(typeof bkEvent==='function'&&bkEvent(g))||(typeof odFind==='function'&&odFind(g))||null; }catch(err){} if(!e) return null;
   const sp=l.spec||{}, out={}, M=e.main||{}, diff={};
   /* each book's own link for this pick; when a book does not list the exact line, use the closest line that book does list (the price will differ, the pick is the same) */
-  const take=(x,line)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=bkRegion(b.link); } }); };
+  /* tol: for player props the closest line is used only when it is within about one unit; a "5+ rush yds" pick must not turn into "Over 24.5 rush yds" at the book */
+  const take=(x,line,tol)=>{ if(!x||!x.books) return; Object.keys(x.books).forEach(k=>{ const b=x.books[k]; if(!b||!b.link||!/^https:\/\//i.test(b.link)) return; const d=(line!=null&&b.line!=null)?Math.abs(+b.line-line):0; if(tol!=null&&d>tol) return; if(diff[k]==null||d<diff[k]){ diff[k]=d; out[k]=bkRegion(b.link); } }); };
   if(sp.k==='ml') take(M.ml&&M.ml[sp.side]);
   else if(sp.k==='spr') take(M.spread&&M.spread[sp.side],+sp.line);
   else if(sp.k==='tot') take(M.total&&M.total[sp.dir],+sp.line);
   else if(sp.k==='prop'){ const pl=(typeof findPlayer==='function')?findPlayer(g,sp.pid):null; if(pl){ const nm=odKey(pl.name); const side=sp.dir==='lt'?'under':'over'; const line=sp.T-0.5;
-      (e.props||[]).forEach(p=>{ if(odKey(p.name)!==nm||p.stat!==sp.stat||p.side!==side) return; take(p,line); }); } }
+      (e.props||[]).forEach(p=>{ if(odKey(p.name)!==nm||p.stat!==sp.stat||p.side!==side) return; take(p,line,1.01); }); } }
   if(l.links) Object.keys(l.links).forEach(k=>{ if(l.links[k]){ out[k]=bkRegion(l.links[k]); diff[k]=0; } });
   if(info) Object.keys(diff).forEach(k=>{ info[k]=diff[k]; });
   return out;

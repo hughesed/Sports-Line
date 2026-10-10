@@ -15,3 +15,6 @@
 .hpleg>summary::before{content:"›";display:inline-block;margin-right:6px;color:var(--muted);transition:transform .15s}.hpleg[open]>summary::before{transform:rotate(90deg)}
 .hpld{padding:4px 0 2px 14px}
 .hpfold .hpfold{margin-left:6px}
+
+/* the game the Live tab was opened at */
+.lvfocus{outline:3px solid var(--accent);outline-offset:3px;border-radius:14px;transition:outline-color .6s}
