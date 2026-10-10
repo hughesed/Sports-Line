@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 53,
+ "runNumber": 54,
  "deadlineHit": false,
- "generatedAt": "2026-10-10T16:13:15Z",
- "generatedAtET": "Sat Oct 10, 12:13 PM ET",
+ "generatedAt": "2026-10-10T16:44:21Z",
+ "generatedAtET": "Sat Oct 10, 12:44 PM ET",
  "today": "2026-10-10",
- "lastRunAt": "2026-10-10T16:13:15Z",
+ "lastRunAt": "2026-10-10T16:44:21Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,10 +45,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 6,
+   "games": 5,
    "playerLevel": 0,
    "teamLevel": 4,
-   "carried": 2,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -56,10 +56,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 14,
+   "games": 21,
    "playerLevel": 0,
    "teamLevel": 8,
-   "carried": 6,
+   "carried": 13,
    "error": null,
    "newFinals": 0,
    "storeGames": 1360,
@@ -97,9 +97,9 @@
   }
  },
  "counts": {
-  "slate": 34,
-  "playerCards": 15,
-  "teamCards": 19,
+  "slate": 40,
+  "playerCards": 17,
+  "teamCards": 23,
   "window": 151,
   "sched": 136,
   "pastp": 37,
@@ -122,9 +122,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 4.8,
+  "seconds": 3.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -134,16 +134,15 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 27,
+  "gamesUploaded": 15,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2287,
   "configured": true
  },
- "odds": "ok: 75 events",
- "fanduel": "ok: FanDuel lines on 12 cards, 314 player stats, FanDuel-only players on 0 cards",
+ "odds": "kept (31 min old, pulls every 120 min)",
+ "fanduel": "ok: FanDuel lines on 14 cards, 314 player stats, FanDuel-only players on 2 cards",
  "errors": [],
- "requests": 907,
+ "requests": 906,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 47.1
+ "seconds": 32.2
 }
