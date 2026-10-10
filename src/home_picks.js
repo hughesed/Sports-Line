@@ -10,12 +10,14 @@ const hpImp=o=>o==null?null:(o<0?(-o)/(-o+100):100/(o+100));
 const hpAm=p=>{ p=clamp(p,0.01,0.99); return p>=0.5?Math.round(-100*p/(1-p)):Math.round(100*(1-p)/p); };
 const hpKey=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
 function hpOdds(){ try{ const O=window.__LSDATA&&window.__LSDATA.odds; return O&&Array.isArray(O.events)?O:null; }catch(e){ return null; } }
-/* best price on the most common line among the books (never mixes lines) */
+/* FanDuel is the main book: its own price and line whenever it lists the outcome; only when it does not, the best price among the other books on their most common line */
 function hpBest(x){
   if(!x||!x.books) return null; const ks=Object.keys(x.books).filter(k=>x.books[k]&&x.books[k].odds!=null); if(!ks.length) return null;
   const cnt={}; ks.forEach(k=>{ const l=String(x.books[k].line); cnt[l]=(cnt[l]||0)+1; });
+  const fd=x.books.fanduel;
+  if(fd&&fd.odds!=null) return {book:'fanduel',odds:fd.odds,line:fd.line,link:fd.link,n:cnt[String(fd.line)]||1,fd:true};
   const main=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]; let best=null;
-  ks.forEach(k=>{ const v=x.books[k]; if(String(v.line)!==main) return; if(!best||v.odds>best.odds) best={book:k,odds:v.odds,line:v.line,link:v.link,n:cnt[main]}; });
+  ks.forEach(k=>{ const v=x.books[k]; if(String(v.line)!==main) return; if(!best||v.odds>best.odds) best={book:k,odds:v.odds,line:v.line,link:v.link,n:cnt[main],fallback:true}; });
   return best;
 }
 /* no-vig chance: the feed's fair price when it is on the same line, otherwise the two best prices with the margin removed */
@@ -96,10 +98,16 @@ function hpAllSgp(){
   all.sort((a,b)=>b.p-a.p); return all;
 }
 function hpSgpCard(s,i){
-  const g=s.g, on=s.legs.every(l=>inSlip(l.tok));
+  const g=s.g, on=s.legs.every(l=>inSlip(l.tok)); const nFd=s.legs.filter(l=>l.book==='fanduel').length, allFd=nFd===s.legs.length, fdU=hpFdUrl(s);
   return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.away,20)+' ':'')+esc(g.teams.away.abbr)+' @ '+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.home,20)+' ':'')+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.n+'-leg</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
-    s.legs.map(l=>'<div class="small">'+esc(l.label)+' <span class="mono">'+fo(l.price)+'</span> <span class="muted">'+esc(l.bk)+' · '+Math.round(l.p*100)+'%'+(l.why?' · '+esc(l.why):'')+'</span></div>').join('')+
-    '<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="hp-add" data-i="'+i+'">'+(on?'Remove from slip':'Add to slip')+'</button></div></div>';
+    '<div class="hpsrc">'+(allFd?fdMark()+' same-game parlay legs':(nFd?fdMark()+' on '+nFd+' of '+s.n+' legs, the rest at the best other book':'FanDuel has not posted these legs yet, so the best other book is shown'))+'</div>'+
+    s.legs.map(l=>'<div class="small">'+esc(l.label)+' <span class="mono">'+fo(l.price)+'</span> <span class="muted">'+(l.book==='fanduel'?'<b class="fdtag">FD</b>':esc(l.bk))+' · '+Math.round(l.p*100)+'%'+(l.why?' · '+esc(l.why):'')+'</span></div>').join('')+
+    '<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="hp-add" data-i="'+i+'">'+(on?'Remove from slip':'Add to slip')+'</button>'+(fdU?'<a class="btn" href="'+esc(fdU)+'" target="_blank" rel="noopener">Open on FanDuel</a>':'')+'</div></div>';
+}
+/* the FanDuel page for a parlay: all legs in one betslip link when every leg has its FanDuel link, otherwise the game's FanDuel page */
+function hpFdUrl(s){
+  try{ const ls=s.legs.map(l=>l.book==='fanduel'?l.link:null); if(ls.every(u=>u&&/^https:\/\//.test(u))){ const c=(ls.length>1&&typeof odCombine==='function')?odCombine('fanduel',ls):ls[0]; if(c) return c; }
+    const e=bkEvent(s.g); const u=e&&e.eventLinks&&e.eventLinks.fanduel; return u&&/^https:\/\//.test(u)?u:''; }catch(e){ return ''; }
 }
 function hpSgpHtml(){
   if(!hpOdds()) return '<div class="small muted">Sportsbook lines have not loaded yet, so no parlays can be built. They refresh about every hour.</div>';

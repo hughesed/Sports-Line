@@ -235,15 +235,31 @@ async function doClaim(){
 async function signOut(){ stopChat(); try{ await SOC.sb.auth.signOut(); }catch(e){} SOC.user=null; SOC.me=null; SOC.bets=null; SOC.mentions=[]; S.view='pre'; render(); }
 
 /* ---------- leaderboard + badges ---------- */
+const LB_KEY='ls_lb_v1';
+function lbCacheGet(){ try{ const j=JSON.parse(localStorage.getItem(LB_KEY)||'null'); return (j&&j.d&&typeof j.d==='object')?j:null; }catch(e){ return null; } }
+function lbCachePut(d){ try{ localStorage.setItem(LB_KEY,JSON.stringify({d:d,t:Date.now()})); }catch(e){} }
+function lbPaint(){ if(S.view==='board'){ const b=document.getElementById('board-body'); if(b) b.innerHTML=boardBodyHtml(); } }
+function lbPrevDay(d,n){ const t=new Date((d||'')+'T12:00:00'); if(isNaN(+t)) return ''; t.setDate(t.getDate()-n); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+/* the board always shows something: live data, else the last settled day, else what this phone saw last */
 function loadBoard(force){
-  if(!SOC.sb) return; if(!force&&SOC.lb&&Date.now()-SOC.lbT<20000) return; SOC.lbT=Date.now();
-  SOC.sb.rpc('leaderboard').then(r=>{ if(r.error){ SOC.err=r.error.message; return; } const sig=JSON.stringify(r.data); if(sig===SOC.lbSig) return; SOC.lbSig=sig; SOC.lb=r.data; if(S.view==='board'){ const b=document.getElementById('board-body'); if(b) b.innerHTML=boardBodyHtml(); } });
+  if(!SOC.lb){ const c=lbCacheGet(); if(c){ SOC.lb=c.d; SOC.lbOld=c.t; } }
+  if(!SOC.sb){ lbPaint(); return; } if(!force&&SOC.lb&&!SOC.lbOld&&Date.now()-SOC.lbT<20000) return; SOC.lbT=Date.now();
+  SOC.sb.rpc('leaderboard').then(function(r){
+    if(r.error||!r.data||typeof r.data!=='object'){ SOC.lbErr=(r.error&&r.error.message)||'no data'; lbPaint(); return; }
+    SOC.lbErr=''; const d=r.data; const empty=!(d.winners&&d.winners.length)&&!(d.losers&&d.losers.length);
+    const done=function(){ const sig=JSON.stringify(d); SOC.lbOld=0; if(sig!==SOC.lbSig||force){ SOC.lbSig=sig; SOC.lb=d; lbCachePut(d); } lbPaint(); };
+    if(!empty||!d.day){ done(); return; }
+    /* nothing settled yet today: look back for the latest day that has results */
+    let n=1; const look=function(){ if(n>7){ done(); return; } const pd=lbPrevDay(d.day,n++); SOC.sb.rpc('leaderboard',{p_day:pd}).then(function(q){ const x=q&&q.data; if(x&&((x.winners&&x.winners.length)||(x.losers&&x.losers.length))){ d.winners=x.winners; d.losers=x.losers; d.fromDay=x.day||pd; } if(d.fromDay) done(); else look(); }).catch(function(){ done(); }); };
+    look();
+  }).catch(function(e){ SOC.lbErr=String((e&&e.message)||e||'offline'); lbPaint(); });
 }
 function uLink(name,cls){ return '<button class="ulink'+(cls?' '+cls:'')+'" data-act="profile" data-u="'+esc(name)+'">'+esc(name)+'</button>'; }
 function badgeChip(kind,count,sport,title){ const b=BADGE[kind]; if(!b) return ''; return '<span class="bdg bdg-'+kind+'" title="'+esc(b.n+(sport?' ('+sport.toUpperCase()+')':'')+': '+b.d+(title?' · '+title:''))+'"><i aria-hidden="true">'+b.e+'</i>'+esc(b.n)+(sport?' '+esc(sport.toUpperCase()):'')+(count>1?' <b>×'+count+'</b>':'')+'</span>'; }
 function badgeLegend(){ return '<details class="d"><summary>What the badges mean</summary><div class="legend">'+Object.keys(BADGE).map(k=>'<div class="lg1">'+badgeChip(k,1)+'<span class="small muted">'+esc(BADGE[k].d)+'</span></div>').join('')+'<div class="small muted">Badges stack: each award is kept with its date (and sport for King), and profiles show ×count. Days run midnight to midnight Eastern time.</div></div></details>'; }
 function boardBodyHtml(){
-  const lb=SOC.lb; if(!lb) return '<div class="small muted">Loading the board…</div>';
+  const lb=SOC.lb; if(!lb) return SOC.lbErr?'<div class="flash">The board could not load ('+esc(SOC.lbErr)+'). <button class="btn" data-act="lbretry">Try again</button></div>':'<div class="small muted">Loading the board…</div>';
+  const note=(SOC.lbErr?'<div class="small muted">Live data is not reachable right now'+(SOC.lbOld?', showing what this phone saw '+esc(shAgo(new Date(SOC.lbOld).toISOString())):'')+'. <button class="ulink" data-act="lbretry">Try again</button></div>':(SOC.lbOld?'<div class="small muted">Showing saved data from '+esc(shAgo(new Date(SOC.lbOld).toISOString()))+', refreshing…</div>':''))+(lb.fromDay?'<div class="small muted">Nothing has settled yet today, so these are the top results from '+esc(fmtDay(lb.fromDay))+'.</div>':'');
   const rows=(arr,win)=>arr.length?arr.map((r,i)=>'<div class="lbrow'+(SOC.me&&r.id===SOC.me.id?' me':'')+'"><span class="rk">'+(i+1)+'</span>'+uLink(r.username)+'<span class="mono pf '+(win?'g':'r')+'">'+sgn(+r.net)+'</span></div>').join(''):'<div class="small muted">'+(win?'No winners yet today. Profit counts on the day a bet or battle settles.':'Nobody is down today yet.')+'</div>';
   const tab=SOC.boardTab;
   const y=lb.yesterday||{}; const yb=(y.badges||[]);
@@ -252,15 +268,15 @@ function boardBodyHtml(){
   const at=(lb.alltime||[]);
   const atHtml=at.length?'<div class="attable" role="table" aria-label="All-time badges"><div class="atr ath" role="row"><span>Player</span>'+['champion','trash','active','convo','king','hot'].map(k=>'<span title="'+esc(BADGE[k].n)+'">'+BADGE[k].e+'</span>').join('')+'</div>'+
     at.map(r=>'<div class="atr" role="row">'+uLink(r.username)+['champion','trash','active','convo','king','hot'].map(k=>'<span class="mono">'+(r[k]||'·')+'</span>').join('')+'</div>').join('')+'</div>':'<div class="small muted">No badges awarded yet. The first ones are handed out at the first midnight ET after people start playing.</div>';
-  return '<div class="small muted">'+esc(fmtDay(lb.day))+' · Eastern time · '+(lb.players||0)+' player'+(lb.players===1?'':'s')+' active today · resets at midnight ET</div>'+
+  return note+'<div class="small muted">'+esc(fmtDay(lb.day))+' · Eastern time · '+(lb.players||0)+' player'+(lb.players===1?'':'s')+' active today · resets at midnight ET</div>'+
     '<div class="seg" role="group" aria-label="Board"><button data-act="lbtab" data-t="win" aria-pressed="'+(tab==='win')+'">Top 10 winners</button><button data-act="lbtab" data-t="lose" aria-pressed="'+(tab==='lose')+'">Top 10 losers</button></div>'+
     '<div class="lblist">'+(tab==='win'?rows(lb.winners||[],true):rows(lb.losers||[],false))+'</div>'+
     '<h4 class="sub">Yesterday\'s champions</h4>'+yHtml+
-    '<h4 class="sub">All-time badges</h4>'+atHtml+badgeLegend()+shProfileBlock(d)+PRACTICE_NOTE;
+    '<h4 class="sub">All-time badges</h4>'+atHtml+badgeLegend()+PRACTICE_NOTE;
 }
 function fmtDay(d){ if(!d) return ''; const t=new Date(d+'T12:00:00'); return t.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
 function boardView(){
-  if(!SOC.on||SOC.state!=='ready') return '<section class="game"><div class="sec"><h3>Daily leaderboard</h3>'+socNote()+localSelfCard()+'</div></section>';
+  if(!SOC.on||SOC.state!=='ready'){ if(!SOC.lb){ const c=lbCacheGet(); if(c){ SOC.lb=c.d; SOC.lbOld=c.t; } } return '<section class="game"><div class="sec"><h3>Daily leaderboard</h3>'+socNote()+localSelfCard()+(SOC.lb?'<div id="board-body">'+boardBodyHtml()+'</div>':'')+'</div></section>'; }
   return '<section class="game"><div class="sec"><h3>Daily leaderboard <span class="hint">net coins won today</span></h3><div id="board-body">'+boardBodyHtml()+'</div></div></section>';
 }
 function localSelfCard(){ const pend=P.bets.filter(b=>b.status==='pending'); const atStake=pend.reduce((s,b)=>s+b.stake,0); const net=P.bank+atStake-P.start; return '<div class="small muted">Your phone-only practice bank: '+money(P.bank)+' ('+(net>=0?'+':'−')+money(Math.abs(net))+').</div>'; }
@@ -413,6 +429,7 @@ document.addEventListener('click',function(e){
   if(act==='su-out'){ stop(); closeModal(); signOut(); return; }
   if(act==='signout'){ stop(); signOut(); return; }
   if(act==='profile'){ stop(); const u=t.getAttribute('data-u'); if(u) openProfile(u); return; }
+  if(act==='lbretry'){ stop(); SOC.lbErr=''; loadBoard(true); lbPaint(); return; }
   if(act==='lbtab'){ stop(); SOC.boardTab=t.getAttribute('data-t'); const b=document.getElementById('board-body'); if(b) b.innerHTML=boardBodyHtml(); return; }
   if(act==='chat-send'){ stop(); sendChatMsg(); return; }
   if(act==='chat-del'){ stop(); const id=+t.getAttribute('data-id'); SOC.sb.rpc('delete_chat',{p_id:id}).then(r=>{ if(r.error){ const n=document.getElementById('chatnote'); if(n) n.textContent=r.error.message; return; } const m=SOC.chat.find(x=>x.id===id); if(m){ m.deleted=true; m.body=''; m.img=null; renderChat(false); } }); return; }

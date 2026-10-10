@@ -35,8 +35,8 @@ t = rep(t, "'<div class=\"kv\"><div class=\"k\">Last '+st.n+' vs line</div><div 
         "'<div class=\"kv\"><div class=\"k\">Last '+st.n15+' vs line</div><div class=\"v\">'+st.overHits15+'/'+st.n15+' over</div>")
 t = rep(t, "' · '+st.n+' of '+st.n;", "' · '+st.n15+' of '+st.n15;")
 t = rep(t, "Alternate lines (hit count is for the last '+st.n+')", "Alternate lines (hit count is for the last '+st.n15+' played)")
-t = rep(t, "<span><i style=\"background:var(--safe)\"></i>safe point</span></div>'+",
-        "<span><i style=\"background:var(--safe)\"></i>safe point</span><span>lighter bars: older than the 10-game model window</span><span>dashed: did not play</span></div>'+")
+t = rep(t, "<span><i style=\"background:var(--safe)\"></i>safe point</span></div>')+",
+        "<span><i style=\"background:var(--safe)\"></i>safe point</span><span>lighter bars: older than the 10-game model window</span><span>dashed: did not play</span></div>')+")
 t = rep(t, "is the highest number a player reached in every game of the window (the last 10 games, or every game played this season in the NFL). If he had a zero in that stretch, there is no safe point.",
         "is the highest number a player reached in every game he played in the window (up to 15 games, shown in the chart; fewer when the season is shorter). Games he missed show as DNP and are not counted as zeros. If he had a zero in a game he played, there is no safe point.")
 t = rep(t, "<div><b>Limits</b>: the NFL has only 3 games played, so a safe point there means 3 of 3.",
@@ -87,7 +87,7 @@ t = rep(t, '<div class="wrap" id="app"></div>', '<header class="hd" id="hdr"></h
 t = rep(t, '<div class="slipbar" id="slip" hidden></div>', '<div class="slipbar" id="slip" hidden></div>\n<nav class="bnav" id="nav" aria-label="Main"></nav>')
 t = cut(t, '/* ================= shell ================= */\nfunction render(){', '/* ================= events')
 t = cut(t, 'function linesTable(g){', 'function crossroads(g){')
-t = rep(t, "'<div class=\"sec\"><h3>Lines <span class=\"hint\">DraftKings via ESPN</span></h3>'+linesTable(g)+'</div>'", "'<div class=\"sec\"><h3>Lines <span class=\"hint\">DraftKings via ESPN · tap to add to slip</span></h3>'+linesTable(g)+'</div>'")
+t = rep(t, "'<div class=\"sec\"><h3>Lines <span class=\"hint\">DraftKings via ESPN</span></h3>'+linesTable(g)+'</div>'", "'<div class=\"sec\"><h3>Lines <span class=\"hint\">'+linesSrcHtml(g)+' · tap to add to slip</span></h3>'+linesTable(g)+'</div>'")
 t = rep(t, "'</div>'+leans+notesHtml+", "'</div>'+leans+ctxBox(g)+learnedBox(g)+notesHtml+")
 t = rep(t, "const LEAGUE_N = {nfl:32,wnba:15,mlb:30};", "const LEAGUE_N = {nfl:32,wnba:15,mlb:30,nba:30,cfb:136,cbb:362,nhl:32,tennis:2};")
 t = rep(t, "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5};", "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5,cfb:11.1,nba:8.9,cbb:8.2,nhl:1.45,tennis:3.4};")

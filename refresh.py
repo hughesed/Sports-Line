@@ -177,6 +177,17 @@ def main():
     validate_slate(slate)
     log(f"  slate: {len(games)} games " + str({lg: sum(1 for g in games if (g.get('key') or g['lg']) == lg) for lg in LEAGUES}))
 
+    # ---------------------------------------------------------------- sportsbook prices: FanDuel is the main book on every card (lines, props, links)
+    try: odds_status = ODDS.refresh(f"{DATA}/odds.json", log)
+    except Exception as ex: odds_status = "error"
+    log(f"  odds: {odds_status}")
+    try:
+        import fanduel as FD
+        fd_status = FD.apply(games, read_json(f"{DATA}/odds.json", {}), now)
+    except Exception as ex:
+        fd_status = f"error: {type(ex).__name__}: {ex}"[:160]
+    log(f"  fanduel: {fd_status}")
+
     # ---------------------------------------------------------------- 4. learning export
     log("4/7 learning (walk-forward ratings, tuning, blend weights)")
     sched_events = {lg: [e for e in (boards.get(lg) or [])] for lg in LEAGUES}
@@ -217,6 +228,27 @@ def main():
     nlog = pred.log_games(games, now, slopes)
     log(f"  logged {nlog} new pre-game snapshots (first snapshot per game is kept); {len(pred.recs)} on file")
 
+    tennis_note = None
+    try:      # tennis: book-only match cards from the odds feed (isolated: a problem here never touches the other leagues). Added after the prediction log, before the uploads
+        import tennis as TEN
+        tc = TEN.cards(read_json(f"{DATA}/odds.json", {}), now)
+        games.extend(tc); tennis_note = dict(status="ok", games=len(tc), playerLevel=0, teamLevel=len(tc), carried=0, error=None)
+        log(f"  tennis: {len(tc)} match cards")
+    except Exception as ex:
+        tennis_note = dict(status="error", games=0, playerLevel=0, teamLevel=0, carried=0, error=f"{type(ex).__name__}: {ex}"[:160])
+
+    try:      # leagues ESPN gave no cards for (NHL, MLB) but the odds feed lists: book-only cards with FanDuel lines and props
+        import fanduel as FD
+        fc = FD.feed_cards(read_json(f"{DATA}/odds.json", {}), games, now)
+        if fc:
+            games.extend(fc)
+            for k in {c["key"] for c in fc}:
+                n = sum(1 for c in fc if c["key"] == k)
+                lstat[k].update(status="ok", games=n, playerLevel=0, teamLevel=n, carried=0, error=None, note="book lines only (ESPN had no cards)")
+            log(f"  feed cards: {len(fc)} games from FanDuel for leagues ESPN left empty")
+    except Exception as ex:
+        log(f"  feed cards failed: {type(ex).__name__}: {ex}"[:200])
+
     # ---------------------------------------------------------------- social: battle data file, uploads, wait for the background work
     social_info = runner.finish(((T0 + deadline + 3) - time.time()) if deadline else 90)
     try:
@@ -239,17 +271,6 @@ def main():
     pred.save(today)
     if espn.STATS["skipped"]:
         errors.append(f"time limit reached: {espn.STATS['skipped']} ESPN requests were skipped to stay inside the run budget; the next run catches up")
-    try: odds_status = ODDS.refresh(f"{DATA}/odds.json", log)
-    except Exception as ex: odds_status = "error"
-    log(f"  odds: {odds_status}")
-    tennis_note = None
-    try:      # tennis: book-only match cards from the odds feed (isolated: a problem here never touches the other leagues)
-        import tennis as TEN
-        tc = TEN.cards(read_json(f"{DATA}/odds.json", {}), now)
-        games.extend(tc); tennis_note = dict(status="ok", games=len(tc), playerLevel=0, teamLevel=len(tc), carried=0, error=None)
-        log(f"  tennis: {len(tc)} match cards")
-    except Exception as ex:
-        tennis_note = dict(status="error", games=0, playerLevel=0, teamLevel=0, carried=0, error=f"{type(ex).__name__}: {ex}"[:160])
     run_no = int(os.environ.get("GITHUB_RUN_NUMBER") or (prev_meta.get("runNumber") or 0) + 1)
     meta = dict(schema=SCHEMA, runNumber=run_no, deadlineHit=bool(espn.STATS["skipped"]), generatedAt=now.strftime("%Y-%m-%dT%H:%M:%SZ"), generatedAtET=now.astimezone(ET).strftime("%a %b %-d, %-I:%M %p ET"), today=str(today),
                 lastRunAt=now.strftime("%Y-%m-%dT%H:%M:%SZ"), lastRunError=None,
@@ -258,7 +279,7 @@ def main():
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),
-                social=social_info, odds=odds_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
+                social=social_info, odds=odds_status, fanduel=fd_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
     write_json(f"{DATA}/slate.json", slate)
     write_json(f"{DATA}/learn.json", learn_out)
     write_json(f"{DATA}/pastp.json", pastp)

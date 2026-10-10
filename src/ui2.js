@@ -297,7 +297,7 @@ function render(){
   const showLeague=S.view==='pre'||S.view==='live';
   const dlabel=S.date===TODAY?'Today':wd(S.date)+' '+mon(S.date)+' '+dnum(S.date);
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
-    (S.calOpen?calHtml():'')+(showLeague?'<div class="hd-tools"><div class="tabwrap"><div class="slhint"><span>Slide for more sports</span><span>‹ ›</span></div><div class="slline"><div class="slbar"><i id="slthumb"></i></div>'+(S.view==='pre'?'<button class="themebtn" data-act="theme" aria-label="Switch light or dark mode">'+themeLabel()+'</button>':'')+'</div><div class="tabs" id="ltabs" role="group" aria-label="League">'+ltabs+'</div></div></div>':'')+'</div>';
+    (S.calOpen?calHtml():'')+(showLeague?'<div class="hd-tools"><div class="tabwrap"><div class="slhint"><span>Slide for more sports</span><span>‹ ›</span></div><div class="slline"><div class="slbar" data-for="ltabs" role="slider" aria-label="Slide for more sports"><i id="slthumb"></i></div>'+(S.view==='pre'?'<button class="themebtn" data-act="theme" aria-label="Switch light or dark mode">'+themeLabel()+'</button>':'')+'</div><div class="tabs" id="ltabs" role="group" aria-label="League">'+ltabs+'</div></div></div>':'')+'</div>';
   slFit();
   $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+hpHomeHtml()+hpFold('potd','Pick of the day','',potdHtml(),false)+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
     '<div class="foot"><div>Source: ESPN game logs (up to 15 games shown, last 10 feed the model), standings, results, live play-by-play, injury reports and DraftKings lines. Pregame numbers are a snapshot, so lines and injury news will change before game time.</div>'+
@@ -354,8 +354,17 @@ function themeApply(m){ const r=document.documentElement; if(m==='light'||m==='d
 function themeLabel(){ const m=themeGet(); return m==='dark'?'🌙 Dark':m==='light'?'☀️ Light':'◐ Auto'; }
 function themeCycle(){ const m=themeGet(); const n=m==='auto'?'light':m==='light'?'dark':'auto'; try{ localStorage.setItem('ls_theme',n); }catch(e){} themeApply(n); const b=document.querySelector('.themebtn'); if(b) b.textContent=themeLabel(); }
 themeApply(themeGet());
-function slFit(){ const t=document.getElementById('ltabs'), th=document.getElementById('slthumb'); if(!t||!th) return; const w=Math.max(0.2,Math.min(1,t.clientWidth/Math.max(1,t.scrollWidth))); th.style.width=(w*100)+'%'; const max=t.scrollWidth-t.clientWidth; th.style.left=(max>0?(t.scrollLeft/max)*(100-w*100):0)+'%'; }
-document.addEventListener('scroll',function(e){ if(e.target&&e.target.id==='ltabs') slFit(); },true);
+function slSyncAll(){ document.querySelectorAll('.slbar[data-for]').forEach(function(b){ const t=document.getElementById(b.getAttribute('data-for')), th=b.firstElementChild; if(!t||!th) return; const w=Math.max(0.2,Math.min(1,t.clientWidth/Math.max(1,t.scrollWidth))); th.style.width=(w*100)+'%'; const max=t.scrollWidth-t.clientWidth; th.style.left=(max>0?(t.scrollLeft/max)*(100-w*100):0)+'%'; b.classList.toggle('flat',max<=2); }); }
+function slFit(){ slSyncAll(); }
+document.addEventListener('scroll',function(e){ if(e.target&&e.target.id) slSyncAll(); },true);
+/* every slider bar can be touched or dragged: the thumb follows the finger and scrolls the strip it belongs to */
+(function(){ let cur=null;
+  function move(e){ if(!cur) return; const t=document.getElementById(cur.getAttribute('data-for')); if(!t) return; const r=cur.getBoundingClientRect(), th=cur.firstElementChild; const tw=th?th.getBoundingClientRect().width:0; const span=Math.max(1,r.width-tw); const f=Math.max(0,Math.min(1,(e.clientX-r.left-tw/2)/span)); t.scrollLeft=f*(t.scrollWidth-t.clientWidth); slSyncAll(); if(e.cancelable) e.preventDefault(); }
+  document.addEventListener('pointerdown',function(e){ const b=e.target.closest&&e.target.closest('.slbar[data-for]'); if(!b) return; cur=b; b.classList.add('drag'); try{ b.setPointerCapture(e.pointerId); }catch(_){} move(e); },true);
+  document.addEventListener('pointermove',move,true);
+  function up(){ if(cur){ cur.classList.remove('drag'); cur=null; } }
+  document.addEventListener('pointerup',up,true); document.addEventListener('pointercancel',up,true);
+})();
 window.addEventListener('resize',slFit);
 
 /* Book-only cards (tennis): there is no ratings model, so Crossroads shows what the sportsbook says instead of an offense-vs-defense matchup */
@@ -367,4 +376,14 @@ function bookOnlyBox(g){
       '<div class="kv"><div class="k">'+esc(a.short||a.abbr)+' win chance</div><div class="v">'+pct(1-cr.pHome)+'</div><div class="s">book, no vig</div></div>'+
       '<div class="kv"><div class="k">Game total</div><div class="v">'+n1(L.total)+'</div><div class="s">expected games</div></div>'+
     '</div><div class="small muted">'+esc(g.note||'Book lines only. There is no ratings model for this sport.')+'</div></div>';
+}
+
+/* ---------- FanDuel is the main book: the name shown wherever its lines are used. Official artwork goes in icons/fanduel.svg (or .png); until then the name is shown as text ---------- */
+function fdMark(){ return '<span class="fdmk" title="FanDuel lines"><img class="fdimg" src="icons/fanduel.svg" alt=""><b>FanDuel</b></span>'; }
+document.addEventListener('error',function(e){ const t=e.target; if(t&&t.tagName==='IMG'&&t.classList&&t.classList.contains('fdimg')) t.style.display='none'; },true);
+function linesSrcHtml(g){
+  const s=(g.lines&&g.lines.src)||{}; const n=['ml','spr','tot'].filter(k=>s[k]==='FanDuel').length;
+  if(n===3) return fdMark()+' lines';
+  if(n>0) return fdMark()+' lines, DraftKings for the rest';
+  return 'DraftKings via ESPN <span class="small muted">(FanDuel has not posted this game yet)</span>';
 }

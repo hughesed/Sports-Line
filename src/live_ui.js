@@ -28,23 +28,23 @@ function legFor(tok){
   if(tok.indexOf('o:')===0) return (typeof hpLeg==='function')?hpLeg(tok):null;
   if(tok.charAt(0)==='l'&&tok.charAt(1)===':') return liveLeg(tok);
   const parts = tok.split(':'); const k=parts[0]; const g=G[parts[1]]; if(!g) return null;
-  const cr=g.crossroads, L=g.lines, lg=g.lg;
+  const cr=g.crossroads, L=g.lines, lg=g.lg; const SRC=(L.src||{}), bkOf=x=>x==='FanDuel'?'FD':'DK';
   if(k==='g'){
     const kind=parts[2], side=parts[3];
     if(kind==='ml'){
       const t=g.teams[side]; const price= side==='home'?L.mlHome:L.mlAway;
       const p = side==='home'?cr.pHome:1-cr.pHome;
-      return {id:tok,gid:g.id,group:g.id+':ml',label:t.abbr+' moneyline',p,avail:1,price,src:'DraftKings',spec:{k:'ml',side:side}};
+      return {id:tok,gid:g.id,group:g.id+':ml',label:t.abbr+' moneyline',p,avail:1,price,src:SRC.ml||'DraftKings',bk:bkOf(SRC.ml),spec:{k:'ml',side:side}};
     }
     if(kind==='spr'){
       const t=g.teams[side]; const line= side==='home'?L.sprHome:L.sprAway; const price= side==='home'?L.prHome:L.prAway;
       const ph = logistic((cr.projMargin+L.sprHome)/LOGI[g.key||lg]); const p = side==='home'?ph:1-ph;
-      return {id:tok,gid:g.id,group:g.id+':spr',label:t.abbr+' '+sg(line),p,avail:1,price,src:'DraftKings',spec:{k:'spr',side:side,line:line}};
+      return {id:tok,gid:g.id,group:g.id+':spr',label:t.abbr+' '+sg(line),p,avail:1,price,src:SRC.spr||'DraftKings',bk:bkOf(SRC.spr),spec:{k:'spr',side:side,line:line}};
     }
     if(kind==='tot'){
       const po = logistic((cr.projTotal-L.total)/TOTS[g.key||lg]);
       const over = side==='over';
-      return {id:tok,gid:g.id,group:g.id+':tot',label:(over?'Over ':'Under ')+L.total,p:over?po:1-po,avail:1,price:over?L.over:L.under,src:'DraftKings',spec:{k:'tot',dir:side,line:L.total}};
+      return {id:tok,gid:g.id,group:g.id+':tot',label:(over?'Over ':'Under ')+L.total,p:over?po:1-po,avail:1,price:over?L.over:L.under,src:SRC.tot||'DraftKings',bk:bkOf(SRC.tot),spec:{k:'tot',dir:side,line:L.total}};
     }
   }
   if(k==='p'){
@@ -52,11 +52,12 @@ function legFor(tok){
     const st=pl.stats.find(s=>s.key===parts[3]); if(!st) return null;
     const kind=parts[4]; const nm=surname(pl.name);
     const group=g.id+':'+pl.id+':'+st.key;
-    if(kind==='over') return {id:tok,gid:g.id,group,pid:pl.id,label:nm+' Over '+st.line+' '+st.label.toLowerCase(),p:st.pOver,avail:pl.avail,price:st.overPrice,src:'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:Math.floor(st.line)+1,dir:'ge'}};
+    if(kind==='over') return {id:tok,gid:g.id,group,pid:pl.id,label:nm+' Over '+st.line+' '+st.label.toLowerCase(),p:st.pOver,avail:pl.avail,price:st.overPrice,src:st.lineSrc==='FanDuel'?'FanDuel':'est.',bk:st.lineSrc==='FanDuel'?'FD':undefined,link:st.fdOver||undefined,spec:{k:'prop',pid:pl.id,stat:st.key,T:Math.floor(st.line)+1,dir:'ge'}};
+    if(kind==='under'&&st.underPrice!=null) return {id:tok,gid:g.id,group,pid:pl.id,label:nm+' Under '+st.line+' '+st.label.toLowerCase(),p:1-st.pOver,avail:pl.avail,price:st.underPrice,src:'FanDuel',bk:'FD',link:st.fdUnder||undefined,spec:{k:'prop',pid:pl.id,stat:st.key,T:Math.floor(st.line)+1,dir:'lt'}};
     if(kind==='safe' && st.safeAdj!=null) return {id:tok,gid:g.id,group,pid:pl.id,label:nm+' '+st.safeAdj+'+ '+st.label.toLowerCase(),p:st.pSafe,avail:pl.avail,price:st.safePrice,src:st.safeSrc,spec:{k:'prop',pid:pl.id,stat:st.key,T:st.safeAdj,dir:'ge'}};
     if(kind==='m'){
       const t=parseFloat(parts[5]); const m=st.miles.find(x=>x.t===t); if(!m) return null;
-      const p=clamp(((m.hit+1)/(m.n+2))*(1+0.5*st.matchup),0.03,0.95);
+      const p=m.p!=null?clamp(m.p,0.03,0.95):clamp(((m.hit+1)/(m.n+2))*(1+0.5*st.matchup),0.03,0.95);
       return {id:tok,gid:g.id,group,pid:pl.id,label:nm+' '+t+'+ '+st.label.toLowerCase(),p,avail:pl.avail,price:m.price!=null?m.price:estPrice(p),src:m.price!=null?'DraftKings':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:t,dir:'ge'}};
     }
   }

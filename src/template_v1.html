@@ -277,7 +277,7 @@ function toggleLeg(tok){
 }
 function countSelections(g){
   let n=6;
-  g.players.forEach(pl=>pl.stats.forEach(st=>{ n+=1; if(st.safeAdj!=null) n+=1; n+=visMiles(st).length; }));
+  g.players.forEach(pl=>pl.stats.forEach(st=>{ n+=1; if(st.underPrice!=null) n+=1; if(st.safeAdj!=null) n+=1; n+=visMiles(st).length; }));
   return n;
 }
 function legBtn(tok,title,sub,dis){
@@ -397,31 +397,32 @@ function playerCard(g,pl){
   const hc = st.hot==='hot'?'<span class="badge hot" title="'+esc(st.hotNote)+'">Hot streak</span>':st.hot==='cold'?'<span class="badge cold" title="'+esc(st.hotNote)+'">Cold streak</span>':'<span class="badge">Steady</span>';
   const streak = st.streak>=2 ? st.streak+' straight '+(st.streakDir==='over'?'overs':'unders') : 'no run of 2+';
   const tabs = pl.stats.map(s=>'<button data-act="stat" data-key="'+key+'" data-stat="'+s.key+'" aria-pressed="'+(s.key===sk)+'">'+esc(s.label)+'</button>').join('');
-  const tOver='p:'+g.id+':'+pl.id+':'+st.key+':over', tSafe='p:'+g.id+':'+pl.id+':'+st.key+':safe';
+  const tOver='p:'+g.id+':'+pl.id+':'+st.key+':over', tUnder='p:'+g.id+':'+pl.id+':'+st.key+':under', tSafe='p:'+g.id+':'+pl.id+':'+st.key+':safe';
   const safeTxt = st.safe==null ? 'None (a zero in the window)' : (st.safeAdj!==st.safe ? st.safeAdj+'+ (raw '+st.safe+'+)' : st.safe+'+')+' · '+st.n+' of '+st.n;
-  const alts = visMiles(st).map(m=>legBtn('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t, m.t+'+', legSub('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t)+' · '+m.hit+'/'+m.n, dis)).join('');
-  const bookPrices = st.prices&&st.prices.length ? ' · DK prices '+st.prices.map(fo).join(' / ') : '';
+  const alts = visMiles(st).map(m=>legBtn('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t, m.t+'+', legSub('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t)+(m.n?' · '+m.hit+'/'+m.n:''), dis)).join('');
+  const bookPrices = st.prices&&st.prices.length ? (st.lineSrc==='FanDuel'?' · FD over/under ':' · DK prices ')+st.prices.map(fo).join(' / ') : '';
   const notes=[];
   notes.push(esc(st.matchupNote));
   if(st.boost>0) notes.push('Teammate usage boost +'+Math.round(st.boost*100)+'% ('+esc(pl.boostNotes.join(', '))+')');
   if(st.anchorNote) notes.push('<span class="w">'+esc(st.anchorNote)+'</span>');
   pl.flags.forEach(f=>notes.push('<span class="w">'+esc(f)+'</span>'));
   if(pl.status.note && kind!=='ok') notes.push('<span class="w">'+esc(pl.status.label)+': '+esc(pl.status.note.length>170?pl.status.note.slice(0,167)+'...':pl.status.note)+'</span>');
-  if(st.lineSrc!=='DraftKings') notes.push('No book line for this stat. The line shown is a model line from recent games.');
+  if(st.feed) notes.push('There is no game log for this player in this app. The chance comes from FanDuel\'s no-vig price, and the alternate lines are the model\'s estimate around FanDuel\'s line.');
+  else if(st.lineSrc!=='DraftKings'&&st.lineSrc!=='FanDuel') notes.push('No book line for this stat. The line shown is a model line from recent games.');
   return '<div class="pl" id="pl-'+key+'"><div class="pl-h"><div class="pl-n">'+esc(pl.name)+'<small>'+esc(pl.pos)+' · '+esc(pl.abbr)+(pl.jersey?' #'+esc(pl.jersey):'')+'</small></div>'+
     '<div class="badges"><span class="badge '+bcls+'">'+(kind==='ok'?'Active':esc(pl.status.label))+'</span></div></div>'+
     '<div class="tabs2" role="group" aria-label="Stat">'+tabs+'</div>'+
-    chart(pl,st,pl.id)+
-    '<div class="legend"><span><i style="background:var(--over)"></i>cleared the line</span><span><i style="background:var(--under)"></i>missed</span><span><i style="background:var(--ink);opacity:.7"></i>book line</span><span><i style="background:var(--safe)"></i>safe point</span></div>'+
-    '<div class="mgrid">'+
-      '<div class="kv"><div class="k">Line</div><div class="v">'+st.line+'</div><div class="s">'+(st.lineSrc==='DraftKings'?'DraftKings':'model')+bookPrices+'</div></div>'+
+    (st.feed?'':chart(pl,st,pl.id))+
+    (st.feed?'':'<div class="legend"><span><i style="background:var(--over)"></i>cleared the line</span><span><i style="background:var(--under)"></i>missed</span><span><i style="background:var(--ink);opacity:.7"></i>book line</span><span><i style="background:var(--safe)"></i>safe point</span></div>')+
+    (st.feed?'<div class="mgrid"><div class="kv"><div class="k">Line</div><div class="v">'+st.line+'</div><div class="s">FanDuel'+bookPrices+'</div></div><div class="kv"><div class="k">Over chance</div><div class="v">'+pct(st.pOver)+'</div><div class="s">FanDuel, no vig</div></div><div class="kv"><div class="k">Typical</div><div class="v">'+st.proj+'</div><div class="s">around the line</div></div></div>':'<div class="mgrid">'+
+      '<div class="kv"><div class="k">Line</div><div class="v">'+st.line+'</div><div class="s">'+(st.lineSrc==='FanDuel'?'FanDuel':st.lineSrc==='DraftKings'?'DraftKings':'model')+bookPrices+'</div></div>'+
       '<div class="kv"><div class="k">Safe point</div><div class="v">'+(st.safeAdj!=null?st.safeAdj+'+':'none')+'</div><div class="s">'+esc(safeTxt)+'</div></div>'+
       '<div class="kv"><div class="k">Consistency</div><div class="v">'+gradeEl(st.grade)+'</div><div class="s">'+(st.gradePct!=null?st.gradePct+'% of games near his median':'small sample')+'</div></div>'+
       '<div class="kv"><div class="k">Form</div><div class="v" style="font-family:var(--f-body)">'+hc+'</div><div class="s">'+esc(st.hotNote)+'</div></div>'+
       '<div class="kv"><div class="k">Last '+st.n+' vs line</div><div class="v">'+st.overHits+'/'+st.n+' over</div><div class="s">'+streak+'</div></div>'+
       '<div class="kv"><div class="k">Projection</div><div class="v">'+st.proj+'</div><div class="s">avg '+st.avg+(st.season!=null&&st.season!==st.avg?' · season '+st.season:'')+' · lean '+esc(st.lean)+'</div></div>'+
-    '</div>'+
-    '<div class="btnrow">'+legBtn(tOver,'Over '+st.line,legSub(tOver),dis)+(st.safeAdj!=null?legBtn(tSafe,'Safe '+st.safeAdj+'+',legSub(tSafe),dis):'')+'</div>'+
+    '</div>')+
+    '<div class="btnrow">'+legBtn(tOver,'Over '+st.line,legSub(tOver),dis)+(st.underPrice!=null?legBtn(tUnder,'Under '+st.line,legSub(tUnder),dis):'')+(st.safeAdj!=null?legBtn(tSafe,'Safe '+st.safeAdj+'+',legSub(tSafe),dis):'')+'</div>'+
     (alts?'<div class="small muted">Alternate lines (hit count is for the last '+st.n+')</div><div class="alt">'+alts+'</div>':'')+
     '<div class="pnotes">'+notes.map(x=>'<div>'+x+'</div>').join('')+'</div></div>';
 }
@@ -442,6 +443,9 @@ function buildEight(g){
     if(!best){
       pl.stats.forEach(st=>{ if(st.lean==='Over' && !st.anchorNote){ const sc=st.pOver*0.8; if(!best||sc>best.sc) best={tok:'p:'+g.id+':'+pl.id+':'+st.key+':over',sc}; } });
     }
+    if(!best){   /* players from the book's own list have no game log: take the rung whose chance is nearest 70% */
+      pl.stats.forEach(st=>{ if(!st.feed) return; (st.miles||[]).forEach(m=>{ if(m.p==null||m.p<0.55||m.p>0.9) return; const sc=m.p-Math.abs(m.p-0.7)*0.5; if(!best||sc>best.sc) best={tok:'p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t,sc}; }); });
+    }
     if(best) cands.push(Object.assign({pid:pl.id},best));
   });
   cands.sort((a,b)=>b.sc-a.sc);
@@ -456,7 +460,7 @@ function drawer(g){
   const a=g.teams.away,h=g.teams.home;
   const bs=bestSafe(g).map(x=>{ const tok='p:'+g.id+':'+x.pl.id+':'+x.st.key+':safe'; return '<button class="it" data-act="leg" data-tok="'+esc(tok)+'"><span><b>'+esc(surname(x.pl.name))+'</b> '+esc(x.st.label.toLowerCase())+' safe '+x.st.safeAdj+'+ <span class="muted">(line '+x.st.line+')</span></span><span class="mono">'+(inSlip(tok)?'added':fo(x.st.safePrice))+'</span></button>'; }).join('');
   const byTeam = side=>'<h4 class="sub">'+esc(g.teams[side].name)+'</h4>'+g.players.filter(p=>p.side===side).map(p=>playerCard(g,p)).join('');
-  return '<div class="drawer"><div class="small muted">Lines and player numbers come from ESPN (DraftKings lines). Prices marked est. are my own estimates from the model, not sportsbook prices.</div>'+
+  return '<div class="drawer"><div class="small muted">'+(g.feedProps?'Lines and props are FanDuel\'s. These players come from FanDuel\'s props list, so there is no game log for them here.':'Lines are FanDuel\'s where FanDuel posts them (DraftKings otherwise); player numbers come from ESPN.')+' Prices marked est. are my own estimates from the model, not sportsbook prices.</div>'+
     '<h4 class="sub">Game lines</h4><div class="legs">'+
       gl('ml','away',a.abbr+' moneyline')+gl('ml','home',h.abbr+' moneyline')+
       gl('spr','away',a.abbr+' '+sg(g.lines.sprAway))+gl('spr','home',h.abbr+' '+sg(g.lines.sprHome))+

@@ -24,7 +24,7 @@ function chart(pl,st,pid){
       '<text class="val" x="'+(x+w/2)+'" y="'+(y(0)-h-3)+'" font-size="8.5" text-anchor="middle">'+v+'</text>'+labs+'</g>';
   });
   s+='<line class="bk" x1="'+pL+'" x2="'+(W-pR)+'" y1="'+y(st.line)+'" y2="'+y(st.line)+'"/>';
-  s+='<text class="bkl" x="'+(W-pR)+'" y="'+(y(st.line)-3)+'" font-size="9" text-anchor="end">'+(st.lineSrc==='DraftKings'?'book ':'model ')+st.line+'</text>';
+  s+='<text class="bkl" x="'+(W-pR)+'" y="'+(y(st.line)-3)+'" font-size="9" text-anchor="end">'+(st.lineSrc==='DraftKings'||st.lineSrc==='FanDuel'?'book ':'model ')+st.line+'</text>';
   if(st.safeAdj!=null){
     s+='<line class="sf" x1="'+pL+'" x2="'+(W-pR)+'" y1="'+y(st.safeAdj)+'" y2="'+y(st.safeAdj)+'"/>';
     const near=Math.abs(y(st.safeAdj)-y(st.line))<12;

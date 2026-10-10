@@ -120,7 +120,7 @@ function btRender(){
 }
 /* the sport picker is a swipeable strip: keep its scroll position across re-renders and bring the chosen sport into view */
 function btSliderFix(prev){
-  const tr=document.getElementById('bt-sstrack'); if(!tr) return; if(prev!=null) tr.scrollLeft=prev;
+  const tr=document.getElementById('bt-sstrack'); if(!tr) return; setTimeout(function(){ if(typeof slSyncAll==='function') slSyncAll(); },0); if(prev!=null) tr.scrollLeft=prev;
   const on=tr.querySelector('.ssb[aria-pressed="true"]'); if(!on) return;
   const l=on.offsetLeft, r=l+on.offsetWidth; if(l<tr.scrollLeft+8||r>tr.scrollLeft+tr.clientWidth-8){ try{ tr.scrollTo({left:Math.max(0,l-(tr.clientWidth-on.offsetWidth)/2),behavior:prev==null?'auto':'smooth'}); }catch(e){ tr.scrollLeft=Math.max(0,l-(tr.clientWidth-on.offsetWidth)/2); } }
 }
@@ -148,7 +148,7 @@ function btCreateHtml(){
   const cpu=(f.vs==='cpu');
   const vseg='<div class="fld">Play against<div class="seg" role="group" aria-label="Opponent"><button data-act="bt-vs" data-k="players" aria-pressed="'+(!cpu)+'">Players</button><button data-act="bt-vs" data-k="cpu" aria-pressed="'+cpu+'">🤖 Computer</button></div>'+(cpu?cpuNote():'')+'</div>';
   return '<section class="game"><div class="sec"><h3>Start a battle <span class="hint">practice coins</span></h3>'+vseg+
-    '<div class="sslider" role="group" aria-label="Sport: swipe to see more">'+seg+'</div><div class="small muted ssh">Swipe sideways for more sports</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
+    '<div class="sslider" role="group" aria-label="Sport: swipe to see more">'+seg+'</div><div class="slbar bt" data-for="bt-sstrack" role="slider" aria-label="Slide for more sports"><i></i></div><div class="small muted ssh">Drag the bar or swipe for more sports</div><div class="small muted">'+esc(SPLONG[f.sport])+(sp.season?' · player averages from the '+sp.season+' season'+(off?' (offseason: last season\'s numbers)':''):'')+'</div>'+
     (ts.length?(big?'<label class="fld">Find a team<input class="num wide" data-bt="q" value="'+esc(f.q||'')+'" placeholder="Type a school" aria-label="Find a team" autocomplete="off"></label>':'')+
       tpHtml(f,'home',ts,q,'Your team',null)+
       (cpu?tpHtml(f,'cpuAway',ts,q,'Computer\'s team',f.home,true):'')+

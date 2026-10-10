@@ -89,7 +89,7 @@ function shShopHtml(){
   const bar='<div class="gbar">'+(pick?'<span class="gbl"><span class="gE2">'+esc(pick.emoji)+'</span><span><b>'+esc(pick.name)+'</b><br><small>send it within '+pick.days+' days</small></span></span><button class="gbuy" data-act="sh-buy" data-id="'+esc(pick.id)+'"'+(SHP.busy||!real?' disabled':'')+'><i class="gc"></i> Buy '+cn(pick.pay)+'</button>':'<span class="gbl gmute">Tap a gift to pick it</span>')+'<span class="gbal2"><i class="gc"></i><b>'+cn(s.balance)+'</b></span></div>';
   const mem=shMembers();
   const inv=(s.inventory||[]).filter(x=>!x.sent_at).map(x=>'<div class="ginv"><span class="gE2">'+esc(x.emoji)+'</span><span class="gil"><b>'+esc(x.name)+'</b><small>send by '+esc(shFmt(x.use_by))+'</small></span>'+
-    '<select data-in="sh-to" data-inv="'+x.id+'" aria-label="Send to"><option value="">Send to…</option>'+mem.map(p=>'<option value="'+p.id+'"'+((SHP.to[x.id]||SHP.giftTo)===p.id?' selected':'')+'>'+(p.online?'● ':'○ ')+esc(p.username)+'</option>').join('')+'</select>'+
+    '<select data-in="sh-to" data-inv="'+x.id+'" aria-label="Send to"><option value="">Send to…</option>'+(SOC.me?'<option value="'+SOC.me.id+'"'+((SHP.to[x.id]||SHP.giftTo)===SOC.me.id?' selected':'')+'>⭐ Myself (my vault)</option>':'')+mem.map(p=>'<option value="'+p.id+'"'+((SHP.to[x.id]||SHP.giftTo)===p.id?' selected':'')+'>'+(p.online?'● ':'○ ')+esc(p.username)+'</option>').join('')+'</select>'+
     '<input class="num" data-in="sh-note" data-inv="'+x.id+'" maxlength="140" placeholder="Note (optional)" value="'+esc(SHP.note[x.id]||'')+'" aria-label="Note"><button class="gsend" data-act="sh-send" data-inv="'+x.id+'">Send</button></div>').join('');
   const sent=(s.inventory||[]).filter(x=>x.sent_at).map(x=>'<span class="gsent">'+esc(x.emoji)+' '+esc(x.name)+' → '+esc(x.sent_to_name||'someone')+'</span>').join('');
   return '<div class="gshop"><div class="ghd"><div><b>Send a gift</b><span>Buy with practice coins, send in chat or messages</span></div></div>'+pass+tiles+bar+
@@ -132,7 +132,7 @@ function shProfileBlock(d){
   const mine=SOC.me.id===d.id;
   const g=(x.gifts||[]).map(i=>'<span class="vc">'+esc(i.emoji)+' '+esc(i.name)+' <span class="muted">from '+esc(i.from_name||'?')+' · until '+esc(shFmt(i.until))+'</span></span>').join('');
   return vtProfileRoom(d)+'<div class="shprof"><div class="small">'+shDot(x.online)+(x.online?'Online now':'Last seen '+shAgo(x.last_seen))+(x.pass?' · ⭐ Pass holder':'')+'</div>'+(g?'<h4 class="sub">Gifts right now</h4><div class="vcs">'+g+'</div>':'')+
-    (mine?'':'<div class="btnrow"><button class="btn" data-act="sh-msg-user" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Message</button><button class="btn" data-act="sh-gift-user" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Send a gift</button><button class="btn" data-act="sh-challenge" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Send a battle</button></div>')+'</div>';
+    (mine?'<div class="btnrow"><button class="btn" data-act="sh-gift-user" data-id="'+d.id+'" data-n="myself">Send myself a gift</button></div>':'<div class="btnrow"><button class="btn" data-act="sh-msg-user" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Message</button><button class="btn" data-act="sh-gift-user" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Send a gift</button><button class="btn" data-act="sh-challenge" data-id="'+d.id+'" data-n="'+esc(d.username)+'">Send a battle</button></div>')+'</div>';
 }
 function shLoadPex(d){
   if(SHP.pexBusy[d.id]) return; SHP.pexBusy[d.id]=1;
@@ -160,13 +160,13 @@ document.addEventListener('click',function(e){
   if(act==='sh-pick'){ stop(); SHP.pick=(SHP.pick===id?'':id); shPaint(); return; }
   if(act==='sh-back'){ stop(); SHP.with=null; SHP.thread=[]; shLoadInbox(); shPaint(); return; }
   if(act==='sh-open'||act==='sh-msg-user'){ stop(); SHP.with={id:id,name:nm}; SHP.thread=[]; SHP.ctab='msg'; SHP.cmode='dm'; SHP.msg=''; S.comm='chat'; if(S.view!=='chat'){ S.view='chat'; render(); window.scrollTo(0,0); } else shPaint(); shLoadThread(); return; }
-  if(act==='sh-gift-user'){ stop(); SHP.tab='shop'; SHP.msg='Pick an item below and choose '+nm+' in the list.'; if(!SHP.on) shLoadOnline(); SHP.giftTo=id; S.view='shop'; render(); window.scrollTo(0,0); return; }
+  if(act==='sh-gift-user'){ stop(); SHP.tab='shop'; SHP.msg='Pick an item below and choose '+(SOC.me&&id===SOC.me.id?'Myself':nm)+' in the list.'; if(!SHP.on) shLoadOnline(); SHP.giftTo=id; S.view='shop'; render(); window.scrollTo(0,0); return; }
   if(act==='sh-challenge'){ stop(); SHP.invite={id:id,name:nm}; S.view='battle'; S.flash='Create a battle below. It will be sent to '+nm+'.'; render(); window.scrollTo(0,0); return; }
   if(act==='sh-dm-send'){ stop(); const inp=document.getElementById('shdm'); const body=(inp&&inp.value||'').trim(); if(!body||!SHP.with) return; if(inp) inp.value=''; SHP.dm=''; shCall('send_dm',{p_to:SHP.with.id,p_body:body}).then(()=>shLoadThread()).catch(er=>{ SHP.msg=shErr(er); if(inp) inp.value=body; shPaint(); }); return; }
   if(act==='sh-buy'){ stop(); if(SHP.busy) return; SHP.busy=true; shCall('buy_item',{p_item:id}).then(d=>{ SHP.busy=false; SHP.msg='Bought. You have '+d.days+' days to send it.'; shLoadShop(); }).catch(er=>{ SHP.busy=false; SHP.msg=shErr(er); shPaint(); }); return; }
   if(act==='sh-pass'){ stop(); if(SHP.busy) return; SHP.busy=true; shCall('buy_pass').then(()=>{ SHP.busy=false; SHP.msg='Pass active for 30 more days.'; shLoadShop(); }).catch(er=>{ SHP.busy=false; SHP.msg=shErr(er); shPaint(); }); return; }
   if(act==='sh-send'){ stop(); const inv=t.getAttribute('data-inv'); const to=SHP.to[inv]||(document.querySelector('select[data-inv="'+inv+'"]')||{}).value; if(!to){ SHP.msg='Pick who to send it to.'; shPaint(); return; }
-    shCall('send_item',{p_inv:+inv,p_to:to,p_note:SHP.note[inv]||''}).then(()=>{ SHP.msg='Sent. It is in the chat and on their profile.'; delete SHP.to[inv]; delete SHP.note[inv]; shLoadShop(); }).catch(er=>{ SHP.msg=shErr(er); shPaint(); }); return; }
+    const self=!!(SOC.me&&to===SOC.me.id); shCall('send_item',{p_inv:+inv,p_to:to,p_note:SHP.note[inv]||''}).then(()=>{ SHP.msg=self?'Sent to your own vault. Open the Vault tab to put it in your room.':'Sent. It is in the chat and on their profile.'; delete SHP.to[inv]; delete SHP.note[inv]; VT.data=null; shLoadShop(); }).catch(er=>{ const m=shErr(er); SHP.msg=(self&&/Pick someone else/i.test(m))?'Sending a gift to yourself needs the one-time database update (supabase/patch_vault_v9.sql).':m; shPaint(); }); return; }
   if(act==='sh-invite'){ stop(); const sel=document.querySelector('select[data-in="sh-binv"]'); if(!sel||!sel.value) return; shCall('invite_battle',{p_battle:+id,p_user:sel.value}).then(()=>{ BT.msg='Battle sent.'; if(typeof btOpen==='function') btOpen(+id); }).catch(er=>{ BT.msg=shErr(er); btRender(); }); return; }
 },true);
 document.addEventListener('input',function(e){ const t=e.target; if(!t.getAttribute) return; const k=t.getAttribute('data-in'); if(k==='sh-note') SHP.note[t.getAttribute('data-inv')]=t.value; if(k==='sh-dm') SHP.dm=t.value; });
@@ -195,29 +195,57 @@ document.addEventListener('click',function(e){
 
 
 /* ---------- the vault: gifts people sent you, and a room you decorate (others see it on your profile) ---------- */
-const VT={data:null,sel:null,slot:null,busy:false,msg:'',saveT:null,room:{}};
+const VT={data:null,sel:null,slot:null,busy:false,msg:'',saveT:null,room:{},sort:'new',v9:false};
 const VT_WALL={navy:'Navy',sunset:'Sunset',forest:'Forest',royal:'Royal',neon:'Neon',brick:'Brick'}, VT_FLOOR={wood:'Wood',turf:'Turf',court:'Court',carpet:'Carpet',tile:'Tile'};
-function vtLoad(){ if(!shReady()) return; shCall('my_vault').then(d=>{ VT.data=d; shPaintVault(); }).catch(e=>{ VT.msg=shErr(e); shPaintVault(); }); }
+const VT_WALL9={midnight:'Midnight',gold:'Gold',ice:'Ice',steel:'Steel'}, VT_FLOOR9={marble:'Marble',ice:'Ice rink',concrete:'Concrete'};
+const VT_TIER=p=>p>=250?['Legendary','lg']:p>=100?['Epic','ep']:p>=40?['Rare','ra']:['Common','co'];
+const VT_LEVELS=[[0,'Rookie stash'],[100,'Collector'],[300,'Curator'],[800,'Hall of Famer'],[2000,'Vault Legend']];
+const VT_SETS=[{n:'Ball game',e:['🏈','🏀','⚾','🏒','⚽']},{n:'Winner\'s circle',e:['🏆','🥇','👑','💎','🐐']},{n:'Snack bar',e:['🌽','🍦','🍩','🍕','🌶️']},{n:'Hype squad',e:['🔥','🚀','👏','❤️','😉']}];
+const vtN=e=>String(e||'').replace(/️/g,'');
+const VT_ORDER=[9,10,8,11,15,16,14,17,3,4,2,5,21,22,20,23,0,1,6,7,12,13,18,19];
+function vtLoad(){ if(!shReady()) return; shCall('my_vault').then(d=>{ VT.data=d; VT.v9=!!(d&&d.room&&('title' in d.room)); shPaintVault(); }).catch(e=>{ VT.msg=shErr(e); shPaintVault(); }); }
 function shPaintVault(){ if(S.view!=='vault') return; const b=document.getElementById('vt-body'); if(b) b.innerHTML=vtBody(); }
 function vtRoomHtml(room,items,edit){
-  /* items: [{slot,emoji,name,from_name}] */
+  /* items: [{slot,emoji,name,from_name,id}] */
   const by={}; (items||[]).forEach(i=>{ by[i.slot]=i; });
-  let cells=''; for(let n=0;n<24;n++){ const it=by[n]; cells+='<button class="vtc'+(it?' has':'')+(edit&&VT.slot===n?' sel':'')+'" '+(edit?'data-act="vt-slot" data-id="'+n+'"':'disabled')+' title="'+(it?esc(it.name+(it.from_name?' from '+it.from_name:'')):'')+'">'+(it?'<span>'+esc(it.emoji)+'</span>':'')+'</button>'; }
+  let cells=''; for(let n=0;n<24;n++){ const it=by[n]; const star=!!(it&&it.id!=null&&room.feature!=null&&it.id===room.feature); cells+='<button class="vtc'+(it?' has':'')+(star?' star':'')+(edit&&VT.slot===n?' sel':'')+'" '+(edit?'data-act="vt-slot" data-id="'+n+'"':'disabled')+' title="'+(it?esc(it.name+(it.from_name?' from '+it.from_name:'')):'')+'">'+(it?'<span>'+esc(it.emoji)+'</span>':'')+'</button>'; }
   return '<div class="vtroom w-'+esc(room.wall||'navy')+' f-'+esc(room.floor||'wood')+'"><div class="vtgrid">'+cells+'</div></div>';
 }
 function vtItemsFromData(d){ const slots=(d.room&&d.room.slots)||{}; const g={}; (d.gifts||[]).forEach(x=>{ g[x.id]=x; }); const out=[]; Object.keys(slots).forEach(k=>{ const x=g[slots[k]]; if(x) out.push({slot:+k,emoji:x.emoji,name:x.name,from_name:x.from_name,id:x.id}); }); return out; }
+function vtStats(d){
+  const gs=d.gifts||[]; const value=gs.reduce((n,x)=>n+(+x.price||0),0); const uniq=new Set(gs.map(x=>vtN(x.emoji))).size;
+  const top=gs.reduce((m,x)=>(!m||(+x.price||0)>(+m.price||0))?x:m,null); let lv=0; VT_LEVELS.forEach((l,i)=>{ if(value>=l[0]) lv=i; });
+  const next=VT_LEVELS[lv+1]; const prev=VT_LEVELS[lv][0]; const pct=next?Math.round((value-prev)/(next[0]-prev)*100):100;
+  const own=new Set(gs.map(x=>vtN(x.emoji))); const self=gs.filter(x=>x.self).length;
+  return {n:gs.length,value,uniq,top,lv,next,pct,own,self};
+}
 function vtBody(){
   if(SHP.missing) return '<div class="flash">The vault needs the one-time database update (supabase/patch_shop_v8.sql). Until it is applied you can look around but not save.</div>'+vtPreview();
   const d=VT.data; if(!d) return '<div class="small muted">Loading your vault…</div>';
-  const room=d.room||{wall:'navy',floor:'wood',slots:{}}; const items=vtItemsFromData(d); const placed=new Set(items.map(i=>i.id));
-  const tray=(d.gifts||[]).map(x=>'<button class="vtg'+(VT.sel===x.id?' on':'')+(placed.has(x.id)?' used':'')+'" data-act="vt-pick" data-id="'+x.id+'" title="'+esc(x.name+' from '+(x.from_name||'?'))+'"><span>'+esc(x.emoji)+'</span><small>'+esc(x.name)+'</small><i>'+esc(x.from_name||'')+'</i></button>').join('');
+  const room=d.room||{wall:'navy',floor:'wood',slots:{}}; const items=vtItemsFromData(d); const placed=new Set(items.map(i=>i.id)); const st=vtStats(d);
+  const gs=(d.gifts||[]).slice(); if(VT.sort==='value') gs.sort((a,b)=>(+b.price||0)-(+a.price||0)); else if(VT.sort==='placed') gs.sort((a,b)=>(placed.has(b.id)?1:0)-(placed.has(a.id)?1:0));
+  const feat=gs.find(x=>x.id===room.feature)||st.top;
+  const tray=gs.map(x=>{ const t=VT_TIER(+x.price||0); return '<button class="vtg r-'+t[1]+(VT.sel===x.id?' on':'')+(placed.has(x.id)?' used':'')+'" data-act="vt-pick" data-id="'+x.id+'" title="'+esc(x.name+' from '+(x.self?'you':(x.from_name||'?'))+' · '+t[0])+'"><span>'+esc(x.emoji)+'</span><small>'+esc(x.name)+'</small><i>'+(x.self?'you':esc(x.from_name||''))+'</i><em>'+t[0]+'</em></button>'; }).join('');
   const chip=(map,cur,act)=>Object.keys(map).map(k=>'<button class="vtch" data-act="'+act+'" data-id="'+k+'" aria-pressed="'+(cur===k)+'">'+map[k]+'</button>').join('');
+  const walls=Object.assign({},VT_WALL,VT.v9?VT_WALL9:{}), floors=Object.assign({},VT_FLOOR,VT.v9?VT_FLOOR9:{});
+  const sets=VT_SETS.map(x=>{ const have=x.e.filter(e=>st.own.has(vtN(e))).length; return '<div class="vtset'+(have===x.e.length?' done':'')+'"><div class="vtsn"><b>'+esc(x.n)+'</b><span>'+have+'/'+x.e.length+(have===x.e.length?' ✓':'')+'</span></div><div class="vtse">'+x.e.map(e=>'<span class="'+(st.own.has(vtN(e))?'on':'')+'">'+e+'</span>').join('')+'</div></div>'; }).join('');
+  const recent=(d.gifts||[]).slice(0,6).map(x=>'<div class="vtrec"><span>'+esc(x.emoji)+'</span><b>'+esc(x.name)+'</b><small>'+(x.self?'bought for yourself':'from '+esc(x.from_name||'?'))+' · '+esc(shAgo(x.at))+'</small></div>').join('');
+  const spot=feat?'<div class="vtspot r-'+VT_TIER(+feat.price||0)[1]+'"><div class="vtpd"><span>'+esc(feat.emoji)+'</span></div><div class="vtsi"><small>'+(room.feature===feat.id?'FEATURED GIFT':'MOST VALUABLE')+'</small><b>'+esc(feat.name)+'</b><i>'+esc(feat.blurb||'')+'</i><em>'+VT_TIER(+feat.price||0)[0]+' · '+(+feat.price||0)+' coins · from '+(feat.self?'you':esc(feat.from_name||'?'))+'</em></div></div>':'';
   return (VT.msg?'<div class="flash">'+esc(VT.msg)+'</div>':'')+
-    '<div class="vthead"><b>Your room</b><span>'+(d.gifts||[]).length+' gift'+((d.gifts||[]).length===1?'':'s')+' in your vault · everyone who opens your profile sees this room</span></div>'+
+    '<div class="vtlvl"><div class="vtlt"><b>'+esc(VT_LEVELS[st.lv][1])+'</b><span>Level '+(st.lv+1)+'</span></div><div class="vtbar"><i style="width:'+st.pct+'%"></i></div><div class="vtln">'+(st.next?(st.next[0]-st.value)+' more coins of gifts to reach '+esc(st.next[1]):'Top level reached')+'</div></div>'+
+    '<div class="vtstats"><div><b>'+st.n+'</b><span>gifts</span></div><div><b>'+st.value+'</b><span>coins of value</span></div><div><b>'+st.uniq+'</b><span>different kinds</span></div></div>'+
+    spot+
+    '<div class="vthead"><b>'+esc(room.title||'Your room')+'</b><span>everyone who opens your profile sees this room</span></div>'+
+    (VT.v9?'<label class="vtname">Room name <input class="num wide" data-in="vt-title" maxlength="28" value="'+esc(room.title||'')+'" placeholder="Name your room" aria-label="Room name"></label>':'')+
     vtRoomHtml(room,items,true)+
     '<div class="vthint">'+(VT.sel?'Now tap a spot in the room to place it.':VT.slot!=null?'Now tap a gift below to put it in that spot.':'Tap a gift below, then a spot. Tap a placed gift to take it down.')+'</div>'+
-    '<div class="vtopts"><div class="vtl">Wall</div><div class="vtrow">'+chip(VT_WALL,room.wall,'vt-wall')+'</div><div class="vtl">Floor</div><div class="vtrow">'+chip(VT_FLOOR,room.floor,'vt-floor')+'</div></div>'+
-    '<div class="vthead"><b>Gifts you got</b><span>from the shop, sent by other players</span></div>'+(tray?'<div class="vttray">'+tray+'</div>':'<div class="gmute3">Nothing here yet. When someone sends you a gift it lands in your vault. Send a gift to a friend and ask them to send one back.</div>');
+    '<div class="btnrow vtact"><button class="btn" data-act="vt-auto">✨ Auto-decorate</button><button class="btn" data-act="vt-clear">Clear room</button>'+(VT.v9&&VT.sel!=null?'<button class="btn solid" data-act="vt-feature">⭐ '+(room.feature===VT.sel?'Unfeature':'Feature')+' selected gift</button>':'')+'<button class="btn" data-act="sh-gift-user" data-id="'+(SOC.me?SOC.me.id:'')+'" data-n="myself">🎁 Gift myself</button></div>'+
+    '<div class="vtopts"><div class="vtl">Wall</div><div class="vtrow">'+chip(walls,room.wall,'vt-wall')+'</div><div class="vtl">Floor</div><div class="vtrow">'+chip(floors,room.floor,'vt-floor')+'</div></div>'+
+    (VT.v9?'':'<div class="small muted">More walls and floors, room names, featured gifts and gifts to yourself unlock with the one-time database update (supabase/patch_vault_v9.sql).</div>')+
+    '<div class="vthead"><b>Collections</b><span>finish a set by owning every gift in it</span></div><div class="vtsets">'+sets+'</div>'+
+    '<div class="vthead"><b>Your gifts</b><span>'+(d.gifts||[]).length+' in the vault</span></div>'+
+    ((d.gifts||[]).length?'<div class="vtsort"><button class="vtch" data-act="vt-sort" data-id="new" aria-pressed="'+(VT.sort==='new')+'">Newest</button><button class="vtch" data-act="vt-sort" data-id="value" aria-pressed="'+(VT.sort==='value')+'">Most valuable</button><button class="vtch" data-act="vt-sort" data-id="placed" aria-pressed="'+(VT.sort==='placed')+'">In my room</button></div><div class="vttray">'+tray+'</div>':'<div class="gmute3">Nothing here yet. When someone sends you a gift it lands in your vault. Send a gift to a friend and ask them to send one back, or gift yourself one.</div>')+
+    (recent?'<div class="vthead"><b>Recent arrivals</b><span>newest first</span></div><div class="vtrecs">'+recent+'</div>':'');
 }
 function vtPreview(){ const prev=[{slot:2,emoji:'🏆',name:'Trophy'},{slot:5,emoji:'🦁',name:'Blue Lion'},{slot:14,emoji:'🍕',name:'Pizza'},{slot:20,emoji:'🏈',name:'Football'}]; return vtRoomHtml({wall:'navy',floor:'wood'},prev,false); }
 function vaultView(){
@@ -226,12 +254,15 @@ function vaultView(){
   if(!SOC.user) return h+'<div class="small">Sign in to open your vault and decorate your room.</div><div class="btnrow"><button class="btn solid" data-act="signin">Sign in</button></div></div></section>';
   return h+'<div id="vt-body">'+vtBody()+'</div></div></section>';
 }
-function vtSave(){ if(!VT.data) return; clearTimeout(VT.saveT); VT.saveT=setTimeout(()=>{ const r=VT.data.room; shCall('save_room',{p_wall:r.wall,p_floor:r.floor,p_slots:r.slots}).then(x=>{ if(x&&x.slots) VT.data.room.slots=x.slots; }).catch(e=>{ VT.msg=shErr(e); shPaintVault(); }); },500); }
+function vtSave(){ if(!VT.data) return; clearTimeout(VT.saveT); VT.saveT=setTimeout(()=>{ const r=VT.data.room;
+  const old=()=>shCall('save_room',{p_wall:r.wall,p_floor:r.floor,p_slots:r.slots}).then(x=>{ if(x&&x.slots) r.slots=x.slots; });
+  (VT.v9?shCall('save_room_v2',{p_wall:r.wall,p_floor:r.floor,p_slots:r.slots,p_title:r.title||'',p_feature:r.feature==null?null:r.feature}).then(x=>{ if(x&&x.slots) r.slots=x.slots; }).catch(e=>{ if(/could not find|schema cache/i.test(String((e&&e.message)||e))) return old(); throw e; }):old()).catch(e=>{ VT.msg=shErr(e); shPaintVault(); }); },500); }
 function vtPlace(){
   const d=VT.data; if(!d||VT.sel==null||VT.slot==null) return; const r=d.room; r.slots=Object.assign({},r.slots);
   Object.keys(r.slots).forEach(k=>{ if(r.slots[k]===VT.sel) delete r.slots[k]; });
   r.slots[VT.slot]=VT.sel; VT.sel=null; VT.slot=null; vtSave(); shPaintVault();
 }
+function vtAuto(){ const d=VT.data; if(!d) return; const gs=(d.gifts||[]).slice().sort((a,b)=>(+b.price||0)-(+a.price||0)); const r=d.room; r.slots={}; gs.slice(0,24).forEach((g,i)=>{ r.slots[VT_ORDER[i]]=g.id; }); if(VT.v9&&gs[0]) r.feature=gs[0].id; VT.sel=null; VT.slot=null; vtSave(); shPaintVault(); }
 document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act^="vt-"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
   const act=t.getAttribute('data-act'), id=t.getAttribute('data-id'), d=VT.data; if(!d) return; const r=d.room;
@@ -239,10 +270,16 @@ document.addEventListener('click',function(e){
   if(act==='vt-slot'){ const n=+id; const cur=r.slots[n]; if(cur!=null&&VT.sel==null){ r.slots=Object.assign({},r.slots); delete r.slots[n]; vtSave(); shPaintVault(); return; } VT.slot=n; if(VT.sel!=null) vtPlace(); else shPaintVault(); return; }
   if(act==='vt-wall'){ r.wall=id; vtSave(); shPaintVault(); return; }
   if(act==='vt-floor'){ r.floor=id; vtSave(); shPaintVault(); return; }
+  if(act==='vt-auto'){ vtAuto(); return; }
+  if(act==='vt-clear'){ r.slots={}; r.feature=null; VT.sel=null; VT.slot=null; vtSave(); shPaintVault(); return; }
+  if(act==='vt-feature'){ if(VT.sel!=null){ r.feature=(r.feature===VT.sel?null:VT.sel); vtSave(); shPaintVault(); } return; }
+  if(act==='vt-sort'){ VT.sort=id; shPaintVault(); return; }
 },true);
+document.addEventListener('input',function(e){ const t=e.target; if(t&&t.getAttribute&&t.getAttribute('data-in')==='vt-title'&&VT.data){ VT.data.room.title=t.value.slice(0,28); vtSave(); } });
 /* a visitor's view of someone's room, on their profile */
 function vtProfileRoom(d){
   const x=SHP.room&&SHP.room[d.id]; if(!x){ if(!SHP.roomBusy) SHP.roomBusy={}; if(!SHP.roomBusy[d.id]){ SHP.roomBusy[d.id]=1; shCall('get_room',{p_user:d.id}).then(r=>{ (SHP.room=SHP.room||{})[d.id]=r||{items:[]}; const el=document.getElementById('prof-body'); if(el&&S.view==='profile') el.innerHTML=profileBodyHtml(S.profName); }).catch(er=>{ shErr(er); (SHP.room=SHP.room||{})[d.id]={items:[]}; }); } return ''; }
   if(!x.items||(!x.items.length&&!x.total)) return '';
-  return '<h4 class="sub">'+esc(d.username)+'\'s room <span class="hint">'+(x.total||0)+' gift'+(x.total===1?'':'s')+' in the vault</span></h4>'+vtRoomHtml(x,x.items,false);
+  const f=x.feature;
+  return '<h4 class="sub">'+esc(x.title||(d.username+'\'s room'))+' <span class="hint">'+(x.total||0)+' gift'+(x.total===1?'':'s')+' in the vault'+(x.value?' · '+x.value+' coins of value':'')+'</span></h4>'+(f?'<div class="vtprof">⭐ Featured: '+esc(f.emoji)+' <b>'+esc(f.name)+'</b> <span class="muted">from '+esc(f.from_name||'?')+'</span></div>':'')+vtRoomHtml(x,x.items,false);
 }

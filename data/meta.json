@@ -32,15 +32,16 @@
    "lastFinal": "2026-10-10"
   },
   "mlb": {
-   "status": "empty",
-   "games": 0,
+   "status": "ok",
+   "games": 2,
    "playerLevel": 0,
-   "teamLevel": 0,
+   "teamLevel": 2,
    "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 2453,
-   "lastFinal": "2026-10-09"
+   "lastFinal": "2026-10-09",
+   "note": "book lines only (ESPN had no cards)"
   },
   "nba": {
    "status": "ok",
@@ -76,15 +77,16 @@
    "lastFinal": "2026-04-07"
   },
   "nhl": {
-   "status": "empty",
-   "games": 0,
+   "status": "ok",
+   "games": 10,
    "playerLevel": 0,
-   "teamLevel": 0,
+   "teamLevel": 10,
    "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 71,
-   "lastFinal": "2026-10-10"
+   "lastFinal": "2026-10-10",
+   "note": "book lines only (ESPN had no cards)"
   },
   "tennis": {
    "status": "ok",
@@ -142,5 +144,6 @@
  "requests": 1004,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 53.9
+ "seconds": 53.9,
+ "fanduel": "ok (applied locally from the last odds pull)"
 }

@@ -1,10 +1,16 @@
 """Sportsbook odds from SportsGameOdds (https://api.sportsgameodds.com/v2/events) -> data/odds.json.
 Stdlib only. Needs ODDS_API_KEY (a GitHub secret). Never raises: with no key, a failure, or too little time since the last pull, the old file is kept.
-Free plans are small, so it pulls on a budget: ODDS_MIN_GAP_MIN minutes between pulls (default 60) and ODDS_MAX_EVENTS events per league per pull (default 15)."""
+Free plans are small, so it pulls on a budget: ODDS_MIN_GAP_MIN minutes between pulls (default 60) and ODDS_MAX_EVENTS events per league per pull (default: the per-league CAPS below, e.g. 60 for college football)."""
 import os, json, time, datetime, urllib.request, urllib.parse, urllib.error
 
 API = "https://api.sportsgameodds.com/v2/events"
 LEAGUES = os.environ.get("ODDS_LEAGUES", "NFL,NCAAF,NBA,NCAAB,MLB,WNBA,NHL,ATP,WTA")
+# FanDuel is the main book: ask the API for FanDuel's prices first (and DraftKings as the fallback) so the plan's cap on bookmaker odds is spent on them, not on nine other books.
+# ODDS_BOOKS="" asks for every book again. ODDS_ALTS=1 also asks for alternate lines (bigger responses, so off unless the plan allows it).
+BOOKS = os.environ.get("ODDS_BOOKS", "fanduel,draftkings").strip()
+ALTS = os.environ.get("ODDS_ALTS", "0").strip() == "1"
+# events pulled per league per run: college slates are big, and the feed lists games by start time, so a small cap never reaches the afternoon games
+CAPS = {"NCAAF": 60, "NCAAB": 40, "NFL": 20, "NBA": 20, "NHL": 20, "MLB": 20, "WNBA": 12, "ATP": 12, "WTA": 12}
 # SportsGameOdds stat ids -> the stat names used by the battle picker
 STAT = {"points": "pts", "rebounds": "reb", "assists": "ast", "threePointersMade": "fg3", "points+rebounds+assists": "pra",
         "points+rebounds": "pr", "points+assists": "pa", "rebounds+assists": "ra", "doubleDouble": "dd", "tripleDouble": "td",
@@ -27,6 +33,8 @@ def _books(odd, line_key):
         o = _am(v.get("odds"))
         if o is None: continue
         out[b] = {"odds": o, "line": _num(v.get(line_key)) if line_key else None, "link": v.get("deeplink")}
+        alts = [{"odds": _am(a.get("odds")), "line": _num(a.get(line_key)) if line_key else None, "link": a.get("deeplink")} for a in (v.get("altLines") or []) if isinstance(a, dict) and a.get("available", True) and _am(a.get("odds")) is not None]
+        if alts: out[b]["alts"] = alts
     return out
 
 def normalize(ev):
@@ -73,26 +81,40 @@ def normalize(ev):
     return g
 
 def pull_league(key, league, max_events, now):
-    events, cursor, notice = [], None, None
-    while len(events) < max_events:
-        q = {"leagueID": league, "oddsAvailable": "true", "limit": str(min(20, max_events - len(events))),
-             "startsBefore": (now + datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ")}
-        if cursor: q["cursor"] = cursor
-        req = urllib.request.Request(API + "?" + urllib.parse.urlencode(q), headers={"x-api-key": key, "Accept": "application/json", "User-Agent": "LineScout/1.0"})
-        with urllib.request.urlopen(req, timeout=20) as r: d = json.loads(r.read())
-        if not d.get("success"): raise RuntimeError(str(d.get("error") or d)[:120])
-        notice = d.get("notice") or notice
-        events += d.get("data") or []
-        cursor = d.get("nextCursor")
-        if not cursor or not d.get("data"): break
-    return events[:max_events], notice
+    """FanDuel/DraftKings only, games that have not ended; if the API refuses those filters the same pull is made without them"""
+    def go(filters):
+        events, cursor, notice = [], None, None
+        while len(events) < max_events:
+            q = {"leagueID": league, "oddsAvailable": "true", "limit": str(min(20, max_events - len(events))),
+                 "startsBefore": (now + datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ")}
+            if filters:
+                q["startsAfter"] = (now - datetime.timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%SZ")
+                if BOOKS: q["bookmakerID"] = BOOKS
+                if ALTS: q["includeAltLines"] = "true"
+            if cursor: q["cursor"] = cursor
+            req = urllib.request.Request(API + "?" + urllib.parse.urlencode(q), headers={"x-api-key": key, "Accept": "application/json", "User-Agent": "LineScout/1.0"})
+            with urllib.request.urlopen(req, timeout=20) as r: d = json.loads(r.read())
+            if not d.get("success"): raise RuntimeError(str(d.get("error") or d)[:120])
+            notice = d.get("notice") or notice
+            events += d.get("data") or []
+            cursor = d.get("nextCursor")
+            if not cursor or not d.get("data"): break
+        return events[:max_events], notice
+    try:
+        ev, notice = go(True)
+        if ev: return ev, notice
+    except urllib.error.HTTPError as ex:
+        if ex.code not in (400, 422): raise
+    except RuntimeError:
+        pass
+    return go(False)
 
 def pull(key, max_events, now=None, log=print):
     """one request series per league; a league that errors (unknown id, plan limit) is skipped, the others still count. max_events is per league."""
     now = now or datetime.datetime.utcnow(); events, notice, ok = [], None, 0
     for lg in [x.strip() for x in LEAGUES.split(",") if x.strip()]:
         try:
-            ev, n = pull_league(key, lg, max_events, now); events += ev; notice = n or notice; ok += 1
+            ev, n = pull_league(key, lg, max(max_events, CAPS.get(lg, max_events)) if os.environ.get("ODDS_MAX_EVENTS") is None else max_events, now); events += ev; notice = n or notice; ok += 1
         except Exception as ex: log(f"  odds {lg}: {type(ex).__name__}: {ex}"[:160])
     if not ok: raise RuntimeError("no league could be pulled")
     return events, notice

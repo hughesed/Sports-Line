@@ -110,8 +110,8 @@ function potdFor(key){
   let best=null, near=null;
   gs.forEach(g=>{
     preLegs(g).forEach(l=>{
-      if(l.src!=='DraftKings') return;                      // price must be a real book price, not the model's own
-      const ev=l.ps*decOf(l.price)-1; const o={g:g,l:l,ev:ev};
+      if(l.src!=='DraftKings'&&l.src!=='FanDuel') return;   // price must be a real book price, not the model's own; FanDuel is the main book
+      const ev=l.ps*decOf(l.price)-1+(l.src==='FanDuel'?0.004:0); const o={g:g,l:l,ev:ev};
       if(l.ps>=POTD_P&&l.price>=POTD_PRICE){ if(!best||ev>best.ev) best=o; }
       else if(l.ps>=0.7&&l.price>=-200){ if(!near||ev>near.ev) near=o; }
     });
