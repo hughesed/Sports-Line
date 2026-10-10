@@ -93,7 +93,14 @@ def pull_league(key, league, max_events, now):
                 if ALTS: q["includeAltLines"] = "true"
             if cursor: q["cursor"] = cursor
             req = urllib.request.Request(API + "?" + urllib.parse.urlencode(q), headers={"x-api-key": key, "Accept": "application/json", "User-Agent": "LineScout/1.0"})
-            with urllib.request.urlopen(req, timeout=20) as r: d = json.loads(r.read())
+            for attempt in range(3):          # the free plan rate-limits bursts: wait and retry instead of dropping the league
+                try:
+                    with urllib.request.urlopen(req, timeout=20) as r: d = json.loads(r.read())
+                    break
+                except urllib.error.HTTPError as ex:
+                    if ex.code != 429 or attempt == 2: raise
+                    time.sleep(8 * (attempt + 1))
+            time.sleep(0.6)
             if not d.get("success"): raise RuntimeError(str(d.get("error") or d)[:120])
             notice = d.get("notice") or notice
             events += d.get("data") or []
