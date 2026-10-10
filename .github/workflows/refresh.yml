@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: "*/10 16-23,0-4 * * *"
     - cron: "7,37 5-15 * * *"
+    - cron: "3,23,43 16-23,0-4 * * *"   # extra triggers: GitHub drops scheduled runs when busy, the gap check keeps these from over-pulling
   workflow_dispatch:
 
 concurrency:
