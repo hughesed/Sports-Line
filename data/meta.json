@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "runNumber": 51,
+ "runNumber": 52,
  "deadlineHit": false,
- "generatedAt": "2026-10-10T05:57:34Z",
- "generatedAtET": "Sat Oct 10, 1:57 AM ET",
+ "generatedAt": "2026-10-10T11:06:21Z",
+ "generatedAtET": "Sat Oct 10, 7:06 AM ET",
  "today": "2026-10-10",
- "lastRunAt": "2026-10-10T05:57:34Z",
+ "lastRunAt": "2026-10-10T11:06:21Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 13,
+   "games": 12,
    "playerLevel": 10,
    "teamLevel": 2,
-   "carried": 1,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 350,
@@ -27,16 +27,16 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 347,
    "lastFinal": "2026-10-10"
   },
   "mlb": {
-   "status": "ok",
-   "games": 1,
+   "status": "empty",
+   "games": 0,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 1,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 2453,
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 8,
+   "games": 6,
    "playerLevel": 0,
    "teamLevel": 4,
-   "carried": 4,
+   "carried": 2,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -60,7 +60,7 @@
    "teamLevel": 8,
    "carried": 5,
    "error": null,
-   "newFinals": 4,
+   "newFinals": 0,
    "storeGames": 1360,
    "lastFinal": "2026-10-10"
   },
@@ -96,9 +96,9 @@
   }
  },
  "counts": {
-  "slate": 35,
-  "playerCards": 12,
-  "teamCards": 23,
+  "slate": 31,
+  "playerCards": 10,
+  "teamCards": 21,
   "window": 151,
   "sched": 136,
   "pastp": 37,
@@ -121,9 +121,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 16,
   "failedCalls": 0,
-  "seconds": 4.6,
+  "seconds": 4.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -134,14 +134,13 @@
    "nhl": 32
   },
   "gamesUploaded": 16,
-  "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2295,
   "configured": true
  },
- "odds": "ok: 45 events (plan limit: Response is missing 22810 bookmaker odds. Upgrade your API key to access all dat)",
+ "odds": "ok: 45 events (plan limit: Response is missing 31648 bookmaker odds. Upgrade your API key to access all dat)",
  "errors": [],
  "requests": 1004,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 39.8
+ "seconds": 53.9
 }
