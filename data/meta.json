@@ -1,23 +1,23 @@
 {
  "schema": 1,
- "runNumber": 66,
+ "runNumber": 67,
  "deadlineHit": false,
- "generatedAt": "2026-10-11T20:01:26Z",
- "generatedAtET": "Sun Oct 11, 4:01 PM ET",
+ "generatedAt": "2026-10-11T23:21:40Z",
+ "generatedAtET": "Sun Oct 11, 7:21 PM ET",
  "today": "2026-10-11",
- "lastRunAt": "2026-10-11T20:01:26Z",
+ "lastRunAt": "2026-10-11T23:21:40Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 14,
-   "playerLevel": 5,
+   "games": 11,
+   "playerLevel": 2,
    "teamLevel": 0,
    "carried": 9,
    "error": null,
-   "newFinals": 2,
-   "storeGames": 353,
+   "newFinals": 7,
+   "storeGames": 360,
    "lastFinal": "2026-10-11"
   },
   "wnba": {
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 6,
+   "games": 3,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 3,
+   "teamLevel": 1,
+   "carried": 2,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -55,10 +55,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 2,
+   "games": 1,
    "playerLevel": 0,
-   "teamLevel": 0,
-   "carried": 2,
+   "teamLevel": 1,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 1406,
@@ -96,21 +96,21 @@
   }
  },
  "counts": {
-  "slate": 30,
-  "playerCards": 24,
-  "teamCards": 6,
+  "slate": 23,
+  "playerCards": 19,
+  "teamCards": 4,
   "window": 141,
   "sched": 87,
   "pastp": 34,
-  "predictions": 114,
-  "graded": 68,
-  "storeGames": 13576
+  "predictions": 115,
+  "graded": 74,
+  "storeGames": 13583
  },
  "calibration": {
   "slopes": {},
-  "graded": 68,
-  "accML": 0.647,
-  "accBook": 0.662
+  "graded": 74,
+  "accML": 0.662,
+  "accBook": 0.676
  },
  "social": {
   "enabled": true,
@@ -121,9 +121,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.5,
+  "seconds": 3.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,16 +133,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 6,
+  "gamesUploaded": 8,
   "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2445,
   "configured": true
  },
- "odds": "kept (11 min old, pulls every 60 min)",
- "oddsLive": "ok: 6 in-play events (6 live, 6 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 13 cards, 186 player stats, FanDuel-only players on 0 cards; not in the feed (3): ORL@CLE, MIL@CHA, CHI@DEN",
+ "odds": "ok: 9 events (+5 in play kept)",
+ "oddsLive": "ok: 5 in-play events (5 live, 5 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 8 cards, 84 player stats, FanDuel-only players on 0 cards; not in the feed (1): CHI@DEN",
  "errors": [],
- "requests": 581,
+ "requests": 342,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 24.8
+ "seconds": 85.3
 }
