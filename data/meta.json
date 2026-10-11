@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 60,
+ "runNumber": 61,
  "deadlineHit": false,
- "generatedAt": "2026-10-11T01:36:34Z",
- "generatedAtET": "Sat Oct 10, 9:36 PM ET",
- "today": "2026-10-10",
- "lastRunAt": "2026-10-11T01:36:34Z",
+ "generatedAt": "2026-10-11T07:19:01Z",
+ "generatedAtET": "Sun Oct 11, 3:19 AM ET",
+ "today": "2026-10-11",
+ "lastRunAt": "2026-10-11T07:19:01Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -33,21 +33,21 @@
   },
   "mlb": {
    "status": "ok",
-   "games": 2,
-   "playerLevel": 1,
+   "games": 3,
+   "playerLevel": 2,
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2453,
-   "lastFinal": "2026-10-09"
+   "newFinals": 1,
+   "storeGames": 2454,
+   "lastFinal": "2026-10-11"
   },
   "nba": {
    "status": "ok",
-   "games": 7,
+   "games": 8,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 5,
+   "teamLevel": 4,
+   "carried": 4,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -55,14 +55,14 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 10,
+   "games": 9,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 10,
+   "carried": 9,
    "error": null,
-   "newFinals": 1,
-   "storeGames": 1391,
-   "lastFinal": "2026-10-10"
+   "newFinals": 15,
+   "storeGames": 1406,
+   "lastFinal": "2026-10-11"
   },
   "cbb": {
    "status": "empty",
@@ -77,14 +77,14 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 7,
+   "games": 3,
    "playerLevel": 0,
-   "teamLevel": 7,
+   "teamLevel": 3,
    "carried": 0,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 75,
-   "lastFinal": "2026-10-10"
+   "newFinals": 10,
+   "storeGames": 85,
+   "lastFinal": "2026-10-11"
   },
   "tennis": {
    "status": "ok",
@@ -96,34 +96,41 @@
   }
  },
  "counts": {
-  "slate": 38,
-  "playerCards": 20,
-  "teamCards": 18,
-  "window": 151,
-  "sched": 136,
-  "pastp": 37,
-  "predictions": 102,
-  "graded": 56,
-  "storeGames": 13547
+  "slate": 35,
+  "playerCards": 24,
+  "teamCards": 11,
+  "window": 141,
+  "sched": 87,
+  "pastp": 34,
+  "predictions": 109,
+  "graded": 65,
+  "storeGames": 13573
  },
  "calibration": {
   "slopes": {},
-  "graded": 56,
-  "accML": 0.643,
-  "accBook": 0.643
+  "graded": 65,
+  "accML": 0.631,
+  "accBook": 0.646
  },
  "social": {
   "enabled": true,
   "errors": [],
   "pending": 1,
+  "settled": {
+   "won": 0,
+   "legs": 1,
+   "lost": 1,
+   "void": 0,
+   "games": 1
+  },
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 20,
   "failedCalls": 0,
-  "seconds": 6.1,
+  "seconds": 3.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,17 +140,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 8,
+  "gamesUploaded": 21,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2449,
+  "simPlayersUploaded": 2448,
   "configured": true
  },
- "odds": "kept (20 min old, pulls every 60 min)",
- "oddsLive": "ok: 25 in-play events (25 live, 22 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 15 cards, 349 player stats, FanDuel-only players on 0 cards; not in the feed (2): SA@PHX, DAL@HOU",
+ "odds": "ok: 19 events (+4 in play kept) (plan limit: Response is missing 96 bookmaker odds. Upgrade your API key to access all data f)",
+ "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 16 cards, 328 player stats, FanDuel-only players on 3 cards; not in the feed (5): DAL@HOU, ORL@CLE, MIL@CHA, CHI@DEN, CLE@TB",
  "errors": [],
- "requests": 988,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 38.3
+ "requests": 1081,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 87.4
 }
