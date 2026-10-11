@@ -1,6 +1,8 @@
 /* ================= safe slips, pick of the day, tracked calls, self-check ================= */
 const POTD_P=0.80, POTD_PRICE=-140, MIN_SAFE=0.55, KEEP_DAYS=24, MAX_CALLS=700, MAX_LIVE_PER_GAME=8;
-const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Pick of the day',live:'Live calls'};
+const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Pick of the day',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15'};
+const CALL_KINDS=['safe2','safe4','safe8','potd','live','pl4','pl8','pl12'];
+const isStack=c=>!!c&&c.multi===true;
 if(!Array.isArray(P.calls)) P.calls=[];
 
 /* ---------- helpers ---------- */
@@ -178,26 +180,36 @@ function trimCalls(){
   if(P.calls.length>MAX_CALLS) P.calls=P.calls.slice(P.calls.length-MAX_CALLS);
 }
 function settleCalls(gid,F){
-  let n=0;
+  let n=0,g2=0;
   P.calls.forEach(c=>{
+    if(isStack(c)){
+      /* a parlay stack spans several games: grade the legs of THIS game, and keep grading the others after a miss so every leg teaches the model something */
+      if(!c.legs.some(l=>l.gid===gid&&!l.res)) return;
+      c.legs.forEach(l=>{ if(l.gid===gid&&!l.res){ l.res=gradeLeg(l,F); g2++; } });
+      const was=c.status;
+      if(c.legs.some(l=>l.res==='L')) c.status='miss';
+      else if(c.legs.every(l=>l.res)) c.status=c.legs.every(l=>l.res==='V')?'void':'hit';
+      if(was==='pending'&&c.status!=='pending') n++;
+      return;
+    }
     if(c.status!=='pending'||c.gid!==gid) return;
     c.legs.forEach(l=>{ if(!l.res) l.res=gradeLeg(l,F); });
     if(c.legs.some(l=>l.res==='L')) c.status='miss';
     else if(c.legs.every(l=>l.res)) c.status=c.legs.every(l=>l.res==='V')?'void':'hit';
     if(c.status!=='pending') n++;
   });
-  if(n){ calRefresh(); persist(); }
+  if(n||g2){ calRefresh(); persist(); }
 }
 
 /* ---------- display of tracked calls ---------- */
 function callChip(c){
   const cls=c.status==='hit'?'ok':c.status==='miss'?'bad':'';
   const sym=c.status==='hit'?'✓ ':c.status==='miss'?'✗ ':c.status==='void'?'– ':'… ';
-  const gg=G[c.gid]; const where=gg?gg.teams.away.abbr+' @ '+gg.teams.home.abbr:'';
-  const legs=c.legs.map(l=>(l.res==='W'?'✓ ':l.res==='L'?'✗ ':l.res==='V'?'– ':'… ')+l.label+' ('+fo(l.price)+', '+Math.round(l.p*100)+'%)').join('\n');
-  const nm=c.kind==='live'?(c.legs[0].label+(c.clock?' · '+c.clock:'')):(KINDN[c.kind]+(c.kind.indexOf('safe')===0&&c.legs.length<c.want?' ('+c.legs.length+' legs)':'')+(c.kind==='potd'?': '+c.legs[0].label:''));
+  const gg=G[c.gid]; const where=isStack(c)?(KINDN[c.kind]+', '+(LGN[c.key]||c.key)):(gg?gg.teams.away.abbr+' @ '+gg.teams.home.abbr:'');
+  const legs=c.legs.map(l=>(l.res==='W'?'✓ ':l.res==='L'?'✗ ':l.res==='V'?'– ':'… ')+l.label+(isStack(c)&&l.game?' ['+l.game+']':'')+' ('+fo(l.price)+', '+Math.round(l.p*100)+'%)').join('\n');
+  const nm=c.kind==='live'?(c.legs[0].label+(c.clock?' · '+c.clock:'')):(isStack(c)?(LGN[c.key]||c.key)+' '+c.legs.length+'-leg stack':KINDN[c.kind]+(c.kind.indexOf('safe')===0&&c.legs.length<c.want?' ('+c.legs.length+' legs)':'')+(c.kind==='potd'?': '+c.legs[0].label:''));
   const hitn=c.legs.filter(l=>l.res==='W').length;
-  return '<span class="vc '+cls+'" title="'+esc(where+'\n'+legs)+'">'+sym+esc(nm)+(c.kind.indexOf('safe')===0?' <span class="muted">('+hitn+'/'+c.legs.length+')</span>':'')+'</span>';
+  return '<span class="vc '+cls+'" title="'+esc(where+'\n'+legs)+'">'+sym+esc(nm)+((c.kind.indexOf('safe')===0||isStack(c))?' <span class="muted">('+hitn+'/'+c.legs.length+')</span>':'')+'</span>';
 }
 function callsOn(date){ return P.calls.filter(c=>c.date===date); }
 function callCount(date){ return P.calls.reduce((n,c)=>n+(c.date===date?1:0),0); }
@@ -208,12 +220,13 @@ function tallyCalls(cs){
 }
 function callsDayHtml(date){
   const cs=callsOn(date).filter(c=>leagueOK(c.key));
-  const live=cs.filter(c=>c.kind==='live'), rest=cs.filter(c=>c.kind!=='live');
+  const live=cs.filter(c=>c.kind==='live'), stk=cs.filter(isStack), rest=cs.filter(c=>c.kind!=='live'&&!isStack(c));
   const gm=id=>{ const g=G[id]; return g?g.teams.away.abbr+' @ '+g.teams.home.abbr:id; };
   let h='<section class="game"><div class="sec"><h3>Tracked picks <span class="hint">written down before kickoff or when the live view showed them</span></h3>';
   if(!cs.length) return h+'<div class="small muted">Nothing was recorded for this day'+(S.league==='all'?'':' in this league')+'. Safe slips and picks of the day are recorded when this page is open before kickoff; live calls are recorded while a game is live and the page is open.</div></div></section>';
   const byG={}; rest.forEach(c=>{ (byG[c.gid]=byG[c.gid]||[]).push(c); });
   h+=Object.keys(byG).map(id=>'<div class="rg"><div class="rgh"><b>'+esc(gm(id))+'</b></div><div class="vcs">'+byG[id].sort((a,b)=>a.kind<b.kind?-1:1).map(callChip).join('')+'</div></div>').join('');
+  if(stk.length) h+='<div class="rg"><div class="rgh"><b>Parlay stacks</b><span class="mono">'+tallyCalls(stk).w+'/'+tallyCalls(stk).n+' hit</span></div><div class="vcs">'+stk.sort((a,b)=>a.t-b.t).map(callChip).join('')+'</div></div>';
   if(live.length){ const t=tallyCalls(live);
     h+='<div class="rg"><div class="rgh"><b>Live bets pointed out</b><span class="mono">'+t.w+'/'+t.n+' landed</span></div><div class="vcs">'+live.map(c=>'<span class="vcw">'+esc(gm(c.gid))+'</span>'+callChip(c)).join('')+'</div></div>'; }
   return h+'</div></section>';
@@ -221,12 +234,12 @@ function callsDayHtml(date){
 function callsSummaryHtml(){
   const cut=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
   const cs=P.calls.filter(c=>c.date>=cut&&leagueOK(c.key));
-  const rows=[]; ['safe2','safe4','safe8','potd','live'].forEach(k=>{ const t=tallyCalls(cs.filter(c=>c.kind===k)); if(t.n) rows.push('<div class="kv"><div class="k">'+KINDN[k]+'</div><div class="v">'+t.w+'/'+t.n+'</div><div class="s">legs '+t.legW+'/'+t.legN+(t.legN?' ('+Math.round(100*t.legW/t.legN)+'%)':'')+'</div></div>'); });
+  const rows=[]; CALL_KINDS.forEach(k=>{ const t=tallyCalls(cs.filter(c=>c.kind===k)); if(t.n) rows.push('<div class="kv"><div class="k">'+KINDN[k]+'</div><div class="v">'+t.w+'/'+t.n+'</div><div class="s">legs '+t.legW+'/'+t.legN+(t.legN?' ('+Math.round(100*t.legW/t.legN)+'%)':'')+'</div></div>'); });
   let h='<section class="game"><div class="sec"><h3>Tracked picks, last 7 days <span class="hint">'+cs.length+' recorded</span></h3>';
   if(!rows.length) return h+'<div class="small muted">No graded picks yet. Recording starts with the first slate this page sees before kickoff, so the first results arrive after those games finish.</div></div></section>';
   h+='<div class="proj">'+rows.join('')+'</div>';
   const keys=[]; cs.forEach(c=>{ if(keys.indexOf(c.key)<0) keys.push(c.key); });
-  h+=keys.map(k=>{ const cc=cs.filter(c=>c.key===k); const parts=['safe2','safe4','safe8','potd','live'].map(x=>{ const t=tallyCalls(cc.filter(c=>c.kind===x)); return t.n?KINDN[x]+' '+t.w+'/'+t.n:''; }).filter(Boolean); return parts.length?'<div class="small"><b>'+esc(LGN[k]||k)+'</b> <span class="muted">'+parts.join(' · ')+'</span></div>':''; }).join('');
+  h+=keys.map(k=>{ const cc=cs.filter(c=>c.key===k); const parts=CALL_KINDS.map(x=>{ const t=tallyCalls(cc.filter(c=>c.kind===x)); return t.n?KINDN[x]+' '+t.w+'/'+t.n:''; }).filter(Boolean); return parts.length?'<div class="small"><b>'+esc(LGN[k]||k)+'</b> <span class="muted">'+parts.join(' · ')+'</span></div>':''; }).join('');
   return h+'<div class="small muted">A safe slip counts as hit only when every leg hits. Leg percentages show how often single legs landed.</div></div></section>';
 }
 function selfCheckHtml(){

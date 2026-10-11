@@ -229,3 +229,12 @@ Battle form: team dropdowns with logos (NFL/NBA/MLB logos come from ESPN; colleg
 * **College:** every rated college team is now offered, and the bot fills in players for the schools that had none, 14 teams per run, alternating CFB and CBB (about a day for all of CBB). A school stays team-level until ESPN's leaders feed gives it 8+ players.
 * **Page data:** the page checks for a new `data/` every 20 seconds (was 4 minutes). The bot itself still runs on the schedule in `refresh.yml`.
 * Not run against a real database or the live ESPN feeds here: run the SQL, then play one MLB battle to confirm.
+
+
+### Parlay stacks (home screen, under "Best same-game parlays")
+One cross-game parlay per sport and size (**4**, **8**, **12-15** legs), built from player legs spread over all of that sport's upcoming games (a few points, a few rebounds, a few receptions ...). Code: `src/stacks.js` + `src/stacks.css`; hooks in `home_picks.js` (placement), `picks.js` (ledger, grading), `keepcards.js` (keeps game cards until every leg is graded), `ui2.js` (`plLog()` after each render).
+* **Leg chance** = book no-vig price blended with the model, pulled toward how often the player cleared that number in the last 15 games, then scaled by what the app has learned from its own graded legs for that sport and stat (bounded 0.78 to 1.08, starts at 4 graded legs of a stat). Floors: 68% (4 legs), 64% (8), 60% (12-15, and a leg past 12 needs 68%).
+* **Odds adjustment**: a leg priced better than the fair price gets a bonus, a real FanDuel price beats an estimate (`est.` = no book price for that number, model-priced), steadier stats rank higher.
+* **Mix rules**: one leg per player, at most 2/3/4 of one stat and 2/3/4 per game (relaxed automatically on small slates or when a sport only offers a few stat types), about a quarter unders (loosened, and the card says so, only when little else clears the bar).
+* **Tracking**: the first time a stack is shown it is locked and written to the ledger (`P.calls`, kinds `pl4` / `pl8` / `pl12`, `multi:true`). It stays as written until one of its games starts, then a new version is built (max 3 per sport and size per day). Each leg is graded when its own game finishes, even after the stack has already missed, so every leg teaches the model. Results show in Track record and the calendar day view.
+* Needs only `data/slate.json` (players with game logs) and, for real prices, `data/odds.json`. Games the odds feed does not cover fall back to the slate's own stat ladders (model prices, marked est.).

@@ -1,0 +1,59 @@
+/* ===== Parlay stacks (home screen, under Best same-game parlays) ===== */
+.plchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 0 8px;margin:0 -2px}
+.plchips::-webkit-scrollbar{display:none}
+.plchip{flex:0 0 auto;display:flex;align-items:baseline;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.plchip span{font-size:11px;font-weight:500;color:var(--muted)}
+.plchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.plchip[aria-pressed="true"] span{color:inherit;opacity:.8}
+.plseg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 10px}
+.plseg-b{display:flex;flex-direction:column;align-items:center;gap:1px;border:0;background:transparent;color:var(--ink);border-radius:9px;padding:7px 4px;font:inherit;cursor:pointer;min-width:0}
+.plseg-b b{font-size:13px}.plseg-b span{font-size:11px;color:var(--muted)}
+.plseg-b[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(14,26,43,.18);outline:1px solid var(--accent)}
+.plseg-b[aria-pressed="true"] b{color:var(--accent)}
+
+.plcard{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.plcard.on{outline:2px solid var(--accent)}
+.plh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.plt{font-weight:800;font-size:15px;line-height:1.25}
+.pls{font-size:12px;color:var(--muted);margin-top:2px}
+.plo{text-align:right;flex:0 0 auto}
+.plo b{display:block;font-size:22px;line-height:1.05;color:var(--over)}
+.plo span{font-size:11px;color:var(--muted)}
+.plstats{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px}
+.plstats>div{background:var(--surface2);border-radius:10px;padding:7px 9px;display:flex;flex-direction:column;min-width:0}
+.plstats b{font-size:15px;line-height:1.2}
+.plstats span{font-size:11px;color:var(--muted)}
+.plmeter{height:4px;border-radius:2px;background:var(--line);margin-top:5px;overflow:hidden}
+.plmeter i{display:block;height:100%;background:var(--accent);border-radius:2px}
+.plmixrow{display:flex;flex-wrap:wrap;gap:5px}
+.plmix{font-size:12px;background:var(--accent-soft);border-radius:999px;padding:3px 9px;white-space:nowrap}
+.plmix b{color:var(--accent)}
+.plgroups>summary{cursor:pointer;list-style:none;padding:2px 0}
+.plgroups>summary::-webkit-details-marker{display:none}
+.plgroups>summary::before{content:"\203A";display:inline-block;margin-right:6px;color:var(--muted);transition:transform .15s}
+.plgroups[open]>summary::before{transform:rotate(90deg)}
+.plg{margin-top:8px}
+.plgh{display:flex;justify-content:space-between;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:3px}
+.plr{display:grid;grid-template-columns:minmax(0,1fr) auto auto 10px;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px dashed var(--line);border-radius:6px}
+.plr:last-of-type{border-bottom:0}
+.plr.win{background:var(--over-soft)}
+.plr.loss{background:var(--under-soft)}
+.plw{min-width:0;overflow-wrap:anywhere;line-height:1.3}
+.plwh{color:var(--ink)}
+.plsub{font-size:11px;color:var(--muted)}
+.plpr{display:flex;flex-direction:column;align-items:flex-end;font-size:13px;line-height:1.2}
+.plbk{font-size:10px;color:var(--muted)}
+.plbk.fd{color:var(--accent);font-weight:700}
+.plch{display:flex;flex-direction:column;align-items:flex-end;min-width:34px;line-height:1.2}
+.plch b{font-size:13px}
+.plhist{font-size:10px;color:var(--muted)}
+.pldot{width:8px;height:8px;border-radius:50%;background:var(--line);display:inline-block}
+.pldot.on{background:var(--over)}
+.plkey{font-size:11px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:6px}
+.plfoot{font-size:11px;color:var(--muted);line-height:1.45}
+.plempty{border:1px dashed var(--line);border-radius:14px;padding:14px 12px;background:var(--surface2)}
+.plrec{margin-top:10px;font-size:12px;line-height:1.45;border-top:1px solid var(--line);padding-top:8px}
+.plrec b{color:var(--ink)}
+.plhow{margin-top:8px}
+.plhow>summary{cursor:pointer}
+@media (max-width:360px){.plstats{grid-template-columns:1fr 1fr}.plstats>div:first-child{grid-column:1/-1}.plo b{font-size:19px}}

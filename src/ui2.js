@@ -306,7 +306,7 @@ function render(){
   document.getElementById('nav').innerHTML=navHtml();
   document.body.classList.toggle('vchat',S.view==='chat');
   renderSlip(); renderBank(); if(S.view==='live') afterLiveRender();
-  calRefresh(); logPre();
+  calRefresh(); logPre(); if(typeof plLog==='function'){ try{ plLog(); }catch(e){} }
   if(typeof socAfterRender==='function') socAfterRender();
 }
 

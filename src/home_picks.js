@@ -211,7 +211,8 @@ function hpHomeHtml(){
   if(sg.err) parlays=hpFold('sgp','Best same-game parlays','',sg.err,true);
   else parlays=hpFold('sgp','Best same-game parlays',HP.list.length+' built · FanDuel lines and props',
       HP_SIZES.map(sz=>hpFold('sgp'+sz[0],sz[0]+'-leg parlays',(HP.list.filter(s=>s.n===sz[0]).length)+' found'+(sz[0]>2?' · up to '+sz[0]+' legs, fewer when that is all there is':''),sg[sz[0]],sz[0]===2)).join('')+sg.note,true);
-  return '<section class="game hpsec"><div class="sec">'+parlays+hpFold('fb','First basket (NBA and WNBA)','',fb,false)+hpFold('nrfi','No run first inning (MLB)','',nr,false)+'</div></section>';
+  let stacks=''; try{ stacks=(typeof plHtml==='function')?plHtml():''; }catch(e){ stacks=''; }
+  return '<section class="game hpsec"><div class="sec">'+parlays+stacks+hpFold('fb','First basket (NBA and WNBA)','',fb,false)+hpFold('nrfi','No run first inning (MLB)','',nr,false)+'</div></section>';
 }
 document.addEventListener('toggle',function(e){ const d=e.target; if(d&&d.getAttribute&&d.getAttribute('data-fold')) S.fold[d.getAttribute('data-fold')]=d.open; },true);
 
