@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 61,
+ "runNumber": 62,
  "deadlineHit": false,
- "generatedAt": "2026-10-11T07:19:01Z",
- "generatedAtET": "Sun Oct 11, 3:19 AM ET",
+ "generatedAt": "2026-10-11T07:47:32Z",
+ "generatedAtET": "Sun Oct 11, 3:47 AM ET",
  "today": "2026-10-11",
- "lastRunAt": "2026-10-11T07:19:01Z",
+ "lastRunAt": "2026-10-11T07:47:32Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -38,7 +38,7 @@
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2454,
    "lastFinal": "2026-10-11"
   },
@@ -60,7 +60,7 @@
    "teamLevel": 0,
    "carried": 9,
    "error": null,
-   "newFinals": 15,
+   "newFinals": 0,
    "storeGames": 1406,
    "lastFinal": "2026-10-11"
   },
@@ -79,10 +79,10 @@
    "status": "ok",
    "games": 3,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 0,
+   "teamLevel": 0,
+   "carried": 3,
    "error": null,
-   "newFinals": 10,
+   "newFinals": 0,
    "storeGames": 85,
    "lastFinal": "2026-10-11"
   },
@@ -115,22 +115,15 @@
  "social": {
   "enabled": true,
   "errors": [],
-  "pending": 1,
-  "settled": {
-   "won": 0,
-   "legs": 1,
-   "lost": 1,
-   "void": 0,
-   "games": 1
-  },
+  "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 20,
+  "calls": 16,
   "failedCalls": 0,
-  "seconds": 3.0,
+  "seconds": 5.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -140,17 +133,16 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 21,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 9,
   "simPlayersUploaded": 2448,
   "configured": true
  },
- "odds": "ok: 19 events (+4 in play kept) (plan limit: Response is missing 96 bookmaker odds. Upgrade your API key to access all data f)",
+ "odds": "kept (29 min old, pulls every 60 min)",
  "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 16 cards, 328 player stats, FanDuel-only players on 3 cards; not in the feed (5): DAL@HOU, ORL@CLE, MIL@CHA, CHI@DEN, CLE@TB",
+ "fanduel": "ok: FanDuel lines on 16 cards, 349 player stats, FanDuel-only players on 0 cards; not in the feed (5): DAL@HOU, ORL@CLE, MIL@CHA, CHI@DEN, CLE@TB",
  "errors": [],
- "requests": 1081,
+ "requests": 1063,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 87.4
+ "seconds": 44.7
 }
