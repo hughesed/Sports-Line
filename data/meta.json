@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 59,
+ "runNumber": 60,
  "deadlineHit": false,
- "generatedAt": "2026-10-11T01:16:49Z",
- "generatedAtET": "Sat Oct 10, 9:16 PM ET",
+ "generatedAt": "2026-10-11T01:36:34Z",
+ "generatedAtET": "Sat Oct 10, 9:36 PM ET",
  "today": "2026-10-10",
- "lastRunAt": "2026-10-11T01:16:49Z",
+ "lastRunAt": "2026-10-11T01:36:34Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -33,10 +33,10 @@
   },
   "mlb": {
    "status": "ok",
-   "games": 1,
+   "games": 2,
    "playerLevel": 1,
    "teamLevel": 0,
-   "carried": 0,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 2453,
@@ -44,9 +44,9 @@
   },
   "nba": {
    "status": "ok",
-   "games": 8,
+   "games": 7,
    "playerLevel": 0,
-   "teamLevel": 3,
+   "teamLevel": 2,
    "carried": 5,
    "error": null,
    "newFinals": 0,
@@ -55,13 +55,13 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 17,
+   "games": 10,
    "playerLevel": 0,
-   "teamLevel": 7,
+   "teamLevel": 0,
    "carried": 10,
    "error": null,
-   "newFinals": 9,
-   "storeGames": 1390,
+   "newFinals": 1,
+   "storeGames": 1391,
    "lastFinal": "2026-10-10"
   },
   "cbb": {
@@ -77,15 +77,14 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 5,
+   "games": 7,
    "playerLevel": 0,
-   "teamLevel": 5,
+   "teamLevel": 7,
    "carried": 0,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 75,
-   "lastFinal": "2026-10-10",
-   "note": "book lines only (ESPN had no cards)"
+   "lastFinal": "2026-10-10"
   },
   "tennis": {
    "status": "ok",
@@ -97,15 +96,15 @@
   }
  },
  "counts": {
-  "slate": 43,
-  "playerCards": 23,
-  "teamCards": 20,
+  "slate": 38,
+  "playerCards": 20,
+  "teamCards": 18,
   "window": 151,
   "sched": 136,
   "pastp": 37,
-  "predictions": 101,
+  "predictions": 102,
   "graded": 56,
-  "storeGames": 13546
+  "storeGames": 13547
  },
  "calibration": {
   "slopes": {},
@@ -124,7 +123,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 6.3,
+  "seconds": 6.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -134,17 +133,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 29,
+  "gamesUploaded": 8,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2284,
+  "simPlayersUploaded": 2449,
   "configured": true
  },
- "odds": "ok: 22 events (+59 in play kept)",
- "oddsLive": "ok: 18 in-play events (18 live, 14 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 14 cards, 338 player stats, FanDuel-only players on 1 cards; not in the feed (2): SA@PHX, DAL@HOU",
+ "odds": "kept (20 min old, pulls every 60 min)",
+ "oddsLive": "ok: 25 in-play events (25 live, 22 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 15 cards, 349 player stats, FanDuel-only players on 0 cards; not in the feed (2): SA@PHX, DAL@HOU",
  "errors": [],
- "requests": 956,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 105.2
+ "requests": 988,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 38.3
 }
