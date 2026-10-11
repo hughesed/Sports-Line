@@ -1,19 +1,19 @@
 {
  "schema": 1,
- "runNumber": 63,
+ "runNumber": 64,
  "deadlineHit": false,
- "generatedAt": "2026-10-11T11:21:36Z",
- "generatedAtET": "Sun Oct 11, 7:21 AM ET",
+ "generatedAt": "2026-10-11T16:44:41Z",
+ "generatedAtET": "Sun Oct 11, 12:44 PM ET",
  "today": "2026-10-11",
- "lastRunAt": "2026-10-11T11:21:36Z",
+ "lastRunAt": "2026-10-11T16:44:41Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 12,
+   "games": 13,
    "playerLevel": 10,
-   "teamLevel": 0,
+   "teamLevel": 1,
    "carried": 2,
    "error": null,
    "newFinals": 0,
@@ -55,10 +55,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 8,
+   "games": 7,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 8,
+   "carried": 7,
    "error": null,
    "newFinals": 0,
    "storeGames": 1406,
@@ -77,9 +77,9 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 3,
+   "games": 6,
    "playerLevel": 0,
-   "teamLevel": 0,
+   "teamLevel": 3,
    "carried": 3,
    "error": null,
    "newFinals": 0,
@@ -96,13 +96,13 @@
   }
  },
  "counts": {
-  "slate": 34,
+  "slate": 37,
   "playerCards": 24,
-  "teamCards": 10,
+  "teamCards": 13,
   "window": 141,
   "sched": 87,
   "pastp": 34,
-  "predictions": 109,
+  "predictions": 113,
   "graded": 65,
   "storeGames": 13573
  },
@@ -115,7 +115,7 @@
  "social": {
   "enabled": true,
   "errors": [],
-  "pending": 0,
+  "pending": 1,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
@@ -123,7 +123,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 2.9,
+  "seconds": 7.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,17 +133,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 19,
+  "gamesUploaded": 22,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2448,
   "configured": true
  },
- "odds": "ok: 20 events (plan limit: Response is missing 96 bookmaker odds. Upgrade your API key to access all data f)",
- "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 17 cards, 354 player stats, FanDuel-only players on 0 cards; not in the feed (3): ORL@CLE, MIL@CHA, CHI@DEN",
+ "odds": "ok: 22 events (+1 in play kept) (plan limit: Response is missing 96 bookmaker odds. Upgrade your API key to access all data f)",
+ "oddsLive": "ok: 1 in-play events (1 live, 1 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 20 cards, 331 player stats, FanDuel-only players on 1 cards; not in the feed (3): ORL@CLE, MIL@CHA, CHI@DEN",
  "errors": [],
- "requests": 959,
+ "requests": 980,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 94.1
+ "seconds": 107.3
 }
