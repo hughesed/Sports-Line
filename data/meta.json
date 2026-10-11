@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 67,
+ "runNumber": 68,
  "deadlineHit": false,
- "generatedAt": "2026-10-11T23:21:40Z",
- "generatedAtET": "Sun Oct 11, 7:21 PM ET",
+ "generatedAt": "2026-10-11T23:35:31Z",
+ "generatedAtET": "Sun Oct 11, 7:35 PM ET",
  "today": "2026-10-11",
- "lastRunAt": "2026-10-11T23:21:40Z",
+ "lastRunAt": "2026-10-11T23:35:31Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,8 +16,8 @@
    "teamLevel": 0,
    "carried": 9,
    "error": null,
-   "newFinals": 7,
-   "storeGames": 360,
+   "newFinals": 1,
+   "storeGames": 361,
    "lastFinal": "2026-10-11"
   },
   "wnba": {
@@ -103,14 +103,14 @@
   "sched": 87,
   "pastp": 34,
   "predictions": 115,
-  "graded": 74,
-  "storeGames": 13583
+  "graded": 75,
+  "storeGames": 13584
  },
  "calibration": {
   "slopes": {},
-  "graded": 74,
-  "accML": 0.662,
-  "accBook": 0.676
+  "graded": 75,
+  "accML": 0.667,
+  "accBook": 0.68
  },
  "social": {
   "enabled": true,
@@ -123,7 +123,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.5,
+  "seconds": 6.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,17 +133,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 8,
+  "gamesUploaded": 3,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2445,
+  "simPlayersUploaded": 2629,
   "configured": true
  },
- "odds": "ok: 9 events (+5 in play kept)",
- "oddsLive": "ok: 5 in-play events (5 live, 5 with FanDuel lines)",
+ "odds": "kept (14 min old, pulls every 60 min)",
+ "oddsLive": "ok: 4 in-play events (4 live, 4 with FanDuel lines)",
  "fanduel": "ok: FanDuel lines on 8 cards, 84 player stats, FanDuel-only players on 0 cards; not in the feed (1): CHI@DEN",
  "errors": [],
- "requests": 342,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 85.3
+ "requests": 393,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 26.6
 }
