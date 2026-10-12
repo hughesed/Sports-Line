@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 72,
+ "runNumber": 73,
  "deadlineHit": false,
- "generatedAt": "2026-10-12T09:44:51Z",
- "generatedAtET": "Mon Oct 12, 5:44 AM ET",
+ "generatedAt": "2026-10-12T13:03:25Z",
+ "generatedAtET": "Mon Oct 12, 9:03 AM ET",
  "today": "2026-10-12",
- "lastRunAt": "2026-10-12T09:44:51Z",
+ "lastRunAt": "2026-10-12T13:03:25Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -97,8 +97,8 @@
  },
  "counts": {
   "slate": 26,
-  "playerCards": 18,
-  "teamCards": 8,
+  "playerCards": 19,
+  "teamCards": 7,
   "window": 135,
   "sched": 85,
   "pastp": 30,
@@ -121,9 +121,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 15,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 2.1,
+  "seconds": 7.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,16 +133,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 10,
+  "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2960,
   "configured": true
  },
- "odds": "kept (2 min old, pulls every 60 min)",
+ "odds": "ok: 8 events",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 8 cards, 63 player stats, FanDuel-only players on 0 cards; not in the feed (4): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH",
+ "fanduel": "ok: FanDuel lines on 8 cards, 68 player stats, FanDuel-only players on 1 cards; not in the feed (4): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH",
  "errors": [],
- "requests": 389,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 18.8
+ "requests": 313,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 91.6
 }
