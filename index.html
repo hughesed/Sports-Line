@@ -591,6 +591,8 @@ button.potd{cursor:pointer}
 .vcw{font-size:11px;color:var(--muted);align-self:center;margin-inline-end:2px}
 .dcell{position:relative}
 .cdot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.potd .hpstat{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%}
+.potd .hpgen{padding:6px 12px;font-size:13px;min-height:0}
 
 /* data bar (src/loader.js): "Data updated ...", stale warning, error state */
 .lsbar{font:11.5px/1.35 var(--f-body,system-ui,sans-serif);padding:7px 14px;padding-top:calc(7px + env(safe-area-inset-top,0px));background:var(--surface2,#f3f6fb);color:var(--muted,#566880);border-bottom:1px solid var(--line,#dbe3ee);display:flex;gap:6px 10px;align-items:center;flex-wrap:wrap}
@@ -1158,7 +1160,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="14cc0c0adc">
+<body data-build="37150b67e8">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -6749,19 +6751,24 @@ function hpLeg(tok){ const p=String(tok).split(':'); const g=G[p[1]]; if(!g) ret
 function hpInWin(g){ if(!g.day) return true; const a=Date.parse(S.date+'T12:00:00Z'), d=Date.parse(g.day+'T12:00:00Z'); return d>=a&&d<=a+3*864e5; }
 /* ---------- same-game parlays ---------- */
 const HP_SIZES=[[2,0.58],[4,0.53],[8,0.5]];     // legs wanted, and the lowest chance a leg may have to be used
+const HP_MIN_ALL=0.23;                            // a same-game parlay is only built or shown when its all-hit chance is at least this; a leg that would pull it below is left out, so a big parlay may have fewer legs
 /* what kind of bet a leg is, for mixing: a team side (moneyline / spread), the game total, a player over/under, or a stat threshold ("60+ rush yds") */
 const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.floor?'floor':l.kind==='alt'?'alt':'ou';
 const hpIsUnder=l=>!!(l.spec&&(l.spec.dir==='under'||l.spec.dir==='lt'));
 /* picks up to n legs a step at a time. The score is the leg's chance, nudged so the parlay mixes kinds: at most one team side and one game total, no more than
    ~40% unders, a stat type is not repeated more than the size allows, the first leg of each kind gets a bonus, and legs already used in a smaller parlay for the
    same game are marked down so the 2, 4 and 8-leg builds are not the same picks. A leg still has to clear the chance floor for its size. */
-function hpPick(legs,n,floor,used){
-  const out=[],grp={},per={},kinds={},stats={}; let unders=0;
+/* all-hit chance of a set of legs (the same formula the cards show: product of leg chances, 3% off per extra leg for the legs being linked) */
+const hpAllP=ls=>ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,Math.max(0,ls.length-1));
+/* opts (optional, used by the Generate button): rnd = random function that shakes the scores so a new combination comes out */
+function hpPick(legs,n,floor,used,opts){
+  const out=[],grp={},per={},kinds={},stats={}; let unders=0; const rnd=opts&&opts.rnd, amp=(opts&&opts.amp)||0.35;
   const maxUnder=Math.max(1,Math.floor(n*0.4)), maxStat=n>=8?3:n>=4?2:1, maxAlt=Math.max(1,Math.floor(n/3)+(n>=4?1:0)), maxFloor=Math.max(1,Math.ceil(n/2));      // thresholds: 1 of 2, 2 of 4, 3 of 8; floor legs (a low rung the player almost always clears): 1 of 2, 2 of 4, 4 of 8
   while(out.length<n){
     let best=null,bs=-1;
     for(const l of legs){
       if(l.p<floor||grp[l.group]||out.indexOf(l)>=0) continue;
+      if(out.length>=1&&hpAllP(out.concat([l]))<HP_MIN_ALL) continue;       // keep the whole parlay at or above the all-hit minimum
       const c=hpCat(l); if((c==='side'||c==='total')&&kinds[c]) continue; if(c==='alt'&&(kinds.alt||0)>=maxAlt) continue; if(c==='floor'&&(kinds.floor||0)>=maxFloor) continue;
       if((l.kind==='prop'||l.kind==='alt')&&per[l.pid]) continue;
       const un=hpIsUnder(l); if(un&&unders>=maxUnder) continue;
@@ -6772,6 +6779,7 @@ function hpPick(legs,n,floor,used){
       if(l.book==='fanduel') s*=1.06;                  // a real FanDuel price and link beats an estimate
       if(l.floor) s*=1.04;                              // a floor leg is the kind that keeps landing, so it is preferred over an equal-chance leg
       if(!kinds[c]) s*=n>=4?1.12:1.05;
+      if(rnd) s*=1+(rnd()-0.5)*amp;
       if(s>bs){ bs=s; best=l; } }
     if(!best) break;
     out.push(best); grp[best.group]=1; kinds[hpCat(best)]=(kinds[hpCat(best)]||0)+1; if(best.pid) per[best.pid]=1; if(hpIsUnder(best)) unders++;
@@ -6784,13 +6792,36 @@ function hpBuild(g){
   HP_SIZES.forEach(sz=>{ const n=sz[0], ls=hpPick(legs,n,sz[1],used);
     /* up to n legs: fewer are fine when the game does not have enough good ones, but a 4 or 8 that is no bigger than the size below it is not repeated */
     if(ls.length<2||(n>2&&ls.length<=prev)) return; prev=ls.length; ls.forEach(l=>{ used[l.tok]=(used[l.tok]||0)+1; });
-    const dec=ls.reduce((d,l)=>d*decOf(l.price),1); const cats={}; ls.forEach(l=>{ cats[hpCat(l)]=(cats[hpCat(l)]||0)+1; });
-    res.push({g:g,n:n,k:ls.length,legs:ls,dec:dec,am:amerOfDec(dec),cats:cats,p:ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,ls.length-1)}); });
+    const s=hpMake(g,n,ls); if(s.p<HP_MIN_ALL) return; res.push(s); });
   return res;
+}
+function hpMake(g,n,ls){
+  const dec=ls.reduce((d,l)=>d*decOf(l.price),1); const cats={}; ls.forEach(l=>{ cats[hpCat(l)]=(cats[hpCat(l)]||0)+1; });
+  return {g:g,n:n,k:ls.length,legs:ls,dec:dec,am:amerOfDec(dec),cats:cats,p:hpAllP(ls)};
+}
+/* ---------- Generate button: a fresh parlay for the same game and size ---------- */
+HP.over={}; HP.seen={}; HP.note={};
+const hpSig=ls=>ls.map(l=>l.tok).sort().join('|');
+function hpRand(seed){ let a=seed>>>0; return function(){ a=(a+0x6D2B79F5)>>>0; let t=a; t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61); return ((t^(t>>>14))>>>0)/4294967296; }; }
+function hpRegen(gid,n){
+  const g=G[gid]; if(!g) return null; gid=g.id; const sz=HP_SIZES.find(x=>x[0]===n); if(!sz) return null;
+  const legs=hpLegs(g).slice(); const key=gid+':'+n; const seen=HP.seen[key]||(HP.seen[key]={});
+  const cur=(HP.list||[]).find(s=>String(s.g.id)===String(gid)&&s.n===n); if(cur) seen[hpSig(cur.legs)]=1;
+  let best=null;
+  for(let t=0;t<40&&!best;t++){
+    const amp=0.35+Math.min(t,20)*0.05;                       // shake harder each try when the same combination keeps coming back
+    const ls=hpPick(legs,n,sz[1],{},{rnd:hpRand((Date.now()+t*7919+n*131)^(gid.length*977)),amp:amp});
+    if(ls.length<2) break; const s=hpMake(g,n,ls); if(s.p<HP_MIN_ALL) continue;
+    if(!seen[hpSig(ls)]) best=s; }
+  if(!best){ HP.seen[key]={}; return null; }                  // every combination this game can make has been shown: start over next tap
+  seen[hpSig(best.legs)]=1; HP.over[key]=best; return best;
 }
 function hpAllSgp(){
   const gs=boardGames().filter(g=>(S.league==='all'||keyOf(g)===S.league)&&hpInWin(g)&&preOK(g)&&(typeof llState!=='function'||llState(g)==='pre')); const all=[];
-  gs.forEach(g=>{ hpBuild(g).forEach(s=>all.push(s)); });
+  gs.forEach(g=>{ hpBuild(g).forEach(s=>{
+    const o=HP.over[g.id+':'+s.n];                        // a parlay made with the Generate button replaces the built one, while its legs are still on offer
+    if(o){ const ok=hpLegs(g); if(o.legs.every(l=>ok.some(x=>x.tok===l.tok))) { const nl=o.legs.map(l=>ok.find(x=>x.tok===l.tok)), m=hpMake(g,o.n,nl); if(m.p>=HP_MIN_ALL) s=m; else delete HP.over[g.id+':'+s.n]; } else delete HP.over[g.id+':'+s.n]; }
+    all.push(s); }); });
   all.sort((a,b)=>b.p*(1+0.04*(Object.keys(b.cats).length-1))-a.p*(1+0.04*(Object.keys(a.cats).length-1))); return all;       // a mix of kinds ranks a little higher
 }
 const HP_CATN={side:'team side',total:'total',ou:'over/under prop',alt:'stat threshold',floor:'floor leg'};
@@ -6807,8 +6838,9 @@ function hpLegRow(l){
 }
 function hpSgpCard(s,i){
   const g=s.g, on=s.legs.every(l=>inSlip(l.tok)); const nFd=s.legs.filter(l=>l.book==='fanduel').length, allFd=nFd===s.legs.length, fdU=hpFdUrl(s), nEst=s.legs.filter(l=>l.book==='est').length;
-  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.away,20)+' ':'')+esc(g.teams.away.abbr)+' @ '+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.home,20)+' ':'')+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.k+(s.k<s.n?' of up to '+s.n:'')+' legs</span></b><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span></div>'+
+  return '<div class="potd hit'+(on?' on':'')+'"><div class="ph"><b>'+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.away,20)+' ':'')+esc(g.teams.away.abbr)+' @ '+(typeof tlogo==='function'?tlogo(keyOf(g),g.teams.home,20)+' ':'')+esc(g.teams.home.abbr)+' <span class="muted small">'+esc(LGN[keyOf(g)]||keyOf(g).toUpperCase())+' · '+esc(g.startDate||'')+' · '+s.k+(s.k<s.n?' of up to '+s.n:'')+' legs</span></b><span class="hpstat"><span class="mono">est. '+fo(s.am)+' · ~'+Math.round(s.p*100)+'% all hit</span><button class="btn hpgen" data-act="hp-gen" data-g="'+esc(g.id)+'" data-n="'+s.n+'" title="Build a different parlay for this game">Generate</button></span></div>'+
     '<div class="small muted hpmix">Mix: '+esc(hpMixTxt(s))+(nEst?' · '+nEst+' est. price'+(nEst>1?'s':''):'')+'</div>'+
+    (HP.note[g.id+':'+s.n]?'<div class="small muted">'+esc(HP.note[g.id+':'+s.n])+'</div>':'')+
     '<div class="hpsrc">'+(allFd?fdMark()+' same-game parlay legs':(nFd?fdMark()+' on '+nFd+' of '+s.k+' legs, the rest at the best other book':'FanDuel has not posted these legs yet, so the best other book is shown'))+'</div>'+
     '<details class="hplegs"'+(S.fold['hpl'+g.id+s.n]?' open':'')+' data-fold="hpl'+esc(g.id+s.n)+'"><summary class="small"><b>Legs</b> <span class="muted">tap to open or close, and tap a leg for its detail</span></summary>'+s.legs.map(hpLegRow).join('')+'</details>'+
     '<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="hp-add" data-i="'+i+'">'+(on?'Remove from slip':'Add to slip')+'</button>'+(fdU.url?'<a class="btn" href="'+esc(fdU.url)+'" rel="noopener">'+(fdU.n?'Open on FanDuel ('+fdU.n+' of '+s.k+' legs)':'Open game on FanDuel')+'</a>':'')+'</div>'+
@@ -6826,7 +6858,7 @@ function hpSgpHtml(){
   const all=hpAllSgp(); HP.list=all; const out={};
   HP_SIZES.forEach(sz=>{ const n=sz[0], per={}; const show=[];
     all.forEach((s,i)=>{ if(s.n!==n) return; const k=keyOf(s.g); per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<4) show.push([s,i]); });
-    out[n]=show.length?show.map(x=>hpSgpCard(x[0],x[1])).join(''):'<div class="small muted">No game has enough legs at or above '+Math.round(sz[1]*100)+'% for a '+n+'-leg parlay'+(S.league==='all'?'':' in this league')+' right now.</div>'; });
+    out[n]=show.length?show.map(x=>hpSgpCard(x[0],x[1])).join(''):'<div class="small muted">No game has enough legs at or above '+Math.round(sz[1]*100)+'% (with at least a '+Math.round(HP_MIN_ALL*100)+'% chance of all legs hitting) for a '+n+'-leg parlay'+(S.league==='all'?'':' in this league')+' right now.</div>'; });
   out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Floor legs, low numbers a player almost always reaches ("2+ receptions", "15+ receiving yards": the projection is far above the number and he cleared it in nearly every recent game), are tagged and ranked a little higher. Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
   return out;
 }
@@ -6881,6 +6913,12 @@ document.addEventListener('click',function(e){
   else { S.slip=s.legs.map(l=>legFor(l.tok)).filter(Boolean); S.betMode='parlay'; S.slipOpen=true; S.slipMsg='Loaded '+s.n+' legs. Prices are the best in the sportsbook feed; the book will price the combo lower.'; }
   renderSlip(); syncLegButtons(); render();
 },true);
+document.addEventListener('click',function(e){
+  const t=e.target.closest&&e.target.closest('[data-act="hp-gen"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
+  const gid=t.getAttribute('data-g'), n=+t.getAttribute('data-n'); let r=null; try{ r=hpRegen(gid,n); }catch(err){ try{ console.error('Line Scout: generate failed',err); }catch(_){} }
+  HP.note[gid+':'+n]=r?'':'That was every combination this game can make at this size. Tap again to start over.';
+  render();
+},true);
 /* signed-in practice bets are priced by the server from the slate; a feed leg goes through only when the slate offers the same line */
 function hpServerTok(l){
   const g=G[l.gid]; if(!g||!l.spec) return null; const sp=l.spec, L=g.lines||{};
@@ -6893,7 +6931,7 @@ function hpServerTok(l){
     return null; }
   return null;
 }
-try{ if(window.__LS) window.__LS.hp={legs:hpLegs,all:hpAllSgp,mix:hpMixTxt,pick:hpPick,odds:hpOdds}; }catch(e){}
+try{ if(window.__LS) window.__LS.hp={legs:hpLegs,all:hpAllSgp,mix:hpMixTxt,pick:hpPick,odds:hpOdds,regen:hpRegen}; }catch(e){}
 
 /* ================= Parlay stacks: cross-game parlays per sport (4 / 8 / 12-15 legs) =================
    Sits on the home screen under "Best same-game parlays". For each sport it builds one parlay from player legs spread across ALL of that sport's upcoming games

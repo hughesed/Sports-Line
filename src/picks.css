@@ -18,3 +18,5 @@ button.potd{cursor:pointer}
 .vcw{font-size:11px;color:var(--muted);align-self:center;margin-inline-end:2px}
 .dcell{position:relative}
 .cdot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.potd .hpstat{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%}
+.potd .hpgen{padding:6px 12px;font-size:13px;min-height:0}
