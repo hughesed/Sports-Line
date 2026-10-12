@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 75,
+ "runNumber": 76,
  "deadlineHit": false,
- "generatedAt": "2026-10-12T22:41:14Z",
- "generatedAtET": "Mon Oct 12, 6:41 PM ET",
+ "generatedAt": "2026-10-12T22:48:08Z",
+ "generatedAtET": "Mon Oct 12, 6:48 PM ET",
  "today": "2026-10-12",
- "lastRunAt": "2026-10-12T22:41:14Z",
+ "lastRunAt": "2026-10-12T22:48:08Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -121,9 +121,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 3,
   "failedCalls": 0,
-  "seconds": 7.7,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,17 +133,15 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 10,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2952,
+  "gamesUploaded": 0,
   "configured": true
  },
- "odds": "ok: 22 events (+2 in play kept) (early: 1 slate game(s) had no event, e.g. GS@LAL)",
+ "odds": "kept (7 min old, pulls every 60 min)",
  "oddsLive": "ok: 1 in-play events (1 live, 1 with FanDuel lines)",
  "fanduel": "ok: FanDuel lines on 12 cards, 97 player stats, FanDuel-only players on 0 cards; not in the feed (6): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH, CLE@ORL, GS@LAL",
  "errors": [],
- "requests": 291,
+ "requests": 289,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 95.0
+ "seconds": 32.3
 }
