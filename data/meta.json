@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "runNumber": 73,
+ "runNumber": 74,
  "deadlineHit": false,
- "generatedAt": "2026-10-12T13:03:25Z",
- "generatedAtET": "Mon Oct 12, 9:03 AM ET",
+ "generatedAt": "2026-10-12T21:42:18Z",
+ "generatedAtET": "Mon Oct 12, 5:42 PM ET",
  "today": "2026-10-12",
- "lastRunAt": "2026-10-12T13:03:25Z",
+ "lastRunAt": "2026-10-12T21:42:18Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 8,
+   "games": 6,
    "playerLevel": 1,
    "teamLevel": 0,
-   "carried": 7,
+   "carried": 5,
    "error": null,
    "newFinals": 0,
    "storeGames": 363,
@@ -34,21 +34,21 @@
   "mlb": {
    "status": "ok",
    "games": 3,
-   "playerLevel": 2,
+   "playerLevel": 1,
    "teamLevel": 0,
-   "carried": 1,
+   "carried": 2,
    "error": null,
    "newFinals": 0,
    "storeGames": 2455,
    "lastFinal": "2026-10-12"
   },
   "nba": {
-   "status": "ok",
-   "games": 7,
+   "status": "partial",
+   "games": 8,
    "playerLevel": 0,
-   "teamLevel": 4,
+   "teamLevel": 5,
    "carried": 3,
-   "error": null,
+   "error": "LON @ POR: RuntimeError: teams not in the learned model: LON @ POR",
    "newFinals": 0,
    "storeGames": 2631,
    "lastFinal": "2026-06-14"
@@ -57,8 +57,8 @@
    "status": "ok",
    "games": 2,
    "playerLevel": 0,
-   "teamLevel": 1,
-   "carried": 1,
+   "teamLevel": 0,
+   "carried": 2,
    "error": null,
    "newFinals": 0,
    "storeGames": 1406,
@@ -77,14 +77,14 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 6,
+   "games": 12,
    "playerLevel": 0,
-   "teamLevel": 0,
+   "teamLevel": 6,
    "carried": 6,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 88,
-   "lastFinal": "2026-10-11"
+   "newFinals": 1,
+   "storeGames": 89,
+   "lastFinal": "2026-10-12"
   },
   "tennis": {
    "status": "ok",
@@ -96,21 +96,21 @@
   }
  },
  "counts": {
-  "slate": 26,
-  "playerCards": 19,
-  "teamCards": 7,
+  "slate": 31,
+  "playerCards": 23,
+  "teamCards": 8,
   "window": 135,
   "sched": 85,
   "pastp": 30,
-  "predictions": 121,
-  "graded": 81,
-  "storeGames": 13590
+  "predictions": 128,
+  "graded": 82,
+  "storeGames": 13591
  },
  "calibration": {
   "slopes": {},
-  "graded": 81,
-  "accML": 0.654,
-  "accBook": 0.667
+  "graded": 82,
+  "accML": 0.659,
+  "accBook": 0.659
  },
  "social": {
   "enabled": true,
@@ -123,7 +123,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 7.3,
+  "seconds": 7.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,17 +133,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 10,
+  "gamesUploaded": 17,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2960,
+  "simPlayersUploaded": 2952,
   "configured": true
  },
- "odds": "ok: 8 events",
- "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 8 cards, 68 player stats, FanDuel-only players on 1 cards; not in the feed (4): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH",
- "errors": [],
- "requests": 313,
+ "odds": "ok: 22 events (+2 in play kept)",
+ "oddsLive": "ok: 1 in-play events (1 live, 1 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 12 cards, 68 player stats, FanDuel-only players on 6 cards; not in the feed (5): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH, CLE@ORL",
+ "errors": [
+  "nba: LON @ POR: RuntimeError: teams not in the learned model: LON @ POR"
+ ],
+ "requests": 285,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 91.6
+ "seconds": 94.6
 }
