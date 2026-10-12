@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 70,
+ "runNumber": 71,
  "deadlineHit": false,
- "generatedAt": "2026-10-12T02:38:45Z",
- "generatedAtET": "Sun Oct 11, 10:38 PM ET",
- "today": "2026-10-11",
- "lastRunAt": "2026-10-12T02:38:45Z",
+ "generatedAt": "2026-10-12T09:42:27Z",
+ "generatedAtET": "Mon Oct 12, 5:42 AM ET",
+ "today": "2026-10-12",
+ "lastRunAt": "2026-10-12T09:42:27Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,9 +16,9 @@
    "teamLevel": 0,
    "carried": 7,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 362,
-   "lastFinal": "2026-10-11"
+   "newFinals": 1,
+   "storeGames": 363,
+   "lastFinal": "2026-10-12"
   },
   "wnba": {
    "status": "empty",
@@ -33,14 +33,14 @@
   },
   "mlb": {
    "status": "ok",
-   "games": 2,
-   "playerLevel": 1,
+   "games": 3,
+   "playerLevel": 2,
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2454,
-   "lastFinal": "2026-10-11"
+   "newFinals": 1,
+   "storeGames": 2455,
+   "lastFinal": "2026-10-12"
   },
   "nba": {
    "status": "ok",
@@ -96,21 +96,21 @@
   }
  },
  "counts": {
-  "slate": 25,
-  "playerCards": 17,
+  "slate": 26,
+  "playerCards": 18,
   "teamCards": 8,
-  "window": 141,
-  "sched": 87,
-  "pastp": 34,
-  "predictions": 120,
-  "graded": 79,
-  "storeGames": 13588
+  "window": 135,
+  "sched": 85,
+  "pastp": 30,
+  "predictions": 121,
+  "graded": 81,
+  "storeGames": 13590
  },
  "calibration": {
   "slopes": {},
-  "graded": 79,
-  "accML": 0.658,
-  "accBook": 0.671
+  "graded": 81,
+  "accML": 0.654,
+  "accBook": 0.667
  },
  "social": {
   "enabled": true,
@@ -121,9 +121,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 15,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.0,
+  "seconds": 3.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,16 +133,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 9,
+  "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2926,
   "configured": true
  },
- "odds": "kept (6 min old, pulls every 60 min)",
- "oddsLive": "ok: 2 in-play events (2 live, 2 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 7 cards, 63 player stats, FanDuel-only players on 0 cards; not in the feed (4): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH",
+ "odds": "ok: 8 events",
+ "oddsLive": "no games in play",
+ "fanduel": "ok: FanDuel lines on 8 cards, 63 player stats, FanDuel-only players on 0 cards; not in the feed (4): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH",
  "errors": [],
- "requests": 333,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 29.9
+ "requests": 413,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 81.9
 }
