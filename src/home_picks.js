@@ -51,7 +51,7 @@ function hpHtBlock(g){
 /* ---------- legs for one game, all from the feed ---------- */
 function hpLegs(g){
   const O=hpOdds(); if(!O) return []; const ck=g.id+'|'+O.generatedAt+'|'+CALV; if(HP.cache[ck]) return HP.cache[ck];
-  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ HP.cache[ck]=out; return out; }
+  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>out.push(l)); }catch(_){} HP.cache[ck]=out; return out; }
   const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
   const abbrBk=b=>HP_BK[b]||b;
   const push=(tok,kind,label,x,opp,pModel,spec,group,extra)=>{ const b=hpBest(x); if(!b) return; const pf=hpFair(x,opp,b); if(pf==null) return;
@@ -78,7 +78,8 @@ function hpLegs(g){
      Priced from the book when the ladder has a book price for the rung, otherwise an estimate (marked est.). Over/under legs are not the only kind of leg any more. */
   (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
     (pl.stats||[]).forEach(st=>{
-      const rungs=(st.miles||[]).filter(m=>m&&m.t!=null&&m.p!=null); if(!rungs.length||st.line==null) return;
+      /* a slate player's rungs carry no chance of their own (only FanDuel-only players get one), so score each from the projection and the last-15 record (floor.js) */
+      const rungs=(st.miles||[]).filter(m=>m&&m.t!=null).map(m=>{ if(m.p!=null) return m; const r=(typeof flRungP==='function')?flRungP(pl,st,+m.t):null; return r?{t:m.t,price:m.price,p:r.p}:null; }).filter(Boolean); if(!rungs.length||st.line==null) return;
       const lineT=Math.floor(+st.line)+1;
       /* meaningful thresholds only: near the book's line (not "1+ reception" for a 6-catch player), and not near-certain (those add nothing but a -600 price) */
       const cand=rungs.filter(m=>m.t!==lineT&&m.p>=0.55&&m.p<=0.82&&m.t>=0.55*(+st.line)).sort((a,b)=>b.t-a.t);        // highest threshold first
@@ -87,6 +88,8 @@ function hpLegs(g){
         out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+m.t+'+ '+String(st.label||st.key).toLowerCase(),price:priced?m.price:estPrice(m.p),book:priced?'draftkings':'est',bk:priced?'DK':'est.',link:null,nBooks:0,line:m.t-0.5,
           pFair:null,pModel:m.p,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:m.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,why:''}); });
     }); });
+  /* floor legs: low rungs the player almost always clears (floor.js); they replace a mid-range threshold for the same player and stat */
+  try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){}
   HP.cache[ck]=out; return out;
 }
 function hpLeg(tok){ const p=String(tok).split(':'); const g=G[p[1]]; if(!g) return null; const l=hpLegs(g).find(x=>x.tok===tok); return l?Object.assign({},l):null; }
@@ -96,19 +99,19 @@ function hpInWin(g){ if(!g.day) return true; const a=Date.parse(S.date+'T12:00:0
 /* ---------- same-game parlays ---------- */
 const HP_SIZES=[[2,0.58],[4,0.53],[8,0.5]];     // legs wanted, and the lowest chance a leg may have to be used
 /* what kind of bet a leg is, for mixing: a team side (moneyline / spread), the game total, a player over/under, or a stat threshold ("60+ rush yds") */
-const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.kind==='alt'?'alt':'ou';
+const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.floor?'floor':l.kind==='alt'?'alt':'ou';
 const hpIsUnder=l=>!!(l.spec&&(l.spec.dir==='under'||l.spec.dir==='lt'));
 /* picks up to n legs a step at a time. The score is the leg's chance, nudged so the parlay mixes kinds: at most one team side and one game total, no more than
    ~40% unders, a stat type is not repeated more than the size allows, the first leg of each kind gets a bonus, and legs already used in a smaller parlay for the
    same game are marked down so the 2, 4 and 8-leg builds are not the same picks. A leg still has to clear the chance floor for its size. */
 function hpPick(legs,n,floor,used){
   const out=[],grp={},per={},kinds={},stats={}; let unders=0;
-  const maxUnder=Math.max(1,Math.floor(n*0.4)), maxStat=n>=8?3:n>=4?2:1, maxAlt=Math.max(1,Math.floor(n/3)+(n>=4?1:0));      // thresholds: 1 of 2, 2 of 4, 3 of 8
+  const maxUnder=Math.max(1,Math.floor(n*0.4)), maxStat=n>=8?3:n>=4?2:1, maxAlt=Math.max(1,Math.floor(n/3)+(n>=4?1:0)), maxFloor=Math.max(1,Math.ceil(n/2));      // thresholds: 1 of 2, 2 of 4, 3 of 8; floor legs (a low rung the player almost always clears): 1 of 2, 2 of 4, 4 of 8
   while(out.length<n){
     let best=null,bs=-1;
     for(const l of legs){
       if(l.p<floor||grp[l.group]||out.indexOf(l)>=0) continue;
-      const c=hpCat(l); if((c==='side'||c==='total')&&kinds[c]) continue; if(c==='alt'&&(kinds.alt||0)>=maxAlt) continue;
+      const c=hpCat(l); if((c==='side'||c==='total')&&kinds[c]) continue; if(c==='alt'&&(kinds.alt||0)>=maxAlt) continue; if(c==='floor'&&(kinds.floor||0)>=maxFloor) continue;
       if((l.kind==='prop'||l.kind==='alt')&&per[l.pid]) continue;
       const un=hpIsUnder(l); if(un&&unders>=maxUnder) continue;
       const sk=l.spec&&l.spec.stat; if(sk&&(stats[sk]||0)>=maxStat) continue;
@@ -116,6 +119,7 @@ function hpPick(legs,n,floor,used){
       if(sk) s*=Math.pow(0.93,stats[sk]||0);
       if(un) s*=0.94;
       if(l.book==='fanduel') s*=1.06;                  // a real FanDuel price and link beats an estimate
+      if(l.floor) s*=1.04;                              // a floor leg is the kind that keeps landing, so it is preferred over an equal-chance leg
       if(!kinds[c]) s*=n>=4?1.12:1.05;
       if(s>bs){ bs=s; best=l; } }
     if(!best) break;
@@ -138,9 +142,11 @@ function hpAllSgp(){
   gs.forEach(g=>{ hpBuild(g).forEach(s=>all.push(s)); });
   all.sort((a,b)=>b.p*(1+0.04*(Object.keys(b.cats).length-1))-a.p*(1+0.04*(Object.keys(a.cats).length-1))); return all;       // a mix of kinds ranks a little higher
 }
-const HP_CATN={side:'team side',total:'total',ou:'over/under prop',alt:'stat threshold'};
+const HP_CATN={side:'team side',total:'total',ou:'over/under prop',alt:'stat threshold',floor:'floor leg'};
 function hpMixTxt(s){ return Object.keys(s.cats).map(k=>s.cats[k]+' '+HP_CATN[k]+(s.cats[k]>1&&k!=='side'?'s':'')).join(' · '); }
 function hpLegRow(l){
+  if(l.floor) return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <b class="flTag" title="a low number the player almost always reaches">floor</b> <span class="mono">'+fo(l.price)+'</span> <span class="muted small">'+esc(l.bk)+' · '+Math.round(l.p*100)+'%</span></summary>'+
+    '<div class="small muted hpld">'+esc(l.why||'')+' '+(l.book==='est'?'Price is my estimate, not a sportsbook price (FanDuel may list this rung at a different price, or not at all).':'Price is the book\'s price for this rung.')+' FanDuel cannot load this leg from a link: add it by hand.</div></details>';
   if(l.kind==='alt') return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <span class="mono">'+fo(l.price)+'</span> <span class="muted small">'+esc(l.bk)+' · '+Math.round(l.p*100)+'%</span></summary>'+
     '<div class="small muted hpld">Stat threshold from the model\'s ladder around the book\'s line. '+(l.book==='est'?'Price is my estimate, not a sportsbook price (FanDuel may list this rung at a different price, or not at all).':'Price is the book\'s price for this rung.')+' Model chance '+Math.round(l.pModel*100)+'%'+(Math.abs(l.p-l.pModel)>0.005?', adjusted for availability to '+Math.round(l.p*100)+'%':'')+'. FanDuel cannot load this leg from a link: add it by hand.</div></details>';
   const isP=l.kind==='prop';
@@ -170,7 +176,7 @@ function hpSgpHtml(){
   HP_SIZES.forEach(sz=>{ const n=sz[0], per={}; const show=[];
     all.forEach((s,i)=>{ if(s.n!==n) return; const k=keyOf(s.g); per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<4) show.push([s,i]); });
     out[n]=show.length?show.map(x=>hpSgpCard(x[0],x[1])).join(''):'<div class="small muted">No game has enough legs at or above '+Math.round(sz[1]*100)+'% for a '+n+'-leg parlay'+(S.league==='all'?'':' in this league')+' right now.</div>'; });
-  out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
+  out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Floor legs, low numbers a player almost always reaches ("2+ receptions", "15+ receiving yards": the projection is far above the number and he cleared it in nearly every recent game), are tagged and ranked a little higher. Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
   return out;
 }
 
@@ -236,3 +242,4 @@ function hpServerTok(l){
     return null; }
   return null;
 }
+try{ if(window.__LS) window.__LS.hp={legs:hpLegs,all:hpAllSgp,mix:hpMixTxt,pick:hpPick,odds:hpOdds}; }catch(e){}

@@ -1,7 +1,7 @@
 /* ================= safe slips, pick of the day, tracked calls, self-check ================= */
 const POTD_P=0.80, POTD_PRICE=-140, MIN_SAFE=0.55, KEEP_DAYS=24, MAX_CALLS=700, MAX_LIVE_PER_GAME=8;
-const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Pick of the day',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15'};
-const CALL_KINDS=['safe2','safe4','safe8','potd','live','pl4','pl8','pl12'];
+const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Pick of the day',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6'};
+const CALL_KINDS=['safe2','safe4','safe8','potd','live','pl4','pl8','pl12','pl6'];
 const isStack=c=>!!c&&c.multi===true;
 if(!Array.isArray(P.calls)) P.calls=[];
 

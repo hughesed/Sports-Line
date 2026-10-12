@@ -5,7 +5,7 @@
 .plchip span{font-size:11px;font-weight:500;color:var(--muted)}
 .plchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .plchip[aria-pressed="true"] span{color:inherit;opacity:.8}
-.plseg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 10px}
+.plseg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 10px}
 .plseg-b{display:flex;flex-direction:column;align-items:center;gap:1px;border:0;background:transparent;color:var(--ink);border-radius:9px;padding:7px 4px;font:inherit;cursor:pointer;min-width:0}
 .plseg-b b{font-size:13px}.plseg-b span{font-size:11px;color:var(--muted)}
 .plseg-b[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(14,26,43,.18);outline:1px solid var(--accent)}
@@ -57,3 +57,5 @@
 .plhow{margin-top:8px}
 .plhow>summary{cursor:pointer}
 @media (max-width:360px){.plstats{grid-template-columns:1fr 1fr}.plstats>div:first-child{grid-column:1/-1}.plo b{font-size:19px}}
+
+.flTag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--over);background:var(--over-soft);border-radius:4px;padding:1px 4px;vertical-align:1px}
