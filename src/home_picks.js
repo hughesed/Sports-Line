@@ -4,6 +4,9 @@
    Prices on every leg are the best sportsbook price in the feed. Chances blend the feed's no-vig price with the model when the model has the player.
    Practice only. */
 const HP={min:0.6,list:[],cache:{},open:{sgp:true}};
+/* what the player's own sportsbook offers on player props. NHL: overs only, and only points, shots and saves (no unders, no assists), so none of the builders may use anything else there */
+const HP_BOOK={nhl:{overOnly:true,stats:{pts:1,sog:1,saves:1}}};
+function hpPropOk(key,stat,under){ const r=HP_BOOK[key]; return !r||((!under||!r.overOnly)&&(!r.stats||!!r.stats[stat])); }
 if(!S.fold) S.fold={};
 const HP_BK={draftkings:'DK',fanduel:'FD',betmgm:'MGM',caesars:'CZR',espnbet:'ESPN',fanatics:'FAN',bovada:'BOV',betrivers:'BR',hardrockbet:'HR'};
 const hpImp=o=>o==null?null:(o<0?(-o)/(-o+100):100/(o+100));
@@ -68,7 +71,7 @@ function hpLegs(g){
     push('o:'+g.id+':tot:'+d,'tot',(d==='over'?'Over ':'Under ')+b.line,x,o,pm,{k:'tot',dir:d,line:+b.line},g.id+':tot'); });
   // player props: only players the slate knows (so the bet can be graded), priced from the feed
   const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
-  Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p) return; const o=pair[side==='over'?'under':'over'];
+  Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p||!hpPropOk(key,p.stat,side==='under')) return; const o=pair[side==='over'?'under':'over'];
     const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')) return;
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
@@ -78,6 +81,7 @@ function hpLegs(g){
      Priced from the book when the ladder has a book price for the rung, otherwise an estimate (marked est.). Over/under legs are not the only kind of leg any more. */
   (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
     (pl.stats||[]).forEach(st=>{
+      if(!hpPropOk(key,st.key,false)) return;
       /* a slate player's rungs carry no chance of their own (only FanDuel-only players get one), so score each from the projection and the last-15 record (floor.js) */
       const rungs=(st.miles||[]).filter(m=>m&&m.t!=null).map(m=>{ if(m.p!=null) return m; const r=(typeof flRungP==='function')?flRungP(pl,st,+m.t):null; return r?{t:m.t,price:m.price,p:r.p}:null; }).filter(Boolean); if(!rungs.length||st.line==null) return;
       const lineT=Math.floor(+st.line)+1;

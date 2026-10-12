@@ -45,6 +45,7 @@ function flLegs(g){
   const out=[];
   (g.players||[]).forEach(pl=>{
     (pl.stats||[]).forEach(st=>{
+      if(typeof hpPropOk==='function'&&!hpPropOk(keyOf(g),st.key,false)) return;
       const f=flFloorRung(pl,st); if(!f) return;
       const r=f.r, p=(typeof adjP==='function')?adjP(r.p,'prop'):r.p, priced=f.price!=null, tok='o:'+g.id+':alt:'+pl.id+':'+st.key+':'+f.t;
       const lab=String(st.label||st.key).toLowerCase();

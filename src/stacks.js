@@ -44,7 +44,7 @@ function plFloorFactor(sport){ const x=plLearnMap().fl[sport]; return x&&x.n>=4?
 function plSlateLegs(g){
   const out=[];
   (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
-    (pl.stats||[]).forEach(st=>{ if(st.line==null) return;
+    (pl.stats||[]).forEach(st=>{ if(st.line==null||!hpPropOk(keyOf(g),st.key,false)) return;
       const rungs=(st.miles||[]).filter(m=>m&&m.t!=null).map(m=>{ if(m.p!=null) return m; const r=(typeof flRungP==='function')?flRungP(pl,st,+m.t):null; return r?{t:m.t,price:m.price,p:r.p}:null; }).filter(Boolean); if(!rungs.length) return;
       const cand=rungs.filter(m=>m.p>=0.58&&m.p<=0.88&&m.t>=0.5*(+st.line)).sort((a,b)=>b.t-a.t);
       const picks=[]; [cand.find(m=>m.p>=0.74),cand.find(m=>m.p<0.74)].forEach(m=>{ if(m&&picks.indexOf(m)<0) picks.push(m); });

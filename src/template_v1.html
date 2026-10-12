@@ -422,7 +422,7 @@ function playerCard(g,pl){
       '<div class="kv"><div class="k">Last '+st.n+' vs line</div><div class="v">'+st.overHits+'/'+st.n+' over</div><div class="s">'+streak+'</div></div>'+
       '<div class="kv"><div class="k">Projection</div><div class="v">'+st.proj+'</div><div class="s">avg '+st.avg+(st.season!=null&&st.season!==st.avg?' · season '+st.season:'')+' · lean '+esc(st.lean)+'</div></div>'+
     '</div>')+
-    '<div class="btnrow">'+legBtn(tOver,'Over '+st.line,legSub(tOver),dis)+(st.underPrice!=null?legBtn(tUnder,'Under '+st.line,legSub(tUnder),dis):'')+(st.safeAdj!=null?legBtn(tSafe,'Safe '+st.safeAdj+'+',legSub(tSafe),dis):'')+'</div>'+
+    '<div class="btnrow">'+legBtn(tOver,'Over '+st.line,legSub(tOver),dis)+(st.underPrice!=null&&g.lg!=='nhl'?legBtn(tUnder,'Under '+st.line,legSub(tUnder),dis):'')+(st.safeAdj!=null?legBtn(tSafe,'Safe '+st.safeAdj+'+',legSub(tSafe),dis):'')+'</div>'+
     (alts?'<div class="small muted">Alternate lines (hit count is for the last '+st.n+')</div><div class="alt">'+alts+'</div>':'')+
     '<div class="pnotes">'+notes.map(x=>'<div>'+x+'</div>').join('')+'</div></div>';
 }
