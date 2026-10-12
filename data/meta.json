@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 74,
+ "runNumber": 75,
  "deadlineHit": false,
- "generatedAt": "2026-10-12T21:42:18Z",
- "generatedAtET": "Mon Oct 12, 5:42 PM ET",
+ "generatedAt": "2026-10-12T22:41:14Z",
+ "generatedAtET": "Mon Oct 12, 6:41 PM ET",
  "today": "2026-10-12",
- "lastRunAt": "2026-10-12T21:42:18Z",
+ "lastRunAt": "2026-10-12T22:41:14Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -43,12 +43,12 @@
    "lastFinal": "2026-10-12"
   },
   "nba": {
-   "status": "partial",
-   "games": 8,
+   "status": "ok",
+   "games": 9,
    "playerLevel": 0,
-   "teamLevel": 5,
+   "teamLevel": 6,
    "carried": 3,
-   "error": "LON @ POR: RuntimeError: teams not in the learned model: LON @ POR",
+   "error": null,
    "newFinals": 0,
    "storeGames": 2631,
    "lastFinal": "2026-06-14"
@@ -79,10 +79,10 @@
    "status": "ok",
    "games": 12,
    "playerLevel": 0,
-   "teamLevel": 6,
-   "carried": 6,
+   "teamLevel": 0,
+   "carried": 12,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 89,
    "lastFinal": "2026-10-12"
   },
@@ -96,13 +96,13 @@
   }
  },
  "counts": {
-  "slate": 31,
+  "slate": 32,
   "playerCards": 23,
-  "teamCards": 8,
+  "teamCards": 9,
   "window": 135,
   "sched": 85,
   "pastp": 30,
-  "predictions": 128,
+  "predictions": 129,
   "graded": 82,
   "storeGames": 13591
  },
@@ -123,7 +123,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 7.2,
+  "seconds": 7.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,19 +133,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 17,
+  "gamesUploaded": 10,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2952,
   "configured": true
  },
- "odds": "ok: 22 events (+2 in play kept)",
+ "odds": "ok: 22 events (+2 in play kept) (early: 1 slate game(s) had no event, e.g. GS@LAL)",
  "oddsLive": "ok: 1 in-play events (1 live, 1 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 12 cards, 68 player stats, FanDuel-only players on 6 cards; not in the feed (5): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH, CLE@ORL",
- "errors": [
-  "nba: LON @ POR: RuntimeError: teams not in the learned model: LON @ POR"
- ],
- "requests": 285,
+ "fanduel": "ok: FanDuel lines on 12 cards, 97 player stats, FanDuel-only players on 0 cards; not in the feed (6): OKC@ATL, BKN@WSH, MIN@NY, SA@UTAH, CLE@ORL, GS@LAL",
+ "errors": [],
+ "requests": 291,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 94.6
+ "seconds": 95.0
 }
