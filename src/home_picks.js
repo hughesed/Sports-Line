@@ -54,7 +54,7 @@ function hpHtBlock(g){
 /* ---------- legs for one game, all from the feed ---------- */
 function hpLegs(g){
   const O=hpOdds(); if(!O) return []; const ck=g.id+'|'+O.generatedAt+'|'+CALV; if(HP.cache[ck]) return HP.cache[ck];
-  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>out.push(l)); }catch(_){} HP.cache[ck]=out; return out; }
+  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ const k0=keyOf(g); (g.players||[]).forEach(pl=>(pl.stats||[]).forEach(st=>{ if(hpPropOk(k0,st.key,false)) stAltLegs(g,pl,st).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); })); }catch(_){} try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){} HP.cache[ck]=out; return out; }
   const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
   const abbrBk=b=>HP_BK[b]||b;
   const push=(tok,kind,label,x,opp,pModel,spec,group,extra)=>{ const b=hpBest(x); if(!b) return; const pf=hpFair(x,opp,b); if(pf==null) return;
@@ -72,26 +72,15 @@ function hpLegs(g){
   // player props: only players the slate knows (so the bet can be graded), priced from the feed
   const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
   Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p||!hpPropOk(key,p.stat,side==='under')) return; const o=pair[side==='over'?'under':'over'];
-    const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')) return;
+    const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')||!stMain(g,pl)) return;
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
-    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why}); }); });
-  /* normal-stat thresholds ("60+ rush yds", "5+ receptions", "25+ points"): the model's own ladder around the book's line, for every player the slate knows.
-     Priced from the book when the ladder has a book price for the rung, otherwise an estimate (marked est.). Over/under legs are not the only kind of leg any more. */
+    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl)}); }); });
+  /* stat thresholds ("60+ rush yds", "5+ receptions", "2+ pass TD"): for every MAIN player of the game (starters.js), the highest rung that is still ~76%+ and the highest still ~62%+, from the book's ladder
+     where it has one and from the model where it does not (rush+rec, pass+rush, carries, completions, pass TDs). Priced from the book when the ladder has a price for the rung, otherwise an estimate (marked est.). */
   (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
-    (pl.stats||[]).forEach(st=>{
-      if(!hpPropOk(key,st.key,false)) return;
-      /* a slate player's rungs carry no chance of their own (only FanDuel-only players get one), so score each from the projection and the last-15 record (floor.js) */
-      const rungs=(st.miles||[]).filter(m=>m&&m.t!=null).map(m=>{ if(m.p!=null) return m; const r=(typeof flRungP==='function')?flRungP(pl,st,+m.t):null; return r?{t:m.t,price:m.price,p:r.p}:null; }).filter(Boolean); if(!rungs.length||st.line==null) return;
-      const lineT=Math.floor(+st.line)+1;
-      /* meaningful thresholds only: near the book's line (not "1+ reception" for a 6-catch player), and not near-certain (those add nothing but a -600 price) */
-      const cand=rungs.filter(m=>m.t!==lineT&&m.p>=0.55&&m.p<=0.82&&m.t>=0.55*(+st.line)).sort((a,b)=>b.t-a.t);        // highest threshold first
-      const picks=[]; [cand.find(m=>m.p>=0.7),cand.find(m=>m.p<0.7)].forEach(m=>{ if(m&&picks.indexOf(m)<0) picks.push(m); });
-      picks.forEach(m=>{ const av=pl.avail==null?1:pl.avail; const p=adjP(clamp(m.p*av,0.02,0.97),'prop'); const priced=m.price!=null; const tok='o:'+g.id+':alt:'+pl.id+':'+st.key+':'+m.t;
-        out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+m.t+'+ '+String(st.label||st.key).toLowerCase(),price:priced?m.price:estPrice(m.p),book:priced?'draftkings':'est',bk:priced?'DK':'est.',link:null,nBooks:0,line:m.t-0.5,
-          pFair:null,pModel:m.p,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:m.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,why:''}); });
-    }); });
+    (pl.stats||[]).forEach(st=>{ if(!hpPropOk(key,st.key,false)) return; stAltLegs(g,pl,st,key).forEach(l=>out.push(l)); }); });
   /* floor legs: low rungs the player almost always clears (floor.js); they replace a mid-range threshold for the same player and stat */
   try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){}
   HP.cache[ck]=out; return out;
@@ -107,33 +96,32 @@ const HP_MIN_ALL=0.23;                            // a same-game parlay is only 
 const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.floor?'floor':l.kind==='alt'?'alt':'ou';
 const hpIsUnder=l=>!!(l.spec&&(l.spec.dir==='under'||l.spec.dir==='lt'));
 /* picks up to n legs a step at a time. The score is the leg's chance, nudged so the parlay mixes kinds: at most one team side and one game total, no more than
-   ~40% unders, a stat type is not repeated more than the size allows, the first leg of each kind gets a bonus, and legs already used in a smaller parlay for the
+   ~40% unders, a stat type is not repeated more than the size allows, the first leg of each kind (floor legs excepted) gets a bonus, and legs already used in a smaller parlay for the
    same game are marked down so the 2, 4 and 8-leg builds are not the same picks. A leg still has to clear the chance floor for its size. */
 /* all-hit chance of a set of legs (the same formula the cards show: product of leg chances, 3% off per extra leg for the legs being linked) */
 const hpAllP=ls=>ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,Math.max(0,ls.length-1));
 /* opts (optional, used by the Generate button): rnd = random function that shakes the scores so a new combination comes out */
 function hpPick(legs,n,floor,used,opts){
   const out=[],grp={},per={},kinds={},stats={}; let unders=0; const rnd=opts&&opts.rnd, amp=(opts&&opts.amp)||0.35;
-  const maxUnder=Math.max(1,Math.floor(n*0.4)), maxStat=n>=8?3:n>=4?2:1, maxAlt=Math.max(1,Math.floor(n/3)+(n>=4?1:0)), maxFloor=Math.max(1,Math.ceil(n/2));      // thresholds: 1 of 2, 2 of 4, 3 of 8; floor legs (a low rung the player almost always clears): 1 of 2, 2 of 4, 4 of 8
+  const maxUnder=Math.max(1,Math.floor(n*0.4)), maxStat=n>=8?3:n>=4?2:1, maxAlt=Math.max(1,Math.ceil(n*0.6)), maxFloor=n>=8?2:n>=4?1:0, maxPer=n>=8?2:1;      // starter thresholds: 2 of 2, 3 of 4, 5 of 8; floor legs (a low rung the player almost always clears): none in a 2-leg, 1 of 4, 2 of 8; legs per player: 1 (2 in an 8-leg parlay, like a QB's yards and TDs)
   while(out.length<n){
     let best=null,bs=-1;
     for(const l of legs){
       if(l.p<floor||grp[l.group]||out.indexOf(l)>=0) continue;
       if(out.length>=1&&hpAllP(out.concat([l]))<HP_MIN_ALL) continue;       // keep the whole parlay at or above the all-hit minimum
       const c=hpCat(l); if((c==='side'||c==='total')&&kinds[c]) continue; if(c==='alt'&&(kinds.alt||0)>=maxAlt) continue; if(c==='floor'&&(kinds.floor||0)>=maxFloor) continue;
-      if((l.kind==='prop'||l.kind==='alt')&&per[l.pid]) continue;
+      if((l.kind==='prop'||l.kind==='alt')&&(per[l.pid]||0)>=maxPer) continue;
       const un=hpIsUnder(l); if(un&&unders>=maxUnder) continue;
       const sk=l.spec&&l.spec.stat; if(sk&&(stats[sk]||0)>=maxStat) continue;
-      let s=l.p*Math.pow(0.85,used[l.tok]||0);
+      let s=stScore(l.p)*Math.pow(0.85,used[l.tok]||0)*(1+0.04*(l.lead||0));                // a QB1 / RB1 / WR1 leg edges out an equal-chance leg on a lesser starter
       if(sk) s*=Math.pow(0.93,stats[sk]||0);
       if(un) s*=0.94;
       if(l.book==='fanduel') s*=1.06;                  // a real FanDuel price and link beats an estimate
-      if(l.floor) s*=1.04;                              // a floor leg is the kind that keeps landing, so it is preferred over an equal-chance leg
-      if(!kinds[c]) s*=n>=4?1.12:1.05;
+      if(!kinds[c]&&c!=='floor') s*=n>=4?1.12:1.05;
       if(rnd) s*=1+(rnd()-0.5)*amp;
       if(s>bs){ bs=s; best=l; } }
     if(!best) break;
-    out.push(best); grp[best.group]=1; kinds[hpCat(best)]=(kinds[hpCat(best)]||0)+1; if(best.pid) per[best.pid]=1; if(hpIsUnder(best)) unders++;
+    out.push(best); grp[best.group]=1; kinds[hpCat(best)]=(kinds[hpCat(best)]||0)+1; if(best.pid) per[best.pid]=(per[best.pid]||0)+1; if(hpIsUnder(best)) unders++;
     const sk=best.spec&&best.spec.stat; if(sk) stats[sk]=(stats[sk]||0)+1; }
   return out;
 }
@@ -210,7 +198,7 @@ function hpSgpHtml(){
   HP_SIZES.forEach(sz=>{ const n=sz[0], per={}; const show=[];
     all.forEach((s,i)=>{ if(s.n!==n) return; const k=keyOf(s.g); per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<4) show.push([s,i]); });
     out[n]=show.length?show.map(x=>hpSgpCard(x[0],x[1])).join(''):'<div class="small muted">No game has enough legs at or above '+Math.round(sz[1]*100)+'% (with at least a '+Math.round(HP_MIN_ALL*100)+'% chance of all legs hitting) for a '+n+'-leg parlay'+(S.league==='all'?'':' in this league')+' right now.</div>'; });
-  out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Floor legs, low numbers a player almost always reaches ("2+ receptions", "15+ receiving yards": the projection is far above the number and he cleared it in nearly every recent game), are tagged and ranked a little higher. Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
+  out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Player legs are built around the main players of the game (the QB, the lead backs, the top three pass catchers; in basketball the top six scorers), at a number a little below what the model projects ("Allen 200+ pass yds", "Nacua 80+ rec yds", "Cook 80+ rush+rec yds", "Stafford 2+ pass TD"); backups are not used. A leg with a very high chance pays almost nothing, so the ranking prefers legs around 70 to 75% over 90% ones. Floor legs (a low number a main player nearly always reaches) are tagged and no longer ranked above these. Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
   return out;
 }
 

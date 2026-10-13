@@ -40,6 +40,7 @@ function preToks(g){
   if(L.total!=null&&L.over!=null) ['over','under'].forEach(d=>out.push('g:'+g.id+':tot:'+d));
   (g.players||[]).forEach(pl=>{
     if(pl.status&&pl.status.kind==='out') return;
+    if(typeof stMain==='function'&&!stMain(g,pl)) return;                    // the main players of the game (starters.js), not backups
     (pl.stats||[]).forEach(st=>{
       if(st.safeAdj!=null&&st.pSafe!=null) out.push('p:'+g.id+':'+pl.id+':'+st.key+':safe');
       (st.miles||[]).forEach(m=>out.push('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t));
@@ -77,7 +78,7 @@ function safeSlip(g,n,legs){
 }
 function safeAll(g){
   const key=g.id+':'+CALV; if(SAFE_CACHE[key]) return SAFE_CACHE[key];
-  const legs=preLegs(g).sort((a,b)=>b.ps-a.ps||decOf(b.price)-decOf(a.price));
+  const legs=preLegs(g).sort((a,b)=>stScore(b.ps)-stScore(a.ps)||decOf(b.price)-decOf(a.price));       // stScore: legs around 70 to 75% before 93% ones that pay almost nothing
   const r={2:safeSlip(g,2,legs),4:safeSlip(g,4,legs),8:safeSlip(g,8,legs)};
   Object.keys(SAFE_CACHE).forEach(k=>{ if(k.indexOf(g.id+':')===0) delete SAFE_CACHE[k]; });
   SAFE_CACHE[key]=r; return r;
@@ -105,7 +106,7 @@ function safeBar(g){
   const shown=[2,4,8].map(n=>all[n]).filter(s=>s.legs.length);
   const detail=shown.length?'<details class="d"><summary>What is in each safe slip</summary>'+[2,4,8].map(n=>{ const s=all[n]; return s.legs.length?'<div class="small"><b>Safe '+n+'</b>: '+s.legs.map(l=>esc(l.label)+' <span class="mono">'+fo(l.price)+'</span> <span class="muted">'+Math.round(l.ps*100)+'%</span>').join(' · ')+'</div>':''; }).join('')+
     '<div class="small muted">The chance shown multiplies each leg\'s own chance as if they were unrelated and uses the model\'s own prices, so a sportsbook\'s same-game price will differ. Tap one to load it into the slip.</div></details>':'';
-  return '<div class="sec safebar"><h3>Safe slips <span class="hint">highest-chance legs · tap to load</span></h3><div class="safebtns">'+btns+'</div>'+(note?'<div class="small muted">'+esc(note)+'</div>':'')+detail+'</div>';
+  return '<div class="sec safebar"><h3>Safe slips <span class="hint">main players, solid legs · tap to load</span></h3><div class="safebtns">'+btns+'</div>'+(note?'<div class="small muted">'+esc(note)+'</div>':'')+detail+'</div>';
 }
 
 /* ---------- pick of the day, per sport ---------- */

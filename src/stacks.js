@@ -43,7 +43,7 @@ function plFloorFactor(sport){ const x=plLearnMap().fl[sport]; return x&&x.n>=4?
 /* games the odds feed does not cover still get legs from the slate's own stat ladders (model price, marked est.) */
 function plSlateLegs(g){
   const out=[];
-  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
+  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out'||!stMain(g,pl)) return;
     (pl.stats||[]).forEach(st=>{ if(st.line==null||!hpPropOk(keyOf(g),st.key,false)) return;
       const rungs=(st.miles||[]).filter(m=>m&&m.t!=null).map(m=>{ if(m.p!=null) return m; const r=(typeof flRungP==='function')?flRungP(pl,st,+m.t):null; return r?{t:m.t,price:m.price,p:r.p}:null; }).filter(Boolean); if(!rungs.length) return;
       const cand=rungs.filter(m=>m.p>=0.58&&m.p<=0.88&&m.t>=0.5*(+st.line)).sort((a,b)=>b.t-a.t);
@@ -65,7 +65,8 @@ function plLeg(g,l,sport){
   const edge=(!est&&l.pFair!=null)?clamp(p-l.pFair,-0.06,0.10):0;
   const stead=cv==null?0.5:1-clamp((cv-0.25)/0.75,0,1), hr=hist?hist.h/hist.n:null;
   const steady=p>=0.62&&(cv==null||cv<=0.6)&&(hr==null||hr>=0.7);
-  const score=p+0.5*edge+0.04*stead+(l.book==='fanduel'?0.01:0)-(est?0.015:0)+(hr!=null?0.03*(hr-0.5):0)+(l.floor?0.03:0);                 // a floor leg (a low rung he almost always clears) is the kind that keeps landing
+  const lead=(typeof stLead==='function')?stLead(g,pl):0;
+  const score=stScore(p)+0.03*lead+0.5*edge+0.04*stead+(l.book==='fanduel'?0.01:0)-(est?0.015:0)+(hr!=null?0.03*(hr-0.5):0);                 // stScore (starters.js): a very high chance pays almost nothing, so legs near 70 to 75% rank above 93% ones
   const lab=String(st.label||st.key), A=g.teams.away.abbr, H=g.teams.home.abbr, tm=pl.abbr||'', side=tm===H?'home':tm===A?'away':'';
   const what=under?'Under '+l.line+' '+lab.toLowerCase():(l.kind==='alt'?sp.T+'+ ':'Over '+l.line+' ')+lab.toLowerCase();
   return {tok:l.tok||l.id,gid:g.id,pid:pl.id,sk:sp.stat,skl:lab,who:surname(pl.name),team:tm,game:side==='home'?H+' vs '+A:side==='away'?A+' at '+H:A+' @ '+H,what:what,under:under,spec:sp,
@@ -91,7 +92,7 @@ function plPick(pool,sz){
   const cand=pool.filter(l=>l.p>=sz.floor&&(!sz.onlyFloor||l.floor)), nG={},nS={}; cand.forEach(l=>{ nG[l.gid]=1; nS[l.sk]=1; });
   /* the spread caps relax when a sport has few games or few stat types on offer (a postseason slate, NHL points only), so a stack can still be built */
   const capG=Math.max(sz.maxGame,Math.ceil(sz.min/Math.max(1,Object.keys(nG).length))), capS=Math.max(sz.maxStat,Math.ceil(sz.min/Math.max(1,Object.keys(nS).length)));
-  const maxEst=Math.ceil(sz.max*0.6), maxFl=sz.onlyFloor?sz.max:Math.ceil(sz.max*0.6);       // the regular sizes keep room for real-priced legs; Floor 6 is floor legs only
+  const maxEst=Math.ceil(sz.max*0.6), maxFl=sz.onlyFloor?sz.max:Math.floor(sz.max*0.25);       // the regular sizes are mostly starters' solid legs (a quarter floor legs at most); Floor 6 is floor legs only
   const run=frac=>{
     const out=[],per={},stat={},gm={}; let unders=0,est=0,fls=0; const maxUnder=Math.floor(sz.max*frac);
     while(out.length<sz.max){
@@ -108,8 +109,8 @@ function plPick(pool,sz){
     }
     return out;
   };
-  /* about a quarter unders at most; only when too little else clears the bar does the cap loosen (and the card says so) */
-  let out=[]; for(const f of [0.25,0.5,1]){ out=run(f); if(out.length>=sz.min) break; }
+  /* overs only at first (a winning slip is made of overs); unders are allowed, up to a quarter, only when too little else clears the bar, and the card says so */
+  let out=[]; for(const f of [0,0.25,0.5,1]){ out=run(f); if(out.length>=sz.min) break; }
   return {legs:out,avail:cand.length,capG:capG,capS:capS};
 }
 function plSummarize(sport,sz,legs,extra){
@@ -228,7 +229,7 @@ function plBody(){
   const s=stacks[cur.n];
   return '<div class="plchips" role="tablist" aria-label="Sport">'+chips+'</div><div class="plseg" role="tablist" aria-label="Parlay size">'+seg+'</div>'+
     (s&&!s.none?plCardHtml(s):plEmptyHtml(s||{sz:cur,avail:0},PL.sport))+plRecordHtml(PL.sport)+
-    '<details class="plhow"><summary class="small muted">How these are picked</summary><div class="small muted">Each stack takes player legs from every upcoming game of one sport, so the legs do not depend on each other the way same-game legs do. A leg\'s chance is the book\'s no-vig price blended with the model, pulled toward how often the player cleared that number in recent games, then scaled by how this app\'s own graded legs for that stat have actually done. Steadier stats (small spread next to the projection) and legs whose price beats the fair price rank higher, a real FanDuel price beats an estimate, and the mix caps one player per stack, '+cur.maxStat+' of one stat and '+cur.maxGame+' per game for this size, and about a quarter unders. Odds multiply the legs\' prices; the all-hit chance multiplies their chances, with a small haircut. Floor legs are low numbers that a player nearly always reaches ("2+ receptions", "15+ receiving yards"): the projection sits well above the number, he cleared it in nearly every recent game, and the leg is 86%+; they rank a little higher and may repeat a stat once more, and the Floor 6 size is built from them alone. Long parlays are long shots by nature: a 12-leg stack of 70% legs lands about 1.4% of the time. Floor prices are estimates unless the book lists that rung, and a book\'s real price for a very safe leg is shorter than fair, so check the payout before relying on it.</div></details>';
+    '<details class="plhow"><summary class="small muted">How these are picked</summary><div class="small muted">Each stack takes player legs from every upcoming game of one sport, so the legs do not depend on each other the way same-game legs do. A leg\'s chance is the book\'s no-vig price blended with the model, pulled toward how often the player cleared that number in recent games, then scaled by how this app\'s own graded legs for that stat have actually done. Only the main players of each game are used (QB, lead backs, top three pass catchers; top six scorers in basketball), each at a number a little below the projection, and legs around 70 to 75% rank above 90%+ legs that pay almost nothing. Steadier stats (small spread next to the projection) and legs whose price beats the fair price rank higher, a real FanDuel price beats an estimate, and the mix caps one player per stack, '+cur.maxStat+' of one stat and '+cur.maxGame+' per game for this size, and about a quarter unders. Odds multiply the legs\' prices; the all-hit chance multiplies their chances, with a small haircut. Floor legs are low numbers that a player nearly always reaches ("2+ receptions", "15+ receiving yards"): the projection sits well above the number, he cleared it in nearly every recent game, and the leg is 86%+; they may repeat a stat once more, and the Floor 6 size is built from them alone (main players only). Long parlays are long shots by nature: a 12-leg stack of 70% legs lands about 1.4% of the time. Floor prices are estimates unless the book lists that rung, and a book\'s real price for a very safe leg is shorter than fair, so check the payout before relying on it.</div></details>';
 }
 function plHtml(){
   let inner; try{ inner='<div id="plbox">'+plBody()+'</div>'; }catch(e){ try{ console.error('Line Scout: parlay stacks failed',e); }catch(_){} return ''; }

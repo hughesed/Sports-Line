@@ -1160,7 +1160,7 @@ body.vchat .foot{display:none}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="37150b67e8">
+<body data-build="b685054221">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -3732,6 +3732,7 @@ function preToks(g){
   if(L.total!=null&&L.over!=null) ['over','under'].forEach(d=>out.push('g:'+g.id+':tot:'+d));
   (g.players||[]).forEach(pl=>{
     if(pl.status&&pl.status.kind==='out') return;
+    if(typeof stMain==='function'&&!stMain(g,pl)) return;                    // the main players of the game (starters.js), not backups
     (pl.stats||[]).forEach(st=>{
       if(st.safeAdj!=null&&st.pSafe!=null) out.push('p:'+g.id+':'+pl.id+':'+st.key+':safe');
       (st.miles||[]).forEach(m=>out.push('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t));
@@ -3769,7 +3770,7 @@ function safeSlip(g,n,legs){
 }
 function safeAll(g){
   const key=g.id+':'+CALV; if(SAFE_CACHE[key]) return SAFE_CACHE[key];
-  const legs=preLegs(g).sort((a,b)=>b.ps-a.ps||decOf(b.price)-decOf(a.price));
+  const legs=preLegs(g).sort((a,b)=>stScore(b.ps)-stScore(a.ps)||decOf(b.price)-decOf(a.price));       // stScore: legs around 70 to 75% before 93% ones that pay almost nothing
   const r={2:safeSlip(g,2,legs),4:safeSlip(g,4,legs),8:safeSlip(g,8,legs)};
   Object.keys(SAFE_CACHE).forEach(k=>{ if(k.indexOf(g.id+':')===0) delete SAFE_CACHE[k]; });
   SAFE_CACHE[key]=r; return r;
@@ -3797,7 +3798,7 @@ function safeBar(g){
   const shown=[2,4,8].map(n=>all[n]).filter(s=>s.legs.length);
   const detail=shown.length?'<details class="d"><summary>What is in each safe slip</summary>'+[2,4,8].map(n=>{ const s=all[n]; return s.legs.length?'<div class="small"><b>Safe '+n+'</b>: '+s.legs.map(l=>esc(l.label)+' <span class="mono">'+fo(l.price)+'</span> <span class="muted">'+Math.round(l.ps*100)+'%</span>').join(' · ')+'</div>':''; }).join('')+
     '<div class="small muted">The chance shown multiplies each leg\'s own chance as if they were unrelated and uses the model\'s own prices, so a sportsbook\'s same-game price will differ. Tap one to load it into the slip.</div></details>':'';
-  return '<div class="sec safebar"><h3>Safe slips <span class="hint">highest-chance legs · tap to load</span></h3><div class="safebtns">'+btns+'</div>'+(note?'<div class="small muted">'+esc(note)+'</div>':'')+detail+'</div>';
+  return '<div class="sec safebar"><h3>Safe slips <span class="hint">main players, solid legs · tap to load</span></h3><div class="safebtns">'+btns+'</div>'+(note?'<div class="small muted">'+esc(note)+'</div>':'')+detail+'</div>';
 }
 
 /* ---------- pick of the day, per sport ---------- */
@@ -6586,6 +6587,86 @@ function llPaint(){
 }
 setInterval(function(){ if(!document.hidden) llPaint(); },3000);
 
+/* ================= Main players: the legs a slip is built around =================
+   A winning slip looks like this: QBs, lead backs and the top receivers, each at a number a little below the projection ("Allen 200+ pass yds", "Nacua 80+ rec yds",
+   "Cook 80+ rush+rec yds", "Shakir 3+ rec", "Stafford 2+ pass TD"), not a depth player's tiny number. Three things kept the builders away from that:
+     1. they ranked legs by raw chance, so a 93% leg on a backup beat a 70% leg on the starter;
+     2. the ladder only offered the two rungs nearest the book's line, and rush+rec yards, pass+rush yards and pass TDs had no ladder at all;
+     3. any player on the slate could be used, backups and third receivers included.
+   This file fixes the inputs for all builders (same-game parlays, stacks, floor legs, safe slips):
+     stMain(g,pl)       is the player a main player of his team in this game? Ranked by projected volume among teammates who are playing, so when a starter is out the next man up counts.
+                        NFL / college football: QB1, RB1 (RB2 only when he is close to RB1), the top 3 pass catchers (a 4th when he is close to the 3rd).
+                        Basketball: the top 6 scorers. Baseball: all pitchers and the top 6 hitters. Anything else (feed-only players, no projection): treated as main.
+     stScore(p)         how much a builder wants a leg of chance p: rises with p up to 75%, then falls, so a 93% leg that pays almost nothing does not beat a 72% leg.
+     stAltLegs(g,pl,st) per main player and stat, the highest rung that is still about 72%+ ("solid") and the highest that is still about 60%+ ("reach"), from the book's ladder when it has
+                        one and from the model when it does not (rush+rec, pass+rush, carries, completions, pass TDs).
+   Practice only. */
+const ST={cache:new WeakMap(),peak:0.75,drop:0.6,solid:0.72,reach:0.60,pMin:0.55,pMax:0.88,ratioMin:0.45};
+/* rung spacing for stats the book ladder does not cover (yards: step; counts: 1) */
+const ST_STEP={rr:5,pr:10};
+const ST_COUNT={comp:1,carries:1,passTD:1};
+const stNum=(pl,k)=>{ const s=(pl.stats||[]).find(x=>x.key===k); if(!s) return null; const m=+(s.proj!=null?s.proj:s.avg); return isFinite(m)?m:null; };
+const stOut=pl=>!!(pl.status&&pl.status.kind==='out')||(pl.avail!=null&&pl.avail<0.5);
+function stCalc(g){
+  const key=keyOf(g), res={}, side={};
+  (g.players||[]).forEach(pl=>{ if(pl.feed||stOut(pl)) return; (side[pl.side]=side[pl.side]||[]).push(pl); });
+  /* mark the top `keep` of arr (by score) as main, plus up to `extra` more whose score is at least `rel` of the best */
+  const mark=(arr,score,keep,extra,rel)=>{
+    const xs=arr.map(p=>({p:p,s:score(p)})).filter(x=>x.s!=null&&x.s>0).sort((a,b)=>b.s-a.s);
+    xs.forEach((x,i)=>{ res[x.p.id]={main:(i<keep)||(i<keep+(extra||0)&&x.s>=(rel||0.7)*xs[0].s),lead:i===0?1:i===1?0.6:i===2?0.3:0}; });      // lead: QB1 / RB1 / WR1 count most, then the next in line
+  };
+  Object.keys(side).forEach(sd=>{ const ps=side[sd];
+    if(key==='nfl'||key==='cfb'){
+      mark(ps.filter(p=>p.pos==='QB'),p=>stNum(p,'passYds'),1,0,0);
+      mark(ps.filter(p=>p.fam==='RB'||p.pos==='RB'||p.pos==='FB'),p=>{ const r=stNum(p,'rr'); if(r!=null) return r; const a=stNum(p,'rushYds'),b=stNum(p,'recYds'); return a==null&&b==null?null:(a||0)+(b||0); },1,1,0.6);
+      mark(ps.filter(p=>p.pos!=='QB'&&p.fam!=='RB'&&p.pos!=='RB'&&p.pos!=='FB'),p=>stNum(p,'recYds'),3,1,0.8);
+    } else if(key==='nba'||key==='wnba'||key==='cbb'){
+      mark(ps,p=>stNum(p,'pts'),6,0,0);
+    } else if(key==='mlb'){
+      ps.filter(p=>p.fam==='P').forEach(p=>{ res[p.id]={main:true,lead:1}; });
+      mark(ps.filter(p=>p.fam!=='P'),p=>{ const h=stNum(p,'hrr'); return h!=null?h:stNum(p,'tb'); },6,0,0);
+    }
+  });
+  return res;
+}
+/* true when the player is a main player of his team in this game (and true for anyone the ranking cannot judge, so nothing disappears by accident) */
+function stMain(g,pl){
+  if(!g||!pl) return false; let r=ST.cache.get(g); if(!r){ try{ r=stCalc(g); }catch(e){ r={}; } ST.cache.set(g,r); }
+  const v=r[pl.id]; return v===undefined?true:v.main;
+}
+/* 1 for the top player of his group (QB1, RB1, WR1, the top scorer), 0.6 and 0.3 for the next two, 0 for everyone else: builders add a small bonus for it */
+function stLead(g,pl){ if(!g||!pl) return 0; stMain(g,pl); const r=ST.cache.get(g)||{}, v=r[pl.id]; return v?v.lead:0; }
+/* how much a builder wants a leg of chance p: p itself up to the peak, then it falls (a 93% leg scores below a 75% one) */
+const stScore=p=>p<=ST.peak?p:ST.peak-ST.drop*(p-ST.peak);
+
+/* every rung of one stat with a chance: the book's ladder where it has one, otherwise rungs from the model's projection */
+function stRungSet(pl,st){
+  const mu=(typeof flMu==='function')?flMu(st):null; if(mu==null||typeof flRungP!=='function') return [];
+  const have={}, raw=[];
+  (st.miles||[]).forEach(m=>{ if(m&&m.t!=null&&+m.t>=1){ have[+m.t]=1; raw.push({t:+m.t,price:m.price,p:m.p}); } });
+  if(raw.length<3){
+    const step=ST_STEP[st.key], cnt=ST_COUNT[st.key];
+    if(step){ for(let t=Math.ceil(0.4*mu/step)*step;t<=1.15*mu;t+=step) if(t>=1&&!have[t]) raw.push({t:t,price:null,p:null}); }
+    else if(cnt){ for(let t=Math.max(1,Math.round(0.4*mu));t<=Math.ceil(1.25*mu);t++) if(!have[t]) raw.push({t:t,price:null,p:null}); }
+  }
+  return raw.map(m=>{ if(m.p!=null) return m; const r=flRungP(pl,st,+m.t); return r?{t:m.t,price:m.price,p:r.p,pm:r.pm}:null; }).filter(Boolean).sort((a,b)=>a.t-b.t);
+}
+/* the "solid" and "reach" rungs of one main player's stat, as parlay legs (same shape as the other threshold legs) */
+function stAltLegs(g,pl,st,key){
+  if(!st||!stMain(g,pl)||pl.status&&pl.status.kind==='out') return [];
+  const mu=flMu(st); if(mu==null) return [];
+  const lineT=st.line!=null?Math.floor(+st.line)+1:null;
+  const cand=stRungSet(pl,st).filter(m=>m.t!==lineT&&m.t>=ST.ratioMin*mu&&m.p>=ST.pMin&&m.p<=ST.pMax).sort((a,b)=>b.t-a.t);        // highest number first
+  const picks=[]; [cand.find(m=>m.p>=ST.solid),cand.find(m=>m.p>=ST.reach)].forEach(m=>{ if(m&&picks.indexOf(m)<0) picks.push(m); });
+  const av=pl.avail==null?1:pl.avail, lab=String(st.label||st.key).toLowerCase(), out=[];
+  picks.forEach(m=>{ const p=adjP(clamp(m.p*av,0.02,0.97),'prop'), priced=m.price!=null, tok='o:'+g.id+':alt:'+pl.id+':'+st.key+':'+m.t;
+    out.push({id:tok,tok:tok,gid:g.id,kind:'alt',main:true,label:surname(pl.name)+' '+m.t+'+ '+lab,price:priced?m.price:estPrice(m.p),book:priced?'draftkings':'est',bk:priced?'DK':'est.',link:null,nBooks:0,line:m.t-0.5,
+      pFair:null,pModel:m.p,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:m.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),
+      why:'Starter leg: projects '+(Math.round(mu*10)/10)+' '+lab+', and this number is '+Math.round(100*m.t/mu)+'% of that.'}); });
+  return out;
+}
+try{ if(window.__LS) window.__LS.st={ST:ST,main:stMain,lead:stLead,score:stScore,rungs:stRungSet,alt:stAltLegs}; }catch(e){}
+
 /* ================= Floor legs: the "he gets at least this much almost every week" picks =================
    The kind of leg that fills a winning slip: "Makai Lemon 2+ receptions", "Parker Washington 3+ receptions", "Makai Lemon 10+ yards" ... a low rung on a volume stat (receptions,
    receiving / rushing / passing yards, carries, completions, shots, strikeouts ...) where the player's projection sits far above the number and he has cleared it in nearly every recent game.
@@ -6632,13 +6713,14 @@ function flLegs(g){
   const cv=(typeof CALV==='number')?CALV:0, hit=FL.cache.get(g); if(hit&&hit.v===cv) return hit.out;
   const out=[];
   (g.players||[]).forEach(pl=>{
+    if(typeof stMain==='function'&&!stMain(g,pl)) return;                    // floor legs are for the main players of the game too (starters.js), not backups
     (pl.stats||[]).forEach(st=>{
       if(typeof hpPropOk==='function'&&!hpPropOk(keyOf(g),st.key,false)) return;
       const f=flFloorRung(pl,st); if(!f) return;
       const r=f.r, p=(typeof adjP==='function')?adjP(r.p,'prop'):r.p, priced=f.price!=null, tok='o:'+g.id+':alt:'+pl.id+':'+st.key+':'+f.t;
       const lab=String(st.label||st.key).toLowerCase();
       out.push({id:tok,tok:tok,gid:g.id,kind:'alt',floor:true,label:surname(pl.name)+' '+f.t+'+ '+lab,price:priced?f.price:flPrice(p),book:priced?'draftkings':'est',bk:priced?'DK':'est.',link:null,nBooks:0,line:f.t-0.5,
-        pFair:null,pModel:r.pm,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:f.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,
+        pFair:null,pModel:r.pm,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:f.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:(typeof stLead==='function')?stLead(g,pl):0,
         proj:r.mu,hh:r.h,hn:r.n,why:'Floor leg: projects '+(Math.round(r.mu*10)/10)+' '+lab+' against a number of '+f.t+(r.n?', and he has reached it in '+r.h+' of his last '+r.n+' games':', no game log, so this is the model alone')+'.'});
     });
   });
@@ -6703,7 +6785,7 @@ function hpHtBlock(g){
 /* ---------- legs for one game, all from the feed ---------- */
 function hpLegs(g){
   const O=hpOdds(); if(!O) return []; const ck=g.id+'|'+O.generatedAt+'|'+CALV; if(HP.cache[ck]) return HP.cache[ck];
-  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>out.push(l)); }catch(_){} HP.cache[ck]=out; return out; }
+  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ const k0=keyOf(g); (g.players||[]).forEach(pl=>(pl.stats||[]).forEach(st=>{ if(hpPropOk(k0,st.key,false)) stAltLegs(g,pl,st).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); })); }catch(_){} try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){} HP.cache[ck]=out; return out; }
   const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
   const abbrBk=b=>HP_BK[b]||b;
   const push=(tok,kind,label,x,opp,pModel,spec,group,extra)=>{ const b=hpBest(x); if(!b) return; const pf=hpFair(x,opp,b); if(pf==null) return;
@@ -6721,26 +6803,15 @@ function hpLegs(g){
   // player props: only players the slate knows (so the bet can be graded), priced from the feed
   const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
   Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p||!hpPropOk(key,p.stat,side==='under')) return; const o=pair[side==='over'?'under':'over'];
-    const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')) return;
+    const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')||!stMain(g,pl)) return;
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
-    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why}); }); });
-  /* normal-stat thresholds ("60+ rush yds", "5+ receptions", "25+ points"): the model's own ladder around the book's line, for every player the slate knows.
-     Priced from the book when the ladder has a book price for the rung, otherwise an estimate (marked est.). Over/under legs are not the only kind of leg any more. */
+    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl)}); }); });
+  /* stat thresholds ("60+ rush yds", "5+ receptions", "2+ pass TD"): for every MAIN player of the game (starters.js), the highest rung that is still ~76%+ and the highest still ~62%+, from the book's ladder
+     where it has one and from the model where it does not (rush+rec, pass+rush, carries, completions, pass TDs). Priced from the book when the ladder has a price for the rung, otherwise an estimate (marked est.). */
   (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
-    (pl.stats||[]).forEach(st=>{
-      if(!hpPropOk(key,st.key,false)) return;
-      /* a slate player's rungs carry no chance of their own (only FanDuel-only players get one), so score each from the projection and the last-15 record (floor.js) */
-      const rungs=(st.miles||[]).filter(m=>m&&m.t!=null).map(m=>{ if(m.p!=null) return m; const r=(typeof flRungP==='function')?flRungP(pl,st,+m.t):null; return r?{t:m.t,price:m.price,p:r.p}:null; }).filter(Boolean); if(!rungs.length||st.line==null) return;
-      const lineT=Math.floor(+st.line)+1;
-      /* meaningful thresholds only: near the book's line (not "1+ reception" for a 6-catch player), and not near-certain (those add nothing but a -600 price) */
-      const cand=rungs.filter(m=>m.t!==lineT&&m.p>=0.55&&m.p<=0.82&&m.t>=0.55*(+st.line)).sort((a,b)=>b.t-a.t);        // highest threshold first
-      const picks=[]; [cand.find(m=>m.p>=0.7),cand.find(m=>m.p<0.7)].forEach(m=>{ if(m&&picks.indexOf(m)<0) picks.push(m); });
-      picks.forEach(m=>{ const av=pl.avail==null?1:pl.avail; const p=adjP(clamp(m.p*av,0.02,0.97),'prop'); const priced=m.price!=null; const tok='o:'+g.id+':alt:'+pl.id+':'+st.key+':'+m.t;
-        out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+m.t+'+ '+String(st.label||st.key).toLowerCase(),price:priced?m.price:estPrice(m.p),book:priced?'draftkings':'est',bk:priced?'DK':'est.',link:null,nBooks:0,line:m.t-0.5,
-          pFair:null,pModel:m.p,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:m.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,why:''}); });
-    }); });
+    (pl.stats||[]).forEach(st=>{ if(!hpPropOk(key,st.key,false)) return; stAltLegs(g,pl,st,key).forEach(l=>out.push(l)); }); });
   /* floor legs: low rungs the player almost always clears (floor.js); they replace a mid-range threshold for the same player and stat */
   try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){}
   HP.cache[ck]=out; return out;
@@ -6756,33 +6827,32 @@ const HP_MIN_ALL=0.23;                            // a same-game parlay is only 
 const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.floor?'floor':l.kind==='alt'?'alt':'ou';
 const hpIsUnder=l=>!!(l.spec&&(l.spec.dir==='under'||l.spec.dir==='lt'));
 /* picks up to n legs a step at a time. The score is the leg's chance, nudged so the parlay mixes kinds: at most one team side and one game total, no more than
-   ~40% unders, a stat type is not repeated more than the size allows, the first leg of each kind gets a bonus, and legs already used in a smaller parlay for the
+   ~40% unders, a stat type is not repeated more than the size allows, the first leg of each kind (floor legs excepted) gets a bonus, and legs already used in a smaller parlay for the
    same game are marked down so the 2, 4 and 8-leg builds are not the same picks. A leg still has to clear the chance floor for its size. */
 /* all-hit chance of a set of legs (the same formula the cards show: product of leg chances, 3% off per extra leg for the legs being linked) */
 const hpAllP=ls=>ls.reduce((x,l)=>x*l.p,1)*Math.pow(0.97,Math.max(0,ls.length-1));
 /* opts (optional, used by the Generate button): rnd = random function that shakes the scores so a new combination comes out */
 function hpPick(legs,n,floor,used,opts){
   const out=[],grp={},per={},kinds={},stats={}; let unders=0; const rnd=opts&&opts.rnd, amp=(opts&&opts.amp)||0.35;
-  const maxUnder=Math.max(1,Math.floor(n*0.4)), maxStat=n>=8?3:n>=4?2:1, maxAlt=Math.max(1,Math.floor(n/3)+(n>=4?1:0)), maxFloor=Math.max(1,Math.ceil(n/2));      // thresholds: 1 of 2, 2 of 4, 3 of 8; floor legs (a low rung the player almost always clears): 1 of 2, 2 of 4, 4 of 8
+  const maxUnder=Math.max(1,Math.floor(n*0.4)), maxStat=n>=8?3:n>=4?2:1, maxAlt=Math.max(1,Math.ceil(n*0.6)), maxFloor=n>=8?2:n>=4?1:0, maxPer=n>=8?2:1;      // starter thresholds: 2 of 2, 3 of 4, 5 of 8; floor legs (a low rung the player almost always clears): none in a 2-leg, 1 of 4, 2 of 8; legs per player: 1 (2 in an 8-leg parlay, like a QB's yards and TDs)
   while(out.length<n){
     let best=null,bs=-1;
     for(const l of legs){
       if(l.p<floor||grp[l.group]||out.indexOf(l)>=0) continue;
       if(out.length>=1&&hpAllP(out.concat([l]))<HP_MIN_ALL) continue;       // keep the whole parlay at or above the all-hit minimum
       const c=hpCat(l); if((c==='side'||c==='total')&&kinds[c]) continue; if(c==='alt'&&(kinds.alt||0)>=maxAlt) continue; if(c==='floor'&&(kinds.floor||0)>=maxFloor) continue;
-      if((l.kind==='prop'||l.kind==='alt')&&per[l.pid]) continue;
+      if((l.kind==='prop'||l.kind==='alt')&&(per[l.pid]||0)>=maxPer) continue;
       const un=hpIsUnder(l); if(un&&unders>=maxUnder) continue;
       const sk=l.spec&&l.spec.stat; if(sk&&(stats[sk]||0)>=maxStat) continue;
-      let s=l.p*Math.pow(0.85,used[l.tok]||0);
+      let s=stScore(l.p)*Math.pow(0.85,used[l.tok]||0)*(1+0.04*(l.lead||0));                // a QB1 / RB1 / WR1 leg edges out an equal-chance leg on a lesser starter
       if(sk) s*=Math.pow(0.93,stats[sk]||0);
       if(un) s*=0.94;
       if(l.book==='fanduel') s*=1.06;                  // a real FanDuel price and link beats an estimate
-      if(l.floor) s*=1.04;                              // a floor leg is the kind that keeps landing, so it is preferred over an equal-chance leg
-      if(!kinds[c]) s*=n>=4?1.12:1.05;
+      if(!kinds[c]&&c!=='floor') s*=n>=4?1.12:1.05;
       if(rnd) s*=1+(rnd()-0.5)*amp;
       if(s>bs){ bs=s; best=l; } }
     if(!best) break;
-    out.push(best); grp[best.group]=1; kinds[hpCat(best)]=(kinds[hpCat(best)]||0)+1; if(best.pid) per[best.pid]=1; if(hpIsUnder(best)) unders++;
+    out.push(best); grp[best.group]=1; kinds[hpCat(best)]=(kinds[hpCat(best)]||0)+1; if(best.pid) per[best.pid]=(per[best.pid]||0)+1; if(hpIsUnder(best)) unders++;
     const sk=best.spec&&best.spec.stat; if(sk) stats[sk]=(stats[sk]||0)+1; }
   return out;
 }
@@ -6859,7 +6929,7 @@ function hpSgpHtml(){
   HP_SIZES.forEach(sz=>{ const n=sz[0], per={}; const show=[];
     all.forEach((s,i)=>{ if(s.n!==n) return; const k=keyOf(s.g); per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<4) show.push([s,i]); });
     out[n]=show.length?show.map(x=>hpSgpCard(x[0],x[1])).join(''):'<div class="small muted">No game has enough legs at or above '+Math.round(sz[1]*100)+'% (with at least a '+Math.round(HP_MIN_ALL*100)+'% chance of all legs hitting) for a '+n+'-leg parlay'+(S.league==='all'?'':' in this league')+' right now.</div>'; });
-  out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Floor legs, low numbers a player almost always reaches ("2+ receptions", "15+ receiving yards": the projection is far above the number and he cleared it in nearly every recent game), are tagged and ranked a little higher. Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
+  out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Player legs are built around the main players of the game (the QB, the lead backs, the top three pass catchers; in basketball the top six scorers), at a number a little below what the model projects ("Allen 200+ pass yds", "Nacua 80+ rec yds", "Cook 80+ rush+rec yds", "Stafford 2+ pass TD"); backups are not used. A leg with a very high chance pays almost nothing, so the ranking prefers legs around 70 to 75% over 90% ones. Floor legs (a low number a main player nearly always reaches) are tagged and no longer ranked above these. Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
   return out;
 }
 
@@ -6978,7 +7048,7 @@ function plFloorFactor(sport){ const x=plLearnMap().fl[sport]; return x&&x.n>=4?
 /* games the odds feed does not cover still get legs from the slate's own stat ladders (model price, marked est.) */
 function plSlateLegs(g){
   const out=[];
-  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
+  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out'||!stMain(g,pl)) return;
     (pl.stats||[]).forEach(st=>{ if(st.line==null||!hpPropOk(keyOf(g),st.key,false)) return;
       const rungs=(st.miles||[]).filter(m=>m&&m.t!=null).map(m=>{ if(m.p!=null) return m; const r=(typeof flRungP==='function')?flRungP(pl,st,+m.t):null; return r?{t:m.t,price:m.price,p:r.p}:null; }).filter(Boolean); if(!rungs.length) return;
       const cand=rungs.filter(m=>m.p>=0.58&&m.p<=0.88&&m.t>=0.5*(+st.line)).sort((a,b)=>b.t-a.t);
@@ -7000,7 +7070,8 @@ function plLeg(g,l,sport){
   const edge=(!est&&l.pFair!=null)?clamp(p-l.pFair,-0.06,0.10):0;
   const stead=cv==null?0.5:1-clamp((cv-0.25)/0.75,0,1), hr=hist?hist.h/hist.n:null;
   const steady=p>=0.62&&(cv==null||cv<=0.6)&&(hr==null||hr>=0.7);
-  const score=p+0.5*edge+0.04*stead+(l.book==='fanduel'?0.01:0)-(est?0.015:0)+(hr!=null?0.03*(hr-0.5):0)+(l.floor?0.03:0);                 // a floor leg (a low rung he almost always clears) is the kind that keeps landing
+  const lead=(typeof stLead==='function')?stLead(g,pl):0;
+  const score=stScore(p)+0.03*lead+0.5*edge+0.04*stead+(l.book==='fanduel'?0.01:0)-(est?0.015:0)+(hr!=null?0.03*(hr-0.5):0);                 // stScore (starters.js): a very high chance pays almost nothing, so legs near 70 to 75% rank above 93% ones
   const lab=String(st.label||st.key), A=g.teams.away.abbr, H=g.teams.home.abbr, tm=pl.abbr||'', side=tm===H?'home':tm===A?'away':'';
   const what=under?'Under '+l.line+' '+lab.toLowerCase():(l.kind==='alt'?sp.T+'+ ':'Over '+l.line+' ')+lab.toLowerCase();
   return {tok:l.tok||l.id,gid:g.id,pid:pl.id,sk:sp.stat,skl:lab,who:surname(pl.name),team:tm,game:side==='home'?H+' vs '+A:side==='away'?A+' at '+H:A+' @ '+H,what:what,under:under,spec:sp,
@@ -7026,7 +7097,7 @@ function plPick(pool,sz){
   const cand=pool.filter(l=>l.p>=sz.floor&&(!sz.onlyFloor||l.floor)), nG={},nS={}; cand.forEach(l=>{ nG[l.gid]=1; nS[l.sk]=1; });
   /* the spread caps relax when a sport has few games or few stat types on offer (a postseason slate, NHL points only), so a stack can still be built */
   const capG=Math.max(sz.maxGame,Math.ceil(sz.min/Math.max(1,Object.keys(nG).length))), capS=Math.max(sz.maxStat,Math.ceil(sz.min/Math.max(1,Object.keys(nS).length)));
-  const maxEst=Math.ceil(sz.max*0.6), maxFl=sz.onlyFloor?sz.max:Math.ceil(sz.max*0.6);       // the regular sizes keep room for real-priced legs; Floor 6 is floor legs only
+  const maxEst=Math.ceil(sz.max*0.6), maxFl=sz.onlyFloor?sz.max:Math.floor(sz.max*0.25);       // the regular sizes are mostly starters' solid legs (a quarter floor legs at most); Floor 6 is floor legs only
   const run=frac=>{
     const out=[],per={},stat={},gm={}; let unders=0,est=0,fls=0; const maxUnder=Math.floor(sz.max*frac);
     while(out.length<sz.max){
@@ -7043,8 +7114,8 @@ function plPick(pool,sz){
     }
     return out;
   };
-  /* about a quarter unders at most; only when too little else clears the bar does the cap loosen (and the card says so) */
-  let out=[]; for(const f of [0.25,0.5,1]){ out=run(f); if(out.length>=sz.min) break; }
+  /* overs only at first (a winning slip is made of overs); unders are allowed, up to a quarter, only when too little else clears the bar, and the card says so */
+  let out=[]; for(const f of [0,0.25,0.5,1]){ out=run(f); if(out.length>=sz.min) break; }
   return {legs:out,avail:cand.length,capG:capG,capS:capS};
 }
 function plSummarize(sport,sz,legs,extra){
@@ -7163,7 +7234,7 @@ function plBody(){
   const s=stacks[cur.n];
   return '<div class="plchips" role="tablist" aria-label="Sport">'+chips+'</div><div class="plseg" role="tablist" aria-label="Parlay size">'+seg+'</div>'+
     (s&&!s.none?plCardHtml(s):plEmptyHtml(s||{sz:cur,avail:0},PL.sport))+plRecordHtml(PL.sport)+
-    '<details class="plhow"><summary class="small muted">How these are picked</summary><div class="small muted">Each stack takes player legs from every upcoming game of one sport, so the legs do not depend on each other the way same-game legs do. A leg\'s chance is the book\'s no-vig price blended with the model, pulled toward how often the player cleared that number in recent games, then scaled by how this app\'s own graded legs for that stat have actually done. Steadier stats (small spread next to the projection) and legs whose price beats the fair price rank higher, a real FanDuel price beats an estimate, and the mix caps one player per stack, '+cur.maxStat+' of one stat and '+cur.maxGame+' per game for this size, and about a quarter unders. Odds multiply the legs\' prices; the all-hit chance multiplies their chances, with a small haircut. Floor legs are low numbers that a player nearly always reaches ("2+ receptions", "15+ receiving yards"): the projection sits well above the number, he cleared it in nearly every recent game, and the leg is 86%+; they rank a little higher and may repeat a stat once more, and the Floor 6 size is built from them alone. Long parlays are long shots by nature: a 12-leg stack of 70% legs lands about 1.4% of the time. Floor prices are estimates unless the book lists that rung, and a book\'s real price for a very safe leg is shorter than fair, so check the payout before relying on it.</div></details>';
+    '<details class="plhow"><summary class="small muted">How these are picked</summary><div class="small muted">Each stack takes player legs from every upcoming game of one sport, so the legs do not depend on each other the way same-game legs do. A leg\'s chance is the book\'s no-vig price blended with the model, pulled toward how often the player cleared that number in recent games, then scaled by how this app\'s own graded legs for that stat have actually done. Only the main players of each game are used (QB, lead backs, top three pass catchers; top six scorers in basketball), each at a number a little below the projection, and legs around 70 to 75% rank above 90%+ legs that pay almost nothing. Steadier stats (small spread next to the projection) and legs whose price beats the fair price rank higher, a real FanDuel price beats an estimate, and the mix caps one player per stack, '+cur.maxStat+' of one stat and '+cur.maxGame+' per game for this size, and about a quarter unders. Odds multiply the legs\' prices; the all-hit chance multiplies their chances, with a small haircut. Floor legs are low numbers that a player nearly always reaches ("2+ receptions", "15+ receiving yards"): the projection sits well above the number, he cleared it in nearly every recent game, and the leg is 86%+; they may repeat a stat once more, and the Floor 6 size is built from them alone (main players only). Long parlays are long shots by nature: a 12-leg stack of 70% legs lands about 1.4% of the time. Floor prices are estimates unless the book lists that rung, and a book\'s real price for a very safe leg is shorter than fair, so check the payout before relying on it.</div></details>';
 }
 function plHtml(){
   let inner; try{ inner='<div id="plbox">'+plBody()+'</div>'; }catch(e){ try{ console.error('Line Scout: parlay stacks failed',e); }catch(_){} return ''; }

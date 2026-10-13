@@ -44,13 +44,14 @@ function flLegs(g){
   const cv=(typeof CALV==='number')?CALV:0, hit=FL.cache.get(g); if(hit&&hit.v===cv) return hit.out;
   const out=[];
   (g.players||[]).forEach(pl=>{
+    if(typeof stMain==='function'&&!stMain(g,pl)) return;                    // floor legs are for the main players of the game too (starters.js), not backups
     (pl.stats||[]).forEach(st=>{
       if(typeof hpPropOk==='function'&&!hpPropOk(keyOf(g),st.key,false)) return;
       const f=flFloorRung(pl,st); if(!f) return;
       const r=f.r, p=(typeof adjP==='function')?adjP(r.p,'prop'):r.p, priced=f.price!=null, tok='o:'+g.id+':alt:'+pl.id+':'+st.key+':'+f.t;
       const lab=String(st.label||st.key).toLowerCase();
       out.push({id:tok,tok:tok,gid:g.id,kind:'alt',floor:true,label:surname(pl.name)+' '+f.t+'+ '+lab,price:priced?f.price:flPrice(p),book:priced?'draftkings':'est',bk:priced?'DK':'est.',link:null,nBooks:0,line:f.t-0.5,
-        pFair:null,pModel:r.pm,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:f.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,
+        pFair:null,pModel:r.pm,p:p,ps:p,avail:1,src:priced?'DK':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:f.t,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:(typeof stLead==='function')?stLead(g,pl):0,
         proj:r.mu,hh:r.h,hn:r.n,why:'Floor leg: projects '+(Math.round(r.mu*10)/10)+' '+lab+' against a number of '+f.t+(r.n?', and he has reached it in '+r.h+' of his last '+r.n+' games':', no game log, so this is the model alone')+'.'});
     });
   });

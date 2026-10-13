@@ -138,7 +138,7 @@ for fn in ("slipHtml", "calcHtml", "placeCheck", "slipsView"):
     t = t.replace("function " + fn + "(){", "function " + fn + "Local(){", 1)
 assert t.count("function renderBank(){") == 1
 t = t.replace("function renderBank(){", "function renderBankLocal(){", 1)
-sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("battle_fill.js") + "\n" + rd("share.js") + "\n" + rd("shop.js") + "\n" + rd("odds_ui.js") + "\n" + rd("live_lines.js") + "\n" + rd("floor.js") + "\n" + rd("home_picks.js") + "\n" + rd("stacks.js")
+sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("battle_fill.js") + "\n" + rd("share.js") + "\n" + rd("shop.js") + "\n" + rd("odds_ui.js") + "\n" + rd("live_lines.js") + "\n" + rd("starters.js") + "\n" + rd("floor.js") + "\n" + rd("home_picks.js") + "\n" + rd("stacks.js")
 assert t.count("const $app=document.getElementById") == 1
 t = t.replace("const $app=document.getElementById", sa + "\nconst $app=document.getElementById", 1)
 t = rep(t, "if(dbh&&userh) initSocial(dbh,userh); else { FS.conn='nodb'; if(S.view==='live') render(); }", "startPoll();")
