@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 91,
+ "runNumber": 92,
  "deadlineHit": false,
- "generatedAt": "2026-10-14T15:02:59Z",
- "generatedAtET": "Wed Oct 14, 11:02 AM ET",
+ "generatedAt": "2026-10-14T19:18:18Z",
+ "generatedAtET": "Wed Oct 14, 3:18 PM ET",
  "today": "2026-10-14",
- "lastRunAt": "2026-10-14T15:02:59Z",
+ "lastRunAt": "2026-10-14T19:18:18Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -77,9 +77,9 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 11,
+   "games": 17,
    "playerLevel": 0,
-   "teamLevel": 0,
+   "teamLevel": 6,
    "carried": 11,
    "error": null,
    "newFinals": 0,
@@ -96,13 +96,13 @@
   }
  },
  "counts": {
-  "slate": 31,
-  "playerCards": 18,
+  "slate": 37,
+  "playerCards": 24,
   "teamCards": 13,
   "window": 141,
   "sched": 133,
   "pastp": 29,
-  "predictions": 159,
+  "predictions": 165,
   "graded": 105,
   "storeGames": 13615
  },
@@ -123,7 +123,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 5.2,
+  "seconds": 4.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,17 +133,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 14,
+  "gamesUploaded": 23,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 3060,
+  "simPlayersUploaded": 3052,
   "configured": true
  },
- "odds": "ok: 10 events",
+ "odds": "ok: 21 events",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 10 cards, 83 player stats, FanDuel-only players on 0 cards; not in the feed (7): BKN@MIA, CHA@BOS, PHX@SA, NO@DAL, CHI@MIL, DET@MIN...",
+ "fanduel": "ok: FanDuel lines on 16 cards, 81 player stats, FanDuel-only players on 6 cards; not in the feed (7): BKN@MIA, CHA@BOS, PHX@SA, NO@DAL, CHI@MIL, DET@MIN...",
  "errors": [],
- "requests": 356,
+ "requests": 352,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 95.8
+ "seconds": 79.3
 }
