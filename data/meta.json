@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 93,
+ "runNumber": 94,
  "deadlineHit": false,
- "generatedAt": "2026-10-14T19:55:13Z",
- "generatedAtET": "Wed Oct 14, 3:55 PM ET",
+ "generatedAt": "2026-10-14T20:03:07Z",
+ "generatedAtET": "Wed Oct 14, 4:03 PM ET",
  "today": "2026-10-14",
- "lastRunAt": "2026-10-14T19:55:13Z",
+ "lastRunAt": "2026-10-14T20:03:07Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -121,9 +121,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 4.6,
+  "seconds": 1.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -133,17 +133,15 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 4,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 3052,
+  "gamesUploaded": 2,
   "configured": true
  },
- "odds": "kept (37 min old, pulls every 60 min)",
+ "odds": "kept (45 min old, pulls every 60 min)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 16 cards, 129 player stats, FanDuel-only players on 0 cards; not in the feed (7): BKN@MIA, CHA@BOS, PHX@SA, NO@DAL, CHI@MIL, DET@MIN...",
  "errors": [],
- "requests": 323,
+ "requests": 321,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 28.5
+ "seconds": 32.4
 }
