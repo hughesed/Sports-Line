@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 100,
+ "runNumber": 101,
  "deadlineHit": false,
- "generatedAt": "2026-10-15T06:26:08Z",
- "generatedAtET": "Thu Oct 15, 2:26 AM ET",
+ "generatedAt": "2026-10-15T09:47:38Z",
+ "generatedAtET": "Thu Oct 15, 5:47 AM ET",
  "today": "2026-10-15",
- "lastRunAt": "2026-10-15T06:26:08Z",
+ "lastRunAt": "2026-10-15T09:47:38Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -77,10 +77,10 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 12,
+   "games": 10,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 12,
+   "carried": 10,
    "error": null,
    "newFinals": 0,
    "storeGames": 109,
@@ -96,8 +96,8 @@
   }
  },
  "counts": {
-  "slate": 33,
-  "playerCards": 23,
+  "slate": 31,
+  "playerCards": 21,
   "teamCards": 10,
   "window": 135,
   "sched": 129,
@@ -123,9 +123,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 16,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 5.8,
+  "seconds": 1.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -135,16 +135,15 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 1,
-  "simPlayersUploaded": 3140,
+  "gamesUploaded": 10,
   "configured": true
  },
- "odds": "kept (31 min old, pulls every 60 min)",
- "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 16 cards, 131 player stats, FanDuel-only players on 0 cards; not in the feed (3): TOR@NY, OKC@HOU, APP@CCU",
+ "odds": "ok: 22 events",
+ "oddsLive": "no games in play",
+ "fanduel": "ok: FanDuel lines on 16 cards, 128 player stats, FanDuel-only players on 0 cards; not in the feed (3): TOR@NY, OKC@HOU, APP@CCU",
  "errors": [],
- "requests": 388,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 32.2
+ "requests": 285,
+ "failedRequests": 4,
+ "retries": 6,
+ "seconds": 83.2
 }
