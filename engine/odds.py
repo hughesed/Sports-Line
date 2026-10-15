@@ -193,18 +193,20 @@ def pull(key, max_events, now=None, log=print, games=None, skip=None, skip_leagu
     pulled = []
     for lg in order:
         if time.time() - t0 > deadline:
-            log(f"  odds {lg}: skipped (pull time limit of {deadline:.0f}s reached)"); continue
+            log(f"  odds {lg}: skipped (pull time limit of {deadline:.0f}s reached)"); LEAGUE_INFO[lg] = "skipped (time)"; continue
         try:
             cap = max(max_events, CAPS.get(lg, max_events)) if os.environ.get("ODDS_MAX_EVENTS") is None else max_events
             done = None
             want = [g for g in _slate_wants(games, lg, aware) if str(g.get("id")) not in skip]
             if want and FD is not None:
                 done = lambda evs, want=want: all(FD.find_event(g, evs) for g in want)
-            ev, n = pull_league(key, lg, cap, now, done); events += ev; notice = n or notice; ok += 1; pulled.append(lg)
-        except Exception as ex: log(f"  odds {lg}: {type(ex).__name__}: {ex}"[:160])
+            ev, n = pull_league(key, lg, cap, now, done); events += ev; notice = n or notice; ok += 1; pulled.append(lg); LEAGUE_INFO[lg] = len(ev)
+        except Exception as ex:
+            log(f"  odds {lg}: {type(ex).__name__}: {ex}"[:160]); LEAGUE_INFO[lg] = f"{type(ex).__name__}: {ex}"[:80]
     if not ok: raise RuntimeError("no league could be pulled")
     PULLED[:] = pulled
     return events, notice
+LEAGUE_INFO = {}     # per league: events pulled, or why not (written to odds.json so a league the plan does not cover is visible)
 PULLED = []          # the leagues the last pull() reached (refresh() uses it to know whether soccer was refreshed)
 
 def _unmatched(games, evs, now, old=None):
@@ -269,10 +271,12 @@ def refresh(path, log=print, now=None, games=None):
             elif e.get("league") in SOCCER and not soccer_pulled and not e.get("final") and st > aware: keep.append(e)      # soccer not due this pull: its upcoming events stay
         out = {"generatedAt": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "source": "sportsgameodds", "notice": notice, "events": fresh + keep}
         out["soccerAt"] = stamp if soccer_pulled else (old or {}).get("soccerAt")
+        out["leagues"] = dict(LEAGUE_INFO)
         if old and old.get("liveAt"): out["liveAt"] = old["liveAt"]
         if games is not None: out["unmatched"] = _unmatched(games, fresh + keep, aware, old)
         tmp = path + ".tmp"; json.dump(out, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)
-        return f"ok: {len(fresh)} events" + (f" (+{len(keep)} in play kept)" if keep else "") + (f" (plan limit: {notice[:80]})" if notice else "") + why
+        soc = {lg: LEAGUE_INFO[lg] for lg in SOCCER if lg in LEAGUE_INFO}
+        return f"ok: {len(fresh)} events" + (f" (+{len(keep)} in play kept)" if keep else "") + (f"; soccer {soc}" if soc else "") + (f" (plan limit: {notice[:80]})" if notice else "") + why
     except Exception as ex:
         log(f"  odds step failed: {type(ex).__name__}: {ex}"[:200])
         return f"error: {type(ex).__name__}"[:60]
