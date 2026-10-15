@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 106,
- "deadlineHit": true,
- "generatedAt": "2026-10-15T21:07:18Z",
- "generatedAtET": "Thu Oct 15, 5:07 PM ET",
+ "runNumber": 107,
+ "deadlineHit": false,
+ "generatedAt": "2026-10-15T21:10:57Z",
+ "generatedAtET": "Thu Oct 15, 5:10 PM ET",
  "today": "2026-10-15",
- "lastRunAt": "2026-10-15T21:07:18Z",
+ "lastRunAt": "2026-10-15T21:10:57Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,8 +57,8 @@
    "status": "ok",
    "games": 10,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 7,
+   "teamLevel": 0,
+   "carried": 10,
    "error": null,
    "newFinals": 0,
    "storeGames": 1410,
@@ -131,9 +131,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.2,
+  "seconds": 3.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -143,16 +143,17 @@
    "cbb": 726,
    "nhl": 32
   },
+  "gamesUploaded": 37,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 3209,
   "configured": true
  },
- "odds": "ok: 90 events (+1 in play kept)",
- "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 10 cards, 96 player stats, FanDuel-only players on 3 cards; not in the feed (14): TOR@NY, OKC@HOU, ATL@GS, HOU@JAX, BAL@CLE, CAR@PHI...",
- "errors": [
-  "time limit reached: 3 ESPN requests were skipped to stay inside the run budget; the next run catches up"
- ],
- "requests": 978,
+ "odds": "ok: 77 events (+1 in play kept); soccer {'EPL': 'HTTPError: HTTP Error 400: Bad Request', 'UEFA_CHAMPIONS_LEAGUE': 0, 'LA_LIGA': 'HTTPError: HTTP Error 400: Bad Request', 'BUNDESLIGA': 'HTTPError: HTTP Error 429: Too Many Requests', 'IT_SERIE_A': 'HTTPError: HTTP Error 429: Too Many Requests', 'FR_LIGUE_1': 'skipped (time)', 'MLS': 'skipped (time)', 'LIGA_MX': 'skipped (time)'}",
+ "oddsLive": "kept (4 min old, live pulls every 4 min)",
+ "fanduel": "ok: FanDuel lines on 10 cards, 153 player stats, FanDuel-only players on 0 cards; not in the feed (14): TOR@NY, OKC@HOU, ATL@GS, HOU@JAX, BAL@CLE, CAR@PHI...",
+ "errors": [],
+ "requests": 954,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 165.3
+ "seconds": 148.7
 }
