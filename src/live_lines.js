@@ -65,7 +65,7 @@ function llInner(g){
 }
 /* the lines section of a game card: pregame games keep the lines grid you can tap into the slip; a game in play gets its score and FanDuel's current lines */
 function llLinesSec(g){
-  if(llState(g)==='pre') return '<div class="sec"><h3>Lines <span class="hint">'+linesSrcHtml(g)+' · tap to add to slip</span></h3>'+linesTable(g)+'</div>';
+  if(llState(g)==='pre') return '<div class="sec"><h3>Lines <span class="hint">'+linesSrcHtml(g)+' · tap to add to slip</span></h3>'+linesTable(g)+'</div>'+(typeof socMarketsHtml==='function'?socMarketsHtml(g):'');
   return '<div class="sec llive" data-ll="'+esc(g.id)+'">'+llInner(g)+'</div>';
 }
 /* the SGP builder belongs to pregame lines; once the game is on, bets are made on the Live tab */

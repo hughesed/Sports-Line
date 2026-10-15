@@ -9,23 +9,29 @@ Free plans are small, so it pulls on a budget. Two pulls feed the same file:
 import os, json, time, datetime, urllib.request, urllib.parse, urllib.error
 
 API = "https://api.sportsgameodds.com/v2/events"
-LEAGUES = os.environ.get("ODDS_LEAGUES", "NFL,NCAAF,NBA,NCAAB,MLB,WNBA,NHL,ATP,WTA")
+# soccer: the big European leagues, the Champions League, MLS and Liga MX. Soccer lines barely move before kickoff, so soccer is pulled at most every
+# ODDS_SOCCER_GAP_MIN minutes (default 120) to keep the plan's request budget for the US leagues; between pulls the file keeps the last soccer events.
+SOCCER = [x.strip() for x in os.environ.get("ODDS_SOCCER", "EPL,UEFA_CHAMPIONS_LEAGUE,LA_LIGA,BUNDESLIGA,IT_SERIE_A,FR_LIGUE_1,MLS,LIGA_MX").split(",") if x.strip()]
+LEAGUES = os.environ.get("ODDS_LEAGUES", "NFL,NCAAF,NBA,NCAAB,MLB,WNBA,NHL,ATP,WTA" + ("," + ",".join(SOCCER) if SOCCER else ""))
 # FanDuel is the main book: ask the API for FanDuel's prices first (and DraftKings as the fallback) so the plan's cap on bookmaker odds is spent on them, not on nine other books.
 # ODDS_BOOKS="" asks for every book again. ODDS_ALTS=1 also asks for alternate lines (bigger responses, so off unless the plan allows it).
 BOOKS = os.environ.get("ODDS_BOOKS", "fanduel,draftkings").strip()
 ALTS = os.environ.get("ODDS_ALTS", "0").strip() == "1"
 LIVE_BOOKS = os.environ.get("ODDS_LIVE_BOOKS", "fanduel").strip()          # in-play lines: FanDuel only (the page never shows another book's live price)
 # events pulled per league per run: college slates are big, and the feed lists games by start time, so a small cap never reaches the evening games
-CAPS = {"NCAAF": 150, "NCAAB": 80, "NFL": 20, "NBA": 20, "NHL": 20, "MLB": 20, "WNBA": 12, "ATP": 12, "WTA": 12}
+CAPS = {"NCAAF": 150, "NCAAB": 80, "NFL": 20, "NBA": 20, "NHL": 20, "MLB": 20, "WNBA": 12, "ATP": 12, "WTA": 12, **{lg: 10 for lg in SOCCER}}
 # minutes back from now that the pregame pull still asks for (a game that started longer ago than this is the live pull's job); tennis matches run long
-STARTED_BACK_MIN = {"ATP": 240, "WTA": 240}
+STARTED_BACK_MIN = {"ATP": 240, "WTA": 240, **{lg: 120 for lg in SOCCER}}
 DEFAULT_BACK_MIN = float(os.environ.get("ODDS_STARTED_MIN", "30"))
 KEEP_H = 6                  # events that started less than this long ago stay in the file between pulls (live games)
 # SportsGameOdds stat ids -> the stat names used by the battle picker
 STAT = {"points": "pts", "rebounds": "reb", "assists": "ast", "threePointersMade": "fg3", "points+rebounds+assists": "pra",
         "points+rebounds": "pr", "points+assists": "pa", "rebounds+assists": "ra", "doubleDouble": "dd", "tripleDouble": "td",
         "passing_yards": "passYds", "passing_touchdowns": "passTD", "rushing_yards": "rushYds", "receiving_yards": "recYds",
-        "receiving_receptions": "rec", "batting_hits": "hits", "batting_homeRuns": "hr", "batting_RBI": "rbi", "pitching_strikeouts": "k"}
+        "receiving_receptions": "rec", "batting_hits": "hits", "batting_homeRuns": "hr", "batting_RBI": "rbi", "pitching_strikeouts": "k",
+        "passing_attempts": "passAtt", "passing_completions": "comp", "rushing_attempts": "carries",
+        "shots_onGoal": "sog", "goalie_saves": "saves", "shots": "shots", "passes_attempted": "passes", "tackles": "tkl"}
+SOCCER_STAT = {"points": "gls"}          # a soccer player's "points" are his goals
 
 def _fd():
     try:
@@ -89,9 +95,23 @@ def normalize(ev, live=False):
                 g.setdefault("first", []).append({"stat": sid, "pid": o.get("playerID"), "name": p.get("name"), "ent": ent, "side": side,
                     "team": "home" if (p.get("teamID") or ent) in ((t.get("home") or {}).get("teamID"), "home") else "away", "fair": fair, "books": bk})
             continue
+        soc = g["league"] in SOCCER
+        # soccer: the 3-way result over 90 minutes (home / draw / away, and the double chances home+draw / away+draw), both teams to score, team goal totals
+        if soc and bt == "ml3way" and sid == "points" and per == "reg" and not o.get("playerID"):
+            bk = _books(o, None, live)
+            if bk: g.setdefault("m3", {})[side] = {"fair": fair, "books": bk}
+            continue
+        if soc and sid == "bothTeamsScored" and bt == "yn" and per == "game":
+            bk = _books(o, None, live)
+            if bk: g.setdefault("btts", {})[side] = {"fair": fair, "books": bk}
+            continue
+        if sid == "points" and bt == "ou" and per == "game" and ent in ("home", "away") and not o.get("playerID"):
+            bk = _books(o, "overUnder", live)
+            if bk: g.setdefault("tt", {}).setdefault(ent, {})[side] = {"fair": fair, "books": bk}
+            continue
         if per != "game" or o.get("statID") != "points" and not o.get("playerID"): continue
         if o.get("playerID"):
-            stat = STAT.get(o.get("statID"))
+            stat = (SOCCER_STAT.get(o.get("statID")) if soc else None) or STAT.get(o.get("statID"))
             if not stat or bt not in ("ou", "yn"): continue
             bk = _books(o, "overUnder" if bt == "ou" else None, live)
             if not bk: continue
@@ -161,15 +181,16 @@ def _slate_wants(games, league, now):
     if not games or FD is None: return []
     return [g for g in games if FD.KEYLG.get(g.get("key") or g.get("lg")) == league and not g.get("bookOnly") and not g.get("oddsId") and not FD._started(g, now)]
 
-def pull(key, max_events, now=None, log=print, games=None, skip=None):
+def pull(key, max_events, now=None, log=print, games=None, skip=None, skip_leagues=None):
     """one request series per league; a league that errors (unknown id, plan limit) is skipped, the others still count. max_events is per league.
     Leagues with slate games go first and the whole pull stops at ODDS_DEADLINE_S (default 110) so a slow API cannot eat the run."""
     now = now or datetime.datetime.utcnow(); events, notice, ok = [], None, 0
     aware = _utc(now); FD = _fd(); skip = skip or set()
-    order = [x.strip() for x in LEAGUES.split(",") if x.strip()]
+    order = [x.strip() for x in LEAGUES.split(",") if x.strip() and x.strip() not in (skip_leagues or ())]
     have = {lg for lg in order if _slate_wants(games, lg, aware)}
     order.sort(key=lambda lg: 0 if lg in have else 1)          # stable: the slate's leagues first, the rest in the configured order
     t0 = time.time(); deadline = float(os.environ.get("ODDS_DEADLINE_S", "110"))
+    pulled = []
     for lg in order:
         if time.time() - t0 > deadline:
             log(f"  odds {lg}: skipped (pull time limit of {deadline:.0f}s reached)"); continue
@@ -179,10 +200,12 @@ def pull(key, max_events, now=None, log=print, games=None, skip=None):
             want = [g for g in _slate_wants(games, lg, aware) if str(g.get("id")) not in skip]
             if want and FD is not None:
                 done = lambda evs, want=want: all(FD.find_event(g, evs) for g in want)
-            ev, n = pull_league(key, lg, cap, now, done); events += ev; notice = n or notice; ok += 1
+            ev, n = pull_league(key, lg, cap, now, done); events += ev; notice = n or notice; ok += 1; pulled.append(lg)
         except Exception as ex: log(f"  odds {lg}: {type(ex).__name__}: {ex}"[:160])
     if not ok: raise RuntimeError("no league could be pulled")
+    PULLED[:] = pulled
     return events, notice
+PULLED = []          # the leagues the last pull() reached (refresh() uses it to know whether soccer was refreshed)
 
 def _unmatched(games, evs, now, old=None):
     """{slate game id: first time it was seen without an event}: games the feed does not carry; they do not trigger another pull for 6 hours"""
@@ -228,7 +251,9 @@ def refresh(path, log=print, now=None, games=None):
     try:
         aware = _utc(now)
         skip = set((old or {}).get("unmatched") or {})
-        try: evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "15")), now, log, games=games, skip=skip)
+        s_gap = float(os.environ.get("ODDS_SOCCER_GAP_MIN", "120")); s_at = _parse((old or {}).get("soccerAt"))
+        soccer_due = bool(SOCCER) and (s_at is None or (aware - s_at).total_seconds() / 60 >= s_gap)
+        try: evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "15")), now, log, games=games, skip=skip, skip_leagues=None if soccer_due else set(SOCCER))
         except TypeError: evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "15")), now, log)      # an older stub without the new arguments
         stamp = _iso(aware)
         fresh = [normalize(e) for e in evs]
@@ -236,11 +261,14 @@ def refresh(path, log=print, now=None, games=None):
         ids = {e["id"] for e in fresh}
         # games that began a moment ago drop out of this pull (the live pull owns them): keep what the file had, with its own asOf, so a live game's lines are not lost between pulls
         keep = []
+        soccer_pulled = soccer_due and any(lg in PULLED for lg in SOCCER)
         for e in (old or {}).get("events") or []:
             st = _parse(e.get("start"))
             if e.get("id") in ids or st is None: continue
             if st <= aware and (aware - st).total_seconds() <= KEEP_H * 3600: keep.append(e)
+            elif e.get("league") in SOCCER and not soccer_pulled and not e.get("final") and st > aware: keep.append(e)      # soccer not due this pull: its upcoming events stay
         out = {"generatedAt": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "source": "sportsgameodds", "notice": notice, "events": fresh + keep}
+        out["soccerAt"] = stamp if soccer_pulled else (old or {}).get("soccerAt")
         if old and old.get("liveAt"): out["liveAt"] = old["liveAt"]
         if games is not None: out["unmatched"] = _unmatched(games, fresh + keep, aware, old)
         tmp = path + ".tmp"; json.dump(out, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)

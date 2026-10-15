@@ -1,7 +1,7 @@
 /* ================= safe slips, pick of the day, tracked calls, self-check ================= */
-const POTD_P=0.80, POTD_PRICE=-140, MIN_SAFE=0.55, KEEP_DAYS=24, MAX_CALLS=700, MAX_LIVE_PER_GAME=8;
-const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Pick of the day',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6'};
-const CALL_KINDS=['safe2','safe4','safe8','potd','live','pl4','pl8','pl12','pl6'];
+const POTD_P=0.90, POTD_PRICE=-140, MIN_SAFE=0.65, KEEP_DAYS=24, MAX_CALLS=700, MAX_LIVE_PER_GAME=8;
+const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5'};
+const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6'];
 const isStack=c=>!!c&&c.multi===true;
 if(!Array.isArray(P.calls)) P.calls=[];
 
@@ -110,7 +110,9 @@ function safeBar(g){
 }
 
 /* ---------- pick of the day, per sport ---------- */
+/* the pick of the day is the sport's GOLD pick (gold.js): its single 90%+ leg */
 function potdFor(key){
+  if(typeof goldPick==='function'){ const r=goldPick(key); if(!r) return null; return {key:key,best:r.best?{g:r.best.g,l:r.best,ev:0}:null,near:r.near?{g:r.near.g,l:r.near,ev:0}:null,games:r.games}; }
   const gs=DATA.games.filter(g=>keyOf(g)===key&&preOK(g)); if(!gs.length) return null;
   let best=null, near=null;
   gs.forEach(g=>{
@@ -208,7 +210,7 @@ function callChip(c){
   const sym=c.status==='hit'?'✓ ':c.status==='miss'?'✗ ':c.status==='void'?'– ':'… ';
   const gg=G[c.gid]; const where=isStack(c)?(KINDN[c.kind]+', '+(LGN[c.key]||c.key)):(gg?gg.teams.away.abbr+' @ '+gg.teams.home.abbr:'');
   const legs=c.legs.map(l=>(l.res==='W'?'✓ ':l.res==='L'?'✗ ':l.res==='V'?'– ':'… ')+l.label+(isStack(c)&&l.game?' ['+l.game+']':'')+' ('+fo(l.price)+', '+Math.round(l.p*100)+'%)').join('\n');
-  const nm=c.kind==='live'?(c.legs[0].label+(c.clock?' · '+c.clock:'')):(isStack(c)?(LGN[c.key]||c.key)+' '+c.legs.length+'-leg stack':KINDN[c.kind]+(c.kind.indexOf('safe')===0&&c.legs.length<c.want?' ('+c.legs.length+' legs)':'')+(c.kind==='potd'?': '+c.legs[0].label:''));
+  const nm=c.kind==='live'?(c.legs[0].label+(c.clock?' · '+c.clock:'')):(isStack(c)?(LGN[c.key]||c.key)+' '+(c.kind.indexOf('gold')===0?'gold '+c.legs.length:c.legs.length+'-leg stack'):KINDN[c.kind]+(c.kind.indexOf('safe')===0&&c.legs.length<c.want?' ('+c.legs.length+' legs)':'')+(c.kind==='potd'?': '+c.legs[0].label:''));
   const hitn=c.legs.filter(l=>l.res==='W').length;
   return '<span class="vc '+cls+'" title="'+esc(where+'\n'+legs)+'">'+sym+esc(nm)+((c.kind.indexOf('safe')===0||isStack(c))?' <span class="muted">('+hitn+'/'+c.legs.length+')</span>':'')+'</span>';
 }

@@ -583,7 +583,7 @@ def compose_team(lg, abbr, cands, out_ids, q_ids, inj_items, today=None):
     return res, info
 
 # ------------------------------------------------------------------------------------------------ page + Supabase output
-def build(learn_out, cache, live=None, today=None, tennis=None):
+def build(learn_out, cache, live=None, today=None, tennis=None, soccer=None):
     """-> sim.json dict (page) ; also used for the Supabase rows"""
     live = live if live is not None else load_live()
     out = {"sports": {}}
@@ -634,6 +634,7 @@ def build(learn_out, cache, live=None, today=None, tennis=None):
                 players[ab] = [dict(pid=p["pid"], name=p["name"], pos=p["pos"], role=p["role"], rk=p["rk"], stats=p["stats"], **({"inj": p["inj"], "note": p.get("note", "")} if p.get("inj") else {})) for p in pl]
         out["sports"][lg] = dict(L=L.get("L"), hfa=(L.get("params") or {}).get("hfa", 0), season=pc.get("season"), teams=teams, players=players)
     if tennis: out["sports"]["tennis"] = tennis
+    if soccer: out["sports"]["soccer"] = soccer
     return out
 
 def rows(sim):

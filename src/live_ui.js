@@ -29,6 +29,8 @@ function legFor(tok){
   if(tok.charAt(0)==='l'&&tok.charAt(1)===':') return liveLeg(tok);
   const parts = tok.split(':'); const k=parts[0]; const g=G[parts[1]]; if(!g) return null;
   const cr=g.crossroads, L=g.lines, lg=g.lg; const SRC=(L.src||{}), bkOf=x=>x==='FanDuel'?'FD':'DK';
+  if(k==='g'&&parts[2]==='at'&&typeof altTotLeg==='function'&&!(typeof isSoc==='function'&&isSoc(g))) return altTotLeg(tok,parts,g);      // alternate game totals (gold.js)
+  if(k==='g'&&typeof socLegFor==='function'){ const r=socLegFor(tok,parts,g); if(r!==undefined) return r; }      // soccer: 3-way result, double chance, goal ladders (soccer.js)
   if(k==='g'){
     const kind=parts[2], side=parts[3];
     if(kind==='ml'){
@@ -126,6 +128,7 @@ function saveSlip(){
 }
 function gradeLeg(leg,F){
   const sp=leg.spec; if(!sp) return 'V';
+  if(typeof socGrade==='function'){ const r=socGrade(leg,F); if(r!==undefined) return r; }
   if(sp.k==='ml'){ const m=F.home-F.away; if(m===0) return 'V'; return ((sp.side==='home')===(m>0))?'W':'L'; }
   if(sp.k==='spr'){ const m=F.home-F.away; const v=(sp.side==='home'?m:-m)+sp.line; if(v===0) return 'V'; return v>0?'W':'L'; }
   if(sp.k==='tot'){ const t=F.home+F.away; if(t===sp.line) return 'V'; return ((sp.dir==='over')===(t>sp.line))?'W':'L'; }

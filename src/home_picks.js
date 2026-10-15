@@ -54,13 +54,14 @@ function hpHtBlock(g){
 /* ---------- legs for one game, all from the feed ---------- */
 function hpLegs(g){
   const O=hpOdds(); if(!O) return []; const ck=g.id+'|'+O.generatedAt+'|'+CALV; if(HP.cache[ck]) return HP.cache[ck];
-  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ const k0=keyOf(g); (g.players||[]).forEach(pl=>(pl.stats||[]).forEach(st=>{ if(hpPropOk(k0,st.key,false)) stAltLegs(g,pl,st).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); })); }catch(_){} try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){} HP.cache[ck]=out; return out; }
+  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l)); }catch(_){} try{ const k0=keyOf(g); (g.players||[]).forEach(pl=>(pl.stats||[]).forEach(st=>{ if(hpPropOk(k0,st.key,false)) stAltLegs(g,pl,st).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); })); }catch(_){} try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){} HP.cache[ck]=out; return out; }
   const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
   const abbrBk=b=>HP_BK[b]||b;
   const push=(tok,kind,label,x,opp,pModel,spec,group,extra)=>{ const b=hpBest(x); if(!b) return; const pf=hpFair(x,opp,b); if(pf==null) return;
     const p0=pModel==null?pf:0.5*pf+0.5*pModel; const p=adjP(clamp(p0*((extra&&extra.avail)||1),0.02,0.97),kind==='prop'?'prop':'team');
     out.push(Object.assign({id:tok,tok:tok,gid:g.id,kind:kind,label:label,price:b.odds,book:b.book,bk:abbrBk(b.book),link:b.link,nBooks:b.n,line:b.line,pFair:pf,pModel:pModel,p:p,ps:p,avail:1,src:abbrBk(b.book),spec:spec,group:group},extra||{})); };
-  const L={mlH:M.ml&&M.ml.home,mlA:M.ml&&M.ml.away};
+  if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l));       // soccer: the 3-way result, double chance, goal ladders (soccer.js) instead of the 2-way lines
+  else {
   ['home','away'].forEach(s=>{ const t=s==='home'?H:A, x=M.ml&&M.ml[s], o=M.ml&&M.ml[s==='home'?'away':'home'];
     push('o:'+g.id+':ml:'+s,'ml',t.abbr+' moneyline',x,o,cr?(s==='home'?cr.pHome:1-cr.pHome):null,{k:'ml',side:s},g.id+':ml'); });
   ['home','away'].forEach(s=>{ const x=M.spread&&M.spread[s], o=M.spread&&M.spread[s==='home'?'away':'home']; const b=hpBest(x); if(!b||b.line==null) return;
@@ -69,6 +70,7 @@ function hpLegs(g){
   ['over','under'].forEach(d=>{ const x=M.total&&M.total[d], o=M.total&&M.total[d==='over'?'under':'over']; const b=hpBest(x); if(!b||b.line==null) return;
     let pm=null; if(cr&&typeof TOTS!=='undefined'&&TOTS[key]){ const po=logistic((cr.projTotal-(+b.line))/TOTS[key]); pm=d==='over'?po:1-po; }
     push('o:'+g.id+':tot:'+d,'tot',(d==='over'?'Over ':'Under ')+b.line,x,o,pm,{k:'tot',dir:d,line:+b.line},g.id+':tot'); });
+  }
   // player props: only players the slate knows (so the bet can be graded), priced from the feed
   const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
   Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p||!hpPropOk(key,p.stat,side==='under')) return; const o=pair[side==='over'?'under':'over'];
@@ -90,8 +92,8 @@ function hpLeg(tok){ const p=String(tok).split(':'); const g=G[p[1]]; if(!g) ret
 /* games from the selected day through the next 3 days (a Friday home screen still shows Sunday's NFL slate) */
 function hpInWin(g){ if(!g.day) return true; const a=Date.parse(S.date+'T12:00:00Z'), d=Date.parse(g.day+'T12:00:00Z'); return d>=a&&d<=a+3*864e5; }
 /* ---------- same-game parlays ---------- */
-const HP_SIZES=[[2,0.58],[4,0.53],[8,0.5]];     // legs wanted, and the lowest chance a leg may have to be used
-const HP_MIN_ALL=0.23;                            // a same-game parlay is only built or shown when its all-hit chance is at least this; a leg that would pull it below is left out, so a big parlay may have fewer legs
+const HP_SIZES=[[2,0.64],[4,0.58],[8,0.54]];     // legs wanted, and the lowest chance a leg may have to be used
+const HP_MIN_ALL=0.28;                            // a same-game parlay is only built or shown when its all-hit chance is at least this; a leg that would pull it below is left out, so a big parlay may have fewer legs
 /* what kind of bet a leg is, for mixing: a team side (moneyline / spread), the game total, a player over/under, or a stat threshold ("60+ rush yds") */
 const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.floor?'floor':l.kind==='alt'?'alt':'ou';
 const hpIsUnder=l=>!!(l.spec&&(l.spec.dir==='under'||l.spec.dir==='lt'));

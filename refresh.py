@@ -237,6 +237,15 @@ def main():
     except Exception as ex:
         tennis_note = dict(status="error", games=0, playerLevel=0, teamLevel=0, carried=0, error=f"{type(ex).__name__}: {ex}"[:160])
 
+    soccer_note, soccer_cards = None, []
+    try:      # soccer: book-priced match cards keyed by their ESPN event (isolated like tennis: a problem here never touches the other leagues)
+        import soccer as SOC
+        soccer_cards = SOC.cards(read_json(f"{DATA}/odds.json", {}), now, log=log)
+        games.extend(soccer_cards)
+        soccer_note = dict(status="ok", games=len(soccer_cards), playerLevel=sum(1 for c in soccer_cards if c["players"]), teamLevel=len(soccer_cards), carried=0, error=None)
+    except Exception as ex:
+        soccer_note = dict(status="error", games=0, playerLevel=0, teamLevel=0, carried=0, error=f"{type(ex).__name__}: {ex}"[:160])
+
     try:      # leagues ESPN gave no cards for (NHL, MLB) but the odds feed lists: book-only cards with FanDuel lines and props
         import fanduel as FD
         fc = FD.feed_cards(read_json(f"{DATA}/odds.json", {}), games, now)
@@ -263,7 +272,12 @@ def main():
             ten_sim = TEN.sim_sport(TEN.cards(read_json(f"{DATA}/odds.json", {}), now))
         except Exception as ex:
             ten_sim = None; social_info.setdefault("errors", []).append(f"tennis battle data: {ex}"[:200])
-        sim = simdata.build(learn_out, sim_cache.get("c") or simdata.load_cache(), tennis=ten_sim)
+        try:
+            import soccer as SOC
+            soc_sim = SOC.sim_sport(soccer_cards)
+        except Exception as ex:
+            soc_sim = None; social_info.setdefault("errors", []).append(f"soccer battle data: {ex}"[:200])
+        sim = simdata.build(learn_out, sim_cache.get("c") or simdata.load_cache(), tennis=ten_sim, soccer=soc_sim)
         write_json(f"{DATA}/sim.json", sim)
         social_info["simTeams"] = {lg: len(v["teams"]) for lg, v in sim["sports"].items()}
         if supa_on and not (deadline and time.time() > T0 + deadline): runner.uploads(games, sim)
@@ -281,7 +295,7 @@ def main():
     meta = dict(schema=SCHEMA, runNumber=run_no, deadlineHit=bool(espn.STATS["skipped"]), generatedAt=now.strftime("%Y-%m-%dT%H:%M:%SZ"), generatedAtET=now.astimezone(ET).strftime("%a %b %-d, %-I:%M %p ET"), today=str(today),
                 lastRunAt=now.strftime("%Y-%m-%dT%H:%M:%SZ"), lastRunError=None,
                 ok=not any(v["status"] in ("error", "stale") for lg, v in lstat.items() if lg in leagues),
-                leagues={**{lg: lstat[lg] for lg in LEAGUES}, **({'tennis': tennis_note} if tennis_note else {})},
+                leagues={**{lg: lstat[lg] for lg in LEAGUES}, **({'tennis': tennis_note} if tennis_note else {}), **({'soccer': soccer_note} if soccer_note else {})},
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),

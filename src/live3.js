@@ -16,6 +16,8 @@ function syncMan(g,doc){
     let inn=Math.max(1,st.per||1), half='top', outs=(doc.sit&&doc.sit.o)||0;
     if(dm){ const w=dm[1].toLowerCase(); inn=+dm[2]; if(w==='bottom'||w==='bot') half='bot'; else if(w==='middle'||w==='mid'){ half='bot'; outs=0; } else if(w==='end'){ inn=inn+1; half='top'; outs=0; } }
     m.inn=Math.min(9,inn); m.half=half; m.outs=Math.min(2,outs);
+  } else if(g.lg==='soccer'){
+    m.q=1; m.min=socMinute(st.clk,st.det); m.sec=0;
   } else {
     const c=parseClock(st.clk); const per=st.per||1;
     if((g.key||g.lg)==='cbb'){ // two 20-minute halves: convert to quarter-equivalents
@@ -383,15 +385,15 @@ function tennisViz(g){
   s+='<text x="30" y="33" class="rtx" text-anchor="middle">'+esc(g.teams.away.abbr)+'</text><text x="90" y="33" class="rtx" text-anchor="middle">'+esc(g.teams.home.abbr)+'</text></svg>';
   return s;
 }
-function vzKind(g){ return g.lg==='nfl'?'nfl':g.lg==='mlb'?'mlb':g.lg==='nhl'?'nhl':g.lg==='tennis'?'tnn':'bkb'; }
+function vzKind(g){ return g.lg==='nfl'?'nfl':g.lg==='mlb'?'mlb':g.lg==='nhl'?'nhl':g.lg==='tennis'?'tnn':g.lg==='soccer'?'soc':'bkb'; }
 function vizHtml(g){
-  const k=vzKind(g); const kind=k==='nfl'?nflViz(g):k==='mlb'?mlbViz(g):k==='nhl'?nhlViz(g):k==='tnn'?tennisViz(g):wnbaViz(g);
+  const k=vzKind(g); const kind=k==='nfl'?nflViz(g):k==='mlb'?mlbViz(g):k==='nhl'?nhlViz(g):k==='tnn'?tennisViz(g):k==='soc'?socViz(g):wnbaViz(g);
   const a=g.teams.away,h=g.teams.home;
   const plate=(t,side)=>'<div class="vz-plate '+side+'" style="--c:'+esc(t.color||'#4d98ff')+'"><i>SCORE</i><span><em>'+(vzLogo(g,t)?'<img class="vzl" alt="" src="'+esc(vzLogo(g,t))+'" onerror="this.remove()">':'')+esc(t.abbr)+'</em><b id="vs'+side[0]+'-'+g.id+'">0</b></span></div>';
-  const first=k==='nfl'?'KICKOFF':k==='mlb'?'AT BAT':k==='nhl'?'PUCK DROP':k==='tnn'?'FIRST SERVE':'TIP-OFF';
+  const first=k==='nfl'?'KICKOFF':k==='mlb'?'AT BAT':k==='nhl'?'PUCK DROP':k==='tnn'?'FIRST SERVE':k==='soc'?'KICK-OFF':'TIP-OFF';
   return '<div class="viz vz-'+k+'" id="viz-'+g.id+'" data-act="fs" data-g="'+g.id+'" role="button" tabindex="0" aria-label="Open full screen"><div class="vz-field">'+kind+'<div class="vz-vig"></div></div>'+
     '<div class="vz-top">'+plate(a,'away')+'<div class="vz-pill" id="pill-'+g.id+'">'+first+'</div>'+plate(h,'home')+'</div>'+
-    '<div class="vz-act" id="vact-'+g.id+'"></div><div class="vz-ball" id="vball-'+g.id+'"><b>Chip</b><span>'+(k==='nfl'?'🏈':k==='mlb'?'⚾':k==='nhl'?'🏒':k==='tnn'?'🎾':'🏀')+'</span><em id="vchp-'+g.id+'">'+money(P.bank)+'</em><em id="vclk-'+g.id+'"></em></div>'+
+    '<div class="vz-act" id="vact-'+g.id+'"></div><div class="vz-ball" id="vball-'+g.id+'"><b>Chip</b><span>'+(k==='nfl'?'🏈':k==='mlb'?'⚾':k==='nhl'?'🏒':k==='tnn'?'🎾':k==='soc'?'⚽':'🏀')+'</span><em id="vchp-'+g.id+'">'+money(P.bank)+'</em><em id="vclk-'+g.id+'"></em></div>'+
     '<span class="fshint">Full screen</span><div class="playchip" id="chip-'+g.id+'"><b>Waiting for a play</b><span></span></div><div class="cel" id="cel-'+g.id+'"></div></div>';
 }
 function vzScores(){
@@ -401,14 +403,14 @@ function vzScores(){
 }
 setInterval(vzScores,1000);
 function vizRestore(g){
-  if(g.lg==='nfl') nflApply(g,true); else if(g.lg==='mlb') mlbApply(g,true); else if(g.lg==='nhl') nhlApply(g); else if(g.lg==='tennis') {} else wnbaApply(g);
+  if(g.lg==='nfl') nflApply(g,true); else if(g.lg==='mlb') mlbApply(g,true); else if(g.lg==='nhl') nhlApply(g); else if(g.lg==='soccer') socApply(g); else if(g.lg==='tennis') {} else wnbaApply(g);
   const V=vis(g.id); const last=V.shown[0]; if(last){ chip(g.id,g.lg==='nfl'?nflLabel(last):(last.ty||'Play').toUpperCase(),(last.tx||'').slice(0,110),g.lg==='nfl'?nflKind(last):'other'); }
 }
 function ingestPlays(g,doc,first){
   const V=vis(g.id); const fresh=doc.plays.filter(p=>!V.seen.has(p.i));
   if(first){
     doc.plays.forEach(p=>V.seen.add(p.i));
-    doc.plays.slice(-30).forEach(p=>{ if(g.lg==='nfl') nflPlay(g,p,true); else if(g.lg==='mlb') mlbPlay(g,p,true); else if(g.lg==='nhl') nhlPlay(g,p,true); else if(g.lg==='tennis') {} else wnbaPlay(g,p,true); });
+    doc.plays.slice(-30).forEach(p=>{ if(g.lg==='nfl') nflPlay(g,p,true); else if(g.lg==='mlb') mlbPlay(g,p,true); else if(g.lg==='nhl') nhlPlay(g,p,true); else if(g.lg==='soccer') socPlay(g,p,true); else if(g.lg==='tennis') {} else wnbaPlay(g,p,true); });
     V.shown=doc.plays.slice(-18).reverse();
     if(g.lg==='mlb') mlbApply(g,true);
     return;
@@ -417,15 +419,15 @@ function ingestPlays(g,doc,first){
   if(V.queue.length>80) V.queue=V.queue.slice(-80);
   if(g.lg==='mlb') mlbApply(g,false);
 }
-const DUR={nfl:2300,wnba:1500,mlb:1300,nhl:1500,tennis:1000};
-function playDur(g,p){ if(g.lg==='nhl') return p.sc?3000:(p.sh?1500:700); if(g.lg==='tennis') return 500; if(g.lg==='mlb') return p.hc?2000:(p.pt?1000:700); if(g.lg==='wnba') return p.sh?1700:800; const f=nflFlags(p); if(p.sc) return 3800; if(f.ko) return 3300; if(f.sack) return 2600; if(f.pass&&!f.inc) return (+p.y>5?3000:2300); if(f.inc) return 2400; if(f.fg||f.punt) return 2900; return 2500; }
+const DUR={nfl:2300,wnba:1500,mlb:1300,nhl:1500,tennis:1000,soccer:1500};
+function playDur(g,p){ if(g.lg==='soccer') return p.sc?3000:(p.sh?1500:800); if(g.lg==='nhl') return p.sc?3000:(p.sh?1500:700); if(g.lg==='tennis') return 500; if(g.lg==='mlb') return p.hc?2000:(p.pt?1000:700); if(g.lg==='wnba') return p.sh?1700:800; const f=nflFlags(p); if(p.sc) return 3800; if(f.ko) return 3300; if(f.sack) return 2600; if(f.pass&&!f.inc) return (+p.y>5?3000:2300); if(f.inc) return 2400; if(f.fg||f.punt) return 2900; return 2500; }
 function vizTick(){
   const now=Date.now();
   Object.keys(VIS).forEach(gid=>{
     const V=VIS[gid]; if(!V.queue.length||now<V.next) return; const g=G[gid]; const p=V.queue.shift();
     const show=S.view==='live'&&E('viz-'+gid)&&document.visibilityState==='visible';
     const turbo=V.queue.length>40;
-    if(g.lg==='nfl') nflPlay(g,p,!show||turbo); else if(g.lg==='mlb') mlbPlay(g,p,!show||turbo); else if(g.lg==='nhl') nhlPlay(g,p,!show||turbo); else if(g.lg==='tennis') {} else wnbaPlay(g,p,!show||turbo);
+    if(g.lg==='nfl') nflPlay(g,p,!show||turbo); else if(g.lg==='mlb') mlbPlay(g,p,!show||turbo); else if(g.lg==='nhl') nhlPlay(g,p,!show||turbo); else if(g.lg==='soccer') socPlay(g,p,!show||turbo); else if(g.lg==='tennis') {} else wnbaPlay(g,p,!show||turbo);
     V.shown.unshift(p); if(V.shown.length>30) V.shown.length=30; V.fresh=p.i;
     let d=playDur(g,p); if(V.queue.length>12) d*=0.4; let sp=0; if(show&&!turbo&&FSV.gid===gid) sp=announce(g,p,V.queue.length)||0; if(sp&&V.queue.length<=8) d=Math.max(d,sp); if(show&&FSV.gid===gid&&SND.on&&V.queue.length<=3&&/timeout|two-minute warning/i.test((p.ty||'')+' '+(p.tx||''))) d=Math.max(d,12000); if(!show||turbo) d=0; V.next=now+d;
     if(show){ RF('lv-log-'+gid,logHtml(G[gid])); if(FSV.gid===gid) RF('fs-log',logHtml(G[gid])); }

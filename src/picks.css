@@ -20,3 +20,32 @@ button.potd{cursor:pointer}
 .cdot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
 .potd .hpstat{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%}
 .potd .hpgen{padding:6px 12px;font-size:13px;min-height:0}
+
+/* gold picks (gold.js): the 90%+ leg of each sport and the 85%+ gold slips */
+.goldsec .sec{display:flex;flex-direction:column;gap:6px}
+.gold{border:1px solid #d4a72c;background:linear-gradient(135deg,#fff6d6,#fde9a8);color:#3d2c00;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.gold .muted{color:#6b5410}
+.gold .glh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.glpick{display:flex;flex-direction:column;gap:4px;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;border:2px solid #c9961a;border-radius:10px;padding:8px 10px;background:linear-gradient(135deg,#ffe58a,#f5c542);box-shadow:0 1px 6px rgba(201,150,26,.35)}
+.glpick.on{outline:3px solid var(--accent)}
+.glbadge{align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.08em;background:#3d2c00;color:#ffd84d;border-radius:999px;padding:2px 8px}
+.glrow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.gll{font-weight:700;min-width:0;overflow-wrap:anywhere}
+.glbig{font-size:22px;font-weight:800;text-align:right;white-space:nowrap;line-height:1.05}
+.glbig small{display:block;font-size:11px;font-weight:600}
+.glslip{border-top:1px solid rgba(61,44,0,.2);padding-top:6px}
+.glslip summary{display:flex;justify-content:space-between;gap:8px;cursor:pointer;list-style:none}
+.glslip summary::-webkit-details-marker{display:none}
+.glleg{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:2px 0}
+.glp{white-space:nowrap}
+.glall{align-self:stretch}
+.glbtn{background:#3d2c00;border-color:#3d2c00;color:#ffd84d}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gold{background:linear-gradient(135deg,#3a2c05,#4a3608);color:#ffe49a;border-color:#a67c12}
+ :root:not([data-theme="light"]) .gold .muted{color:#e2c46e} :root:not([data-theme="light"]) .glpick{background:linear-gradient(135deg,#6e4f07,#8a650c);border-color:#d4a72c}}
+:root[data-theme="dark"] .gold{background:linear-gradient(135deg,#3a2c05,#4a3608);color:#ffe49a;border-color:#a67c12}
+:root[data-theme="dark"] .gold .muted{color:#e2c46e} :root[data-theme="dark"] .glpick{background:linear-gradient(135deg,#6e4f07,#8a650c);border-color:#d4a72c}
+/* soccer markets (soccer.js) */
+.socm .socg{display:flex;flex-direction:column;gap:4px;margin-block:6px}
+.socm .socbtns{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
+.socm .odd .o2{font-size:11px}
+.orow.socdraw .team .chip{color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}

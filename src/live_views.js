@@ -127,7 +127,7 @@ function slipsView(){
 function render(){
   const gs = DATA.games.filter(g=>S.league==='all'||(g.key||g.lg)===S.league);
   const counts={all:DATA.games.length}; DATA.games.forEach(g=>{counts[g.lg]=(counts[g.lg]||0)+1;});
-  const ltabs=[['all','All'],['nfl','NFL'],['wnba','WNBA'],['mlb','MLB'],['nhl','NHL'],['tennis','Tennis']].map(([k,l])=>'<button class="tab" data-act="league" data-k="'+k+'" aria-pressed="'+(S.league===k)+'">'+l+' '+(counts[k]||0)+'</button>').join('');
+  const ltabs=[['all','All'],['nfl','NFL'],['wnba','WNBA'],['mlb','MLB'],['nhl','NHL'],['soccer','Soccer'],['tennis','Tennis']].map(([k,l])=>'<button class="tab" data-act="league" data-k="'+k+'" aria-pressed="'+(S.league===k)+'">'+l+' '+(counts[k]||0)+'</button>').join('');
   const pend=P.bets.filter(b=>b.status==='pending').length;
   const vtabs=[['pre','Pregame'],['live','Live'],['slips','Slips'+(pend?' ('+pend+')':'')]].map(([k,l])=>'<button class="vtab" data-act="view" data-k="'+k+'" aria-pressed="'+(S.view===k)+'">'+l+'</button>').join('');
   let body='';

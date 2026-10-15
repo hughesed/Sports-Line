@@ -1,5 +1,5 @@
 /* ===== standalone live feed: ESPN -> compact docs, in the browser (port of feed.py) ===== */
-const ESP={nfl:'football/nfl',wnba:'basketball/wnba',mlb:'baseball/mlb',nba:'basketball/nba',cfb:'football/college-football',cbb:'basketball/mens-college-basketball',nhl:'hockey/nhl',tennis:'tennis/atp'};
+const ESP={nfl:'football/nfl',wnba:'basketball/wnba',mlb:'baseball/mlb',nba:'basketball/nba',cfb:'football/college-football',cbb:'basketball/mens-college-basketball',nhl:'hockey/nhl',tennis:'tennis/atp',soccer:'soccer'};
 const ESPFAM={cfb:'nfl',nba:'wnba',cbb:'wnba'};
 const ESPQ={cfb:'?groups=80&limit=300',cbb:'?groups=50&limit=400'};
 const ESPB='https://site.api.espn.com/apis/site/v2/sports/';
@@ -35,6 +35,7 @@ function sTeamStats(lg,s,home,away){
 
 function espnBuild(key,gid,sbEv){
   if(key==='tennis') return tennisBuild(gid);
+  if(key==='soccer') return soccerBuild(gid);
   const lg=ESPFAM[key]||key;
   return sGet(ESPB+ESP[key]+'/summary?event='+gid).then(s=>{
     if(!s||!s.header) return null;
@@ -44,21 +45,25 @@ function espnBuild(key,gid,sbEv){
     const home=comp.competitors.find(c=>c.homeAway==='home'), away=comp.competitors.find(c=>c.homeAway==='away');
     const doc={gid:gid,lg:key,st:{s:ty.state,per:stt.period||0,clk:stt.displayClock||'',det:ty.detail||'',pre:stt.periodPrefix||''},hs:sToi(home.score),as:sToi(away.score)};
     const sit=(sbEv&&sbEv.competitions&&sbEv.competitions[0]&&sbEv.competitions[0].situation)||{};
-    const p={}, nm={}, dnp=[];
+    const p={}, nm={}, dnp=[], full={};
     ((s.boxscore&&s.boxscore.players)||[]).forEach(t=>{
       (t.statistics||[]).forEach(grp=>{
         const keys=grp.keys||[];
         (grp.athletes||[]).forEach(a=>{
-          const aid=a.athlete.id; nm[aid]=a.athlete.shortName||a.athlete.displayName;
+          const aid=a.athlete.id; nm[aid]=a.athlete.shortName||a.athlete.displayName; if(a.athlete.displayName) full[aid]=socPid(a.athlete.displayName);
           const v={}; keys.forEach((k,i)=>v[k]=(a.stats||[])[i]); const d=p[aid]||(p[aid]={});
           if(lg==='nfl'){
             const n_=grp.name;
-            if(n_==='passing'){ d.comp=sFirst(v['completions/passingAttempts']); d.passYds=sToi(v.passingYards); d.passTD=sToi(v.passingTouchdowns); }
+            if(n_==='passing'){ d.comp=sFirst(v['completions/passingAttempts']); const ca=String(v['completions/passingAttempts']||'').split('/'); if(ca.length===2) d.passAtt=sToi(ca[1]); d.passYds=sToi(v.passingYards); d.passTD=sToi(v.passingTouchdowns); }
             else if(n_==='rushing'){ d.carries=sToi(v.rushingAttempts); d.rushYds=sToi(v.rushingYards); }
             else if(n_==='receiving'){ d.rec=sToi(v.receptions); d.recYds=sToi(v.receivingYards); }
           } else if(lg==='wnba'){
             d.pts=sToi(v.points); d.reb=sToi(v.rebounds); d.ast=sToi(v.assists); d.fg3=sFirst(v['threePointFieldGoalsMade-threePointFieldGoalsAttempted']);
             if(a.didNotPlay) dnp.push(aid);
+          } else if(lg==='nhl'){        // skaters: shots on goal and points; goalies: saves (the first key name present counts)
+            const sh=['shotsTotal','shots','shotsOnGoal'].map(k=>v[k]).find(x=>x!=null&&x!==''); if(sh!=null) d.sog=sToi(sh);
+            if(v.saves!=null&&v.saves!=='') d.saves=sToi(v.saves);
+            if((v.goals!=null&&v.goals!=='')||(v.assists!=null&&v.assists!=='')){ d.gls=sToi(v.goals); d.ast=sToi(v.assists); d.pts=d.gls+d.ast; }
           } else if(lg==='mlb'){
             if(grp.type==='batting'){ d.hits=sToi(v.hits); d.runs=sToi(v.runs); d.rbi=sToi(v.RBIs); if(d.tb==null) d.tb=0; }
             else if(grp.type==='pitching'){ d.k=sToi(v.strikeouts); const ip=String(v['fullInnings.partInnings']||'0.0').split('.'); d.outs=sToi(ip[0])*3+(ip.length>1?sToi(ip[1]):0); }
@@ -67,6 +72,7 @@ function espnBuild(key,gid,sbEv){
       });
     });
     doc.p={}; Object.keys(p).forEach(k=>{ if(Object.keys(p[k]).length) doc.p[k]=p[k]; });
+    const g0=G[gid]; Object.keys(full).forEach(aid=>{ const nk=full[aid]; if(doc.p[aid]&&!doc.p[nk]&&g0&&(g0.players||[]).some(q=>q.id===nk)) doc.p[nk]=doc.p[aid]; if(dnp.indexOf(aid)>=0&&dnp.indexOf(nk)<0) dnp.push(nk); });      // feed-built players carry a name id
     if(dnp.length) doc.dnp=dnp;
     let plays=[];
     if(lg==='nfl'){
@@ -159,7 +165,7 @@ function pollOnce(){
   const now=Date.now();
   const cand=pollGames().filter(g=>!POLL.stop[g.id]).filter(g=>{ const t=Date.parse(g.iso); return !isFinite(t)||t-now<POLL_LEAD; });
   if(!cand.length){ if(FS.conn!=='err') FS.conn=Object.keys(FEED).length?'on':'idle'; if(S.view==='live') RF('lv-status',statusHtml()); return Promise.resolve(60000); }
-  const lgs=[...new Set(cand.map(g=>g.key||g.lg))];
+  const lgs=[...new Set(cand.map(g=>g.key||g.lg))].filter(lg=>lg!=='soccer'&&lg!=='tennis');       // soccer and tennis read their own boards / summaries
   return Promise.all(lgs.map(lg=>sGet(ESPB+ESP[lg]+'/scoreboard'+(ESPQ[lg]||'')).then(j=>{ POLL.sb[lg]=j; }).catch(()=>{}))).then(()=>
     Promise.all(cand.map(g=>{
       const ev=((POLL.sb[g.key||g.lg]||{}).events||[]).find(e=>e.id===g.id);

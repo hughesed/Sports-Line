@@ -9,9 +9,11 @@ import math, re, unicodedata
 KEYLG = {"nfl": "NFL", "cfb": "NCAAF", "nba": "NBA", "cbb": "NCAAB", "mlb": "MLB", "wnba": "WNBA", "nhl": "NHL"}
 BOOK = "fanduel"
 LABEL = {"passYds": "Pass yds", "passTD": "Pass TD", "rushYds": "Rush yds", "recYds": "Rec yds", "rec": "Receptions", "pts": "Points", "ast": "Assists", "reb": "Rebounds",
-         "fg3": "3-pointers", "hits": "Hits", "hr": "Home runs", "rbi": "RBI", "k": "Strikeouts", "pra": "Pts+reb+ast", "pr": "Pts+reb", "pa": "Pts+ast", "ra": "Reb+ast"}
+         "fg3": "3-pointers", "hits": "Hits", "hr": "Home runs", "rbi": "RBI", "k": "Strikeouts", "pra": "Pts+reb+ast", "pr": "Pts+reb", "pa": "Pts+ast", "ra": "Reb+ast",
+         "passAtt": "Pass att", "comp": "Completions", "carries": "Carries", "sog": "Shots on goal", "saves": "Saves",
+         "gls": "Goals", "shots": "Shots", "passes": "Passes", "tkl": "Tackles"}
 POS = {"passYds": "QB", "passTD": "QB", "rushYds": "RB", "recYds": "WR", "rec": "WR", "pts": "", "ast": "", "k": "P", "hits": "B", "hr": "B", "rbi": "B"}
-REL_SD = {"passYds": 0.28, "rushYds": 0.55, "recYds": 0.62}        # yardage spread relative to the line; counting stats use a Poisson-like spread
+REL_SD = {"passYds": 0.28, "rushYds": 0.55, "recYds": 0.62, "passAtt": 0.2, "comp": 0.25, "passes": 0.3, "saves": 0.4}        # yardage spread relative to the line; counting stats use a Poisson-like spread
 MAX_PLAYERS_PER_TEAM = 14
 
 def _n(s): return re.sub(r"[^a-z]", "", (s or "").lower())
@@ -159,7 +161,8 @@ def _synth_players(g, e, by):
         mine.sort(key=lambda kv: -max(s["line"] * (1 if s["key"] in REL_SD else 12) for s in kv[1]["stats"]))     # the featured players first
         for pid, v in mine[:MAX_PLAYERS_PER_TEAM]:
             ks = [s["key"] for s in v["stats"]]; pos = next((POS[k] for k in ("passYds", "rushYds", "recYds", "rec", "k") if k in ks and POS.get(k)), "")
-            out.append(dict(id=str(pid), name=v["name"], side=side, abbr=g["teams"][side]["abbr"], pos=pos, jersey=None, status=dict(label="Active", kind="ok", note=""), avail=1.0, flags=[], boostNotes=[],
+            # the id is the player's name: the feed's player id is not ESPN's, so the box score is matched on the name
+            out.append(dict(id="n" + re.sub(r"[^a-z]", "", unicodedata.normalize("NFKD", v["name"]).encode("ascii", "ignore").decode().lower()), name=v["name"], side=side, abbr=g["teams"][side]["abbr"], pos=pos, jersey=None, status=dict(label="Active", kind="ok", note=""), avail=1.0, flags=[], boostNotes=[],
                             games=[], slots=[], stats=sorted(v["stats"], key=lambda s: list(LABEL).index(s["key"])), fam=("P" if "k" in ks else pos or "X"), ht=None, feed=True))
     return out
 

@@ -12,9 +12,9 @@
      stAltLegs(g,pl,st) per main player and stat, the highest rung that is still about 72%+ ("solid") and the highest that is still about 60%+ ("reach"), from the book's ladder when it has
                         one and from the model when it does not (rush+rec, pass+rush, carries, completions, pass TDs).
    Practice only. */
-const ST={cache:new WeakMap(),peak:0.75,drop:0.6,solid:0.72,reach:0.60,pMin:0.55,pMax:0.88,ratioMin:0.45};
+const ST={cache:new WeakMap(),peak:0.80,drop:0.6,solid:0.76,reach:0.64,pMin:0.55,pMax:0.88,ratioMin:0.45};
 /* rung spacing for stats the book ladder does not cover (yards: step; counts: 1) */
-const ST_STEP={rr:5,pr:10};
+const ST_STEP={rr:5,pr:10,passAtt:5};
 const ST_COUNT={comp:1,carries:1,passTD:1};
 const stNum=(pl,k)=>{ const s=(pl.stats||[]).find(x=>x.key===k); if(!s) return null; const m=+(s.proj!=null?s.proj:s.avg); return isFinite(m)?m:null; };
 const stOut=pl=>!!(pl.status&&pl.status.kind==='out')||(pl.avail!=null&&pl.avail<0.5);

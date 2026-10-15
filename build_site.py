@@ -89,9 +89,9 @@ t = cut(t, '/* ================= shell ================= */\nfunction render(){'
 t = cut(t, 'function linesTable(g){', 'function crossroads(g){')
 t = rep(t, "'<div class=\"sec\"><h3>Lines <span class=\"hint\">DraftKings via ESPN</span></h3>'+linesTable(g)+'</div>'", "llLinesSec(g)")
 t = rep(t, "'</div>'+leans+notesHtml+", "'</div>'+leans+ctxBox(g)+learnedBox(g)+notesHtml+")
-t = rep(t, "const LEAGUE_N = {nfl:32,wnba:15,mlb:30};", "const LEAGUE_N = {nfl:32,wnba:15,mlb:30,nba:30,cfb:136,cbb:362,nhl:32,tennis:2};")
-t = rep(t, "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5};", "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5,cfb:11.1,nba:8.9,cbb:8.2,nhl:1.45,tennis:3.4};")
-t = rep(t, "const TOTS = {nfl:5.6,wnba:9,mlb:3};", "const TOTS = {nfl:5.6,wnba:9,mlb:3,cfb:6.9,nba:7.9,cbb:7.4,nhl:1.7,tennis:2.6};")
+t = rep(t, "const LEAGUE_N = {nfl:32,wnba:15,mlb:30};", "const LEAGUE_N = {nfl:32,wnba:15,mlb:30,nba:30,cfb:136,cbb:362,nhl:32,tennis:2,soccer:20};")
+t = rep(t, "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5};", "const LOGI = {nfl:7.9,wnba:6.5,mlb:2.5,cfb:11.1,nba:8.9,cbb:8.2,nhl:1.45,tennis:3.4,soccer:0.95};")
+t = rep(t, "const TOTS = {nfl:5.6,wnba:9,mlb:3};", "const TOTS = {nfl:5.6,wnba:9,mlb:3,cfb:6.9,nba:7.9,cbb:7.4,nhl:1.7,tennis:2.6,soccer:0.95};")
 t = rep(t, "const cr=g.crossroads,a=g.teams.away,h=g.teams.home,N=LEAGUE_N[g.lg];", "const cr=g.crossroads,a=g.teams.away,h=g.teams.home,N=g.n||LEAGUE_N[g.lg];\n  if(g.bookOnly) return bookOnlyBox(g);")
 t = rep(t, """    '<button class="drawerbtn" data-act="drawer" data-gid="'+g.id+'" aria-expanded="'+open+'"><span>SGP builder</span><span class="mono">'+countSelections(g)+' selections '+(open?'(hide)':'(open)')+'</span></button>'+
     (open?drawer(g):'')+'</article>';""", """    llDrawerPart(g,open)+'</article>';""")
@@ -138,7 +138,7 @@ for fn in ("slipHtml", "calcHtml", "placeCheck", "slipsView"):
     t = t.replace("function " + fn + "(){", "function " + fn + "Local(){", 1)
 assert t.count("function renderBank(){") == 1
 t = t.replace("function renderBank(){", "function renderBankLocal(){", 1)
-sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("battle_fill.js") + "\n" + rd("share.js") + "\n" + rd("shop.js") + "\n" + rd("odds_ui.js") + "\n" + rd("live_lines.js") + "\n" + rd("starters.js") + "\n" + rd("floor.js") + "\n" + rd("home_picks.js") + "\n" + rd("stacks.js")
+sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("battle_fill.js") + "\n" + rd("share.js") + "\n" + rd("shop.js") + "\n" + rd("odds_ui.js") + "\n" + rd("live_lines.js") + "\n" + rd("soccer.js") + "\n" + rd("starters.js") + "\n" + rd("floor.js") + "\n" + rd("home_picks.js") + "\n" + rd("stacks.js") + "\n" + rd("gold.js")
 assert t.count("const $app=document.getElementById") == 1
 t = t.replace("const $app=document.getElementById", sa + "\nconst $app=document.getElementById", 1)
 t = rep(t, "if(dbh&&userh) initSocial(dbh,userh); else { FS.conn='nodb'; if(S.view==='live') render(); }", "startPoll();")

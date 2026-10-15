@@ -15,7 +15,7 @@ const PL_SIZES=[
   {n:8, min:7, max:8, floor:0.64,add:0.64,maxStat:3,maxGame:3,tab:'8 legs'},
   {n:12,min:12,max:15,floor:0.60,add:0.68,maxStat:4,maxGame:4,tab:'12–15 legs'},
   {n:6, min:5, max:6, floor:0.86,add:0.86,maxStat:4,maxGame:2,tab:'Floor 6',onlyFloor:true}];
-const PL_ORDER=['nfl','cfb','nba','wnba','cbb','mlb','nhl'];
+const PL_ORDER=['nfl','cfb','nba','wnba','cbb','mlb','nhl','soccer'];
 const PL_MAXVER=3;                                       // most stacks written down per sport and size in one day
 const plKind=sz=>'pl'+sz.n;
 const plSport=k=>LGN[k]||String(k).toUpperCase();

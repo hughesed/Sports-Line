@@ -56,7 +56,7 @@ def main():
         if ngames: check("every slate game has a card", cards >= ngames, f"{cards} cards / {ngames} games")
         else: check("empty slate renders without error", True)
         txt = pg.inner_text("#app")
-        check("Pick of the Day section present", "PICK OF THE DAY" in txt.upper())
+        check("Gold picks (pick of the day) section present", "GOLD PICKS" in txt.upper())
         if any(g["players"] for g in slate["games"]):
             check("Safe 2 / 4 / 8 buttons present", pg.locator("button.safeb").count() >= 3, pg.locator("button.safeb").count())
         pg.locator("button.calbtn").first.click(); pg.wait_for_timeout(400)

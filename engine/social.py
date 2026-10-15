@@ -61,26 +61,41 @@ def _toi(x, d=0):
 def _first(s):
     m = re.match(r"\s*(-?\d+)", str(s if s is not None else "")); return int(m.group(1)) if m else 0
 
+def _nkey(name):
+    import unicodedata
+    return "n" + re.sub(r"[^a-z]", "", unicodedata.normalize("NFKD", str(name or "")).encode("ascii", "ignore").decode().lower())
+
 def box_of(key, s):
     """ESPN summary -> (home, away, {pid: {stat: value}}, set of pids marked did-not-play)"""
     lg = ESPFAM.get(key, key)
     comp = s["header"]["competitions"][0]
     home = next(c for c in comp["competitors"] if c.get("homeAway") == "home")
     away = next(c for c in comp["competitors"] if c.get("homeAway") == "away")
-    p, dnp = {}, set()
+    p, dnp, alias = {}, set(), {}
     for t in (s.get("boxscore") or {}).get("players") or []:
         for grp in t.get("statistics") or []:
             keys = grp.get("keys") or []
             for a in grp.get("athletes") or []:
                 aid = str(a["athlete"]["id"]); v = dict(zip(keys, a.get("stats") or [])); d = p.setdefault(aid, {})
+                full = a["athlete"].get("displayName")
+                if full: alias[aid] = _nkey(full)
                 if lg == "nfl":
                     n = grp.get("name")
-                    if n == "passing": d.update(comp=_first(v.get("completions/passingAttempts")), passYds=_toi(v.get("passingYards")), passTD=_toi(v.get("passingTouchdowns")))
+                    if n == "passing":
+                        ca = str(v.get("completions/passingAttempts") or "").split("/")
+                        d.update(comp=_first(v.get("completions/passingAttempts")), passYds=_toi(v.get("passingYards")), passTD=_toi(v.get("passingTouchdowns")))
+                        if len(ca) == 2: d["passAtt"] = _toi(ca[1])
                     elif n == "rushing": d.update(carries=_toi(v.get("rushingAttempts")), rushYds=_toi(v.get("rushingYards")))
                     elif n == "receiving": d.update(rec=_toi(v.get("receptions")), recYds=_toi(v.get("receivingYards")))
                 elif lg == "wnba":
                     d.update(pts=_toi(v.get("points")), reb=_toi(v.get("rebounds")), ast=_toi(v.get("assists")), fg3=_first(v.get("threePointFieldGoalsMade-threePointFieldGoalsAttempted")))
                     if a.get("didNotPlay"): dnp.add(aid)
+                elif lg == "nhl":         # skaters: shots on goal and points; goalies: saves (key names vary, the first one present counts)
+                    sh = next((v[k] for k in ("shotsTotal", "shots", "shotsOnGoal") if v.get(k) not in (None, "")), None)
+                    if sh is not None: d["sog"] = _toi(sh)
+                    if v.get("saves") not in (None, ""): d["saves"] = _toi(v.get("saves"))
+                    g_, a_ = v.get("goals"), v.get("assists")
+                    if g_ not in (None, "") or a_ not in (None, ""): d.update(gls=_toi(g_), ast=_toi(a_), pts=_toi(g_) + _toi(a_))
                 elif lg == "mlb":
                     if grp.get("type") == "batting":
                         d.update(hits=_toi(v.get("hits")), runs=_toi(v.get("runs")), rbi=_toi(v.get("RBIs")))
@@ -99,6 +114,9 @@ def box_of(key, s):
                 if v: tb[bid] = tb.get(bid, 0) + v
         for bid, v in tb.items(): p.setdefault(bid, {})["tb"] = v
     p = {k: v for k, v in p.items() if v}
+    for aid, nk in alias.items():        # players built from the sportsbook feed carry a name id ("n" + name): the same row under that key
+        if aid in p and nk not in p: p[nk] = p[aid]
+        if aid in dnp: dnp.add(nk)
     return _toi(home.get("score")), _toi(away.get("score")), p, dnp
 
 def final_doc(gid, home, away, box=None, dnp=()):
@@ -117,11 +135,18 @@ def finals_for(pending, store, log, max_fetch=12):
     for g in pending:
         key = g.get("key") or g.get("lg"); gid = str(g["gid"])
         row = (store.games.get(key) or {}).get(gid) if store else None
-        if row and row.get("hs") is not None and not g.get("props"):
+        if row and row.get("hs") is not None and not g.get("props") and key != "soccer":
             out.append(final_doc(gid, int(row["hs"]), int(row.get("as_", row.get("as")))))
         else: need.append((g, key, row))            # player legs need the box score; games missing from the store (e.g. preseason) are read directly
     def one(item):
         g, key, row = item
+        if key == "soccer":
+            import soccer as SOC
+            slugs = [g["esl"]] if g.get("esl") else [v[0] for v in SOC.LEAGUES.values()]
+            for sl in slugs:
+                r = SOC.final_of(dict(g, esl=sl), curl)
+                if r: return final_doc(g["gid"], *r)
+            return None
         if key not in SP: return None
         sport, l = SP[key]
         s = curl(f"{SB}{sport}/{l}/summary?event={g['gid']}", tries=2, timeout=8)
@@ -148,7 +173,8 @@ def game_rows(games):
             props[str(pl["id"])] = {"name": pl.get("name"), "side": pl.get("side"), "status": {"kind": (pl.get("status") or {}).get("kind")}, "avail": pl.get("avail"), "stats": stats}
         L = g.get("lines") or {}
         rows.append(dict(gid=str(g["id"]), lg=g["lg"], key=g.get("key") or g["lg"], start_at=g["iso"], home=g["teams"]["home"]["abbr"], away=g["teams"]["away"]["abbr"],
-                         title=g.get("title"), lines={k: v for k, v in L.items() if k != "dk"}, props=props))
+                         title=g.get("title"), lines={**{k: v for k, v in L.items() if k != "dk"}, **({"esl": g["esl"]} if g.get("esl") else {}),
+                                                                       **({"projTotal": (g.get("crossroads") or {}).get("projTotal")} if (g.get("crossroads") or {}).get("projTotal") is not None else {})}, props=props))
     return rows
 
 class Runner:
@@ -206,6 +232,13 @@ class Runner:
                         import urllib.parse
                         q = ",".join(urllib.parse.quote(a, safe="-") for a in keep)
                         try: supa.delete("sim_teams", f"sport=eq.{lg}&abbr=not.in.({q})")
+                        except Exception as ex: self.err("sim_teams cleanup", ex)
+                for lg in ("tennis", "soccer"):     # these follow the board too: teams of matches that left it are dropped
+                    keep = [t["abbr"] for t in teams if t["sport"] == lg]
+                    if keep:
+                        import urllib.parse
+                        q = ",".join('"' + a.replace('"', '') + '"' for a in keep)
+                        try: supa.delete("sim_teams", f"sport=eq.{lg}&abbr=not.in.({urllib.parse.quote(q, safe=',')})")
                         except Exception as ex: self.err("sim_teams cleanup", ex)
                 st["simTeams"] = dt; changed = True; self.info["simTeamsUploaded"] = len(teams)
             if players and st.get("simPlayers") != dp:

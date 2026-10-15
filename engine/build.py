@@ -133,6 +133,7 @@ STATS = {
         "QB": [("passYds", "Pass yds", lambda g: v(g, "passingYards"), ["Total Passing Yards"], "Passing Yards", 225),
                ("comp", "Completions", lambda g: v(g, "completions"), ["Total Pass Completions"], "Pass Completions", 20),
                ("passTD", "Pass TD", lambda g: v(g, "passingTouchdowns"), ["Total Passing Touchdowns"], "Passing Touchdowns", 1.4),
+               ("passAtt", "Pass att", lambda g: v(g, "passingAttempts"), ["Total Pass Attempts", "Total Passing Attempts"], None, 33),
                ("rushYds", "Rush yds", lambda g: v(g, "rushingYards"), ["Total Rushing Yards"], "Rushing Yards", 15),
                ("pr", "Pass+rush yds", lambda g: v(g, "passingYards") + v(g, "rushingYards"), ["Total Passing Plus Rushing Yards"], None, 235)],
         "RB": [("rushYds", "Rush yds", lambda g: v(g, "rushingYards"), ["Total Rushing Yards"], "Rushing Yards", 55),

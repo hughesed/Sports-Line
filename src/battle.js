@@ -4,10 +4,10 @@
    Spectators can bet on the game lines and on who wins the battle until the game starts. Rosters and injuries are frozen into the battle when it is created. */
 const BT={lobby:null,id:null,det:null,timer:null,tick:null,sim:null,simTried:false,form:{sport:'nfl',home:'',pick:'',wager:'50',fmt:'parlay',q:'',vs:'players'},
   draft:{},saveT:null,spec:{tok:'',stake:'25'},msg:'',busy:false,seen:{},html:{},lastTick:0,skew:0,quote:{},acc:{},all:{},sawLive:{},flashed:{}};
-const SPORTS3_ALL=[['nfl','NFL'],['nba','NBA'],['wnba','WNBA'],['mlb','MLB'],['nhl','NHL'],['tennis','Tennis'],['cfb','CFB'],['cbb','CBB']];
-const SPLONG={nfl:'NFL',nba:'NBA',wnba:'WNBA',mlb:'MLB',nhl:'NHL hockey',tennis:'Tennis (games won)',cfb:'College football',cbb:"Men's college basketball"};
+const SPORTS3_ALL=[['nfl','NFL'],['nba','NBA'],['wnba','WNBA'],['mlb','MLB'],['nhl','NHL'],['soccer','Soccer'],['tennis','Tennis'],['cfb','CFB'],['cbb','CBB']];
+const SPLONG={nfl:'NFL',nba:'NBA',wnba:'WNBA',mlb:'MLB',nhl:'NHL hockey',soccer:'Soccer (extra time and penalties if level)',tennis:'Tennis (games won)',cfb:'College football',cbb:"Men's college basketball"};
 /* hockey and tennis are offered once the bot has published their teams / players (and they need the one-time database update, supabase/patch_hockey_tennis.sql) */
-function sports3(){ return SPORTS3_ALL.filter(([k])=>(k!=='nhl'&&k!=='tennis')||(typeof simTeams==='function'&&simTeams(k).length)); }
+function sports3(){ return SPORTS3_ALL.filter(([k])=>(k!=='nhl'&&k!=='tennis'&&k!=='soccer')||(typeof simTeams==='function'&&simTeams(k).length)); }
 function btLiveDot(){ return !!(BT.lobby&&BT.lobby.live&&BT.lobby.live.length); }
 function btNow(){ return Date.now()+BT.skew; }
 function loadSim(){
@@ -516,7 +516,7 @@ setInterval(()=>{ try{
 /* ---------- team logo dropdowns, profile pictures ---------- */
 const LOGO_LG={nfl:'nfl',nba:'nba',wnba:'wnba',mlb:'mlb',nhl:'nhl'};
 /* ESPN team logo: pro leagues are filed by abbreviation, college teams (CFB / CBB) by ESPN team id */
-function logoUrl(sport,t){ if(!t) return ''; if(sport==='cfb'||sport==='cbb') return /^\d+$/.test(String(t.id||''))?'https://a.espncdn.com/i/teamlogos/ncaa/500/'+t.id+'.png':''; const lg=LOGO_LG[sport]; return lg?'https://a.espncdn.com/i/teamlogos/'+lg+'/500/'+String(t.abbr||'').toLowerCase()+'.png':''; }
+function logoUrl(sport,t){ if(!t) return ''; if(sport==='soccer') return t.logo||(/^\d+$/.test(String(t.id||''))?'https://a.espncdn.com/i/teamlogos/soccer/500/'+t.id+'.png':''); if(sport==='cfb'||sport==='cbb') return /^\d+$/.test(String(t.id||''))?'https://a.espncdn.com/i/teamlogos/ncaa/500/'+t.id+'.png':''; const lg=LOGO_LG[sport]; return lg?'https://a.espncdn.com/i/teamlogos/'+lg+'/500/'+String(t.abbr||'').toLowerCase()+'.png':''; }
 function tlogo(sport,t,sz){ sz=sz||30; if(!t) return ''; const u=logoUrl(sport,t); const ab=String(t.abbr||'');
   return '<span class="tl" style="width:'+sz+'px;height:'+sz+'px;background:'+esc(t.color||'#3b4a6b')+'"><b>'+esc(ab.slice(0,3))+'</b>'+(u?'<img class="tlg" alt="" loading="lazy" src="'+esc(u)+'" onerror="this.style.display=\'none\'">':'')+'</span>'; }
 function tpHtml(f,kind,ts,q,label,other,rnd){
