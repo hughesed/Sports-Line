@@ -11,7 +11,8 @@ import os, json, time, datetime, urllib.request, urllib.parse, urllib.error
 API = "https://api.sportsgameodds.com/v2/events"
 # soccer: the big European leagues, the Champions League, MLS and Liga MX. Soccer lines barely move before kickoff, so soccer is pulled at most every
 # ODDS_SOCCER_GAP_MIN minutes (default 120) to keep the plan's request budget for the US leagues; between pulls the file keeps the last soccer events.
-SOCCER = [x.strip() for x in os.environ.get("ODDS_SOCCER", "EPL,UEFA_CHAMPIONS_LEAGUE,LA_LIGA,BUNDESLIGA,IT_SERIE_A,FR_LIGUE_1,MLS,LIGA_MX").split(",") if x.strip()]
+# The free SportsGameOdds plan carries the Champions League and MLS only (the others answer 400 and are then skipped for a day, see NO_PLAN), so those two go first.
+SOCCER = [x.strip() for x in os.environ.get("ODDS_SOCCER", "UEFA_CHAMPIONS_LEAGUE,MLS,EPL,LA_LIGA,BUNDESLIGA,IT_SERIE_A,FR_LIGUE_1,LIGA_MX").split(",") if x.strip()]
 LEAGUES = os.environ.get("ODDS_LEAGUES", "NFL,NCAAF,NBA,NCAAB,MLB,WNBA,NHL,ATP,WTA" + ("," + ",".join(SOCCER) if SOCCER else ""))
 # FanDuel is the main book: ask the API for FanDuel's prices first (and DraftKings as the fallback) so the plan's cap on bookmaker odds is spent on them, not on nine other books.
 # ODDS_BOOKS="" asks for every book again. ODDS_ALTS=1 also asks for alternate lines (bigger responses, so off unless the plan allows it).
@@ -129,7 +130,14 @@ def normalize(ev, live=False):
     return g
 
 # ---------------------------------------------------------------- one request, with the rate-limit retry the free plan needs
+RPM = float(os.environ.get("ODDS_RPM", "10") or 10)        # the plan's requests per minute (free plan: 10); requests are spaced to stay under it
+_LAST = [0.0]
+NO_PLAN = {}                 # league -> ISO time it answered 400 (not on the plan): skipped for NO_PLAN_H hours, then tried again
+NO_PLAN_H = 24
 def _get(key, q, pause=0.6):
+    gap = 60.0 / max(RPM, 1) + 0.25 - (time.time() - _LAST[0])
+    if gap > 0: time.sleep(gap)
+    _LAST[0] = time.time()
     req = urllib.request.Request(API + "?" + urllib.parse.urlencode(q), headers={"x-api-key": key, "Accept": "application/json", "User-Agent": "LineScout/1.0"})
     for attempt in range(3):          # the free plan rate-limits bursts: wait and retry instead of dropping the league
         try:
@@ -137,7 +145,7 @@ def _get(key, q, pause=0.6):
             break
         except urllib.error.HTTPError as ex:
             if ex.code != 429 or attempt == 2: raise
-            time.sleep(8 * (attempt + 1))
+            time.sleep(8 * (attempt + 1)); _LAST[0] = time.time()
     time.sleep(pause)
     if not d.get("success"): raise RuntimeError(str(d.get("error") or d)[:120])
     return d
@@ -186,7 +194,12 @@ def pull(key, max_events, now=None, log=print, games=None, skip=None, skip_leagu
     Leagues with slate games go first and the whole pull stops at ODDS_DEADLINE_S (default 110) so a slow API cannot eat the run."""
     now = now or datetime.datetime.utcnow(); events, notice, ok = [], None, 0
     aware = _utc(now); FD = _fd(); skip = skip or set()
+    def off_plan(lg):
+        t = _parse(NO_PLAN.get(lg))
+        return t is not None and (aware - t).total_seconds() < NO_PLAN_H * 3600
     order = [x.strip() for x in LEAGUES.split(",") if x.strip() and x.strip() not in (skip_leagues or ())]
+    for lg in [x for x in order if off_plan(x)]: LEAGUE_INFO[lg] = "not on the plan (400), retried after " + str(NO_PLAN_H) + " h"
+    order = [x for x in order if not off_plan(x)]
     have = {lg for lg in order if _slate_wants(games, lg, aware)}
     order.sort(key=lambda lg: 0 if lg in have else 1)          # stable: the slate's leagues first, the rest in the configured order
     t0 = time.time(); deadline = float(os.environ.get("ODDS_DEADLINE_S", "110"))
@@ -203,6 +216,7 @@ def pull(key, max_events, now=None, log=print, games=None, skip=None, skip_leagu
             ev, n = pull_league(key, lg, cap, now, done); events += ev; notice = n or notice; ok += 1; pulled.append(lg); LEAGUE_INFO[lg] = len(ev)
         except Exception as ex:
             log(f"  odds {lg}: {type(ex).__name__}: {ex}"[:160]); LEAGUE_INFO[lg] = f"{type(ex).__name__}: {ex}"[:80]
+            if isinstance(ex, urllib.error.HTTPError) and ex.code == 400: NO_PLAN[lg] = _iso(aware)
     if not ok: raise RuntimeError("no league could be pulled")
     PULLED[:] = pulled
     return events, notice
@@ -253,6 +267,7 @@ def refresh(path, log=print, now=None, games=None):
     try:
         aware = _utc(now)
         skip = set((old or {}).get("unmatched") or {})
+        NO_PLAN.clear(); NO_PLAN.update((old or {}).get("noPlan") or {}); LEAGUE_INFO.clear()
         s_gap = float(os.environ.get("ODDS_SOCCER_GAP_MIN", "120")); s_at = _parse((old or {}).get("soccerAt"))
         soccer_due = bool(SOCCER) and (s_at is None or (aware - s_at).total_seconds() / 60 >= s_gap)
         try: evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "15")), now, log, games=games, skip=skip, skip_leagues=None if soccer_due else set(SOCCER))
@@ -271,7 +286,7 @@ def refresh(path, log=print, now=None, games=None):
             elif e.get("league") in SOCCER and not soccer_pulled and not e.get("final") and st > aware: keep.append(e)      # soccer not due this pull: its upcoming events stay
         out = {"generatedAt": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "source": "sportsgameodds", "notice": notice, "events": fresh + keep}
         out["soccerAt"] = stamp if soccer_pulled else (old or {}).get("soccerAt")
-        out["leagues"] = dict(LEAGUE_INFO)
+        out["leagues"] = dict(LEAGUE_INFO); out["noPlan"] = dict(NO_PLAN)
         if old and old.get("liveAt"): out["liveAt"] = old["liveAt"]
         if games is not None: out["unmatched"] = _unmatched(games, fresh + keep, aware, old)
         tmp = path + ".tmp"; json.dump(out, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)
