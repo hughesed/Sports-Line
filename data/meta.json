@@ -1,22 +1,22 @@
 {
  "schema": 1,
- "runNumber": 112,
- "deadlineHit": true,
- "generatedAt": "2026-10-16T05:07:21Z",
- "generatedAtET": "Fri Oct 16, 1:07 AM ET",
+ "runNumber": 113,
+ "deadlineHit": false,
+ "generatedAt": "2026-10-16T05:56:06Z",
+ "generatedAtET": "Fri Oct 16, 1:56 AM ET",
  "today": "2026-10-16",
- "lastRunAt": "2026-10-16T05:07:21Z",
+ "lastRunAt": "2026-10-16T05:56:06Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
    "games": 13,
-   "playerLevel": 10,
+   "playerLevel": 0,
    "teamLevel": 2,
-   "carried": 1,
+   "carried": 11,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 365,
    "lastFinal": "2026-10-16"
   },
@@ -38,7 +38,7 @@
    "teamLevel": 0,
    "carried": 2,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2461,
    "lastFinal": "2026-10-16"
   },
@@ -46,8 +46,8 @@
    "status": "ok",
    "games": 7,
    "playerLevel": 0,
-   "teamLevel": 4,
-   "carried": 3,
+   "teamLevel": 2,
+   "carried": 5,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -57,10 +57,10 @@
    "status": "ok",
    "games": 11,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 8,
+   "teamLevel": 1,
+   "carried": 10,
    "error": null,
-   "newFinals": 3,
+   "newFinals": 0,
    "storeGames": 1413,
    "lastFinal": "2026-10-16"
   },
@@ -82,7 +82,7 @@
    "teamLevel": 0,
    "carried": 5,
    "error": null,
-   "newFinals": 11,
+   "newFinals": 0,
    "storeGames": 120,
    "lastFinal": "2026-10-16"
   },
@@ -109,7 +109,7 @@
   "teamCards": 14,
   "window": 136,
   "sched": 125,
-  "pastp": 22,
+  "pastp": 25,
   "predictions": 201,
   "graded": 124,
   "storeGames": 13637
@@ -133,7 +133,7 @@
   },
   "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.0,
+  "seconds": 1.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,14 +145,12 @@
   },
   "configured": true
  },
- "odds": "ok: 122 events (+11 in play kept); soccer {'UEFA_CHAMPIONS_LEAGUE': 0, 'MLS': 14, 'EPL': 'not on the plan (400), retried after 24 h', 'LA_LIGA': 'not on the plan (400), retried after 24 h', 'BUNDESLIGA': 'HTTPError: HTTP Error 400: Bad Request', 'IT_SERIE_A': 'skipped (time)', 'FR_LIGUE_1': 'skipped (time)', 'LIGA_MX': 'skipped (time)'}",
+ "odds": "kept (50 min old, pulls every 60 min)",
  "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 7 cards, 96 player stats, FanDuel-only players on 2 cards; not in the feed (17): MIA@ORL, BOS@PHI, TOR@DET, MIL@IND, APP@CCU, HOU@JAX...",
- "errors": [
-  "time limit reached: 13 ESPN requests were skipped to stay inside the run budget; the next run catches up"
- ],
- "requests": 1020,
- "failedRequests": 6,
- "retries": 9,
- "seconds": 176.4
+ "fanduel": "ok: FanDuel lines on 7 cards, 119 player stats, FanDuel-only players on 0 cards; not in the feed (17): MIA@ORL, BOS@PHI, TOR@DET, MIL@IND, APP@CCU, HOU@JAX...",
+ "errors": [],
+ "requests": 276,
+ "failedRequests": 58,
+ "retries": 136,
+ "seconds": 151.4
 }
