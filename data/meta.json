@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 117,
- "deadlineHit": false,
- "generatedAt": "2026-10-16T10:18:41Z",
- "generatedAtET": "Fri Oct 16, 6:18 AM ET",
+ "runNumber": 118,
+ "deadlineHit": true,
+ "generatedAt": "2026-10-16T11:07:47Z",
+ "generatedAtET": "Fri Oct 16, 7:07 AM ET",
  "today": "2026-10-16",
- "lastRunAt": "2026-10-16T10:18:41Z",
+ "lastRunAt": "2026-10-16T11:07:47Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -131,9 +131,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.2,
+  "seconds": 0.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -143,15 +143,16 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 2,
   "configured": true
  },
- "odds": "kept (38 min old, pulls every 60 min)",
+ "odds": "error: RuntimeError",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 7 cards, 119 player stats, FanDuel-only players on 0 cards; not in the feed (17): MIA@ORL, BOS@PHI, TOR@DET, MIL@IND, APP@CCU, HOU@JAX...",
- "errors": [],
- "requests": 927,
- "failedRequests": 5,
+ "errors": [
+  "time limit reached: 10 ESPN requests were skipped to stay inside the run budget; the next run catches up"
+ ],
+ "requests": 947,
+ "failedRequests": 2,
  "retries": 5,
- "seconds": 28.3
+ "seconds": 158.1
 }
