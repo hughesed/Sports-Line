@@ -307,7 +307,8 @@ def refresh(path, log=print, now=None, games=None):
         return f"ok: {len(fresh)} events" + (f" (+{len(keep)} kept: in play, or leagues not pulled this time)" if keep else "") + (f"; soccer {soc}" if soc else "") + (f" (plan limit: {notice[:80]})" if notice else "") + why
     except Exception as ex:
         log(f"  odds step failed: {type(ex).__name__}: {ex}"[:200])
-        return f"error: {type(ex).__name__}"[:60]
+        why = "; ".join(f"{k}: {v}" for k, v in LEAGUE_INFO.items() if not isinstance(v, int))[:300]
+        return f"error: {type(ex).__name__}: {ex}"[:80] + (f" ({why})" if why else "")
 
 # ---------------------------------------------------------------- the live pull: FanDuel's current in-play lines
 def in_play(g, now, hours=6):
