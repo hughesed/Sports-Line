@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 114,
+ "runNumber": 115,
  "deadlineHit": false,
- "generatedAt": "2026-10-16T09:40:43Z",
- "generatedAtET": "Fri Oct 16, 5:40 AM ET",
+ "generatedAt": "2026-10-16T10:13:59Z",
+ "generatedAtET": "Fri Oct 16, 6:13 AM ET",
  "today": "2026-10-16",
- "lastRunAt": "2026-10-16T09:40:43Z",
+ "lastRunAt": "2026-10-16T10:13:59Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -131,9 +131,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 3.6,
+  "seconds": 0.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -143,17 +143,15 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 22,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 3173,
+  "gamesUploaded": 9,
   "configured": true
  },
- "odds": "ok: 117 events; soccer {'UEFA_CHAMPIONS_LEAGUE': 0, 'MLS': 14, 'EPL': 'not on the plan (400), retried after 24 h', 'LA_LIGA': 'not on the plan (400), retried after 24 h', 'BUNDESLIGA': 'not on the plan (400), retried after 24 h', 'IT_SERIE_A': 'HTTPError: HTTP Error 400: Bad Request', 'FR_LIGUE_1': 'HTTPError: HTTP Error 400: Bad Request', 'LIGA_MX': 'skipped (time)'}",
+ "odds": "kept (33 min old, pulls every 60 min)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 7 cards, 119 player stats, FanDuel-only players on 0 cards; not in the feed (17): MIA@ORL, BOS@PHI, TOR@DET, MIL@IND, APP@CCU, HOU@JAX...",
  "errors": [],
  "requests": 927,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 145.6
+ "seconds": 27.3
 }
