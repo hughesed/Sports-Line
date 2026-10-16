@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 111,
- "deadlineHit": false,
- "generatedAt": "2026-10-16T01:03:31Z",
- "generatedAtET": "Thu Oct 15, 9:03 PM ET",
- "today": "2026-10-15",
- "lastRunAt": "2026-10-16T01:03:31Z",
+ "runNumber": 112,
+ "deadlineHit": true,
+ "generatedAt": "2026-10-16T05:07:21Z",
+ "generatedAtET": "Fri Oct 16, 1:07 AM ET",
+ "today": "2026-10-16",
+ "lastRunAt": "2026-10-16T05:07:21Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,14 +16,14 @@
    "teamLevel": 2,
    "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 364,
-   "lastFinal": "2026-10-13"
+   "newFinals": 1,
+   "storeGames": 365,
+   "lastFinal": "2026-10-16"
   },
   "wnba": {
-   "status": "ok",
-   "games": 1,
-   "playerLevel": 1,
+   "status": "empty",
+   "games": 0,
+   "playerLevel": 0,
    "teamLevel": 0,
    "carried": 0,
    "error": null,
@@ -33,21 +33,21 @@
   },
   "mlb": {
    "status": "ok",
-   "games": 4,
-   "playerLevel": 1,
+   "games": 2,
+   "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 3,
+   "carried": 2,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2460,
-   "lastFinal": "2026-10-15"
+   "newFinals": 1,
+   "storeGames": 2461,
+   "lastFinal": "2026-10-16"
   },
   "nba": {
    "status": "ok",
-   "games": 4,
+   "games": 7,
    "playerLevel": 0,
-   "teamLevel": 0,
-   "carried": 4,
+   "teamLevel": 4,
+   "carried": 3,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -57,12 +57,12 @@
    "status": "ok",
    "games": 11,
    "playerLevel": 0,
-   "teamLevel": 0,
-   "carried": 11,
+   "teamLevel": 3,
+   "carried": 8,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1410,
-   "lastFinal": "2026-10-15"
+   "newFinals": 3,
+   "storeGames": 1413,
+   "lastFinal": "2026-10-16"
   },
   "cbb": {
    "status": "empty",
@@ -79,12 +79,12 @@
    "status": "ok",
    "games": 5,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 3,
+   "teamLevel": 0,
+   "carried": 5,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 109,
-   "lastFinal": "2026-10-15"
+   "newFinals": 11,
+   "storeGames": 120,
+   "lastFinal": "2026-10-16"
   },
   "tennis": {
    "status": "ok",
@@ -105,22 +105,22 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 28,
-  "teamCards": 10,
-  "window": 135,
-  "sched": 129,
-  "pastp": 24,
-  "predictions": 197,
-  "graded": 111,
-  "storeGames": 13621
+  "playerCards": 24,
+  "teamCards": 14,
+  "window": 136,
+  "sched": 125,
+  "pastp": 22,
+  "predictions": 201,
+  "graded": 124,
+  "storeGames": 13637
  },
  "calibration": {
   "slopes": {
-   "cfb": 1.0357
+   "cfb": 1.0451
   },
-  "graded": 111,
-  "accML": 0.604,
-  "accBook": 0.613
+  "graded": 124,
+  "accML": 0.597,
+  "accBook": 0.605
  },
  "social": {
   "enabled": true,
@@ -131,9 +131,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 3,
   "failedCalls": 0,
-  "seconds": 6.1,
+  "seconds": 1.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -143,17 +143,16 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 20,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 3260,
   "configured": true
  },
- "odds": "kept (18 min old, pulls every 60 min)",
- "oddsLive": "ok: 14 in-play events (14 live, 14 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 9 cards, 141 player stats, FanDuel-only players on 0 cards; not in the feed (13): ATL@GS, HOU@JAX, BAL@CLE, CAR@PHI, CHI@ATL, NO@NYG...",
- "errors": [],
- "requests": 935,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 62.6
+ "odds": "ok: 122 events (+11 in play kept); soccer {'UEFA_CHAMPIONS_LEAGUE': 0, 'MLS': 14, 'EPL': 'not on the plan (400), retried after 24 h', 'LA_LIGA': 'not on the plan (400), retried after 24 h', 'BUNDESLIGA': 'HTTPError: HTTP Error 400: Bad Request', 'IT_SERIE_A': 'skipped (time)', 'FR_LIGUE_1': 'skipped (time)', 'LIGA_MX': 'skipped (time)'}",
+ "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 7 cards, 96 player stats, FanDuel-only players on 2 cards; not in the feed (17): MIA@ORL, BOS@PHI, TOR@DET, MIL@IND, APP@CCU, HOU@JAX...",
+ "errors": [
+  "time limit reached: 13 ESPN requests were skipped to stay inside the run budget; the next run catches up"
+ ],
+ "requests": 1020,
+ "failedRequests": 6,
+ "retries": 9,
+ "seconds": 176.4
 }
