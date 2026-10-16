@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 120,
- "deadlineHit": true,
- "generatedAt": "2026-10-16T14:45:47Z",
- "generatedAtET": "Fri Oct 16, 10:45 AM ET",
+ "runNumber": 121,
+ "deadlineHit": false,
+ "generatedAt": "2026-10-16T18:45:32Z",
+ "generatedAtET": "Fri Oct 16, 2:45 PM ET",
  "today": "2026-10-16",
- "lastRunAt": "2026-10-16T14:45:47Z",
+ "lastRunAt": "2026-10-16T18:45:32Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -131,9 +131,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.5,
+  "seconds": 5.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -143,16 +143,17 @@
    "cbb": 726,
    "nhl": 32
   },
+  "gamesUploaded": 17,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 3173,
   "configured": true
  },
  "odds": "error: RuntimeError: no league could be pulled (WNBA: not on the plan (400), retried after 24 h; ATP: not on the plan (400), retried after 24 h; WTA: not on the plan (400), retried after 24 h; EPL: not on the plan (400), retried after 24 h; LA_LIGA: not on the plan (400), retried after 24 h; BUNDESLIGA: not on the plan (400), retried after 24 h; )",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 7 cards, 119 player stats, FanDuel-only players on 0 cards; not in the feed (17): MIA@ORL, BOS@PHI, TOR@DET, MIL@IND, APP@CCU, HOU@JAX...",
- "errors": [
-  "time limit reached: 10 ESPN requests were skipped to stay inside the run budget; the next run catches up"
- ],
- "requests": 918,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 151.7
+ "errors": [],
+ "requests": 923,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 149.3
 }
