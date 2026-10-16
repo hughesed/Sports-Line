@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 110,
- "deadlineHit": true,
- "generatedAt": "2026-10-16T00:45:03Z",
- "generatedAtET": "Thu Oct 15, 8:45 PM ET",
+ "runNumber": 111,
+ "deadlineHit": false,
+ "generatedAt": "2026-10-16T01:03:31Z",
+ "generatedAtET": "Thu Oct 15, 9:03 PM ET",
  "today": "2026-10-15",
- "lastRunAt": "2026-10-16T00:45:03Z",
+ "lastRunAt": "2026-10-16T01:03:31Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 6,
+   "games": 4,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 6,
+   "carried": 4,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -57,8 +57,8 @@
    "status": "ok",
    "games": 11,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 8,
+   "teamLevel": 0,
+   "carried": 11,
    "error": null,
    "newFinals": 0,
    "storeGames": 1410,
@@ -77,10 +77,10 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 3,
+   "games": 5,
    "playerLevel": 0,
    "teamLevel": 2,
-   "carried": 1,
+   "carried": 3,
    "error": null,
    "newFinals": 0,
    "storeGames": 109,
@@ -131,9 +131,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.3,
+  "seconds": 6.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -143,16 +143,17 @@
    "cbb": 726,
    "nhl": 32
   },
+  "gamesUploaded": 20,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 3260,
   "configured": true
  },
- "odds": "ok: 114 events (+13 in play kept); soccer {'UEFA_CHAMPIONS_LEAGUE': 0, 'MLS': 10, 'EPL': 'HTTPError: HTTP Error 400: Bad Request', 'LA_LIGA': 'HTTPError: HTTP Error 400: Bad Request', 'BUNDESLIGA': 'skipped (time)', 'IT_SERIE_A': 'skipped (time)', 'FR_LIGUE_1': 'skipped (time)', 'LIGA_MX': 'skipped (time)'} (plan limit: Response is missing 6401 bookmaker odds. Upgrade your API key to access all data)",
+ "odds": "kept (18 min old, pulls every 60 min)",
  "oddsLive": "ok: 14 in-play events (14 live, 14 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 9 cards, 85 player stats, FanDuel-only players on 3 cards; not in the feed (13): ATL@GS, HOU@JAX, BAL@CLE, CAR@PHI, CHI@ATL, NO@NYG...",
- "errors": [
-  "time limit reached: 3 ESPN requests were skipped to stay inside the run budget; the next run catches up"
- ],
- "requests": 965,
- "failedRequests": 5,
- "retries": 6,
- "seconds": 186.6
+ "fanduel": "ok: FanDuel lines on 9 cards, 141 player stats, FanDuel-only players on 0 cards; not in the feed (13): ATL@GS, HOU@JAX, BAL@CLE, CAR@PHI, CHI@ATL, NO@NYG...",
+ "errors": [],
+ "requests": 935,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 62.6
 }
