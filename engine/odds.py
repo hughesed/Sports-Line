@@ -295,7 +295,7 @@ def refresh(path, log=print, now=None, games=None):
             st = _parse(e.get("start"))
             if e.get("id") in ids or st is None: continue
             if st <= aware and (aware - st).total_seconds() <= KEEP_H * 3600: keep.append(e)
-            elif e.get("league") in SOCCER and not soccer_pulled and not e.get("final") and st > aware: keep.append(e)      # soccer not due this pull: its upcoming events stay
+            elif e.get("league") not in PULLED and not e.get("final") and st > aware: keep.append(e)      # a league not pulled this time (soccer not due, rate limit, time): its upcoming events stay
         out = {"generatedAt": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "source": "sportsgameodds", "notice": notice, "events": fresh + keep}
         out["soccerAt"] = stamp if soccer_pulled else (old or {}).get("soccerAt")
         out["leagues"] = dict(LEAGUE_INFO); out["noPlan"] = dict(NO_PLAN); out["altLines"] = ALT_STATE["v"]
@@ -304,7 +304,7 @@ def refresh(path, log=print, now=None, games=None):
         if games is not None: out["unmatched"] = _unmatched(games, fresh + keep, aware, old)
         tmp = path + ".tmp"; json.dump(out, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)
         soc = {lg: LEAGUE_INFO[lg] for lg in SOCCER if lg in LEAGUE_INFO}
-        return f"ok: {len(fresh)} events" + (f" (+{len(keep)} in play kept)" if keep else "") + (f"; soccer {soc}" if soc else "") + (f" (plan limit: {notice[:80]})" if notice else "") + why
+        return f"ok: {len(fresh)} events" + (f" (+{len(keep)} kept: in play, or leagues not pulled this time)" if keep else "") + (f"; soccer {soc}" if soc else "") + (f" (plan limit: {notice[:80]})" if notice else "") + why
     except Exception as ex:
         log(f"  odds step failed: {type(ex).__name__}: {ex}"[:200])
         return f"error: {type(ex).__name__}"[:60]
