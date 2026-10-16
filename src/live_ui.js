@@ -60,7 +60,7 @@ function legFor(tok){
     if(kind==='m'){
       const t=parseFloat(parts[5]); const m=st.miles.find(x=>x.t===t); if(!m) return null;
       const p=m.p!=null?clamp(m.p,0.03,0.95):clamp(((m.hit+1)/(m.n+2))*(1+0.5*st.matchup),0.03,0.95);
-      return {id:tok,gid:g.id,group,pid:pl.id,label:nm+' '+t+'+ '+st.label.toLowerCase(),p,avail:pl.avail,price:m.price!=null?m.price:estPrice(p),src:m.price!=null?'DraftKings':'est.',spec:{k:'prop',pid:pl.id,stat:st.key,T:t,dir:'ge'}};
+      return {id:tok,gid:g.id,group,pid:pl.id,label:nm+' '+t+'+ '+st.label.toLowerCase(),p,avail:pl.avail,price:m.price!=null?m.price:estPrice(p),src:m.fd?'FanDuel':m.price!=null?'DraftKings':'est.',bk:m.fd?'FD':undefined,link:m.fd?(m.link||undefined):undefined,spec:{k:'prop',pid:pl.id,stat:st.key,T:t,dir:'ge'}};
     }
   }
   return null;

@@ -54,6 +54,7 @@ function preLegs(g){
   const seen={}, out=[];
   preToks(g).forEach(t=>{
     const l=legFor(t); if(!l||l.price==null||!isFinite(l.price)||!l.spec) return;
+    if(!(l.src==='FanDuel'||l.book==='fanduel')) return;          // FanDuel only: a rung or price FanDuel does not list is not used in a slip
     if(seen[l.label]) return; seen[l.label]=1;
     l.ps=adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),legKind(l)); out.push(l);
   });
@@ -96,7 +97,7 @@ function safeBar(g){
   }
   const btns=[2,4,8].map(n=>{
     const s=all[n]; const on=slipIsSafe(g,n);
-    if(!s.legs.length) return '<button class="safeb" disabled><b>Safe '+n+'</b><span>no legs clear '+Math.round(MIN_SAFE*100)+'%</span></button>';
+    if(!s.legs.length) return '<button class="safeb" disabled><b>Safe '+n+'</b><span>no FanDuel legs clear '+Math.round(MIN_SAFE*100)+'%</span></button>';
     const am=amerOfDec(s.dec);
     return '<button class="safeb'+(on?' on':'')+'" data-act="safeN" data-gid="'+g.id+'" data-n="'+n+'" aria-pressed="'+on+'"><b>Safe '+n+(s.short?' ('+s.legs.length+' legs)':'')+'</b><span>~'+Math.round(s.pAll*100)+'% all hit · est. '+fo(am)+'</span></button>';
   }).join('');
@@ -158,8 +159,8 @@ function logPre(){
     [2,4,8].forEach(n=>{ const s=all[n], id=gDay(g)+':'+g.id+':safe'+n; if(s.legs.length>=2&&!hasCall(id)){ P.calls.push(mkCall(g,'safe'+n,s.legs,{want:n})); add++; } });
   });
   const keys=[]; DATA.games.forEach(g=>{ const k=keyOf(g); if(keys.indexOf(k)<0) keys.push(k); });
-  keys.forEach(k=>{ const r=potdFor(k); if(!r||!r.best) return; const g=r.best.g, id=gDay(g)+':'+g.id+':potd'; if(hasCall(id)) return;
-    if(P.calls.some(c=>c.kind==='potd'&&c.key===k&&c.date===gDay(g))) return;   // one per sport per day
+  keys.forEach(k=>{ const r=potdFor(k); if(!r||!r.best) return; const g=r.best.g, id=gDay(g)+':'+g.id+':potdfd'; if(hasCall(id)) return;
+    if(P.calls.some(c=>c.kind==='potd'&&c.key===k&&c.date===gDay(g)&&c.status!=='void')) return;   // one per sport per day
     P.calls.push(mkCall(g,'potd',[r.best.l])); add++; });
   if(add){ trimCalls(); persist(); }
 }

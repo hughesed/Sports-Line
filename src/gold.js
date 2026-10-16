@@ -46,9 +46,8 @@ function goldLegsOf(g){
     const p0=l.ps!=null?l.ps:adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),l.spec.k==='prop'?'prop':'team');
     const tok=l.tok||l.id; const book=l.book?(l.book==='est'?'est':l.book):(l.src==='FanDuel'?'fanduel':l.src==='DraftKings'||l.src==='DK'?'draftkings':'est');
     out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0}); };
-  try{ preLegs(g).forEach(add); }catch(e){}
-  try{ if(typeof hpLegs==='function') hpLegs(g).forEach(add); }catch(e){}
-  try{ altTotToks(g).forEach(t=>add(legFor(t))); }catch(e){}
+  /* FanDuel only: hpLegs (home_picks.js) gives the bets FanDuel lists at FanDuel's price (team lines, over/unders, its alternate lines and 1+ markets) */
+  try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(typeof hpIsFd!=='function'||hpIsFd(l)) add(l); }); }catch(e){}
   Object.keys(GPK.cache).forEach(k=>{ if(k.indexOf(g.id+'|')===0) delete GPK.cache[k]; });
   GPK.cache[ck]=out; return out;
 }
@@ -79,7 +78,7 @@ function goldSlip(key,n){
 
 /* ---------- ledger: gold slips are recorded once per sport, size and day ---------- */
 function goldSlipFor(key,n){
-  const id='gold:'+TODAY+':'+key+':'+n; const c=P.calls.find(x=>x.id===id);
+  const id='goldfd:'+TODAY+':'+key+':'+n; const c=P.calls.find(x=>x.id===id);
   if(c&&c.status==='pending'&&c.legs.every(l=>{ const g=G[l.gid]; return g&&preOK(g); })){
     const legs=c.legs.map(l=>{ const g=G[l.gid]; return Object.assign({},l,{tok:l.id,g:g,ps:l.p}); });
     const same=legs.length-new Set(legs.map(l=>l.gid)).size;
@@ -88,7 +87,11 @@ function goldSlipFor(key,n){
   const s=goldSlip(key,n); if(s&&!c) GPK.todo[id]=s; return s;
 }
 GPK.todo={};
+/* picks recorded before gold went FanDuel-only (some used estimated rungs FanDuel does not list): still pending ones are voided, not graded */
+const GOLD_FD_SINCE=Date.parse('2026-10-16T11:00:00Z');
+function goldVoidOld(){ let n=0; P.calls.forEach(c=>{ if(c.status==='pending'&&(c.kind==='potd'||c.kind.indexOf('gold')===0)&&(c.t||0)<GOLD_FD_SINCE){ c.status='void'; c.legs.forEach(l=>{ if(!l.res) l.res='V'; }); n++; } }); if(n) persist(); }
 function goldLog(){
+  if(!GPK.voided){ GPK.voided=1; try{ goldVoidOld(); }catch(e){} }
   const ids=Object.keys(GPK.todo); let add=0;
   ids.forEach(id=>{ if(hasCall(id)) return; const s=GPK.todo[id];
     P.calls.push({id:id,date:TODAY,key:s.key,gid:'',multi:true,kind:'gold'+s.n,t:Date.now(),status:'pending',want:s.n,dec:Math.round(s.dec*100)/100,pAll:Math.round(s.pAll*10000)/10000,
@@ -128,7 +131,7 @@ function goldHtml(){
   return '<section class="game goldsec"><div class="sec"><h3>Gold picks <span class="hint">'+Math.round(GPK.p*100)+'%+ chance, one per sport · gold slips: every leg '+Math.round(GPK.slip*100)+'%+</span></h3>'+
     (picks.length>1?'<button class="btn solid glall" data-act="gold-all">'+(allOn?'Remove the gold picks from the slip':'Add all '+picks.length+' gold picks to the slip (~'+Math.round(pAll*100)+'% all hit)')+'</button>':'')+
     keys.map(goldSportHtml).join('')+
-    '<div class="small muted">The gold pick is the leg the app rates most likely to land in each sport, team lines and player numbers alike, with a sportsbook price preferred over an estimate (* = estimated price; the book may price it differently or not list it). Chances blend the book\'s no-vig price with the model and are scaled by the app\'s own graded record'+(cal.n>=20?' (gold legs said '+Math.round(cal.said*100)+'%, landed '+Math.round(cal.got*100)+'%, so new ones are scaled by '+cal.f.toFixed(2)+')':' once 20 gold legs are graded ('+cal.n+' so far)')+'. A 90% leg pays little and still misses about one time in ten; five of them all land only about 6 times in 10. Written down before kickoff, graded at the final.</div></div></section>';
+    '<div class="small muted">Every gold leg is a bet FanDuel lists, at FanDuel\'s price and number (its over/unders, its alternate lines like 125+ / 150+ pass yds, its 1+ markets and team lines); a number FanDuel does not offer is never picked. The gold pick is the one the app rates most likely to land in each sport. Chances take FanDuel\'s price without its margin and blend it with the model and are scaled by the app\'s own graded record'+(cal.n>=20?' (gold legs said '+Math.round(cal.said*100)+'%, landed '+Math.round(cal.got*100)+'%, so new ones are scaled by '+cal.f.toFixed(2)+')':' once 20 gold legs are graded ('+cal.n+' so far)')+'. A 90% leg pays little and still misses about one time in ten; five of them all land only about 6 times in 10. Written down before kickoff, graded at the final.</div></div></section>';
 }
 document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act="gold-add"],[data-act="gold-all"]'); if(!t) return; e.stopPropagation(); e.preventDefault();

@@ -80,6 +80,7 @@ function plLegsOf(g){
   if(!base.some(l=>!l.floor)){ const have={}; base.forEach(l=>{ if(l.spec) have[l.spec.pid+'|'+l.spec.stat+'|'+l.spec.T]=1; });
     base=base.concat(plSlateLegs(g).filter(l=>!have[l.spec.pid+'|'+l.spec.stat+'|'+l.spec.T])); }
   if(!O||!base.some(l=>l.floor)){ try{ const have={}; base.forEach(l=>{ if(l.spec) have[l.spec.pid+'|'+l.spec.stat+'|'+l.spec.T]=1; }); if(typeof flLegs==='function') base=base.concat(flLegs(g).filter(l=>!have[l.spec.pid+'|'+l.spec.stat+'|'+l.spec.T])); }catch(e){} }
+  base=base.filter(l=>l.book==='fanduel');          // FanDuel only: no estimated rungs or other books' prices in a stack
   const out=[]; base.forEach(l=>{ try{ const s=plLeg(g,l,sport); if(s) out.push(s); }catch(e){} });
   Object.keys(PL.cache).forEach(k=>{ if(k.indexOf('L'+g.id+'|')===0&&k!==ck) delete PL.cache[k]; });
   PL.cache[ck]=out; return out;
@@ -139,6 +140,7 @@ function plFromCall(c){
 }
 function plStackFor(sport,sz){
   const mine=P.calls.filter(c=>c.multi&&c.kind===plKind(sz)&&c.key===sport&&c.date===TODAY).sort((a,b)=>a.t-b.t), last=mine[mine.length-1];
+  if(last&&(last.t||0)<Date.parse('2026-10-16T11:00:00Z')&&last.status==='pending'){ last.status='void'; last.legs.forEach(l=>{ if(!l.res) l.res='V'; }); persist(); }        // built before stacks went FanDuel-only
   if(last&&last.status==='pending'&&last.legs.length&&last.legs.every(l=>{ const g=G[l.gid]; return g&&preOK(g); })) return plFromCall(last);
   const b=plBuildFor(sport,sz); if(!b||b.none) return b;
   if(mine.length<PL_MAXVER) PL.todo[sport+'|'+sz.n]={b:b,ver:mine.length+1};

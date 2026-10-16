@@ -106,22 +106,63 @@ def _main(g, e):
     ov, un = _fd((m.get("total") or {}).get("over")), _fd((m.get("total") or {}).get("under"))
     if ov and un and ov.get("line") is not None:
         L["total"], L["over"], L["under"] = ov["line"], ov["odds"], un["odds"]; src["tot"] = "FanDuel"; n += 1
+    at = alt_totals(e)
+    if at: L["altTot"] = at
     fd = {"ml": {"home": (ml_h or {}).get("link"), "away": (ml_a or {}).get("link")}, "spr": {"home": (sp_h or {}).get("link"), "away": (sp_a or {}).get("link")},
           "tot": {"over": (ov or {}).get("link"), "under": (un or {}).get("link")}}
     L["fd"] = fd; L["src"] = src
     if (e.get("eventLinks") or {}).get(BOOK): g["fdEvent"] = e["eventLinks"][BOOK]
     return n
 
+def alt_totals(e):
+    """FanDuel's alternate game totals: {"over": {"7.5": -400, ...}, "under": {...}} (the practice server prices "Under 7.5" from these)"""
+    out = {}
+    for side in ("over", "under"):
+        b = _fd(((e.get("main") or {}).get("total") or {}).get(side))
+        for a in (b or {}).get("alts") or []:
+            if a.get("odds") is None or a.get("line") is None: continue
+            ln = float(a["line"]); k = str(int(ln)) if ln == int(ln) else str(ln)
+            out.setdefault(side, {})[k] = int(a["odds"])
+    return out
+
 def _props_by_player(e):
     """{(pid, stat): {over:{...}, under:{...}, name, team}} using FanDuel only"""
-    by = {}
+    by, yn = {}, {}
     for p in e.get("props") or []:
-        if p.get("type") != "ou": continue
         b = (p.get("books") or {}).get(BOOK)
+        if p.get("type") == "yn":          # FanDuel's "1+" market (1+ receptions, 1+ shots on goal, anytime goal): the 1 rung of the ladder
+            if p.get("side") == "yes" and b and b.get("odds") is not None: yn[(p["pid"], p["stat"])] = {"odds": b["odds"], "link": b.get("link")}
+            continue
+        if p.get("type") != "ou": continue
         if not b or b.get("odds") is None or b.get("line") is None: continue
         d = by.setdefault((p["pid"], p["stat"]), {"name": p.get("name"), "team": p.get("team"), "stat": p["stat"]})
-        d[p.get("side")] = {"odds": b["odds"], "line": float(b["line"]), "link": b.get("link"), "fair": (p.get("fair") or {}).get("odds")}
-    return {k: v for k, v in by.items() if v.get("over") and v.get("under") and v["over"]["line"] == v["under"]["line"]}
+        d[p.get("side")] = {"odds": b["odds"], "line": float(b["line"]), "link": b.get("link"), "fair": (p.get("fair") or {}).get("odds"), "alts": b.get("alts") or []}
+    out = {k: v for k, v in by.items() if v.get("over") and v.get("under") and v["over"]["line"] == v["under"]["line"]}
+    for k, v in out.items():
+        if k in yn: v["yn"] = yn[k]
+    return out
+
+def fd_rungs(d):
+    """FanDuel's own "X+" ladder for one player stat: [{t, odds, link}] from its alternate over lines and its 1+ market. The main line is not repeated here
+    (it is the over/under). Only what FanDuel lists, at FanDuel's price."""
+    main_t = math.floor(d["over"]["line"]) + 1; out = {}
+    for a in d["over"].get("alts") or []:
+        if a.get("odds") is None or a.get("line") is None: continue
+        t = math.floor(float(a["line"])) + 1
+        if t >= 1 and t != main_t: out[t] = {"t": float(t), "odds": int(a["odds"]), "link": a.get("link")}
+    if d.get("yn") and main_t != 1 and 1 not in out: out[1] = {"t": 1.0, "odds": int(d["yn"]["odds"]), "link": d["yn"].get("link")}
+    return [out[t] for t in sorted(out)]
+
+def _put_rungs(st, rungs, pfun):
+    """FanDuel rungs into a stat's ladder (miles): each with FanDuel's price and bet link (fd=True); the model's chance in p. Other rungs keep no price (estimates)."""
+    have = {float(m["t"]): m for m in st.get("miles") or [] if m.get("t") is not None}
+    for r in rungs:
+        m = have.get(r["t"])
+        if m is None: m = dict(t=r["t"], hit=0, n=0); have[r["t"]] = m
+        m.update(price=r["odds"], link=r.get("link"), fd=True)
+        if m.get("p") is None:
+            pm = pfun(r["t"]); m["p"] = round(pm, 3) if pm is not None else None
+    st["miles"] = [have[t] for t in sorted(have)]
 
 def _rungs(line, key):
     if line >= 100: step = 25
@@ -142,6 +183,7 @@ def _synth_stat(key, d):
     mu = max(mu, 0.1)
     def ge(t): return _clamp(1 - _phi((t - 0.5 - mu) / sd), 0.02, 0.97)
     miles = [dict(t=float(t), price=None, hit=0, n=0, p=round(ge(t), 3)) for t in _rungs(line, key) if 0.12 <= ge(t) <= 0.9]
+    tmp = {"miles": miles}; _put_rungs(tmp, fd_rungs(d), ge); miles = tmp["miles"]
     margin = max(0.07 * line, 0.25 if line < 5 else 0)
     return dict(key=key, label=LABEL.get(key, key), vals=[], line=line, lineSrc="FanDuel", prices=[d["over"]["odds"], d["under"]["odds"]], n=0, avg=round(mu, 1), avg5=round(mu, 1), mn=0, mx=0,
                 safe=None, safeAdj=None, overHits=0, streak=0, streakDir=None, hot="steady", hotNote="", grade="–", gradePct=None, proj=round(mu, 1), season=round(mu, 1), anchorNote="",
@@ -179,8 +221,16 @@ def _overlay_stat(st, d):
         po, pu = _imp(d["over"]["odds"]), _imp(d["under"]["odds"]); p = po / (po + pu)
     st.update(line=line, lineSrc="FanDuel", overHits=over_hits, pOver=round(p, 3), overPrice=d["over"]["odds"], underPrice=d["under"]["odds"], prices=[d["over"]["odds"], d["under"]["odds"]],
               fdOver=d["over"].get("link"), fdUnder=d["under"].get("link"))
-    # rungs the book listed come from another book: show the model's estimate instead of mixing books
+    # rungs the book listed come from another book: show the model's estimate instead of mixing books; then FanDuel's own ladder goes on with its prices
     for m in st.get("miles") or []: m["price"] = None
+    def pf(t):
+        if proj is None: return None
+        if proj < 8: 
+            lam = max(proj, 0.05); c, term = 0.0, math.exp(-lam)
+            for k in range(int(t)): c += term; term *= lam / (k + 1)
+            return _clamp(1 - c, 0.02, 0.97)
+        return _clamp(1 - _phi((t - 0.5 - proj) / sd), 0.02, 0.97)
+    _put_rungs(st, fd_rungs(d), pf)
     if st.get("safeSrc") == "DraftKings" and st.get("pSafe") is not None:
         st["safeSrc"] = "est."; st["safePrice"] = _est_price(st["pSafe"])
 
@@ -276,6 +326,8 @@ def feed_card(ev, key, now):
              note="Book lines only: ESPN had no card for this game, so the numbers come from FanDuel.", n=32 if key == "nhl" else 30,
              teams=dict(away=a, home=h), lines=lines, crossroads=cr, players=[], bookOnly=True, oddsId=ev.get("id"))
     if (ev.get("eventLinks") or {}).get(BOOK): c["fdEvent"] = ev["eventLinks"][BOOK]
+    at = alt_totals(ev)
+    if at: lines["altTot"] = at
     ps = _synth_players(c, ev, _props_by_player(ev))
     if ps: c["players"] = ps; c["feedProps"] = True
     return c

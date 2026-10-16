@@ -54,7 +54,7 @@ function hpHtBlock(g){
 /* ---------- legs for one game, all from the feed ---------- */
 function hpLegs(g){
   const O=hpOdds(); if(!O) return []; const ck=g.id+'|'+O.generatedAt+'|'+CALV; if(HP.cache[ck]) return HP.cache[ck];
-  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l)); }catch(_){} try{ const k0=keyOf(g); (g.players||[]).forEach(pl=>(pl.stats||[]).forEach(st=>{ if(hpPropOk(k0,st.key,false)) stAltLegs(g,pl,st).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); })); }catch(_){} try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){} HP.cache[ck]=out; return out; }
+  const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l)); }catch(_){} const fdo=out.filter(hpIsFd); HP.cache[ck]=fdo; return fdo; }
   const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
   const abbrBk=b=>HP_BK[b]||b;
   const push=(tok,kind,label,x,opp,pModel,spec,group,extra)=>{ const b=hpBest(x); if(!b) return; const pf=hpFair(x,opp,b); if(pf==null) return;
@@ -79,14 +79,26 @@ function hpLegs(g){
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
     push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl)}); }); });
-  /* stat thresholds ("60+ rush yds", "5+ receptions", "2+ pass TD"): for every MAIN player of the game (starters.js), the highest rung that is still ~76%+ and the highest still ~62%+, from the book's ladder
-     where it has one and from the model where it does not (rush+rec, pass+rush, carries, completions, pass TDs). Priced from the book when the ladder has a price for the rung, otherwise an estimate (marked est.). */
-  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return;
-    (pl.stats||[]).forEach(st=>{ if(!hpPropOk(key,st.key,false)) return; stAltLegs(g,pl,st,key).forEach(l=>out.push(l)); }); });
-  /* floor legs: low rungs the player almost always clears (floor.js); they replace a mid-range threshold for the same player and stat */
-  try{ if(typeof flLegs==='function') flLegs(g).forEach(l=>{ if(!out.some(x=>x.tok===l.tok)) out.push(l); }); }catch(_){}
-  HP.cache[ck]=out; return out;
+  /* stat thresholds ("125+ pass yds", "1+ receptions", "2+ pass TD"): ONLY the rungs FanDuel lists (its alternate lines and 1+ markets, put on the player's ladder by the bot,
+     engine/fanduel.py), at FanDuel's price, with FanDuel's bet link. The app no longer invents rungs or prices for the builders: a number FanDuel does not offer is not a pick. */
+  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; const av=pl.avail==null?1:pl.avail;
+    (pl.stats||[]).forEach(st=>{ if(!hpPropOk(key,st.key,false)) return; const lab=String(st.label||st.key).toLowerCase();
+      (st.miles||[]).forEach(m=>{ if(!m||!m.fd||m.price==null||m.t==null) return; const T=+m.t, pf=clamp(hpImp(m.price)*0.96,0.02,0.97);      // one-sided price: about 4% of it is the book's margin
+        const pm=m.p!=null?+m.p:null; const p=adjP(clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97),'prop'), tok='o:'+g.id+':fd:'+pl.id+':'+st.key+':'+T;
+        if(out.some(x=>x.tok===tok)) return;
+        out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+T+'+ '+lab,price:m.price,book:'fanduel',bk:'FD',link:m.link||null,nBooks:1,line:T-0.5,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
+          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.'}); }); }); });
+  /* FanDuel's alternate game totals ("Under 7.5" in hockey) */
+  if(!(typeof isSoc==='function'&&isSoc(g))) ['over','under'].forEach(d=>{ const x=M.total&&M.total[d], fd=x&&x.books&&x.books.fanduel; if(!fd||!fd.alts) return;
+    fd.alts.forEach(a=>{ if(a.odds==null||a.line==null||(fd.line!=null&&+a.line===+fd.line)) return; const ln=+a.line, pf=clamp(hpImp(a.odds)*0.96,0.02,0.97);
+      let pm=null; if(cr&&typeof TOTS!=='undefined'&&TOTS[key]){ const po=logistic((cr.projTotal-ln)/TOTS[key]); pm=d==='over'?po:1-po; }
+      const p=adjP(clamp(pm==null?pf:0.5*pf+0.5*pm,0.02,0.97),'team'), tok='o:'+g.id+':atot:'+d+':'+ln;
+      out.push({id:tok,tok:tok,gid:g.id,kind:'tot',label:(d==='over'?'Over ':'Under ')+ln+' (alt total)',price:a.odds,book:'fanduel',bk:'FD',link:a.link||null,nBooks:1,line:ln,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',spec:{k:'tot',dir:d,line:ln},group:g.id+':tot',fdRung:1}); }); });
+  /* FanDuel only: a leg priced at another book, or estimated, is left out */
+  const fdo=out.filter(hpIsFd); HP.cache[ck]=fdo; return fdo;
 }
+/* a bet FanDuel lists, at FanDuel's price */
+function hpIsFd(l){ return !!l&&l.book==='fanduel'&&l.price!=null&&isFinite(l.price); }
 function hpLeg(tok){ const p=String(tok).split(':'); const g=G[p[1]]; if(!g) return null; const l=hpLegs(g).find(x=>x.tok===tok); return l?Object.assign({},l):null; }
 
 /* games from the selected day through the next 3 days (a Friday home screen still shows Sunday's NFL slate) */
@@ -168,6 +180,8 @@ function hpAllSgp(){
 const HP_CATN={side:'team side',total:'total',ou:'over/under prop',alt:'stat threshold',floor:'floor leg'};
 function hpMixTxt(s){ return Object.keys(s.cats).map(k=>s.cats[k]+' '+HP_CATN[k]+(s.cats[k]>1&&k!=='side'?'s':'')).join(' · '); }
 function hpLegRow(l){
+  if(l.fdRung) return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <span class="mono">'+fo(l.price)+'</span> <span class="muted small"><b class="fdtag">FD</b> · '+Math.round(l.p*100)+'%</span></summary>'+
+    '<div class="small muted hpld">FanDuel alternate line at FanDuel\'s price. Chance '+Math.round(l.p*100)+'% (FanDuel\'s price without its margin'+(l.pModel!=null?', blended with the model\'s '+Math.round(l.pModel*100)+'%':'')+').'+(l.link?' <a href="'+esc(l.link)+'" target="_blank" rel="noopener">Open this leg on FanDuel</a>':'')+'</div></details>';
   if(l.floor) return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <b class="flTag" title="a low number the player almost always reaches">floor</b> <span class="mono">'+fo(l.price)+'</span> <span class="muted small">'+esc(l.bk)+' · '+Math.round(l.p*100)+'%</span></summary>'+
     '<div class="small muted hpld">'+esc(l.why||'')+' '+(l.book==='est'?'Price is my estimate, not a sportsbook price (FanDuel may list this rung at a different price, or not at all).':'Price is the book\'s price for this rung.')+' FanDuel cannot load this leg from a link: add it by hand.</div></details>';
   if(l.kind==='alt') return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <span class="mono">'+fo(l.price)+'</span> <span class="muted small">'+esc(l.bk)+' · '+Math.round(l.p*100)+'%</span></summary>'+
@@ -200,7 +214,7 @@ function hpSgpHtml(){
   HP_SIZES.forEach(sz=>{ const n=sz[0], per={}; const show=[];
     all.forEach((s,i)=>{ if(s.n!==n) return; const k=keyOf(s.g); per[k]=(per[k]||0)+1; if(per[k]<=2&&show.length<4) show.push([s,i]); });
     out[n]=show.length?show.map(x=>hpSgpCard(x[0],x[1])).join(''):'<div class="small muted">No game has enough legs at or above '+Math.round(sz[1]*100)+'% (with at least a '+Math.round(HP_MIN_ALL*100)+'% chance of all legs hitting) for a '+n+'-leg parlay'+(S.league==='all'?'':' in this league')+' right now.</div>'; });
-  out.note='<div class="small muted">Each parlay mixes kinds of bets: a team side (moneyline or spread), the game total, player over/unders and stat thresholds such as "60+ rush yds". Player legs are built around the main players of the game (the QB, the lead backs, the top three pass catchers; in basketball the top six scorers), at a number a little below what the model projects ("Allen 200+ pass yds", "Nacua 80+ rec yds", "Cook 80+ rush+rec yds", "Stafford 2+ pass TD"); backups are not used. A leg with a very high chance pays almost nothing, so the ranking prefers legs around 70 to 75% over 90% ones. Floor legs (a low number a main player nearly always reaches) are tagged and no longer ranked above these. Over/under legs and the team lines are FanDuel\'s own price (only a line FanDuel has not posted falls back to the best other book); threshold legs use the model\'s ladder around the book\'s line and are marked est. when no book price exists, so they cannot be loaded into FanDuel by link. Chances blend the book\'s no-vig price with the model. Combined odds multiply leg prices, and a sportsbook prices same-game legs lower because they are linked, so check the real price at the book. Games already under way are not listed here.</div>';
+  out.note='<div class="small muted">Every leg is a bet FanDuel lists, at FanDuel\'s price: team lines, player over/unders, and FanDuel\'s own alternate lines ("125+ pass yds", "1+ receptions", alternate totals). A number FanDuel does not offer is never used. Player legs are built around the main players of the game. Chances take FanDuel\'s price without its margin and blend it with the model where the model knows the player. Combined odds multiply the leg prices; FanDuel prices same-game legs lower because they are linked, so check the real price in the betslip. Games already under way are not listed here.</div>';
   return out;
 }
 
@@ -265,7 +279,7 @@ function hpServerTok(l){
   const g=G[l.gid]; if(!g||!l.spec) return null; const sp=l.spec, L=g.lines||{};
   if(sp.k==='ml') return 'g:'+g.id+':ml:'+sp.side;
   if(sp.k==='spr'){ const ln=sp.side==='home'?L.sprHome:L.sprAway; return ln!=null&&Math.abs(ln-sp.line)<0.01?'g:'+g.id+':spr:'+sp.side:null; }
-  if(sp.k==='tot') return L.total!=null&&Math.abs(L.total-sp.line)<0.01?'g:'+g.id+':tot:'+sp.dir:null;
+  if(sp.k==='tot') return L.total!=null&&Math.abs(L.total-sp.line)<0.01?'g:'+g.id+':tot:'+sp.dir:'g:'+g.id+':at:'+sp.dir+':'+sp.line;     // alternate total: the server prices it from FanDuel's alt line (lines.altTot)
   if(sp.k==='prop'&&sp.dir==='ge'){ const pl=findPlayer(g,sp.pid); const st=pl&&pl.stats.find(s=>s.key===sp.stat); if(!st) return null;
     if(st.line!=null&&Math.floor(st.line)+1===sp.T) return 'p:'+g.id+':'+pl.id+':'+st.key+':over';
     if((st.miles||[]).some(m=>m.t===sp.T)) return 'p:'+g.id+':'+pl.id+':'+st.key+':m:'+sp.T;        // a threshold from the slate's own ladder

@@ -15,9 +15,11 @@ API = "https://api.sportsgameodds.com/v2/events"
 SOCCER = [x.strip() for x in os.environ.get("ODDS_SOCCER", "UEFA_CHAMPIONS_LEAGUE,MLS,EPL,LA_LIGA,BUNDESLIGA,IT_SERIE_A,FR_LIGUE_1,LIGA_MX").split(",") if x.strip()]
 LEAGUES = os.environ.get("ODDS_LEAGUES", "NFL,NCAAF,NBA,NCAAB,MLB,WNBA,NHL,ATP,WTA" + ("," + ",".join(SOCCER) if SOCCER else ""))
 # FanDuel is the main book: ask the API for FanDuel's prices first (and DraftKings as the fallback) so the plan's cap on bookmaker odds is spent on them, not on nine other books.
-# ODDS_BOOKS="" asks for every book again. ODDS_ALTS=1 also asks for alternate lines (bigger responses, so off unless the plan allows it).
+# ODDS_BOOKS="" asks for every book again. Alternate lines (FanDuel's ladders: "125+ pass yds", "2+ receptions", alternate totals) are asked for by default;
+# ODDS_ALTS=0 turns that off. If the plan refuses them, the same pull is made without them and odds.json says so ("altLines": "refused").
 BOOKS = os.environ.get("ODDS_BOOKS", "fanduel,draftkings").strip()
-ALTS = os.environ.get("ODDS_ALTS", "0").strip() == "1"
+ALTS = os.environ.get("ODDS_ALTS", "1").strip() == "1"
+ALT_STATE = {"v": None}      # "ok" / "refused" / None (not asked this run)
 LIVE_BOOKS = os.environ.get("ODDS_LIVE_BOOKS", "fanduel").strip()          # in-play lines: FanDuel only (the page never shows another book's live price)
 # events pulled per league per run: college slates are big, and the feed lists games by start time, so a small cap never reaches the evening games
 CAPS = {"NCAAF": 150, "NCAAB": 80, "NFL": 20, "NBA": 20, "NHL": 20, "MLB": 20, "WNBA": 12, "ATP": 12, "WTA": 12, **{lg: 10 for lg in SOCCER}}
@@ -154,7 +156,7 @@ def pull_league(key, league, max_events, now, done=None):
     """FanDuel/DraftKings only, games that have not started (or began a moment ago); if the API refuses those filters the same pull is made without them.
     done(events) -> True stops paging early (every slate game of this league already has its event)."""
     back = STARTED_BACK_MIN.get(league, DEFAULT_BACK_MIN)
-    def go(filters):
+    def go(filters, alts=False):
         events, cursor, notice = [], None, None
         while len(events) < max_events:
             q = {"leagueID": league, "oddsAvailable": "true", "limit": str(min(20, max_events - len(events))),
@@ -162,7 +164,7 @@ def pull_league(key, league, max_events, now, done=None):
             if filters:
                 q["startsAfter"] = (now - datetime.timedelta(minutes=back)).strftime("%Y-%m-%dT%H:%M:%SZ")
                 if BOOKS: q["bookmakerID"] = BOOKS
-                if ALTS: q["includeAltLines"] = "true"
+                if alts: q["includeAltLines"] = "true"
             if cursor: q["cursor"] = cursor
             d = _get(key, q)
             notice = d.get("notice") or notice
@@ -174,6 +176,16 @@ def pull_league(key, league, max_events, now, done=None):
                     if done([normalize(e) for e in events]): break
                 except Exception: pass
         return events[:max_events], notice
+    if ALTS and ALT_STATE["v"] != "refused":
+        try:
+            ev, notice = go(True, True)
+            ALT_STATE["v"] = "ok"
+            if ev: return ev, notice
+        except urllib.error.HTTPError as ex:
+            if ex.code not in (400, 422): raise
+            ALT_STATE["v"] = "refused"
+        except RuntimeError:
+            ALT_STATE["v"] = "refused"
     try:
         ev, notice = go(True)
         if ev: return ev, notice
@@ -286,7 +298,8 @@ def refresh(path, log=print, now=None, games=None):
             elif e.get("league") in SOCCER and not soccer_pulled and not e.get("final") and st > aware: keep.append(e)      # soccer not due this pull: its upcoming events stay
         out = {"generatedAt": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "source": "sportsgameodds", "notice": notice, "events": fresh + keep}
         out["soccerAt"] = stamp if soccer_pulled else (old or {}).get("soccerAt")
-        out["leagues"] = dict(LEAGUE_INFO); out["noPlan"] = dict(NO_PLAN)
+        out["leagues"] = dict(LEAGUE_INFO); out["noPlan"] = dict(NO_PLAN); out["altLines"] = ALT_STATE["v"]
+        out["altRungs"] = sum(len(b.get("alts") or []) for e in fresh for p in e.get("props") or [] for b in (p.get("books") or {}).values())
         if old and old.get("liveAt"): out["liveAt"] = old["liveAt"]
         if games is not None: out["unmatched"] = _unmatched(games, fresh + keep, aware, old)
         tmp = path + ".tmp"; json.dump(out, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)
