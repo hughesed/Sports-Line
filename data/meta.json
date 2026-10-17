@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 134,
+ "runNumber": 135,
  "deadlineHit": false,
- "generatedAt": "2026-10-17T18:05:30Z",
- "generatedAtET": "Sat Oct 17, 2:05 PM ET",
+ "generatedAt": "2026-10-17T18:17:04Z",
+ "generatedAtET": "Sat Oct 17, 2:17 PM ET",
  "today": "2026-10-17",
- "lastRunAt": "2026-10-17T18:05:30Z",
+ "lastRunAt": "2026-10-17T18:17:04Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -43,11 +43,11 @@
    "lastFinal": "2026-10-16"
   },
   "nba": {
-   "status": "ok",
-   "games": 3,
+   "status": "empty",
+   "games": 0,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 3,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -55,10 +55,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 18,
+   "games": 21,
    "playerLevel": 0,
-   "teamLevel": 8,
-   "carried": 10,
+   "teamLevel": 7,
+   "carried": 14,
    "error": null,
    "newFinals": 0,
    "storeGames": 1416,
@@ -105,12 +105,12 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 15,
-  "teamCards": 23,
+  "playerCards": 21,
+  "teamCards": 17,
   "window": 130,
   "sched": 123,
   "pastp": 23,
-  "predictions": 209,
+  "predictions": 211,
   "graded": 127,
   "storeGames": 13642
  },
@@ -147,10 +147,10 @@
  },
  "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: Too Many Requests; NHL: skipped (time); NBA: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
  "oddsLive": "error: live pull failed (NCAAF, NHL)",
- "fanduel": "ok: FanDuel lines on 2 cards, 1 player stats, FanDuel-only players on 1 cards; not in the feed (15): CAR@WPG, ATL@GS, VAN@TB, HOU@JAX, BAL@CLE, CAR@PHI...",
+ "fanduel": "ok: FanDuel lines on 8 cards, 21 player stats, FanDuel-only players on 6 cards; not in the feed (16): CAR@WPG, ATL@GS, VAN@TB, NEB@ORE, HOU@JAX, BAL@CLE...",
  "errors": [],
- "requests": 935,
+ "requests": 933,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 208.0
+ "seconds": 204.5
 }
