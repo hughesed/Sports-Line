@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 128,
+ "runNumber": 129,
  "deadlineHit": false,
- "generatedAt": "2026-10-17T04:46:25Z",
- "generatedAtET": "Sat Oct 17, 12:46 AM ET",
+ "generatedAt": "2026-10-17T04:58:27Z",
+ "generatedAtET": "Sat Oct 17, 12:58 AM ET",
  "today": "2026-10-17",
- "lastRunAt": "2026-10-17T04:46:25Z",
+ "lastRunAt": "2026-10-17T04:58:27Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -60,7 +60,7 @@
    "teamLevel": 1,
    "carried": 10,
    "error": null,
-   "newFinals": 3,
+   "newFinals": 0,
    "storeGames": 1416,
    "lastFinal": "2026-10-17"
   },
@@ -82,7 +82,7 @@
    "teamLevel": 2,
    "carried": 0,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 122,
    "lastFinal": "2026-10-17"
   },
@@ -133,7 +133,7 @@
   },
   "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.0,
+  "seconds": 1.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,8 +149,8 @@
  "oddsLive": "error: live pull failed (NBA, NCAAF)",
  "fanduel": "ok: FanDuel lines on 8 cards, 134 player stats, FanDuel-only players on 0 cards; not in the feed (16): NJ@WSH, CAR@WPG, ATL@GS, NEB@ORE, HOU@JAX, BAL@CLE...",
  "errors": [],
- "requests": 1023,
+ "requests": 1018,
  "failedRequests": 6,
  "retries": 6,
- "seconds": 195.3
+ "seconds": 207.1
 }
