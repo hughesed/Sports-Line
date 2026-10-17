@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 131,
+ "runNumber": 132,
  "deadlineHit": false,
- "generatedAt": "2026-10-17T09:12:48Z",
- "generatedAtET": "Sat Oct 17, 5:12 AM ET",
+ "generatedAt": "2026-10-17T13:08:42Z",
+ "generatedAtET": "Sat Oct 17, 9:08 AM ET",
  "today": "2026-10-17",
- "lastRunAt": "2026-10-17T09:12:48Z",
+ "lastRunAt": "2026-10-17T13:08:42Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -131,9 +131,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 4.4,
+  "seconds": 2.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -143,17 +143,15 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 27,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 3286,
+  "gamesUploaded": 14,
   "configured": true
  },
- "odds": "error: RuntimeError: no league could be pulled (IT_SERIE_A: not on the plan (400), retried after 24 h; FR_LIGUE_1: not on the plan (400), retried after 24 h; NFL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: To)",
+ "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: Too Many Requests; NHL: skipped (time); NBA: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 8 cards, 134 player stats, FanDuel-only players on 0 cards; not in the feed (16): NJ@WSH, CAR@WPG, ATL@GS, NEB@ORE, HOU@JAX, BAL@CLE...",
  "errors": [],
- "requests": 930,
+ "requests": 931,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 147.9
+ "seconds": 146.6
 }
