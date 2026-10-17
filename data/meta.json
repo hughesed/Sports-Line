@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 126,
+ "runNumber": 127,
  "deadlineHit": false,
- "generatedAt": "2026-10-17T00:24:10Z",
- "generatedAtET": "Fri Oct 16, 8:24 PM ET",
+ "generatedAt": "2026-10-17T00:35:10Z",
+ "generatedAtET": "Fri Oct 16, 8:35 PM ET",
  "today": "2026-10-16",
- "lastRunAt": "2026-10-17T00:24:10Z",
+ "lastRunAt": "2026-10-17T00:35:10Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 10,
+   "games": 13,
    "playerLevel": 0,
    "teamLevel": 4,
-   "carried": 6,
+   "carried": 9,
    "error": null,
    "newFinals": 0,
    "storeGames": 2631,
@@ -55,10 +55,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 14,
+   "games": 11,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 11,
+   "teamLevel": 1,
+   "carried": 10,
    "error": null,
    "newFinals": 0,
    "storeGames": 1413,
@@ -106,12 +106,12 @@
  },
  "counts": {
   "slate": 40,
-  "playerCards": 26,
-  "teamCards": 14,
+  "playerCards": 23,
+  "teamCards": 17,
   "window": 136,
   "sched": 125,
   "pastp": 25,
-  "predictions": 202,
+  "predictions": 205,
   "graded": 124,
   "storeGames": 13637
  },
@@ -134,7 +134,7 @@
   },
   "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.1,
+  "seconds": 1.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,10 +148,10 @@
  },
  "odds": "error: RuntimeError: no league could be pulled (EPL: not on the plan (400), retried after 24 h; LA_LIGA: not on the plan (400), retried after 24 h; BUNDESLIGA: not on the plan (400), retried after 24 h; IT_SERIE_A: not on the plan (400), retried after 24 h; FR_LIGUE_1: not on the plan (400), retried after 24 h; NFL: HTTPError: HTTP Error 429: Too)",
  "oddsLive": "error: live pull failed (NBA, NCAAF)",
- "fanduel": "ok: FanDuel lines on 7 cards, 96 player stats, FanDuel-only players on 2 cards; not in the feed (13): NEB@ORE, HOU@JAX, BAL@CLE, CAR@PHI, CHI@ATL, NO@NYG...",
+ "fanduel": "ok: FanDuel lines on 7 cards, 133 player stats, FanDuel-only players on 0 cards; not in the feed (16): POR@GS, UTAH@PHX, DEN@LAL, NEB@ORE, HOU@JAX, BAL@CLE...",
  "errors": [],
- "requests": 915,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 201.7
+ "requests": 982,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 204.9
 }
