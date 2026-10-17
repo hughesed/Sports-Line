@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 135,
+ "runNumber": 136,
  "deadlineHit": false,
- "generatedAt": "2026-10-17T18:17:04Z",
- "generatedAtET": "Sat Oct 17, 2:17 PM ET",
+ "generatedAt": "2026-10-17T20:30:24Z",
+ "generatedAtET": "Sat Oct 17, 4:30 PM ET",
  "today": "2026-10-17",
- "lastRunAt": "2026-10-17T18:17:04Z",
+ "lastRunAt": "2026-10-17T20:30:24Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -23,9 +23,9 @@
   "wnba": {
    "status": "ok",
    "games": 1,
-   "playerLevel": 1,
+   "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 0,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 347,
@@ -55,13 +55,13 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 21,
+   "games": 18,
    "playerLevel": 0,
-   "teamLevel": 7,
-   "carried": 14,
+   "teamLevel": 8,
+   "carried": 10,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1416,
+   "newFinals": 15,
+   "storeGames": 1431,
    "lastFinal": "2026-10-17"
   },
   "cbb": {
@@ -77,13 +77,13 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 3,
+   "games": 6,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 1,
+   "teamLevel": 3,
+   "carried": 3,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 122,
+   "newFinals": 1,
+   "storeGames": 123,
    "lastFinal": "2026-10-17"
   },
   "tennis": {
@@ -105,22 +105,22 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 21,
-  "teamCards": 17,
+  "playerCards": 16,
+  "teamCards": 22,
   "window": 130,
   "sched": 123,
   "pastp": 23,
-  "predictions": 211,
-  "graded": 127,
-  "storeGames": 13642
+  "predictions": 214,
+  "graded": 133,
+  "storeGames": 13658
  },
  "calibration": {
   "slopes": {
-   "cfb": 1.0079
+   "cfb": 1.0
   },
-  "graded": 127,
-  "accML": 0.591,
-  "accBook": 0.598
+  "graded": 133,
+  "accML": 0.602,
+  "accBook": 0.609
  },
  "social": {
   "enabled": true,
@@ -133,7 +133,7 @@
   },
   "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.2,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,12 +145,12 @@
   },
   "configured": true
  },
- "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: Too Many Requests; NHL: skipped (time); NBA: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
- "oddsLive": "error: live pull failed (NCAAF, NHL)",
- "fanduel": "ok: FanDuel lines on 8 cards, 21 player stats, FanDuel-only players on 6 cards; not in the feed (16): CAR@WPG, ATL@GS, VAN@TB, NEB@ORE, HOU@JAX, BAL@CLE...",
+ "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; NHL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; NBA: skipped (time); NCAAB: skipped (time); WNBA: skipped (time); ATP: skipped (time); WTA: sk)",
+ "oddsLive": "error: live pull failed (NCAAF, NHL, WNBA)",
+ "fanduel": "ok: FanDuel lines on 1 cards, 1 player stats, FanDuel-only players on 0 cards; not in the feed (15): SEA@FLA, NYI@TOR, BUF@MTL, HOU@JAX, BAL@CLE, CAR@PHI...",
  "errors": [],
- "requests": 933,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 204.5
+ "requests": 988,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 236.5
 }
