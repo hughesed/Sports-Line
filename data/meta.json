@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 151,
+ "runNumber": 152,
  "deadlineHit": false,
- "generatedAt": "2026-10-18T21:01:42Z",
- "generatedAtET": "Sun Oct 18, 5:01 PM ET",
+ "generatedAt": "2026-10-18T22:44:02Z",
+ "generatedAtET": "Sun Oct 18, 6:44 PM ET",
  "today": "2026-10-18",
- "lastRunAt": "2026-10-18T21:01:42Z",
+ "lastRunAt": "2026-10-18T22:44:02Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -34,9 +34,9 @@
   "mlb": {
    "status": "ok",
    "games": 1,
-   "playerLevel": 1,
+   "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 0,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 2462,
@@ -55,10 +55,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 3,
+   "games": 1,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 3,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 1468,
@@ -79,8 +79,8 @@
    "status": "ok",
    "games": 6,
    "playerLevel": 0,
-   "teamLevel": 6,
-   "carried": 0,
+   "teamLevel": 5,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 136,
@@ -104,9 +104,9 @@
   }
  },
  "counts": {
-  "slate": 25,
+  "slate": 23,
   "playerCards": 15,
-  "teamCards": 10,
+  "teamCards": 8,
   "window": 137,
   "sched": 73,
   "pastp": 24,
@@ -134,7 +134,7 @@
   },
   "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.4,
+  "seconds": 1.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -147,11 +147,11 @@
   "configured": true
  },
  "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NBA: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: Too Many Requests; NHL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: skipped (time); NCAAB: skipped (time); MLB: skipped (time); ATP: skipped (time); WTA: sk)",
- "oddsLive": "error: live pull failed (NFL, MLB)",
- "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (10): CBJ@MIN, CAR@CGY, DAL@GB, ANA@NYR, COL@PHI, SJ@TOR...",
+ "oddsLive": "error: live pull failed (NFL, MLB, NHL)",
+ "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (9): CAR@CGY, DAL@GB, ANA@NYR, COL@PHI, SJ@TOR, ATL@GS...",
  "errors": [],
- "requests": 323,
+ "requests": 291,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 192.2
+ "seconds": 220.6
 }
