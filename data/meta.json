@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 150,
+ "runNumber": 151,
  "deadlineHit": false,
- "generatedAt": "2026-10-18T20:56:14Z",
- "generatedAtET": "Sun Oct 18, 4:56 PM ET",
+ "generatedAt": "2026-10-18T21:01:42Z",
+ "generatedAtET": "Sun Oct 18, 5:01 PM ET",
  "today": "2026-10-18",
- "lastRunAt": "2026-10-18T20:56:14Z",
+ "lastRunAt": "2026-10-18T21:01:42Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,7 +16,7 @@
    "teamLevel": 0,
    "carried": 11,
    "error": null,
-   "newFinals": 7,
+   "newFinals": 0,
    "storeGames": 373,
    "lastFinal": "2026-10-18"
   },
@@ -134,7 +134,7 @@
   },
   "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.6,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,12 +146,12 @@
   },
   "configured": true
  },
- "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NBA: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: Too Many Requests; NHL: skipped (time); NCAAF: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
- "oddsLive": "error: live pull failed (NFL)",
- "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (11): TB@CLE, CBJ@MIN, CAR@CGY, DAL@GB, ANA@NYR, COL@PHI...",
+ "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NBA: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: Too Many Requests; NHL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: skipped (time); NCAAB: skipped (time); MLB: skipped (time); ATP: skipped (time); WTA: sk)",
+ "oddsLive": "error: live pull failed (NFL, MLB)",
+ "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (10): CBJ@MIN, CAR@CGY, DAL@GB, ANA@NYR, COL@PHI, SJ@TOR...",
  "errors": [],
- "requests": 330,
+ "requests": 323,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 165.6
+ "seconds": 192.2
 }
