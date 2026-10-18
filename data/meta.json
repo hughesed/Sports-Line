@@ -1,24 +1,24 @@
 {
  "schema": 1,
- "runNumber": 146,
+ "runNumber": 147,
  "deadlineHit": false,
- "generatedAt": "2026-10-18T13:30:49Z",
- "generatedAtET": "Sun Oct 18, 9:30 AM ET",
+ "generatedAt": "2026-10-18T16:49:44Z",
+ "generatedAtET": "Sun Oct 18, 12:49 PM ET",
  "today": "2026-10-18",
- "lastRunAt": "2026-10-18T13:30:49Z",
+ "lastRunAt": "2026-10-18T16:49:44Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 12,
+   "games": 13,
    "playerLevel": 10,
    "teamLevel": 2,
-   "carried": 0,
+   "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 365,
-   "lastFinal": "2026-10-16"
+   "newFinals": 1,
+   "storeGames": 366,
+   "lastFinal": "2026-10-18"
   },
   "wnba": {
    "status": "ok",
@@ -77,10 +77,10 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 6,
+   "games": 9,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 4,
+   "teamLevel": 6,
+   "carried": 3,
    "error": null,
    "newFinals": 0,
    "storeGames": 136,
@@ -104,24 +104,24 @@
   }
  },
  "counts": {
-  "slate": 30,
-  "playerCards": 14,
-  "teamCards": 16,
+  "slate": 34,
+  "playerCards": 15,
+  "teamCards": 19,
   "window": 137,
   "sched": 73,
   "pastp": 24,
-  "predictions": 231,
-  "graded": 161,
-  "storeGames": 13710
+  "predictions": 236,
+  "graded": 162,
+  "storeGames": 13711
  },
  "calibration": {
   "slopes": {
    "cfb": 0.919,
    "nhl": 1.15
   },
-  "graded": 161,
-  "accML": 0.615,
-  "accBook": 0.621
+  "graded": 162,
+  "accML": 0.611,
+  "accBook": 0.617
  },
  "social": {
   "enabled": true,
@@ -134,7 +134,7 @@
   },
   "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.2,
+  "seconds": 1.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,10 +148,10 @@
  },
  "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: Too Many Requests; NHL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: skipped (time); NBA: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
  "oddsLive": "error: live pull failed (NFL)",
- "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (15): BAL@CLE, CAR@PHI, CHI@ATL, NO@NYG, NYJ@NE, PIT@TB...",
+ "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (20): BAL@CLE, CAR@PHI, CHI@ATL, NO@NYG, NYJ@NE, PIT@TB...",
  "errors": [],
- "requests": 984,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 168.8
+ "requests": 933,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 172.0
 }
