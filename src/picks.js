@@ -1,7 +1,7 @@
 /* ================= safe slips, pick of the day, tracked calls, self-check ================= */
 const POTD_P=0.90, POTD_PRICE=-140, MIN_SAFE=0.65, KEEP_DAYS=24, MAX_CALLS=700, MAX_LIVE_PER_GAME=8;
-const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5'};
-const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6'];
+const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5',cx2:'Combo 2x',cx3:'Combo 3x',cx4:'Combo 4x',cx5:'Combo 5x'};
+const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6','cx2','cx3','cx4','cx5'];
 const isStack=c=>!!c&&c.multi===true;
 if(!Array.isArray(P.calls)) P.calls=[];
 
@@ -223,7 +223,7 @@ function tallyCalls(cs){
   return t;
 }
 function callsDayHtml(date){
-  const cs=callsOn(date).filter(c=>leagueOK(c.key));
+  const cs=callsOn(date).filter(c=>leagueOK(c.key)&&!/^(potd|gold|cx)/.test(c.kind));     // gold picks and combos have their own sections with every leg
   const live=cs.filter(c=>c.kind==='live'), stk=cs.filter(isStack), rest=cs.filter(c=>c.kind!=='live'&&!isStack(c));
   const gm=id=>{ const g=G[id]; return g?g.teams.away.abbr+' @ '+g.teams.home.abbr:id; };
   let h='<section class="game"><div class="sec"><h3>Tracked picks <span class="hint">written down before kickoff or when the live view showed them</span></h3>';
@@ -237,7 +237,7 @@ function callsDayHtml(date){
 }
 function callsSummaryHtml(){
   const cut=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
-  const cs=P.calls.filter(c=>c.date>=cut&&leagueOK(c.key));
+  const cs=P.calls.filter(c=>c.date>=cut&&(leagueOK(c.key)||c.key==='all'));
   const rows=[]; CALL_KINDS.forEach(k=>{ const t=tallyCalls(cs.filter(c=>c.kind===k)); if(t.n) rows.push('<div class="kv"><div class="k">'+KINDN[k]+'</div><div class="v">'+t.w+'/'+t.n+'</div><div class="s">legs '+t.legW+'/'+t.legN+(t.legN?' ('+Math.round(100*t.legW/t.legN)+'%)':'')+'</div></div>'); });
   let h='<section class="game"><div class="sec"><h3>Tracked picks, last 7 days <span class="hint">'+cs.length+' recorded</span></h3>';
   if(!rows.length) return h+'<div class="small muted">No graded picks yet. Recording starts with the first slate this page sees before kickoff, so the first results arrive after those games finish.</div></div></section>';

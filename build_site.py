@@ -82,7 +82,7 @@ t = rep(t, 'body{background:var(--bg);color:var(--ink);font-family:var(--f-body)
         'body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45;padding-inline:0;padding-block:0 170px}')
 t = rep(t, '.wrap{max-width:760px;margin-inline:auto;display:flex;flex-direction:column;gap:16px}', '.wrap{max-width:760px;margin-inline:auto;display:flex;flex-direction:column;gap:14px;padding-inline:16px;padding-block:14px 0}')
 t = rep(t, 'bottom:calc(76px + env(safe-area-inset-bottom,0px))', 'bottom:calc(150px + env(safe-area-inset-bottom,0px))')
-t = rep(t, '</style>', rd("ui2.css") + "\n" + rd("live3.css") + "\n" + rd("fs.css") + "\n" + rd("picks.css") + "\n" + rd("site.css") + "\n" + rd("social.css") + "\n" + rd("battle.css") + "\n" + rd("battle_anim.css") + "\n" + rd("share.css") + "\n" + rd("shop.css") + "\n" + rd("live_lines.css") + "\n" + rd("stacks.css") + "\n</style>")
+t = rep(t, '</style>', rd("ui2.css") + "\n" + rd("live3.css") + "\n" + rd("fs.css") + "\n" + rd("picks.css") + "\n" + rd("site.css") + "\n" + rd("social.css") + "\n" + rd("battle.css") + "\n" + rd("battle_anim.css") + "\n" + rd("share.css") + "\n" + rd("shop.css") + "\n" + rd("live_lines.css") + "\n" + rd("stacks.css") + "\n" + rd("combo.css") + "\n</style>")
 t = rep(t, '<div class="wrap" id="app"></div>', '<header class="hd" id="hdr"></header>\n<div class="wrap" id="app"></div>')
 t = rep(t, '<div class="slipbar" id="slip" hidden></div>', '<div class="slipbar" id="slip" hidden></div>\n<nav class="bnav" id="nav" aria-label="Main"></nav>')
 t = cut(t, '/* ================= shell ================= */\nfunction render(){', '/* ================= events')
@@ -138,7 +138,7 @@ for fn in ("slipHtml", "calcHtml", "placeCheck", "slipsView"):
     t = t.replace("function " + fn + "(){", "function " + fn + "Local(){", 1)
 assert t.count("function renderBank(){") == 1
 t = t.replace("function renderBank(){", "function renderBankLocal(){", 1)
-sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("battle_fill.js") + "\n" + rd("share.js") + "\n" + rd("shop.js") + "\n" + rd("odds_ui.js") + "\n" + rd("live_lines.js") + "\n" + rd("soccer.js") + "\n" + rd("starters.js") + "\n" + rd("floor.js") + "\n" + rd("home_picks.js") + "\n" + rd("stacks.js") + "\n" + rd("gold.js")
+sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("battle_fill.js") + "\n" + rd("share.js") + "\n" + rd("shop.js") + "\n" + rd("odds_ui.js") + "\n" + rd("live_lines.js") + "\n" + rd("soccer.js") + "\n" + rd("starters.js") + "\n" + rd("floor.js") + "\n" + rd("home_picks.js") + "\n" + rd("stacks.js") + "\n" + rd("gold.js") + "\n" + rd("combo.js")
 assert t.count("const $app=document.getElementById") == 1
 t = t.replace("const $app=document.getElementById", sa + "\nconst $app=document.getElementById", 1)
 t = rep(t, "if(dbh&&userh) initSocial(dbh,userh); else { FS.conn='nodb'; if(S.view==='live') render(); }", "startPoll();")

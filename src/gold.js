@@ -45,7 +45,7 @@ function goldLegsOf(g){
     const key=(l.label||'')+'|'+g.id; if(seen[key]) return; seen[key]=1;
     const p0=l.ps!=null?l.ps:adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),l.spec.k==='prop'?'prop':'team');
     const tok=l.tok||l.id; const book=l.book?(l.book==='est'?'est':l.book):(l.src==='FanDuel'?'fanduel':l.src==='DraftKings'||l.src==='DK'?'draftkings':'est');
-    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0}); };
+    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0}); };
   /* FanDuel only: hpLegs (home_picks.js) gives the bets FanDuel lists at FanDuel's price (team lines, over/unders, its alternate lines and 1+ markets) */
   try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(typeof hpIsFd!=='function'||hpIsFd(l)) add(l); }); }catch(e){}
   Object.keys(GPK.cache).forEach(k=>{ if(k.indexOf(g.id+'|')===0) delete GPK.cache[k]; });
@@ -128,10 +128,11 @@ function goldHtml(){
   const picks=keys.map(k=>goldPick(k)).filter(r=>r&&r.best).map(r=>r.best);
   const allOn=picks.length>1&&picks.every(l=>inSlip(l.tok)); const pAll=picks.reduce((x,l)=>x*l.ps,1);
   const cal=goldCal();
-  return '<section class="game goldsec"><div class="sec"><h3>Gold picks <span class="hint">'+Math.round(GPK.p*100)+'%+ chance, one per sport · gold slips: every leg '+Math.round(GPK.slip*100)+'%+</span></h3>'+
+  const goldOpen=S.fold&&S.fold.gold!=null?S.fold.gold:true;
+  return '<section class="game goldsec"><div class="sec"><details class="d hpfold glfold" data-fold="gold"'+(goldOpen?' open':'')+'><summary><b>Gold picks</b> <span class="muted small">'+picks.length+' today · '+Math.round(GPK.p*100)+'%+ chance, one per sport · gold slips '+Math.round(GPK.slip*100)+'%+</span></summary>'+
     (picks.length>1?'<button class="btn solid glall" data-act="gold-all">'+(allOn?'Remove the gold picks from the slip':'Add all '+picks.length+' gold picks to the slip (~'+Math.round(pAll*100)+'% all hit)')+'</button>':'')+
     keys.map(goldSportHtml).join('')+
-    '<div class="small muted">Every gold leg is a bet FanDuel lists, at FanDuel\'s price and number (its over/unders, its alternate lines like 125+ / 150+ pass yds, its 1+ markets and team lines); a number FanDuel does not offer is never picked. The gold pick is the one the app rates most likely to land in each sport. Chances take FanDuel\'s price without its margin and blend it with the model and are scaled by the app\'s own graded record'+(cal.n>=20?' (gold legs said '+Math.round(cal.said*100)+'%, landed '+Math.round(cal.got*100)+'%, so new ones are scaled by '+cal.f.toFixed(2)+')':' once 20 gold legs are graded ('+cal.n+' so far)')+'. A 90% leg pays little and still misses about one time in ten; five of them all land only about 6 times in 10. Written down before kickoff, graded at the final.</div></div></section>';
+    '<div class="small muted">Every gold leg is a bet FanDuel lists, at FanDuel\'s price and number (its over/unders, its alternate lines like 125+ / 150+ pass yds, its 1+ markets and team lines); a number FanDuel does not offer is never picked. The gold pick is the one the app rates most likely to land in each sport. Chances take FanDuel\'s price without its margin and blend it with the model and are scaled by the app\'s own graded record'+(cal.n>=20?' (gold legs said '+Math.round(cal.said*100)+'%, landed '+Math.round(cal.got*100)+'%, so new ones are scaled by '+cal.f.toFixed(2)+')':' once 20 gold legs are graded ('+cal.n+' so far)')+'. A 90% leg pays little and still misses about one time in ten; five of them all land only about 6 times in 10. Written down before kickoff, graded at the final; results are on each day\'s report (calendar).</div></details></div></section>';
 }
 document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act="gold-add"],[data-act="gold-all"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
@@ -143,4 +144,18 @@ document.addEventListener('click',function(e){
   else { S.slip=legs.map(l=>legFor(l.tok)).filter(Boolean); S.betMode='parlay'; S.slipOpen=true; S.slipMsg='Loaded '+S.slip.length+' gold legs. Each is rated '+Math.round(GPK.slip*100)+'%+ but they can still miss together.'; }
   renderSlip(); syncLegButtons(); render();
 },true);
+/* ---------- past-day report: that day's gold picks and gold slips, every leg graded ---------- */
+function goldDayHtml(date){
+  const cs=P.calls.filter(c=>c.date===date&&(c.kind==='potd'||/^gold\d/.test(c.kind))&&c.status!=='void'&&(leagueOK(c.key)));
+  if(!cs.length) return '<section class="game"><div class="sec"><h3>Gold picks</h3><div class="small muted">No gold picks were recorded on this phone that day. They are written down when the app is open before the games start.</div></div></section>';
+  const order=['nfl','cfb','nba','wnba','cbb','mlb','nhl','soccer','tennis'], keys=[]; cs.forEach(c=>{ if(keys.indexOf(c.key)<0) keys.push(c.key); });
+  keys.sort((a,b)=>(order.indexOf(a)+99)%99-(order.indexOf(b)+99)%99);
+  const pk=cs.filter(c=>c.kind==='potd'), legs=[]; cs.forEach(c=>c.legs.forEach(l=>{ if(l.res==='W'||l.res==='L') legs.push(l); }));
+  const row=(l,c)=>{ const g=G[l.gid]; const res=l.res==='W'?' win':l.res==='L'?' loss':'', mk=l.res==='W'?'✓':l.res==='L'?'✗':l.res==='V'?'–':'…';
+    return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc(l.game||(g?g.teams.away.abbr+' @ '+g.teams.home.abbr:''))+'</div></div><div class="plpr mono"><span>'+fo(l.price)+'</span></div><div class="plch"><b>'+Math.round(l.p*100)+'%</b></div><span class="cxmk">'+mk+'</span></div>'; };
+  const st=c=>c.status==='hit'?'<span class="cxst ok">✓ Hit</span>':c.status==='miss'?'<span class="cxst bad">✗ Missed</span>':'<span class="cxst">Waiting on finals</span>';
+  const body=keys.map(k=>{ const mine=cs.filter(c=>c.key===k).sort((a,b)=>(a.kind==='potd'?0:+a.kind.slice(4))-(b.kind==='potd'?0:+b.kind.slice(4)));
+    return '<div class="gold"><div class="glh"><b>'+esc(LGN[k]||k)+'</b></div>'+mine.map(c=>'<div class="cxmini"><div class="cxmh"><b>'+(c.kind==='potd'?'Gold pick':KINDN[c.kind]+' · '+c.legs.length+' legs'+(c.dec?' · '+fo(amerOfDec(c.dec)):''))+'</b>'+st(c)+'</div><div class="plg">'+c.legs.map(l=>row(l,c)).join('')+'</div></div>').join('')+'</div>'; }).join('');
+  return '<section class="game"><div class="sec"><h3>Gold picks <span class="hint">picks '+pk.filter(c=>c.status==='hit').length+'/'+pk.filter(c=>c.status!=='pending').length+' · legs '+legs.filter(l=>l.res==='W').length+'/'+legs.length+'</span></h3>'+body+'</div></section>';
+}
 try{ if(window.__LS) window.__LS.gold={pick:goldPick,slip:goldSlip,legs:goldLegsOf,cal:goldCal,alt:altTotLeg,html:goldHtml}; }catch(e){}

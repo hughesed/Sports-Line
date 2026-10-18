@@ -1,0 +1,24 @@
+/* ===== Combos (2x-5x), tappable report tallies, past-day gold results ===== */
+.cxsec .plcard{margin-top:2px}
+.cxst{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.cxst.ok{background:var(--over-soft);color:var(--over);border-color:transparent}
+.cxst.bad{background:var(--under-soft);color:var(--under);border-color:transparent}
+.cxst.live{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.cxmk{font-weight:800;font-size:13px;text-align:center}
+.plr.win .cxmk{color:var(--over)}.plr.loss .cxmk{color:var(--under)}
+.cxmini{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:var(--surface)}
+.cxmh{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.cxy{margin:10px 0 6px;line-height:1.45}
+.glfold>summary{cursor:pointer;padding:4px 0}
+/* report tallies are buttons now */
+button.kvb{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%}
+button.kvb:active{transform:scale(.98)}
+button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
+.kvtap{color:var(--accent)!important;margin-top:3px}
+.rcl-box{border:1px solid var(--line);border-radius:12px;padding:8px;margin:10px 0;background:var(--surface)}
+.rch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:2px 4px 8px;border-bottom:1px solid var(--line)}
+.okc{color:var(--over);font-weight:700}.badc{color:var(--under);font-weight:700}
+.rcr{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 6px;border-radius:8px;margin-top:4px}
+.rcr.ok{background:var(--over-soft)}.rcr.bad{background:var(--under-soft)}
+.rcm{font-weight:800;text-align:center}.rcr.ok .rcm{color:var(--over)}.rcr.bad .rcm{color:var(--under)}
+.rcl{display:flex;flex-direction:column;min-width:0;line-height:1.3;overflow-wrap:anywhere}

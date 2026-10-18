@@ -1186,10 +1186,35 @@ body.vchat .foot{display:none}
 
 .flTag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--over);background:var(--over-soft);border-radius:4px;padding:1px 4px;vertical-align:1px}
 
+/* ===== Combos (2x-5x), tappable report tallies, past-day gold results ===== */
+.cxsec .plcard{margin-top:2px}
+.cxst{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.cxst.ok{background:var(--over-soft);color:var(--over);border-color:transparent}
+.cxst.bad{background:var(--under-soft);color:var(--under);border-color:transparent}
+.cxst.live{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.cxmk{font-weight:800;font-size:13px;text-align:center}
+.plr.win .cxmk{color:var(--over)}.plr.loss .cxmk{color:var(--under)}
+.cxmini{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:var(--surface)}
+.cxmh{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.cxy{margin:10px 0 6px;line-height:1.45}
+.glfold>summary{cursor:pointer;padding:4px 0}
+/* report tallies are buttons now */
+button.kvb{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%}
+button.kvb:active{transform:scale(.98)}
+button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
+.kvtap{color:var(--accent)!important;margin-top:3px}
+.rcl-box{border:1px solid var(--line);border-radius:12px;padding:8px;margin:10px 0;background:var(--surface)}
+.rch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:2px 4px 8px;border-bottom:1px solid var(--line)}
+.okc{color:var(--over);font-weight:700}.badc{color:var(--under);font-weight:700}
+.rcr{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 6px;border-radius:8px;margin-top:4px}
+.rcr.ok{background:var(--over-soft)}.rcr.bad{background:var(--under-soft)}
+.rcm{font-weight:800;text-align:center}.rcr.ok .rcm{color:var(--over)}.rcr.bad .rcm{color:var(--under)}
+.rcl{display:flex;flex-direction:column;min-width:0;line-height:1.3;overflow-wrap:anywhere}
+
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="175ab15a30">
+<body data-build="92b57a7be7">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -3460,10 +3485,34 @@ function dayTally(games){
   });
   return t;
 }
-function tallyHtml(t){
-  const row=(lab,a)=>'<div class="kv"><div class="k">'+lab+'</div><div class="v">'+a[0]+'/'+a[1]+'</div></div>';
-  return '<div class="proj">'+row('Winner picks',t.ml)+(t.spr[1]?row('Spread leans',t.spr):'')+(t.tot[1]?row('Total leans',t.tot):'')+(t.mll[1]?row('ML leans',t.mll):'')+(t.close[1]?row('Close-game calls',t.close):'')+
-    '<div class="kv"><div class="k">Upsets</div><div class="v">'+t.ups[0]+' of '+t.ups[1]+'</div><div class="s">flagged ahead (35%+): '+t.upf[0]+'</div></div></div>';
+function tallyHtml(t,sel){
+  const row=(k,lab,a,sub)=>sel?'<button class="kv kvb'+(S.repCat===k?' on':'')+'" data-act="rep-cat" data-k="'+k+'" aria-pressed="'+(S.repCat===k)+'"><div class="k">'+lab+'</div><div class="v">'+a+'</div>'+(sub?'<div class="s">'+sub+'</div>':'')+'<div class="s kvtap">'+(S.repCat===k?'Hide the list':'Tap to see each one')+'</div></button>'
+    :'<div class="kv"><div class="k">'+lab+'</div><div class="v">'+a+'</div>'+(sub?'<div class="s">'+sub+'</div>':'')+'</div>';
+  const f=a=>a[0]+'/'+a[1];
+  return '<div class="proj">'+row('ml','Winner picks',f(t.ml))+(t.spr[1]?row('spr','Spread leans',f(t.spr)):'')+(t.tot[1]?row('tot','Total leans',f(t.tot)):'')+(t.mll[1]?row('mll','ML leans',f(t.mll)):'')+(t.close[1]?row('close','Close-game calls',f(t.close)):'')+
+    row('ups','Upsets',t.ups[0]+' of '+t.ups[1],'flagged ahead (35%+): '+t.upf[0])+'</div>';
+}
+/* the list behind a tapped tally box: every bet of that kind on that day, right or wrong */
+const REPCAT={ml:'Winner picks',spr:'Spread leans',tot:'Total leans',mll:'ML leans',close:'Close-game calls',ups:'Upsets'};
+function repCatRows(games,k){
+  const rows=[];
+  games.forEach(g=>{
+    const v=g.v, sc=esc(g.away)+' '+g.as_+' – '+esc(g.home)+' '+g.hs, lg='<span class="badge">'+g.lg.toUpperCase()+'</span>';
+    let lab=null, ok=null;
+    if(k==='ml'){ lab='Pick '+v.ml.pick+' ('+Math.round(v.ml.p*100)+'%)'; ok=v.ml.ok; }
+    else if(k==='spr'&&v.spr&&v.spr.ok!==null){ lab=v.spr.pick+' '+fmtLine(v.spr.line); ok=v.spr.ok; }
+    else if(k==='tot'&&v.tot&&v.tot.ok!==null){ lab=v.tot.pick+' '+v.tot.line+' (scored '+(g.hs+g.as_)+')'; ok=v.tot.ok; }
+    else if(k==='mll'&&v.mlLean){ lab='ML lean '+v.mlLean.pick; ok=v.mlLean.ok; }
+    else if(k==='close'&&v.close.called){ lab='Called close (won by '+v.close.margin+')'; ok=!!v.close.actual; }
+    else if(k==='ups'){ const homeFav=g.pH>=0.5, uw=homeFav?(g.hs<g.as_):(g.hs>g.as_), pu=Math.min(g.pH,1-g.pH); if(!uw) return;
+      lab='Underdog '+(homeFav?g.away:g.home)+' won · app gave '+Math.round(pu*100)+'%'; ok=pu>=0.35; }
+    if(lab==null) return;
+    rows.push({ok:ok,h:'<div class="rcr '+(ok?'ok':'bad')+'"><span class="rcm">'+(ok?'✓':'✗')+'</span><span class="rcl"><b>'+esc(lab)+'</b><span class="small muted">'+sc+'</span></span>'+lg+'</div>'});
+  });
+  rows.sort((a,b)=>(b.ok?1:0)-(a.ok?1:0));
+  const w=rows.filter(r=>r.ok).length;
+  return '<div class="rcl-box"><div class="rch"><b>'+REPCAT[k]+'</b><span class="small"><span class="okc">'+w+(k==='ups'?' flagged ahead':' right')+'</span> · <span class="badc">'+(rows.length-w)+(k==='ups'?' not flagged':' wrong')+'</span></span></div>'+
+    (rows.length?rows.map(r=>r.h).join(''):'<div class="small muted">None that day.</div>')+'</div>';
 }
 function reportGame(g){
   const hn=g.home, an=g.away; const win=g.hs>g.as_?hn:an; const margin=Math.abs(g.hs-g.as_);
@@ -3487,9 +3536,9 @@ function reportView(date){
   const all=[].concat.apply([],Object.keys(LEARN.window).map(k=>LEARN.window[k])).filter(g=>leagueOK(g.lg));
   const t=dayTally(games), tw=dayTally(all);
   return '<section class="game"><div class="sec"><h3>'+wd(date)+' '+mon(date)+' '+dnum(date)+' · what worked <span class="hint">'+games.length+' final'+(games.length===1?'':'s')+'</span></h3>'+
-    (games.length?tallyHtml(t)+'<div class="small muted">Predictions use only what was known before each game. Leans compare the model with the closing line. A ✓ means the lean beat that line. Player SGPs use standard cutoffs (like 250+ passing yards or 20+ points), not that day\'s book lines, which were not saved.</div>':'<div class="small muted">No games in this league on that day.</div>')+
+    (games.length?tallyHtml(t,true)+(S.repCat&&REPCAT[S.repCat]?repCatRows(games,S.repCat):'')+'<div class="small muted">Predictions use only what was known before each game. Leans compare the model with the closing line. A ✓ means the lean beat that line. Player SGPs use standard cutoffs (like 250+ passing yards or 20+ points), not that day\'s book lines, which were not saved.</div>':'<div class="small muted">No games in this league on that day.</div>')+
     '</div></section>'+
-    callsDayHtml(date)+
+    (typeof goldDayHtml==='function'?goldDayHtml(date):'')+(typeof cxDayHtml==='function'?cxDayHtml(date):'')+callsDayHtml(date)+
     (games.length?'<section class="game"><div class="sec"><h3>Game by game</h3>'+games.map(reportGame).join('')+'</div></section>':'')+
     '<section class="game"><div class="sec"><h3>Last 7 days together <span class="hint">'+all.length+' games</span></h3>'+tallyHtml(tw)+'</div></section>'+callsSummaryHtml()+selfCheckHtml()+learnPanel();
 }
@@ -3643,7 +3692,7 @@ function render(){
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
     (S.calOpen?calHtml():'')+(showLeague?'<div class="hd-tools"><div class="tabwrap"><div class="slhint"><span>Slide for more sports</span><span>‹ ›</span></div><div class="slline"><div class="slbar" data-for="ltabs" role="slider" aria-label="Slide for more sports"><i id="slthumb"></i></div>'+(S.view==='pre'?'<button class="themebtn" data-act="theme" aria-label="Switch light or dark mode">'+themeLabel()+'</button>':'')+'</div><div class="tabs" id="ltabs" role="group" aria-label="League">'+ltabs+'</div></div></div>':'')+'</div>';
   slFit();
-  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+(typeof goldHtml==='function'?goldHtml():'')+hpHomeHtml()+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
+  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+(typeof goldHtml==='function'?goldHtml():'')+(typeof cxHtml==='function'?cxHtml():'')+hpHomeHtml()+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
     '<div class="foot"><div>Source: ESPN game logs (up to 15 games shown, last 10 feed the model), standings, results, live play-by-play, injury reports and DraftKings lines. Pregame numbers are a snapshot, so lines and injury news will change before game time.</div>'+
     '<div>Boost types shown are ones sportsbooks have advertised: <a href="https://www.cbssports.com/betting/news/nfl-sportsbook-boosts-promo-codes-for-week-1-best-draftkings-bet365-betmgm-betting-promotions" target="_blank" rel="noopener">CBS Sports</a>, <a href="https://www.actionnetwork.com/education/best-sportsbooks-same-game-parlays" target="_blank" rel="noopener">Action Network</a>, <a href="https://www.oddschecker.com/us/insight/football/nfl/20251020-fanduel-sportsbook-choose-your-own-reward-promotion-2x-25pp-profit-boosts-or-30pp-sgp-profit-boost-on-monday-night-football" target="_blank" rel="noopener">Oddschecker</a>, <a href="https://rg.org/bonuses/parlay-bonuses" target="_blank" rel="noopener">rg.org</a>. They are not live offers.</div>'+
     '<div>Practice money is pretend. Live scores and plays come from ESPN and can lag or contain errors. For information only. Sportsbook buttons may open partner links. Sports betting involves risk, so only stake what you can afford to lose. 21+. Help: 1-800-GAMBLER. This app is not affiliated with any sportsbook.</div></div>';
@@ -3662,6 +3711,7 @@ document.addEventListener('click',function(e){
   if(act==='cal'){ S.calOpen=!S.calOpen; render(); return; }
   if(act==='date'){ S.date=t.getAttribute('data-d'); S.calOpen=false; S.view='pre'; render(); window.scrollTo(0,0); return; }
   if(act==='learn'){ S.learnOpen=!S.learnOpen; render(); return; }
+  if(act==='rep-cat'){ const k=t.getAttribute('data-k'); S.repCat=S.repCat===k?null:k; const y=window.scrollY; render(); window.scrollTo(0,y); return; }
   if(act==='boost'){ const id=t.getAttribute('data-id'); S.boost=(S.boost===id)?null:id; S.slipMsg=''; S.forceSlip=true; renderSlip(); S.forceSlip=false; return; }
 });
 /* ---------- context factors (rest, contract/trade news, dominant opposing players) ---------- */
@@ -3735,8 +3785,8 @@ function linesSrcHtml(g){
 
 /* ================= safe slips, pick of the day, tracked calls, self-check ================= */
 const POTD_P=0.90, POTD_PRICE=-140, MIN_SAFE=0.65, KEEP_DAYS=24, MAX_CALLS=700, MAX_LIVE_PER_GAME=8;
-const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5'};
-const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6'];
+const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5',cx2:'Combo 2x',cx3:'Combo 3x',cx4:'Combo 4x',cx5:'Combo 5x'};
+const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6','cx2','cx3','cx4','cx5'];
 const isStack=c=>!!c&&c.multi===true;
 if(!Array.isArray(P.calls)) P.calls=[];
 
@@ -3958,7 +4008,7 @@ function tallyCalls(cs){
   return t;
 }
 function callsDayHtml(date){
-  const cs=callsOn(date).filter(c=>leagueOK(c.key));
+  const cs=callsOn(date).filter(c=>leagueOK(c.key)&&!/^(potd|gold|cx)/.test(c.kind));     // gold picks and combos have their own sections with every leg
   const live=cs.filter(c=>c.kind==='live'), stk=cs.filter(isStack), rest=cs.filter(c=>c.kind!=='live'&&!isStack(c));
   const gm=id=>{ const g=G[id]; return g?g.teams.away.abbr+' @ '+g.teams.home.abbr:id; };
   let h='<section class="game"><div class="sec"><h3>Tracked picks <span class="hint">written down before kickoff or when the live view showed them</span></h3>';
@@ -3972,7 +4022,7 @@ function callsDayHtml(date){
 }
 function callsSummaryHtml(){
   const cut=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
-  const cs=P.calls.filter(c=>c.date>=cut&&leagueOK(c.key));
+  const cs=P.calls.filter(c=>c.date>=cut&&(leagueOK(c.key)||c.key==='all'));
   const rows=[]; CALL_KINDS.forEach(k=>{ const t=tallyCalls(cs.filter(c=>c.kind===k)); if(t.n) rows.push('<div class="kv"><div class="k">'+KINDN[k]+'</div><div class="v">'+t.w+'/'+t.n+'</div><div class="s">legs '+t.legW+'/'+t.legN+(t.legN?' ('+Math.round(100*t.legW/t.legN)+'%)':'')+'</div></div>'); });
   let h='<section class="game"><div class="sec"><h3>Tracked picks, last 7 days <span class="hint">'+cs.length+' recorded</span></h3>';
   if(!rows.length) return h+'<div class="small muted">No graded picks yet. Recording starts with the first slate this page sees before kickoff, so the first results arrive after those games finish.</div></div></section>';
@@ -7554,7 +7604,7 @@ function goldLegsOf(g){
     const key=(l.label||'')+'|'+g.id; if(seen[key]) return; seen[key]=1;
     const p0=l.ps!=null?l.ps:adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),l.spec.k==='prop'?'prop':'team');
     const tok=l.tok||l.id; const book=l.book?(l.book==='est'?'est':l.book):(l.src==='FanDuel'?'fanduel':l.src==='DraftKings'||l.src==='DK'?'draftkings':'est');
-    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0}); };
+    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0}); };
   /* FanDuel only: hpLegs (home_picks.js) gives the bets FanDuel lists at FanDuel's price (team lines, over/unders, its alternate lines and 1+ markets) */
   try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(typeof hpIsFd!=='function'||hpIsFd(l)) add(l); }); }catch(e){}
   Object.keys(GPK.cache).forEach(k=>{ if(k.indexOf(g.id+'|')===0) delete GPK.cache[k]; });
@@ -7637,10 +7687,11 @@ function goldHtml(){
   const picks=keys.map(k=>goldPick(k)).filter(r=>r&&r.best).map(r=>r.best);
   const allOn=picks.length>1&&picks.every(l=>inSlip(l.tok)); const pAll=picks.reduce((x,l)=>x*l.ps,1);
   const cal=goldCal();
-  return '<section class="game goldsec"><div class="sec"><h3>Gold picks <span class="hint">'+Math.round(GPK.p*100)+'%+ chance, one per sport · gold slips: every leg '+Math.round(GPK.slip*100)+'%+</span></h3>'+
+  const goldOpen=S.fold&&S.fold.gold!=null?S.fold.gold:true;
+  return '<section class="game goldsec"><div class="sec"><details class="d hpfold glfold" data-fold="gold"'+(goldOpen?' open':'')+'><summary><b>Gold picks</b> <span class="muted small">'+picks.length+' today · '+Math.round(GPK.p*100)+'%+ chance, one per sport · gold slips '+Math.round(GPK.slip*100)+'%+</span></summary>'+
     (picks.length>1?'<button class="btn solid glall" data-act="gold-all">'+(allOn?'Remove the gold picks from the slip':'Add all '+picks.length+' gold picks to the slip (~'+Math.round(pAll*100)+'% all hit)')+'</button>':'')+
     keys.map(goldSportHtml).join('')+
-    '<div class="small muted">Every gold leg is a bet FanDuel lists, at FanDuel\'s price and number (its over/unders, its alternate lines like 125+ / 150+ pass yds, its 1+ markets and team lines); a number FanDuel does not offer is never picked. The gold pick is the one the app rates most likely to land in each sport. Chances take FanDuel\'s price without its margin and blend it with the model and are scaled by the app\'s own graded record'+(cal.n>=20?' (gold legs said '+Math.round(cal.said*100)+'%, landed '+Math.round(cal.got*100)+'%, so new ones are scaled by '+cal.f.toFixed(2)+')':' once 20 gold legs are graded ('+cal.n+' so far)')+'. A 90% leg pays little and still misses about one time in ten; five of them all land only about 6 times in 10. Written down before kickoff, graded at the final.</div></div></section>';
+    '<div class="small muted">Every gold leg is a bet FanDuel lists, at FanDuel\'s price and number (its over/unders, its alternate lines like 125+ / 150+ pass yds, its 1+ markets and team lines); a number FanDuel does not offer is never picked. The gold pick is the one the app rates most likely to land in each sport. Chances take FanDuel\'s price without its margin and blend it with the model and are scaled by the app\'s own graded record'+(cal.n>=20?' (gold legs said '+Math.round(cal.said*100)+'%, landed '+Math.round(cal.got*100)+'%, so new ones are scaled by '+cal.f.toFixed(2)+')':' once 20 gold legs are graded ('+cal.n+' so far)')+'. A 90% leg pays little and still misses about one time in ten; five of them all land only about 6 times in 10. Written down before kickoff, graded at the final; results are on each day\'s report (calendar).</div></details></div></section>';
 }
 document.addEventListener('click',function(e){
   const t=e.target.closest&&e.target.closest('[data-act="gold-add"],[data-act="gold-all"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
@@ -7652,7 +7703,161 @@ document.addEventListener('click',function(e){
   else { S.slip=legs.map(l=>legFor(l.tok)).filter(Boolean); S.betMode='parlay'; S.slipOpen=true; S.slipMsg='Loaded '+S.slip.length+' gold legs. Each is rated '+Math.round(GPK.slip*100)+'%+ but they can still miss together.'; }
   renderSlip(); syncLegButtons(); render();
 },true);
+/* ---------- past-day report: that day's gold picks and gold slips, every leg graded ---------- */
+function goldDayHtml(date){
+  const cs=P.calls.filter(c=>c.date===date&&(c.kind==='potd'||/^gold\d/.test(c.kind))&&c.status!=='void'&&(leagueOK(c.key)));
+  if(!cs.length) return '<section class="game"><div class="sec"><h3>Gold picks</h3><div class="small muted">No gold picks were recorded on this phone that day. They are written down when the app is open before the games start.</div></div></section>';
+  const order=['nfl','cfb','nba','wnba','cbb','mlb','nhl','soccer','tennis'], keys=[]; cs.forEach(c=>{ if(keys.indexOf(c.key)<0) keys.push(c.key); });
+  keys.sort((a,b)=>(order.indexOf(a)+99)%99-(order.indexOf(b)+99)%99);
+  const pk=cs.filter(c=>c.kind==='potd'), legs=[]; cs.forEach(c=>c.legs.forEach(l=>{ if(l.res==='W'||l.res==='L') legs.push(l); }));
+  const row=(l,c)=>{ const g=G[l.gid]; const res=l.res==='W'?' win':l.res==='L'?' loss':'', mk=l.res==='W'?'✓':l.res==='L'?'✗':l.res==='V'?'–':'…';
+    return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc(l.game||(g?g.teams.away.abbr+' @ '+g.teams.home.abbr:''))+'</div></div><div class="plpr mono"><span>'+fo(l.price)+'</span></div><div class="plch"><b>'+Math.round(l.p*100)+'%</b></div><span class="cxmk">'+mk+'</span></div>'; };
+  const st=c=>c.status==='hit'?'<span class="cxst ok">✓ Hit</span>':c.status==='miss'?'<span class="cxst bad">✗ Missed</span>':'<span class="cxst">Waiting on finals</span>';
+  const body=keys.map(k=>{ const mine=cs.filter(c=>c.key===k).sort((a,b)=>(a.kind==='potd'?0:+a.kind.slice(4))-(b.kind==='potd'?0:+b.kind.slice(4)));
+    return '<div class="gold"><div class="glh"><b>'+esc(LGN[k]||k)+'</b></div>'+mine.map(c=>'<div class="cxmini"><div class="cxmh"><b>'+(c.kind==='potd'?'Gold pick':KINDN[c.kind]+' · '+c.legs.length+' legs'+(c.dec?' · '+fo(amerOfDec(c.dec)):''))+'</b>'+st(c)+'</div><div class="plg">'+c.legs.map(l=>row(l,c)).join('')+'</div></div>').join('')+'</div>'; }).join('');
+  return '<section class="game"><div class="sec"><h3>Gold picks <span class="hint">picks '+pk.filter(c=>c.status==='hit').length+'/'+pk.filter(c=>c.status!=='pending').length+' · legs '+legs.filter(l=>l.res==='W').length+'/'+legs.length+'</span></h3>'+body+'</div></section>';
+}
 try{ if(window.__LS) window.__LS.gold={pick:goldPick,slip:goldSlip,legs:goldLegsOf,cal:goldCal,alt:altTotLeg,html:goldHtml}; }catch(e){}
+
+/* ================= Combos: 2x, 3x, 4x, 5x your money, all sports together =================
+   For each target (+200, +300, +400, +500 combined odds) the app searches every FanDuel leg it has for games that have not started, across all
+   sports, for the set of legs whose combined price lands between the target and the target + 83 points (so +200 to +283 for 2x) and whose chance of
+   all hitting is the highest. It is not a same-game parlay: legs come from different games (at most 2 from one game, linked legs cost 3% each).
+   Search: legs are ranked by how little chance they give up per unit of payout (log chance / log decimal price), then a beam search keeps the best
+   few hundred partial combos at every size and records each combo that reaches the target window; the best all-hit chance wins.
+   Always optimized: while none of a recorded combo's games has started, a better combo found on a later data refresh replaces it. Once one of its
+   games starts it is locked and graded leg by leg at the finals; a fresh combo from the games still to come can then be recorded (max 3 per target a day).
+   Recorded in the tracked-picks ledger (kinds cx2..cx5), so the results show on the next day's report. Practice only. */
+const CX={targets:[2,3,4,5],over:83,beam:260,maxLegs:14,pool:90,cache:{},k:2,maxVer:3};
+const cxKind=k=>'cx'+k;
+const cxLo=k=>100*k, cxHi=k=>100*k+CX.over;                      // American odds window
+function cxGames(){ const now=Date.now(); return DATA.games.filter(g=>!g.ghost&&preOK(g)&&(Date.parse(g.iso)-now)<36*3600e3); }
+function cxGameTag(g){ return g?g.teams.away.abbr+' @ '+g.teams.home.abbr:''; }
+function cxPool(){
+  const out=[]; cxGames().forEach(g=>{ let ls=[]; try{ ls=(typeof goldLegsOf==='function')?goldLegsOf(g):[]; }catch(e){ ls=[]; }
+    ls.forEach(l=>{ if(l.est||l.ps<0.5||l.ps>0.97) return; const d=decOf(l.price); if(!(d>=1.04)) return;
+      out.push(Object.assign({},l,{dec:d,lc:Math.log(d),lv:Math.log(l.ps),lg:keyOf(g)})); }); });
+  out.forEach(l=>{ l.r=l.lv/l.lc; });                                // closer to 0 = gives up less chance per unit of payout
+  out.sort((a,b)=>b.r-a.r||b.ps-a.ps);
+  return out.slice(0,CX.pool);
+}
+const cxSide=l=>l.spec&&(l.spec.k==='ml'||l.spec.k==='spr'||l.spec.k==='dc');
+function cxSearch(pool,k){
+  const cmin=Math.log(1+k), cmax=Math.log(1+(cxHi(k)/100)), N=pool.length; if(!N) return null;
+  const rBest=pool.reduce((m,l)=>Math.max(m,l.r),-99);
+  let beam=[{i:-1,ix:[],c:0,v:0,grp:{},ply:{},per:{},side:{},same:0}], best=null;
+  const score=s=>s.v+Math.max(0,cmin-s.c)*rBest;                   // optimistic: the rest of the payout bought at the best rate
+  for(let depth=0;depth<CX.maxLegs&&beam.length;depth++){
+    const next=[];
+    beam.forEach(s=>{ for(let j=s.i+1;j<N;j++){ const l=pool[j]; const c=s.c+l.lc; if(c>cmax+1e-9) continue;
+      if(s.grp[l.group]||(l.pid&&s.ply[l.pid])||(s.per[l.gid]||0)>=2) continue;
+      if(cxSide(l)&&s.side[l.gid]) continue;
+      const same=s.same+((s.per[l.gid]||0)>0?1:0);
+      const n={i:j,ix:s.ix.concat(j),c:c,v:s.v+l.lv,grp:Object.assign({},s.grp),ply:Object.assign({},s.ply),per:Object.assign({},s.per),side:Object.assign({},s.side),same:same};
+      n.grp[l.group]=1; if(l.pid) n.ply[l.pid]=1; n.per[l.gid]=(n.per[l.gid]||0)+1; if(cxSide(l)) n.side[l.gid]=1;
+      if(c>=cmin-1e-9){ const val=n.v+same*Math.log(0.97); if(!best||val>best.val) best={ix:n.ix,val:val,same:same}; }
+      else next.push(n); } });
+    next.sort((a,b)=>score(b)-score(a)); beam=next.slice(0,CX.beam);
+    if(best&&beam.length&&score(beam[0])<best.val) break;            // nothing left in the beam can beat the best found
+  }
+  if(!best) return null;
+  const legs=best.ix.map(i=>pool[i]); const dec=legs.reduce((d,l)=>d*l.dec,1);
+  return {k:k,legs:legs,dec:dec,am:amerOfDec(dec),pAll:Math.exp(best.val),sports:Array.from(new Set(legs.map(l=>l.lg)))};
+}
+function cxBuildAll(){
+  const ck=CALV+'|'+((window.__LSDATA&&window.__LSDATA.odds&&window.__LSDATA.odds.generatedAt)||'')+'|'+DATA.asOf+'|'+cxGames().map(g=>g.id).join(',');
+  if(CX.cache.key===ck) return CX.cache.val;
+  const pool=cxPool(), val={}; CX.targets.forEach(k=>{ try{ val[k]=cxSearch(pool,k); }catch(e){ val[k]=null; try{ console.error('Line Scout: combo failed',e); }catch(_){} } });
+  CX.cache={key:ck,val:val}; return val;
+}
+
+/* ---------- ledger ---------- */
+const cxStarted=c=>c.legs.some(l=>{ const g=G[l.gid]; return !g||!preOK(g); });
+const cxSig=legs=>legs.map(l=>l.tok||l.id).sort().join('|');
+function cxRec(s){
+  return {dec:Math.round(s.dec*100)/100,am:s.am,pAll:Math.round(s.pAll*10000)/10000,
+    legs:s.legs.map(l=>({id:l.tok,gid:l.gid,pid:l.pid,label:l.label,price:l.price,p:Math.round(l.ps*1000)/1000,spec:l.spec,res:null,game:cxGameTag(l.g),lg:l.lg,bkn:l.book,lk:l.book==='fanduel'?(l.link||null):null}))};
+}
+function cxToday(k){ return P.calls.filter(c=>c.kind===cxKind(k)&&c.date===TODAY&&c.status!=='void').sort((a,b)=>a.t-b.t); }
+/* what to show for a target: the optimized combo, written down (or swapped in) so it gets graded */
+function cxFor(k,fresh){
+  const mine=cxToday(k), last=mine[mine.length-1]; let changed=false, cur=null;
+  if(last&&last.status==='pending'&&!cxStarted(last)){
+    if(fresh&&fresh.pAll>last.pAll+0.002&&cxSig(fresh.legs)!==cxSig(last.legs)){ Object.assign(last,cxRec(fresh),{t2:Date.now()}); changed=true; }
+    cur=last;
+  } else if(fresh&&mine.length<CX.maxVer&&!(last&&cxSig(last.legs)===cxSig(fresh.legs))){
+    const c=Object.assign({id:'cx:'+TODAY+':'+k+':v'+(mine.length+1),date:TODAY,key:'all',gid:'',multi:true,kind:cxKind(k),t:Date.now(),status:'pending',want:0,ver:mine.length+1},cxRec(fresh));
+    P.calls.push(c); cur=c; changed=true;
+  } else cur=last||null;
+  if(changed){ try{ trimCalls(); persist(); }catch(e){} }
+  return {cur:cur,earlier:mine.filter(c=>c!==cur)};
+}
+
+/* ---------- display ---------- */
+const cxPct=x=>x>=0.1?Math.round(x*100)+'%':x>=0.01?(x*100).toFixed(1)+'%':'<1%';
+const cxStake=()=>{ const v=parseFloat(S.stake); return isFinite(v)&&v>0?v:10; };
+function cxLegRow(l){
+  const g=G[l.gid], res=l.res==='W'?' win':l.res==='L'?' loss':'', mark=l.res==='W'?'✓':l.res==='L'?'✗':l.res==='V'?'–':'';
+  return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc((LGN[l.lg]||String(l.lg||'').toUpperCase())+' · '+(l.game||cxGameTag(g)))+'</div></div>'+
+    '<div class="plpr mono"><span>'+fo(l.price)+'</span><span class="plbk fd">FD</span></div><div class="plch"><b>'+Math.round(l.p*100)+'%</b></div><span class="cxmk">'+mark+'</span></div>';
+}
+function cxStatus(c){ return c.status==='hit'?'<span class="cxst ok">✓ Hit</span>':c.status==='miss'?'<span class="cxst bad">✗ Missed</span>':c.status==='void'?'<span class="cxst">Void</span>':cxStarted(c)?'<span class="cxst live">Locked · in play</span>':'<span class="cxst">Optimizing until first game</span>'; }
+function cxCard(c,k){
+  const st=cxStake(), win=st*(c.dec-1), on=c.legs.every(l=>inSlip(l.id)), wn=c.legs.filter(l=>l.res==='W').length, done=c.legs.filter(l=>l.res).length;
+  const fd=(typeof plFdUrl==='function')?plFdUrl({legs:c.legs.map(l=>({book:l.bkn,link:l.lk}))}):{url:'',n:0};
+  const sports=Array.from(new Set(c.legs.map(l=>LGN[l.lg]||l.lg))).join(', ');
+  return '<div class="plcard cxcard'+(on?' on':'')+'"><div class="plh"><div><div class="plt">'+k+'x your money · '+c.legs.length+' legs</div><div class="pls">'+esc(sports)+'</div></div>'+
+    '<div class="plo"><b>'+fo(c.am)+'</b><span>target +'+cxLo(k)+' to +'+cxHi(k)+'</span></div></div>'+
+    '<div class="plstats"><div><b>'+cxPct(c.pAll)+'</b><span>all-hit chance</span><div class="plmeter"><i style="width:'+Math.min(100,Math.round(c.pAll*100))+'%"></i></div></div>'+
+    '<div><b>$'+win.toFixed(2)+'</b><span>win on $'+st.toFixed(0)+'</span></div><div><b>'+(done?wn+'/'+c.legs.length:Math.round(100*c.legs.reduce((s,l)=>s+l.p,0)/c.legs.length)+'%')+'</b><span>'+(done?'legs hit':'avg leg')+'</span></div></div>'+
+    '<div>'+cxStatus(c)+'</div><div class="plg">'+c.legs.map(cxLegRow).join('')+'</div>'+
+    (c.status==='pending'&&!cxStarted(c)?'<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="cx-add" data-k="'+k+'">'+(on?'Remove from slip':'Add to slip')+'</button>'+(fd.url?'<a class="btn" href="'+esc(fd.url)+'" target="_blank" rel="noopener">Open on FanDuel'+(fd.n<c.legs.length?' ('+fd.n+' legs)':'')+'</a>':'')+'</div>':'')+'</div>';
+}
+function cxMini(c,k){ return '<div class="cxmini"><div class="cxmh"><b>'+k+'x · '+fo(c.am)+' · '+c.legs.length+' legs</b>'+cxStatus(c)+'</div><div class="plg">'+c.legs.map(cxLegRow).join('')+'</div></div>'; }
+function cxYesterday(){
+  const d=new Date(Date.parse(TODAY+'T12:00:00Z')-864e5).toISOString().slice(0,10);
+  const cs=P.calls.filter(c=>c.date===d&&/^cx\d$/.test(c.kind)&&c.status!=='void'); if(!cs.length) return '';
+  const hit=cs.filter(c=>c.status==='hit').length, done=cs.filter(c=>c.status!=='pending').length;
+  return '<div class="small cxy"><b>Yesterday:</b> '+hit+' of '+done+' graded combos hit'+(done<cs.length?' ('+(cs.length-done)+' still open)':'')+' · '+cs.map(c=>c.kind.slice(2)+'x '+(c.status==='hit'?'✓':c.status==='miss'?'✗':'…')).join(' · ')+' <span class="muted">Full legs on yesterday\'s report (calendar).</span></div>';
+}
+function cxBody(){
+  const all=cxBuildAll(); const k=CX.k;
+  const seg='<div class="plseg">'+CX.targets.map(t=>{ const s=all[t]; return '<button class="plseg-b" data-act="cx-k" data-k="'+t+'" aria-pressed="'+(t===k)+'"><b>'+t+'x</b><span>'+(s?cxPct(s.pAll):'none')+'</span></button>'; }).join('')+'</div>';
+  const r=cxFor(k,all[k]);
+  let body;
+  if(r.cur) body=cxCard(r.cur,k);
+  else body='<div class="plempty small">No set of FanDuel legs from games still to come lands between +'+cxLo(k)+' and +'+cxHi(k)+' right now. It fills in as lines post.</div>';
+  const earlier=r.earlier.length?'<details class="plhow"><summary class="small">Earlier '+k+'x combos today ('+r.earlier.length+')</summary>'+r.earlier.map(c=>cxMini(c,k)).join('')+'</details>':'';
+  return seg+body+earlier+cxYesterday()+
+    '<div class="plfoot">Combined odds must land from the target to at most 83 points over it (2x = +200 to +283). The app tries every FanDuel leg on the board across all sports and keeps the set with the highest chance that all of them hit, using each leg\'s no-vig FanDuel chance blended with the model and scaled by the graded record. It keeps re-optimizing until the first game of the combo starts, then locks it and grades it at the finals; the result shows on the next day\'s report. Legs are in different games where possible; the price shown is the plain multiply, so FanDuel may quote a little differently. Practice only.</div>';
+}
+function cxHtml(){
+  let inner; try{ inner='<div id="cxbox">'+cxBody()+'</div>'; }catch(e){ try{ console.error('Line Scout: combos failed',e); }catch(_){} return ''; }
+  return '<section class="game hpsec cxsec"><div class="sec">'+hpFold('cx','Combos · 2x to 5x your money','all sports · highest chance to hit the target',inner,true)+'</div></section>';
+}
+function cxRepaint(){ const b=document.getElementById('cxbox'); if(!b) return; try{ b.innerHTML=cxBody(); }catch(e){ try{ console.error(e); }catch(_){} } }
+
+/* ---------- past-day report: the combos of that day with every leg ---------- */
+function cxDayHtml(date){
+  const cs=P.calls.filter(c=>c.date===date&&/^cx\d$/.test(c.kind)&&c.status!=='void').sort((a,b)=>a.kind<b.kind?-1:a.kind>b.kind?1:a.t-b.t);
+  if(!cs.length) return '';
+  const hit=cs.filter(c=>c.status==='hit').length, done=cs.filter(c=>c.status!=='pending').length;
+  return '<section class="game"><div class="sec"><h3>Combos <span class="hint">'+hit+'/'+done+' hit</span></h3>'+cs.map(c=>cxMini(c,+c.kind.slice(2))).join('')+'</div></section>';
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',function(e){
+  const t=e.target.closest&&e.target.closest('[data-act="cx-k"],[data-act="cx-add"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
+  const k=+t.getAttribute('data-k');
+  if(t.getAttribute('data-act')==='cx-k'){ CX.k=k; cxRepaint(); return; }
+  const c=cxToday(k).filter(x=>x.status==='pending'&&!cxStarted(x)).pop(); if(!c) return;
+  if(c.legs.every(l=>inSlip(l.id))){ S.slip=S.slip.filter(x=>!c.legs.some(l=>l.id===x.id)); S.slipMsg=''; }
+  else { const legs=c.legs.map(l=>legFor(l.id)).filter(Boolean);
+    if(!legs.length){ S.slipMsg='Those legs are no longer posted.'; S.slipOpen=true; }
+    else { S.slip=legs; S.betMode='parlay'; S.slipOpen=true; S.slipMsg='Loaded the '+k+'x combo ('+legs.length+(legs.length<c.legs.length?' of '+c.legs.length:'')+' legs, '+fo(c.am)+').'; } }
+  renderSlip(); syncLegButtons(); cxRepaint();
+},true);
+try{ if(window.__LS) window.__LS.cx={CX:CX,pool:cxPool,search:cxSearch,build:cxBuildAll,forK:cxFor,body:cxBody}; }catch(e){}
 
 const $app=document.getElementById('app');
 document.addEventListener('click',function(e){

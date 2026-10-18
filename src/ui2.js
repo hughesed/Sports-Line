@@ -117,10 +117,34 @@ function dayTally(games){
   });
   return t;
 }
-function tallyHtml(t){
-  const row=(lab,a)=>'<div class="kv"><div class="k">'+lab+'</div><div class="v">'+a[0]+'/'+a[1]+'</div></div>';
-  return '<div class="proj">'+row('Winner picks',t.ml)+(t.spr[1]?row('Spread leans',t.spr):'')+(t.tot[1]?row('Total leans',t.tot):'')+(t.mll[1]?row('ML leans',t.mll):'')+(t.close[1]?row('Close-game calls',t.close):'')+
-    '<div class="kv"><div class="k">Upsets</div><div class="v">'+t.ups[0]+' of '+t.ups[1]+'</div><div class="s">flagged ahead (35%+): '+t.upf[0]+'</div></div></div>';
+function tallyHtml(t,sel){
+  const row=(k,lab,a,sub)=>sel?'<button class="kv kvb'+(S.repCat===k?' on':'')+'" data-act="rep-cat" data-k="'+k+'" aria-pressed="'+(S.repCat===k)+'"><div class="k">'+lab+'</div><div class="v">'+a+'</div>'+(sub?'<div class="s">'+sub+'</div>':'')+'<div class="s kvtap">'+(S.repCat===k?'Hide the list':'Tap to see each one')+'</div></button>'
+    :'<div class="kv"><div class="k">'+lab+'</div><div class="v">'+a+'</div>'+(sub?'<div class="s">'+sub+'</div>':'')+'</div>';
+  const f=a=>a[0]+'/'+a[1];
+  return '<div class="proj">'+row('ml','Winner picks',f(t.ml))+(t.spr[1]?row('spr','Spread leans',f(t.spr)):'')+(t.tot[1]?row('tot','Total leans',f(t.tot)):'')+(t.mll[1]?row('mll','ML leans',f(t.mll)):'')+(t.close[1]?row('close','Close-game calls',f(t.close)):'')+
+    row('ups','Upsets',t.ups[0]+' of '+t.ups[1],'flagged ahead (35%+): '+t.upf[0])+'</div>';
+}
+/* the list behind a tapped tally box: every bet of that kind on that day, right or wrong */
+const REPCAT={ml:'Winner picks',spr:'Spread leans',tot:'Total leans',mll:'ML leans',close:'Close-game calls',ups:'Upsets'};
+function repCatRows(games,k){
+  const rows=[];
+  games.forEach(g=>{
+    const v=g.v, sc=esc(g.away)+' '+g.as_+' – '+esc(g.home)+' '+g.hs, lg='<span class="badge">'+g.lg.toUpperCase()+'</span>';
+    let lab=null, ok=null;
+    if(k==='ml'){ lab='Pick '+v.ml.pick+' ('+Math.round(v.ml.p*100)+'%)'; ok=v.ml.ok; }
+    else if(k==='spr'&&v.spr&&v.spr.ok!==null){ lab=v.spr.pick+' '+fmtLine(v.spr.line); ok=v.spr.ok; }
+    else if(k==='tot'&&v.tot&&v.tot.ok!==null){ lab=v.tot.pick+' '+v.tot.line+' (scored '+(g.hs+g.as_)+')'; ok=v.tot.ok; }
+    else if(k==='mll'&&v.mlLean){ lab='ML lean '+v.mlLean.pick; ok=v.mlLean.ok; }
+    else if(k==='close'&&v.close.called){ lab='Called close (won by '+v.close.margin+')'; ok=!!v.close.actual; }
+    else if(k==='ups'){ const homeFav=g.pH>=0.5, uw=homeFav?(g.hs<g.as_):(g.hs>g.as_), pu=Math.min(g.pH,1-g.pH); if(!uw) return;
+      lab='Underdog '+(homeFav?g.away:g.home)+' won · app gave '+Math.round(pu*100)+'%'; ok=pu>=0.35; }
+    if(lab==null) return;
+    rows.push({ok:ok,h:'<div class="rcr '+(ok?'ok':'bad')+'"><span class="rcm">'+(ok?'✓':'✗')+'</span><span class="rcl"><b>'+esc(lab)+'</b><span class="small muted">'+sc+'</span></span>'+lg+'</div>'});
+  });
+  rows.sort((a,b)=>(b.ok?1:0)-(a.ok?1:0));
+  const w=rows.filter(r=>r.ok).length;
+  return '<div class="rcl-box"><div class="rch"><b>'+REPCAT[k]+'</b><span class="small"><span class="okc">'+w+(k==='ups'?' flagged ahead':' right')+'</span> · <span class="badc">'+(rows.length-w)+(k==='ups'?' not flagged':' wrong')+'</span></span></div>'+
+    (rows.length?rows.map(r=>r.h).join(''):'<div class="small muted">None that day.</div>')+'</div>';
 }
 function reportGame(g){
   const hn=g.home, an=g.away; const win=g.hs>g.as_?hn:an; const margin=Math.abs(g.hs-g.as_);
@@ -144,9 +168,9 @@ function reportView(date){
   const all=[].concat.apply([],Object.keys(LEARN.window).map(k=>LEARN.window[k])).filter(g=>leagueOK(g.lg));
   const t=dayTally(games), tw=dayTally(all);
   return '<section class="game"><div class="sec"><h3>'+wd(date)+' '+mon(date)+' '+dnum(date)+' · what worked <span class="hint">'+games.length+' final'+(games.length===1?'':'s')+'</span></h3>'+
-    (games.length?tallyHtml(t)+'<div class="small muted">Predictions use only what was known before each game. Leans compare the model with the closing line. A ✓ means the lean beat that line. Player SGPs use standard cutoffs (like 250+ passing yards or 20+ points), not that day\'s book lines, which were not saved.</div>':'<div class="small muted">No games in this league on that day.</div>')+
+    (games.length?tallyHtml(t,true)+(S.repCat&&REPCAT[S.repCat]?repCatRows(games,S.repCat):'')+'<div class="small muted">Predictions use only what was known before each game. Leans compare the model with the closing line. A ✓ means the lean beat that line. Player SGPs use standard cutoffs (like 250+ passing yards or 20+ points), not that day\'s book lines, which were not saved.</div>':'<div class="small muted">No games in this league on that day.</div>')+
     '</div></section>'+
-    callsDayHtml(date)+
+    (typeof goldDayHtml==='function'?goldDayHtml(date):'')+(typeof cxDayHtml==='function'?cxDayHtml(date):'')+callsDayHtml(date)+
     (games.length?'<section class="game"><div class="sec"><h3>Game by game</h3>'+games.map(reportGame).join('')+'</div></section>':'')+
     '<section class="game"><div class="sec"><h3>Last 7 days together <span class="hint">'+all.length+' games</span></h3>'+tallyHtml(tw)+'</div></section>'+callsSummaryHtml()+selfCheckHtml()+learnPanel();
 }
@@ -300,7 +324,7 @@ function render(){
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
     (S.calOpen?calHtml():'')+(showLeague?'<div class="hd-tools"><div class="tabwrap"><div class="slhint"><span>Slide for more sports</span><span>‹ ›</span></div><div class="slline"><div class="slbar" data-for="ltabs" role="slider" aria-label="Slide for more sports"><i id="slthumb"></i></div>'+(S.view==='pre'?'<button class="themebtn" data-act="theme" aria-label="Switch light or dark mode">'+themeLabel()+'</button>':'')+'</div><div class="tabs" id="ltabs" role="group" aria-label="League">'+ltabs+'</div></div></div>':'')+'</div>';
   slFit();
-  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+(typeof goldHtml==='function'?goldHtml():'')+hpHomeHtml()+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
+  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+(typeof goldHtml==='function'?goldHtml():'')+(typeof cxHtml==='function'?cxHtml():'')+hpHomeHtml()+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
     '<div class="foot"><div>Source: ESPN game logs (up to 15 games shown, last 10 feed the model), standings, results, live play-by-play, injury reports and DraftKings lines. Pregame numbers are a snapshot, so lines and injury news will change before game time.</div>'+
     '<div>Boost types shown are ones sportsbooks have advertised: <a href="https://www.cbssports.com/betting/news/nfl-sportsbook-boosts-promo-codes-for-week-1-best-draftkings-bet365-betmgm-betting-promotions" target="_blank" rel="noopener">CBS Sports</a>, <a href="https://www.actionnetwork.com/education/best-sportsbooks-same-game-parlays" target="_blank" rel="noopener">Action Network</a>, <a href="https://www.oddschecker.com/us/insight/football/nfl/20251020-fanduel-sportsbook-choose-your-own-reward-promotion-2x-25pp-profit-boosts-or-30pp-sgp-profit-boost-on-monday-night-football" target="_blank" rel="noopener">Oddschecker</a>, <a href="https://rg.org/bonuses/parlay-bonuses" target="_blank" rel="noopener">rg.org</a>. They are not live offers.</div>'+
     '<div>Practice money is pretend. Live scores and plays come from ESPN and can lag or contain errors. For information only. Sportsbook buttons may open partner links. Sports betting involves risk, so only stake what you can afford to lose. 21+. Help: 1-800-GAMBLER. This app is not affiliated with any sportsbook.</div></div>';
@@ -319,6 +343,7 @@ document.addEventListener('click',function(e){
   if(act==='cal'){ S.calOpen=!S.calOpen; render(); return; }
   if(act==='date'){ S.date=t.getAttribute('data-d'); S.calOpen=false; S.view='pre'; render(); window.scrollTo(0,0); return; }
   if(act==='learn'){ S.learnOpen=!S.learnOpen; render(); return; }
+  if(act==='rep-cat'){ const k=t.getAttribute('data-k'); S.repCat=S.repCat===k?null:k; const y=window.scrollY; render(); window.scrollTo(0,y); return; }
   if(act==='boost'){ const id=t.getAttribute('data-id'); S.boost=(S.boost===id)?null:id; S.slipMsg=''; S.forceSlip=true; renderSlip(); S.forceSlip=false; return; }
 });
 /* ---------- context factors (rest, contract/trade news, dominant opposing players) ---------- */
