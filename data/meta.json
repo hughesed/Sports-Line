@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 144,
- "deadlineHit": false,
- "generatedAt": "2026-10-18T09:08:06Z",
- "generatedAtET": "Sun Oct 18, 5:08 AM ET",
+ "runNumber": 145,
+ "deadlineHit": true,
+ "generatedAt": "2026-10-18T09:29:06Z",
+ "generatedAtET": "Sun Oct 18, 5:29 AM ET",
  "today": "2026-10-18",
- "lastRunAt": "2026-10-18T09:08:06Z",
+ "lastRunAt": "2026-10-18T09:29:06Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -38,7 +38,7 @@
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2462,
    "lastFinal": "2026-10-18"
   },
@@ -60,7 +60,7 @@
    "teamLevel": 0,
    "carried": 9,
    "error": null,
-   "newFinals": 22,
+   "newFinals": 0,
    "storeGames": 1468,
    "lastFinal": "2026-10-18"
   },
@@ -82,7 +82,7 @@
    "teamLevel": 2,
    "carried": 4,
    "error": null,
-   "newFinals": 10,
+   "newFinals": 0,
    "storeGames": 136,
    "lastFinal": "2026-10-18"
   },
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 3,
   "failedCalls": 0,
-  "seconds": 7.3,
+  "seconds": 1.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,17 +144,16 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 30,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 3020,
   "configured": true
  },
  "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: HTTPError: HTTP Error 429: Too Many Requests; NHL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: skipped (time); NBA: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (16): HOU@JAX, BAL@CLE, CAR@PHI, CHI@ATL, NO@NYG, NYJ@NE...",
- "errors": [],
- "requests": 1048,
+ "errors": [
+  "time limit reached: 6 ESPN requests were skipped to stay inside the run budget; the next run catches up"
+ ],
+ "requests": 1017,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 150.1
+ "seconds": 152.5
 }
