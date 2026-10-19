@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 165,
+ "runNumber": 166,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T17:46:01Z",
- "generatedAtET": "Mon Oct 19, 1:46 PM ET",
+ "generatedAt": "2026-10-19T17:56:05Z",
+ "generatedAtET": "Mon Oct 19, 1:56 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-19T17:46:01Z",
+ "lastRunAt": "2026-10-19T17:56:05Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.6,
+  "seconds": 6.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,6 +146,7 @@
   },
   "gamesUploaded": 2,
   "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2712,
   "configured": true
  },
  "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; NBA: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: skipped (time); NHL: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
@@ -155,5 +156,5 @@
  "requests": 269,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 132.1
+ "seconds": 147.5
 }
