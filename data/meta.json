@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 157,
+ "runNumber": 158,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T06:01:14Z",
- "generatedAtET": "Mon Oct 19, 2:01 AM ET",
+ "generatedAt": "2026-10-19T10:40:51Z",
+ "generatedAtET": "Mon Oct 19, 6:40 AM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-19T06:01:14Z",
+ "lastRunAt": "2026-10-19T10:40:51Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.0,
+  "seconds": 4.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,14 +144,17 @@
    "cbb": 726,
    "nhl": 32
   },
+  "gamesUploaded": 27,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2782,
   "configured": true
  },
  "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; NBA: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: skipped (time); NHL: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
- "oddsLive": "error: live pull failed (NFL)",
+ "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (13): ANA@NYR, COL@PHI, SJ@TOR, CLE@TB, ATL@GS, WSH@SF...",
  "errors": [],
- "requests": 359,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 160.7
+ "requests": 279,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 139.3
 }
