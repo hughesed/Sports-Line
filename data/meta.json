@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "runNumber": 197,
+ "runNumber": 198,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T22:55:46Z",
- "generatedAtET": "Mon Oct 19, 6:55 PM ET",
+ "generatedAt": "2026-10-19T23:05:51Z",
+ "generatedAtET": "Mon Oct 19, 7:05 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-19T22:55:46Z",
+ "lastRunAt": "2026-10-19T23:05:51Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 12,
+   "games": 5,
    "playerLevel": 1,
    "teamLevel": 0,
-   "carried": 11,
+   "carried": 4,
    "error": null,
    "newFinals": 0,
    "storeGames": 377,
@@ -44,9 +44,9 @@
   },
   "nba": {
    "status": "ok",
-   "games": 3,
+   "games": 5,
    "playerLevel": 0,
-   "teamLevel": 3,
+   "teamLevel": 5,
    "carried": 0,
    "error": null,
    "newFinals": 0,
@@ -104,13 +104,13 @@
   }
  },
  "counts": {
-  "slate": 31,
-  "playerCards": 15,
-  "teamCards": 16,
+  "slate": 26,
+  "playerCards": 8,
+  "teamCards": 18,
   "window": 135,
   "sched": 78,
   "pastp": 23,
-  "predictions": 247,
+  "predictions": 249,
   "graded": 176,
   "storeGames": 13725
  },
@@ -134,7 +134,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.1,
+  "seconds": 6.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,18 +144,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 4,
+  "gamesUploaded": 8,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2428,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 0 graded, nba 0 graded",
  "odds": "kept (odds feed backing off until 02:05Z after 4 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
- "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (17): ANA@NYR, COL@PHI, SJ@TOR, CLE@TB, ATL@GS, WSH@SF...",
+ "oddsLive": "kept (odds feed backing off until 02:05Z)",
+ "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (17): SJ@TOR, CLE@TB, ATL@GS, WSH@SF, PIT@UTA, BOS@DET...",
  "errors": [],
- "requests": 267,
+ "requests": 283,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 16.5
+ "seconds": 24.0
 }
