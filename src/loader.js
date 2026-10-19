@@ -27,10 +27,11 @@
       getJSON('data/slate.json?v='+v,15000),
       getJSON('data/learn.json?v='+v,15000),
       getJSON('data/pastp.json?v='+v,8000).catch(function(){ return {}; }),
-      getJSON('data/odds.json?v='+v,8000).catch(function(){ return null; })
+      getJSON('data/odds.json?v='+v,8000).catch(function(){ return null; }),
+      getJSON('data/firstbasket.json?v='+v,8000).catch(function(){ return null; })
     ]).then(function(a){
       if(!a[0]||!Array.isArray(a[0].games)||!a[1]||!a[1].leagues) throw new Error('data files are not in the expected format');
-      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{},odds:a[3]||null};
+      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{},odds:a[3]||null,fb:a[4]||null};
     });
   }
   function fetchFresh(){ return getJSON('data/meta.json?t='+Date.now()).then(fetchAll); }

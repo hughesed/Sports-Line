@@ -228,6 +228,19 @@ def main():
     nlog = pred.log_games(games, now, slopes)
     log(f"  logged {nlog} new pre-game snapshots (first snapshot per game is kept); {len(pred.recs)} on file")
 
+    # first basket (NBA / WNBA): who is likeliest to score it (put on each card as g["fb"]), and a record of who did (ESPN play-by-play, once the game is final)
+    fbk, fb_out, fb_note = None, None, None
+    try:
+        import firstbasket as FBK
+        fbk = FBK.FirstBasket()
+        n_new = fbk.log_games(games, read_json(f"{DATA}/odds.json", {}), now)
+        n_set = fbk.settle(st, now, log)
+        fb_out = fbk.summary(now)
+        fb_note = f"{n_new} new snapshots, {n_set} graded, " + ", ".join(f"{lg} {v['n']} graded" for lg, v in fb_out["leagues"].items())
+    except Exception as ex:
+        traceback.print_exc(); fb_note = f"error: {type(ex).__name__}: {ex}"[:160]
+    log(f"  first basket: {fb_note}")
+
     tennis_note = None
     try:      # tennis: book-only match cards from the odds feed (isolated: a problem here never touches the other leagues). Added after the prediction log, before the uploads
         import tennis as TEN
@@ -289,6 +302,9 @@ def main():
     # ---------------------------------------------------------------- 7. write everything (atomic, only after validation)
     log("7/7 writing data/ and store/")
     pred.save(today)
+    if fbk is not None:
+        try: fbk.save(today)
+        except Exception as ex: errors.append(f"first basket save: {ex}"[:200])
     if espn.STATS["skipped"]:
         errors.append(f"time limit reached: {espn.STATS['skipped']} ESPN requests were skipped to stay inside the run budget; the next run catches up")
     run_no = int(os.environ.get("GITHUB_RUN_NUMBER") or (prev_meta.get("runNumber") or 0) + 1)
@@ -299,10 +315,11 @@ def main():
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),
-                social=social_info, odds=odds_status, oddsLive=live_status, fanduel=fd_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
+                social=social_info, firstBasket=fb_note, odds=odds_status, oddsLive=live_status, fanduel=fd_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
     write_json(f"{DATA}/slate.json", slate)
     write_json(f"{DATA}/learn.json", learn_out)
     write_json(f"{DATA}/pastp.json", pastp)
+    if fb_out is not None: write_json(f"{DATA}/firstbasket.json", fb_out)
     write_json(hist_f, hist)
     st.save()
     write_json(f"{DATA}/meta.json", meta, compact=False)

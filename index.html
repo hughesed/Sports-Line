@@ -1214,7 +1214,7 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="8777e5c69a">
+<body data-build="cac90b5563">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -1252,10 +1252,11 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
       getJSON('data/slate.json?v='+v,15000),
       getJSON('data/learn.json?v='+v,15000),
       getJSON('data/pastp.json?v='+v,8000).catch(function(){ return {}; }),
-      getJSON('data/odds.json?v='+v,8000).catch(function(){ return null; })
+      getJSON('data/odds.json?v='+v,8000).catch(function(){ return null; }),
+      getJSON('data/firstbasket.json?v='+v,8000).catch(function(){ return null; })
     ]).then(function(a){
       if(!a[0]||!Array.isArray(a[0].games)||!a[1]||!a[1].leagues) throw new Error('data files are not in the expected format');
-      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{},odds:a[3]||null};
+      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{},odds:a[3]||null,fb:a[4]||null};
     });
   }
   function fetchFresh(){ return getJSON('data/meta.json?t='+Date.now()).then(fetchAll); }
@@ -7251,19 +7252,32 @@ function hpSgpHtml(){
   return out;
 }
 
-/* ---------- first basket (NBA / WNBA) ---------- */
+/* ---------- first basket (NBA / WNBA) ----------
+   The bot (engine/firstbasket.py) puts g.fb on every NBA / WNBA card: the chance that each player scores the game's first basket (the model's, averaged with FanDuel's
+   first-basket prices when the feed has them), locked at the first pre-tip snapshot. Once the game is final it adds the real first basket from ESPN's play-by-play,
+   and data/firstbasket.json keeps the record (how often the top pick was right against how often it was expected to be). A free throw is not a basket. */
+function hpFbFd(g){ try{ const O=hpOdds(); const e=O&&bkEvent(g); return (e&&e.first||[]).some(x=>x.pid&&x.name); }catch(_){ return false; } }
+function hpFbRecord(){
+  const F=window.__LSDATA&&window.__LSDATA.fb; if(!F||!F.leagues) return '';
+  const rows=['wnba','nba'].filter(k=>F.leagues[k]&&(F.leagues[k].n||F.leagues[k].pending)&&(S.league==='all'||S.league===k)).map(k=>{ const v=F.leagues[k], nm=k.toUpperCase();
+    if(!v.n) return '<div class="small"><b>'+nm+'</b> <span class="muted">'+v.pending+' game'+(v.pending>1?'s':'')+' waiting to be tracked; the record starts with the first final.</span></div>';
+    return '<div class="small"><b>'+nm+'</b> top pick right <b>'+v.top1+' of '+v.n+'</b> ('+Math.round(v.top1/v.n*100)+'%, the model expected about '+v.exp1.toFixed(1)+') · first scorer in our top 3: <b>'+v.top3+' of '+v.n+'</b> ('+Math.round(v.top3/v.n*100)+'%, expected about '+v.exp3.toFixed(1)+')'+(v.listed<v.n?' · '+(v.n-v.listed)+' times the scorer was not on our list':'')+(v.pending?' · '+v.pending+' to come':'')+'</div>'; }).join('');
+  const rec=(F.recent||[]).filter(r=>S.league==='all'||S.league===r.lg).slice(0,6).map(r=>'<div class="small"><span class="mono">'+(r.rank===1?'✓':r.rank&&r.rank<=3?'~':'✗')+'</span> '+esc(r.a)+' @ '+esc(r.h)+': <b>'+esc(r.who)+'</b> ('+(r.sv===3?'a three':'a basket')+(r.ft?', after a free throw':'')+') <span class="muted">· we had '+(r.rank?'him #'+r.rank+' at '+Math.round((r.pw||0)*100)+'%':'him off the list')+', top pick '+esc(r.top||'–')+(r.p1!=null?' '+Math.round(r.p1*100)+'%':'')+'</span></div>').join('');
+  if(!rows&&!rec) return '';
+  return '<div class="rg"><div class="rgh"><b>Track record</b> <span class="muted small">the first made field goal of each game</span></div>'+rows+(rec?'<div class="small muted" style="margin-top:6px">Latest results (✓ top pick, ~ in our top 3, ✗ missed):</div>'+rec:'')+'</div>';
+}
 function hpFirstHtml(){
-  const O=hpOdds(); const gs=boardGames().filter(g=>(keyOf(g)==='nba'||keyOf(g)==='wnba')&&(S.league==='all'||keyOf(g)===S.league)&&hpInWin(g)&&preOK(g)); if(!gs.length) return '';
-  const rows=gs.map(g=>{ const e=O&&bkEvent(g); const f=(e&&e.first||[]).filter(x=>x.pid&&x.name); let lines='';
-    if(f.length){ const bt=f.map(x=>({n:x.name,b:hpBest(x),team:x.team})).filter(x=>x.b).sort((a,b)=>hpImp(b.b.odds)-hpImp(a.b.odds)).slice(0,5);
-      lines=bt.map(x=>'<div class="small">'+esc(x.n)+' <span class="mono">'+fo(x.b.odds)+'</span> <span class="muted">'+esc(HP_BK[x.b.book]||x.b.book)+'</span></div>').join(''); }
-    else if((g.players||[]).length){ const w=(side)=>(g.players||[]).filter(p=>p.side===side&&!(p.status&&p.status.kind==='out')).map(p=>{ const st=(p.stats||[]).find(s=>s.key==='pts'); return {p:p,w:st&&st.avg?Math.pow(st.avg,1.5)*(p.avail==null?1:p.avail):0}; }).filter(x=>x.w>0).sort((a,b)=>b.w-a.w).slice(0,6);
-      const cr=g.crossroads, pH=cr?cr.pHome:0.5, tHome=clamp(0.5+(pH-0.5)*0.15,0.4,0.6); const ws={home:w('home'),away:w('away')}; const tot={home:ws.home.reduce((s,x)=>s+x.w,0),away:ws.away.reduce((s,x)=>s+x.w,0)};
-      const c=[]; ['home','away'].forEach(sd=>{ ws[sd].forEach(x=>{ c.push({n:x.p.name,p:(sd==='home'?tHome:1-tHome)*x.w/(tot[sd]||1)*0.9}); }); }); c.sort((a,b)=>b.p-a.p);
-      lines=c.slice(0,5).map(x=>'<div class="small">'+esc(x.n)+' <span class="mono">'+fo(hpAm(x.p))+'</span> <span class="muted">model estimate · '+(x.p*100).toFixed(1)+'%</span></div>').join(''); }
-    if(!lines) return '<div class="small muted"><b>'+esc(g.teams.away.abbr)+' @ '+esc(g.teams.home.abbr)+'</b>: no first-basket prices posted yet.</div>';
-    return '<div class="rg"><div class="rgh"><b>'+esc(g.teams.away.abbr)+' @ '+esc(g.teams.home.abbr)+'</b></div>'+lines+'</div>'; }).join('');
-  return rows+'<div class="small muted">Prices come from the sportsbook feed when it lists first basket; otherwise a model estimate is shown (starters\' scoring, scaled by who is likelier to score first). A long shot by nature: even the favourite is rarely above 15%.</div>';
+  const gs=boardGames().filter(g=>(keyOf(g)==='nba'||keyOf(g)==='wnba')&&(S.league==='all'||keyOf(g)===S.league)&&hpInWin(g)&&(preOK(g)||(g.fb&&g.fb.locked)));
+  const rec=hpFbRecord(); if(!gs.length) return rec;
+  const rows=gs.map(g=>{ const f=g.fb, A=g.teams.away, H=g.teams.home; const hd='<div class="rgh"><b>'+esc(A.abbr)+' @ '+esc(H.abbr)+'</b> <span class="muted small">'+esc(g.startDate||'')+'</span></div>';
+    if(!f||!f.rows||!f.rows.length) return '<div class="rg">'+hd+'<div class="small muted">No first-basket prediction yet: it appears once the game has its player list or FanDuel posts the market.</div></div>';
+    const w=f.res&&f.res.fg; const pH=f.pH==null?null:f.pH; const tn=f.tip==null?'':(f.tip>=0.005?' · '+esc(H.abbr)+' has the taller centre':f.tip<=-0.005?' · '+esc(A.abbr)+' has the taller centre':'');
+    const top=f.rows.slice(0,6).map((r,i)=>{ const hit=w&&(String(w.i)===String(r.id)||(w.n&&String(w.n).toLowerCase()===String(r.name).toLowerCase()));
+      return '<div class="small">'+(hit?'<b>✓ ':'')+esc(r.name)+' <span class="muted">'+esc((r.side==='home'?H:A).abbr)+'</span> <span class="mono">'+(r.p*100).toFixed(1)+'%</span> <span class="muted">fair '+fo(hpAm(r.p))+(r.fd!=null?' · <b class="fdtag">FD</b> '+fo(r.fd):'')+(r.pt!=null&&i<3?' · '+Math.round(r.pt*100)+'% of '+esc((r.side==='home'?H:A).abbr)+'\'s first baskets':'')+'</span>'+(hit?'</b>':'')+'</div>'; }).join('');
+    const res=w?'<div class="small" style="margin:4px 0"><b>First basket: '+esc(w.n)+'</b> ('+esc(w.tm==='home'?H.abbr:A.abbr)+', '+(w.sv===3?'a three':'a field goal')+(w.q?', Q'+w.q+' '+esc(w.c||''):'')+')'+(f.res.any&&f.res.any.i!==w.i&&f.res.any.sv===1?' <span class="muted">· the first points were a free throw by '+esc(f.res.any.n)+'</span>':'')+'</div>'
+      :(f.locked?'<div class="small muted" style="margin:4px 0">Tipped off: this is the locked pre-game prediction. The result is added after the game.</div>':'');
+    return '<div class="rg">'+hd+res+top+'<div class="small muted">'+esc(H.abbr)+' '+(pH==null?'':Math.round(pH*100)+'% / '+esc(A.abbr)+' '+Math.round((1-pH)*100)+'% to score first')+tn+' · '+(f.src==='both'?'model averaged with FanDuel\'s first-basket prices':f.src==='book'?'from FanDuel\'s first-basket prices (no player cards for this game)':'model only (FanDuel has not posted first basket)')+'</div></div>'; }).join('');
+  return rec+rows+'<div class="small muted">Chance = who scores the game\'s first made field goal. Model: which team scores first (a little for the taller centre and the better team) times the player\'s share of his team\'s scoring, scaled by availability. Even the favourite is rarely above 15%. A free throw does not count; sportsbooks differ on that, so check your book\'s rule.</div>';
 }
 
 /* ---------- no run in the first inning (MLB) ---------- */
@@ -7289,7 +7303,7 @@ function hpHomeHtml(){
   else parlays=hpFold('sgp','Best same-game parlays',HP.list.length+' built · FanDuel lines and props',
       HP_SIZES.map(sz=>hpFold('sgp'+sz[0],sz[0]+'-leg parlays',(HP.list.filter(s=>s.n===sz[0]).length)+' found'+(sz[0]>2?' · up to '+sz[0]+' legs, fewer when that is all there is':''),sg[sz[0]],sz[0]===2)).join('')+sg.note,true);
   let stacks=''; try{ stacks=(typeof plHtml==='function')?plHtml():''; }catch(e){ stacks=''; }
-  return '<section class="game hpsec"><div class="sec">'+parlays+stacks+hpFold('fb','First basket (NBA and WNBA)','',fb,false)+hpFold('nrfi','No run first inning (MLB)','',nr,false)+'</div></section>';
+  return '<section class="game hpsec"><div class="sec">'+parlays+stacks+hpFold('fb','First basket (NBA and WNBA)',(window.__LSDATA&&window.__LSDATA.fb&&window.__LSDATA.fb.leagues&&Object.keys(window.__LSDATA.fb.leagues).some(k=>window.__LSDATA.fb.leagues[k].n)?'tracked · ':'')+'who scores it first',fb,true)+hpFold('nrfi','No run first inning (MLB)','',nr,false)+'</div></section>';
 }
 document.addEventListener('toggle',function(e){ const d=e.target; if(d&&d.getAttribute&&d.getAttribute('data-fold')) S.fold[d.getAttribute('data-fold')]=d.open; },true);
 
@@ -7319,7 +7333,7 @@ function hpServerTok(l){
     return null; }
   return null;
 }
-try{ if(window.__LS) window.__LS.hp={legs:hpLegs,all:hpAllSgp,mix:hpMixTxt,pick:hpPick,odds:hpOdds,regen:hpRegen}; }catch(e){}
+try{ if(window.__LS) window.__LS.hp={first:hpFirstHtml,legs:hpLegs,all:hpAllSgp,mix:hpMixTxt,pick:hpPick,odds:hpOdds,regen:hpRegen}; }catch(e){}
 
 /* ================= Parlay stacks: cross-game parlays per sport (4 / 8 / 12-15 legs) =================
    Sits on the home screen under "Best same-game parlays". For each sport it builds one parlay from player legs spread across ALL of that sport's upcoming games
