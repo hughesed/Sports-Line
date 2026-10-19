@@ -136,18 +136,74 @@ RPM = float(os.environ.get("ODDS_RPM", "10") or 10)        # the plan's requests
 _LAST = [0.0]
 NO_PLAN = {}                 # league -> ISO time it answered 400 (not on the plan): skipped for NO_PLAN_H hours, then tried again
 NO_PLAN_H = 24
+class RateLimited(RuntimeError):
+    """the API answered 429 and kept answering it: the whole pull stops (asking the next league only makes it worse) and the next pulls back off"""
+
+# ---------------------------------------------------------------- request budget: the free plan is small, so a pull asks only for what the slate needs and the file keeps a ledger
+HORIZON_H = float(os.environ.get("ODDS_HORIZON_H", "30"))            # only games starting within this many hours are asked for (was 2 days)
+BUDGET = float(os.environ.get("ODDS_MONTHLY_BUDGET", "2200"))        # events per month the pulls may use (free plan: 2,500 objects); spread evenly over the days left
+FULL_GAP_MIN = float(os.environ.get("ODDS_FULL_GAP_MIN", "360"))     # leagues with no game on the slate (feed-only cards, soccer, tennis) are pulled only this often
+FAR_GAP_MIN = float(os.environ.get("ODDS_FAR_GAP_MIN", "240"))       # pregame pull gap while no game starts within NEAR_H hours (ODDS_MIN_GAP_MIN applies when one does)
+NEAR_H = 5.0
+BACKOFF_MAX_MIN = float(os.environ.get("ODDS_BACKOFF_MAX_MIN", "240"))
+
+def _guard_state(guard, aware):
+    """-> (guard with the day/month counters rolled over, events the pregame pull may still use today)"""
+    import calendar
+    g = dict(guard or {}); ym = aware.strftime("%Y-%m"); day = aware.strftime("%Y-%m-%d")
+    if g.get("month") != ym: g.update(month=ym, monthEvents=0, day=day, dayEvents=0)
+    if g.get("day") != day: g.update(day=day, dayEvents=0)
+    g.setdefault("monthEvents", 0); g.setdefault("dayEvents", 0)
+    left = calendar.monthrange(aware.year, aware.month)[1] - aware.day + 1
+    allow = max(0.0, (BUDGET - (g["monthEvents"] - g["dayEvents"])) / max(left, 1))
+    return g, allow
+
+def _fail(old, aware, why, path=None, log=print):
+    """note a failed pull in the file's guard (the events stay as they were) and set when the next try may happen: 30, 60, 120, 240 min after 1, 2, 3, 4+ failures in a row"""
+    if not old: return None
+    g, _ = _guard_state(old.get("guard"), aware)
+    g["fails"] = int(g.get("fails") or 0) + 1; g["attemptAt"] = _iso(aware); g["why"] = str(why)[:120]
+    wait = min(30 * 2 ** (g["fails"] - 1), BACKOFF_MAX_MIN)
+    g["blockedUntil"] = _iso(aware + datetime.timedelta(minutes=wait))
+    old["guard"] = g
+    if path:
+        try:
+            tmp = path + ".tmp"; json.dump(old, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)
+        except Exception as ex: log(f"  odds guard not saved: {type(ex).__name__}")
+    return g
+
+def _backing_off(old, aware):
+    g = (old or {}).get("guard") or {}; t = _parse(g.get("blockedUntil"))
+    return (g, t) if (t is not None and aware < t) else (g, None)
+
+def _active_counts(games, aware, horizon_h=None):
+    """{league id: slate games of it that have not started and start within the horizon}: the leagues a pregame pull is for, and how many events each needs"""
+    FD = _fd(); out = {}
+    if FD is None or not games: return out
+    for g in games:
+        lg = FD.KEYLG.get(g.get("key") or g.get("lg"))
+        if lg is None or g.get("bookOnly") or FD._started(g, aware): continue
+        t = _parse(g.get("iso"))
+        if t is None or (t - aware).total_seconds() > (horizon_h or HORIZON_H) * 3600: continue
+        out[lg] = out.get(lg, 0) + 1
+    return out
+
 def _get(key, q, pause=0.6):
     gap = 60.0 / max(RPM, 1) + 0.25 - (time.time() - _LAST[0])
     if gap > 0: time.sleep(gap)
     _LAST[0] = time.time()
     req = urllib.request.Request(API + "?" + urllib.parse.urlencode(q), headers={"x-api-key": key, "Accept": "application/json", "User-Agent": "LineScout/1.0"})
-    for attempt in range(3):          # the free plan rate-limits bursts: wait and retry instead of dropping the league
+    for attempt in range(2):          # a 429 may be a per-minute burst limit: wait once and retry; a second 429 is treated as the plan's quota (see RateLimited)
         try:
             with urllib.request.urlopen(req, timeout=20) as r: d = json.loads(r.read())
             break
         except urllib.error.HTTPError as ex:
-            if ex.code != 429 or attempt == 2: raise
-            time.sleep(8 * (attempt + 1)); _LAST[0] = time.time()
+            if ex.code != 429: raise
+            if attempt == 1:
+                try: body = ex.read().decode("utf-8", "replace")[:100]
+                except Exception: body = ""
+                raise RateLimited("HTTP 429 " + body) from None
+            time.sleep(12); _LAST[0] = time.time()
     time.sleep(pause)
     if not d.get("success"): raise RuntimeError(str(d.get("error") or d)[:120])
     return d
@@ -160,7 +216,7 @@ def pull_league(key, league, max_events, now, done=None):
         events, cursor, notice = [], None, None
         while len(events) < max_events:
             q = {"leagueID": league, "oddsAvailable": "true", "limit": str(min(20, max_events - len(events))),
-                 "startsBefore": (now + datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ")}
+                 "startsBefore": (now + datetime.timedelta(hours=HORIZON_H)).strftime("%Y-%m-%dT%H:%M:%SZ")}
             if filters:
                 q["startsAfter"] = (now - datetime.timedelta(minutes=back)).strftime("%Y-%m-%dT%H:%M:%SZ")
                 if BOOKS: q["bookmakerID"] = BOOKS
@@ -181,6 +237,7 @@ def pull_league(key, league, max_events, now, done=None):
             ev, notice = go(True, True)
             ALT_STATE["v"] = "ok"
             if ev: return ev, notice
+        except RateLimited: raise
         except urllib.error.HTTPError as ex:
             if ex.code not in (400, 422): raise
             ALT_STATE["v"] = "refused"
@@ -189,6 +246,7 @@ def pull_league(key, league, max_events, now, done=None):
     try:
         ev, notice = go(True)
         if ev: return ev, notice
+    except RateLimited: raise
     except urllib.error.HTTPError as ex:
         if ex.code not in (400, 422): raise
     except RuntimeError:
@@ -201,7 +259,7 @@ def _slate_wants(games, league, now):
     if not games or FD is None: return []
     return [g for g in games if FD.KEYLG.get(g.get("key") or g.get("lg")) == league and not g.get("bookOnly") and not g.get("oddsId") and not FD._started(g, now)]
 
-def pull(key, max_events, now=None, log=print, games=None, skip=None, skip_leagues=None):
+def pull(key, max_events, now=None, log=print, games=None, skip=None, skip_leagues=None, full=True):
     """one request series per league; a league that errors (unknown id, plan limit) is skipped, the others still count. max_events is per league.
     Leagues with slate games go first and the whole pull stops at ODDS_DEADLINE_S (default 110) so a slow API cannot eat the run."""
     now = now or datetime.datetime.utcnow(); events, notice, ok = [], None, 0
@@ -212,23 +270,34 @@ def pull(key, max_events, now=None, log=print, games=None, skip=None, skip_leagu
     order = [x.strip() for x in LEAGUES.split(",") if x.strip() and x.strip() not in (skip_leagues or ())]
     for lg in [x for x in order if off_plan(x)]: LEAGUE_INFO[lg] = "not on the plan (400), retried after " + str(NO_PLAN_H) + " h"
     order = [x for x in order if not off_plan(x)]
+    act = _active_counts(games, aware)
+    if games is not None and not full:          # a slate-only pull: just the leagues that have a game coming up (a full pull also covers feed-only leagues, soccer, tennis)
+        for lg in [x for x in order if x not in act]: LEAGUE_INFO[lg] = "no game on the slate (next full pull is due later)"
+        order = [x for x in order if x in act]
     have = {lg for lg in order if _slate_wants(games, lg, aware)}
     order.sort(key=lambda lg: 0 if lg in have else 1)          # stable: the slate's leagues first, the rest in the configured order
     t0 = time.time(); deadline = float(os.environ.get("ODDS_DEADLINE_S", "110"))
-    pulled = []
+    pulled = []; limited = None
     for lg in order:
         if time.time() - t0 > deadline:
             log(f"  odds {lg}: skipped (pull time limit of {deadline:.0f}s reached)"); LEAGUE_INFO[lg] = "skipped (time)"; continue
         try:
             cap = max(max_events, CAPS.get(lg, max_events)) if os.environ.get("ODDS_MAX_EVENTS") is None else max_events
+            if os.environ.get("ODDS_MAX_EVENTS") is None and games is not None:
+                cap = min(cap, act[lg] + 5) if lg in act else min(cap, 30)       # ask for about as many events as the slate has games (+5), not the league's whole cap
             done = None
             want = [g for g in _slate_wants(games, lg, aware) if str(g.get("id")) not in skip]
             if want and FD is not None:
                 done = lambda evs, want=want: all(FD.find_event(g, evs) for g in want)
             ev, n = pull_league(key, lg, cap, now, done); events += ev; notice = n or notice; ok += 1; pulled.append(lg); LEAGUE_INFO[lg] = len(ev)
+        except RateLimited as ex:
+            log(f"  odds {lg}: {ex}"[:160]); LEAGUE_INFO[lg] = f"RateLimited: {ex}"[:80]; limited = str(ex)
+            for rest in order[order.index(lg) + 1:]: LEAGUE_INFO[rest] = "skipped (rate limited)"
+            break          # the plan said stop: do not ask the other leagues
         except Exception as ex:
             log(f"  odds {lg}: {type(ex).__name__}: {ex}"[:160]); LEAGUE_INFO[lg] = f"{type(ex).__name__}: {ex}"[:80]
             if isinstance(ex, urllib.error.HTTPError) and ex.code == 400: NO_PLAN[lg] = _iso(aware)
+    if limited and not ok: raise RateLimited(limited)
     if not ok: raise RuntimeError("no league could be pulled")
     PULLED[:] = pulled
     return events, notice
@@ -265,11 +334,18 @@ def refresh(path, log=print, now=None, games=None):
     games = the slate's cards (optional): lets the pull stop once they are covered and pull again when one is missing."""
     key = os.environ.get("ODDS_API_KEY", "").strip()
     if not key: return "no ODDS_API_KEY (skipped)"
-    now = now or datetime.datetime.utcnow()
+    now = now or datetime.datetime.utcnow(); aware = _utc(now)
     try: old = json.load(open(path))
     except Exception: old = None
+    guard, allow = _guard_state((old or {}).get("guard"), aware)
+    g0, until = _backing_off(old, aware)
+    if old and until is not None:          # the last pull failed (429 and the like): do not ask again until the back-off is over
+        return f"kept (odds feed backing off until {until:%H:%M}Z after {g0.get('fails', 0)} failed pull(s): {str(g0.get('why') or '')[:60]})"
     gap = float(os.environ.get("ODDS_MIN_GAP_MIN", "60")); cover_gap = float(os.environ.get("ODDS_COVER_GAP_MIN", "20"))
+    if games is not None and not _active_counts(games, aware, NEAR_H): gap = max(gap, FAR_GAP_MIN)          # nothing starts soon: lines barely move, pull rarely
     why = ""
+    if old and guard["dayEvents"] >= allow:          # today's share of the month's event budget is spent
+        return f"kept (today's odds budget used: {guard['dayEvents']} of ~{allow:.0f} events; month {guard['monthEvents']} of {BUDGET:.0f})"
     if old and old.get("generatedAt"):
         age = (now - datetime.datetime.strptime(old["generatedAt"], "%Y-%m-%dT%H:%M:%SZ")).total_seconds() / 60
         if age < gap:
@@ -277,12 +353,12 @@ def refresh(path, log=print, now=None, games=None):
             if not miss: return f"kept ({age:.0f} min old, pulls every {gap:.0f} min)"
             why = f" (early: {len(miss)} slate game(s) had no event, e.g. {miss[0]['teams']['away']['abbr']}@{miss[0]['teams']['home']['abbr']})"
     try:
-        aware = _utc(now)
         skip = set((old or {}).get("unmatched") or {})
+        full_at = _parse(guard.get("fullAt")); full = games is None or full_at is None or (aware - full_at).total_seconds() / 60 >= FULL_GAP_MIN
         NO_PLAN.clear(); NO_PLAN.update((old or {}).get("noPlan") or {}); LEAGUE_INFO.clear()
         s_gap = float(os.environ.get("ODDS_SOCCER_GAP_MIN", "120")); s_at = _parse((old or {}).get("soccerAt"))
         soccer_due = bool(SOCCER) and (s_at is None or (aware - s_at).total_seconds() / 60 >= s_gap)
-        try: evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "15")), now, log, games=games, skip=skip, skip_leagues=None if soccer_due else set(SOCCER))
+        try: evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "15")), now, log, games=games, skip=skip, skip_leagues=None if soccer_due else set(SOCCER), full=full)
         except TypeError: evs, notice = pull(key, int(os.environ.get("ODDS_MAX_EVENTS", "15")), now, log)      # an older stub without the new arguments
         stamp = _iso(aware)
         fresh = [normalize(e) for e in evs]
@@ -301,6 +377,10 @@ def refresh(path, log=print, now=None, games=None):
         out["leagues"] = dict(LEAGUE_INFO); out["noPlan"] = dict(NO_PLAN); out["altLines"] = ALT_STATE["v"]
         out["altRungs"] = sum(len(b.get("alts") or []) for e in fresh for p in e.get("props") or [] for b in (p.get("books") or {}).values())
         if old and old.get("liveAt"): out["liveAt"] = old["liveAt"]
+        for k in ("fails", "blockedUntil", "why"): guard.pop(k, None)          # a good pull ends any back-off
+        guard["attemptAt"] = stamp; guard["dayEvents"] += len(evs); guard["monthEvents"] += len(evs)
+        if full: guard["fullAt"] = stamp
+        out["guard"] = guard
         if games is not None: out["unmatched"] = _unmatched(games, fresh + keep, aware, old)
         tmp = path + ".tmp"; json.dump(out, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)
         soc = {lg: LEAGUE_INFO[lg] for lg in SOCCER if lg in LEAGUE_INFO}
@@ -308,7 +388,9 @@ def refresh(path, log=print, now=None, games=None):
     except Exception as ex:
         log(f"  odds step failed: {type(ex).__name__}: {ex}"[:200])
         why = "; ".join(f"{k}: {v}" for k, v in LEAGUE_INFO.items() if not isinstance(v, int))[:300]
-        return f"error: {type(ex).__name__}: {ex}"[:80] + (f" ({why})" if why else "")
+        g = _fail(old, aware, f"{type(ex).__name__}: {ex}", path, log)
+        nxt = f"; next try {g['blockedUntil']}" if g else ""
+        return f"error: {type(ex).__name__}: {ex}"[:80] + (f" ({why})" if why else "") + nxt
 
 # ---------------------------------------------------------------- the live pull: FanDuel's current in-play lines
 def in_play(g, now, hours=6):
@@ -345,7 +427,11 @@ def refresh_live(path, games, now=None, log=print):
     if not live: return "no games in play"
     try: old = json.load(open(path))
     except Exception: return "no odds file yet"
-    gap = float(os.environ.get("ODDS_LIVE_GAP_MIN", "4"))
+    gap = float(os.environ.get("ODDS_LIVE_GAP_MIN", "10"))
+    g0, until = _backing_off(old, now)
+    if until is not None: return f"kept (odds feed backing off until {until:%H:%M}Z)"
+    guard, allow = _guard_state(old.get("guard"), now)
+    if guard["dayEvents"] >= 2 * allow: return f"kept (today's odds budget used: {guard['dayEvents']} events)"
     if old.get("liveAt"):
         t = _parse(old["liveAt"])
         if t is not None and (now - t).total_seconds() / 60 < gap: return f"kept ({(now - t).total_seconds() / 60:.0f} min old, live pulls every {gap:.0f} min)"
@@ -356,9 +442,13 @@ def refresh_live(path, games, now=None, log=print):
     got, errs = [], []
     for lg in leagues:
         try: got += pull_live_league(key, lg, now)
+        except RateLimited as ex:
+            errs.append(lg); log(f"  odds live {lg}: {ex}"[:160]); break
         except Exception as ex:
             errs.append(lg); log(f"  odds live {lg}: {type(ex).__name__}: {ex}"[:160])
-    if not got and errs and len(errs) == len(leagues): return "error: live pull failed (" + ", ".join(errs) + ")"
+    if not got and errs and len(errs) == len(leagues):
+        _fail(old, now, "live pull failed: " + ", ".join(errs), path, log)
+        return "error: live pull failed (" + ", ".join(errs) + ")"
     stamp = _iso(now); fresh = []
     for e in got:
         n = normalize(e, live=True); n["asOf"] = stamp; fresh.append(n)
@@ -368,6 +458,8 @@ def refresh_live(path, games, now=None, log=print):
         if o and not n.get("eventLinks"): n["eventLinks"] = o.get("eventLinks") or {}
         by[n["id"]] = n
     old["events"] = list(by.values()); old["liveAt"] = stamp
+    for k in ("fails", "blockedUntil", "why"): guard.pop(k, None)
+    guard["dayEvents"] += len(got); guard["monthEvents"] += len(got); old["guard"] = guard
     try:
         tmp = path + ".tmp"; json.dump(old, open(tmp, "w"), separators=(",", ":")); os.replace(tmp, path)
     except Exception as ex:

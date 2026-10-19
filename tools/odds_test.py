@@ -42,7 +42,12 @@ s2 = odds.refresh(path); chk("second pull inside the gap is skipped: " + s2, s2.
 os.environ["ODDS_MIN_GAP_MIN"] = "0"
 def boom(*a, **k): raise RuntimeError("Invalid API key")
 odds.pull = boom; before = open(path).read(); s3 = odds.refresh(path, log=lambda *a: None)
-chk("failure keeps the old file: " + s3, s3.startswith("error") and open(path).read() == before)
+chk("failure keeps the old file's events: " + s3, s3.startswith("error") and json.load(open(path))["events"] == json.loads(before)["events"])
+g3 = json.load(open(path)).get("guard") or {}
+chk("failure notes a back-off in the file (1 fail, next try later)", g3.get("fails") == 1 and g3.get("blockedUntil"))
+odds.pull = lambda *a, **k: (_ for _ in ()).throw(AssertionError("asked the API while backing off"))
+s3b = odds.refresh(path, log=lambda *a: None); chk("while backing off nothing is asked: " + s3b, s3b.startswith("kept (odds feed backing off"))
+odds.FAR_GAP_MIN = 0          # the older checks below expect a pull whenever ODDS_MIN_GAP_MIN says so
 
 # ---- v2: per-event asOf, coverage re-pull, early exit, live pull ----
 import copy
@@ -110,5 +115,19 @@ chk("live event is stamped asOf the pull and the file records liveAt", e9["asOf"
 s = odds.refresh_live(path, [live_game], NOW + datetime.timedelta(minutes=2)); chk("second live pull inside the gap is skipped: " + s, s.startswith("kept"))
 odds.pull_live_league = lambda key, lg, now: (_ for _ in ()).throw(RuntimeError("boom"))
 before = open(path).read(); s = odds.refresh_live(path, [live_game], NOW + datetime.timedelta(minutes=10), log=lambda *a: None)
-chk("live pull failure keeps the old file: " + s, s.startswith("error") and open(path).read() == before)
+chk("live pull failure keeps the old file's events: " + s, s.startswith("error") and json.load(open(path))["events"] == json.loads(before)["events"])
+# ---- v3: 429 stops the pull, back-off steps, daily budget, slate-only leagues ----
+d3 = tempfile.mkdtemp(); p3 = path = d3 + "/odds.json"; os.environ["ODDS_MIN_GAP_MIN"] = "0"
+write(d3, events=[], generatedAt="2026-10-10T14:00:00Z")
+asked = []
+def fake429(key, q, pause=0.6):
+    asked.append(q["leagueID"]); raise odds.RateLimited("HTTP 429")
+orig = odds._get; odds._get = fake429; odds.pull = real_pull; odds.LEAGUES = "NFL,NCAAF,NBA,MLB"
+s = odds.refresh(p3, log=lambda *a: None, now=NOW); gg = json.load(open(p3))["guard"]
+chk("a 429 stops after the first league (asked %s): %s" % (asked, s), asked == ["NFL"] and s.startswith("error: RateLimited"))
+chk("back-off is 30 min after the first failure, 60 after the second", gg["fails"] == 1 and gg["blockedUntil"] == "2026-10-10T17:30:00Z" if NOW.strftime("%H:%M") == "17:00" else gg["fails"] == 1)
+g2 = odds._fail(json.load(open(p3)), odds._utc(NOW) + datetime.timedelta(minutes=31), "x"); chk("second failure doubles the wait", g2["fails"] == 2 and (odds._parse(g2["blockedUntil"]) - (odds._utc(NOW) + datetime.timedelta(minutes=31))).total_seconds() == 3600)
+g, allow = odds._guard_state({"month": "2026-10", "monthEvents": 2000, "day": "2026-10-10", "dayEvents": 40}, odds._utc(NOW))
+chk("daily allowance = what is left of the month / days left (%.0f)" % allow, 10 < allow < 12)
+odds._get = orig
 print("ALL PASS" if ok else "SOME FAILED"); sys.exit(0 if ok else 1)
