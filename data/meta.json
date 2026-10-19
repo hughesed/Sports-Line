@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 158,
+ "runNumber": 159,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T10:40:51Z",
- "generatedAtET": "Mon Oct 19, 6:40 AM ET",
+ "generatedAt": "2026-10-19T16:58:19Z",
+ "generatedAtET": "Mon Oct 19, 12:58 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-19T10:40:51Z",
+ "lastRunAt": "2026-10-19T16:58:19Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -77,9 +77,9 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 6,
+   "games": 10,
    "playerLevel": 0,
-   "teamLevel": 4,
+   "teamLevel": 8,
    "carried": 2,
    "error": null,
    "newFinals": 0,
@@ -104,13 +104,13 @@
   }
  },
  "counts": {
-  "slate": 27,
+  "slate": 31,
   "playerCards": 15,
-  "teamCards": 12,
+  "teamCards": 16,
   "window": 135,
   "sched": 78,
   "pastp": 23,
-  "predictions": 243,
+  "predictions": 247,
   "graded": 176,
   "storeGames": 13725
  },
@@ -134,7 +134,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 4.7,
+  "seconds": 7.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,17 +144,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 27,
+  "gamesUploaded": 16,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2782,
+  "simPlayersUploaded": 2791,
   "configured": true
  },
  "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; NBA: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: skipped (time); NHL: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (13): ANA@NYR, COL@PHI, SJ@TOR, CLE@TB, ATL@GS, WSH@SF...",
+ "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (17): ANA@NYR, COL@PHI, SJ@TOR, CLE@TB, ATL@GS, WSH@SF...",
  "errors": [],
- "requests": 279,
+ "requests": 271,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 139.3
+ "seconds": 144.6
 }
