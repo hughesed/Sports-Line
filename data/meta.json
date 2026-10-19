@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 154,
+ "runNumber": 155,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T00:32:28Z",
- "generatedAtET": "Sun Oct 18, 8:32 PM ET",
+ "generatedAt": "2026-10-19T01:02:07Z",
+ "generatedAtET": "Sun Oct 18, 9:02 PM ET",
  "today": "2026-10-18",
- "lastRunAt": "2026-10-19T00:32:28Z",
+ "lastRunAt": "2026-10-19T01:02:07Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,7 +16,7 @@
    "teamLevel": 0,
    "carried": 11,
    "error": null,
-   "newFinals": 3,
+   "newFinals": 0,
    "storeGames": 376,
    "lastFinal": "2026-10-18"
   },
@@ -38,7 +38,7 @@
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2463,
    "lastFinal": "2026-10-18"
   },
@@ -82,7 +82,7 @@
    "teamLevel": 4,
    "carried": 2,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 137,
    "lastFinal": "2026-10-18"
   },
@@ -134,7 +134,7 @@
   },
   "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.8,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -150,8 +150,8 @@
  "oddsLive": "error: live pull failed (NFL, MLB, NHL)",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (12): ANA@NYR, COL@PHI, SJ@TOR, CLE@TB, ATL@GS, WSH@SF...",
  "errors": [],
- "requests": 316,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 222.7
+ "requests": 256,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 228.3
 }
