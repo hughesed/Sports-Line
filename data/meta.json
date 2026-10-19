@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 200,
+ "runNumber": 201,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T23:25:54Z",
- "generatedAtET": "Mon Oct 19, 7:25 PM ET",
+ "generatedAt": "2026-10-19T23:58:02Z",
+ "generatedAtET": "Mon Oct 19, 7:58 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-19T23:25:54Z",
+ "lastRunAt": "2026-10-19T23:58:02Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,9 +44,9 @@
   },
   "nba": {
    "status": "ok",
-   "games": 5,
+   "games": 8,
    "playerLevel": 0,
-   "teamLevel": 5,
+   "teamLevel": 8,
    "carried": 0,
    "error": null,
    "newFinals": 0,
@@ -77,10 +77,10 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 12,
+   "games": 13,
    "playerLevel": 0,
    "teamLevel": 8,
-   "carried": 4,
+   "carried": 5,
    "error": null,
    "newFinals": 0,
    "storeGames": 138,
@@ -104,13 +104,13 @@
   }
  },
  "counts": {
-  "slate": 28,
+  "slate": 32,
   "playerCards": 8,
-  "teamCards": 20,
+  "teamCards": 24,
   "window": 135,
   "sched": 78,
   "pastp": 23,
-  "predictions": 251,
+  "predictions": 255,
   "graded": 176,
   "storeGames": 13725
  },
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 2.3,
+  "seconds": 6.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,17 +144,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 3,
+  "gamesUploaded": 8,
   "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2428,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 0 graded, nba 0 graded",
  "odds": "kept (odds feed backing off until 02:05Z after 4 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 02:05Z)",
- "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (19): SJ@TOR, CLE@TB, ATL@GS, WSH@SF, PIT@UTA, BOS@DET...",
+ "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (22): CLE@TB, ATL@GS, WSH@SF, PIT@UTA, BOS@DET, MTSU@FIU...",
  "errors": [],
- "requests": 283,
+ "requests": 303,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 23.3
+ "seconds": 30.2
 }
