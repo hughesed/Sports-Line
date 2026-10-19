@@ -4,8 +4,9 @@
    Prices on every leg are the best sportsbook price in the feed. Chances blend the feed's no-vig price with the model when the model has the player.
    Practice only. */
 const HP={min:0.6,list:[],cache:{},open:{sgp:true}};
-/* what the player's own sportsbook offers on player props. NHL: overs only, and only points, shots and saves (no unders, no assists), so none of the builders may use anything else there */
-const HP_BOOK={nhl:{overOnly:true,stats:{pts:1,sog:1,saves:1}}};
+/* what the player's own sportsbook offers. NHL player props: overs only, and only points, assists, shots on goal and saves, so none of the builders may use anything else there.
+   altSpr = FanDuel's alternate spread (NHL "Alternate Puck Line", WNBA "Alternate Handicaps") may be a leg; teamTot = team totals ("Anaheim Ducks Total Goals") may be a leg. Other leagues are unchanged. */
+const HP_BOOK={nhl:{overOnly:true,stats:{pts:1,sog:1,saves:1,ast:1},altSpr:'alt puck line',teamTot:'goals'},wnba:{altSpr:'alt handicap'}};
 function hpPropOk(key,stat,under){ const r=HP_BOOK[key]; return !r||((!under||!r.overOnly)&&(!r.stats||!!r.stats[stat])); }
 if(!S.fold) S.fold={};
 const HP_BK={draftkings:'DK',fanduel:'FD',betmgm:'MGM',caesars:'CZR',espnbet:'ESPN',fanatics:'FAN',bovada:'BOV',betrivers:'BR',hardrockbet:'HR'};
@@ -36,12 +37,12 @@ function hpMatchup(g,pl,stKey){
   const opp=pl.side==='home'?'away':'home', ot=g.teams[opp]&&g.teams[opp].ht; let f=1; const why=[];
   if(ot){ const d=ot.avg-base.avg;
     if(stKey==='reb'){ const k=clamp(1-0.018*d,0.9,1.1); f*=k; if(Math.abs(k-1)>=0.015) why.push(g.teams[opp].abbr+' rotation avg '+ot.avg+' in: '+(k<1?'taller, fewer boards':'shorter, more boards')); }
-    else if(stKey==='pts'||stKey==='pra'||stKey==='pr'||stKey==='pa'){ const k=clamp(1-0.008*d,0.94,1.06); f*=k; if(Math.abs(k-1)>=0.01) why.push(g.teams[opp].abbr+' height '+(k<1?'cuts':'helps')+' inside scoring'); }
+    else if(stKey==='pts'||stKey==='pra'||stKey==='ptsreb'||stKey==='ptsast'){ const k=clamp(1-0.008*d,0.94,1.06); f*=k; if(Math.abs(k-1)>=0.01) why.push(g.teams[opp].abbr+' height '+(k<1?'cuts':'helps')+' inside scoring'); }
     else if(stKey==='fg3'){ const k=clamp(1+0.004*d,0.96,1.04); f*=k; }
     if(pl.ht&&(stKey==='reb'||stKey==='pts')){ const gap=pl.ht-ot.big; const k=clamp(1+0.006*gap,0.95,1.05); f*=k; if(Math.abs(k-1)>=0.02) why.push(pl.name.split(' ').pop()+' is '+Math.abs(gap)+' in '+(gap>0?'taller':'shorter')+' than their tallest'); }
   }
   const m=g.crossroads&&g.crossroads.matchups&&g.crossroads.matchups[pl.side==='home'?1:0];       // the opposing defense rating (50 = average)
-  if(m&&m.dfn!=null&&(stKey==='pts'||stKey==='pra'||stKey==='pr'||stKey==='pa'||stKey==='ast')){ const k=clamp(1-(m.dfn-50)/50*0.06,0.94,1.06); f*=k; if(Math.abs(k-1)>=0.02) why.push('their defense rates '+Math.round(m.dfn)+'/100'); }
+  if(m&&m.dfn!=null&&(stKey==='pts'||stKey==='pra'||stKey==='ptsreb'||stKey==='ptsast'||stKey==='ast')){ const k=clamp(1-(m.dfn-50)/50*0.06,0.94,1.06); f*=k; if(Math.abs(k-1)>=0.02) why.push('their defense rates '+Math.round(m.dfn)+'/100'); }
   return {f:f,why:why.join('; ')};
 }
 function hpHtBlock(g){
@@ -94,6 +95,26 @@ function hpLegs(g){
       let pm=null; if(cr&&typeof TOTS!=='undefined'&&TOTS[key]){ const po=logistic((cr.projTotal-ln)/TOTS[key]); pm=d==='over'?po:1-po; }
       const p=adjP(clamp(pm==null?pf:0.5*pf+0.5*pm,0.02,0.97),'team'), tok='o:'+g.id+':atot:'+d+':'+ln;
       out.push({id:tok,tok:tok,gid:g.id,kind:'tot',label:(d==='over'?'Over ':'Under ')+ln+' (alt total)',price:a.odds,book:'fanduel',bk:'FD',link:a.link||null,nBooks:1,line:ln,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',spec:{k:'tot',dir:d,line:ln},group:g.id+':tot',fdRung:1}); }); });
+  /* FanDuel's alternate spreads (NHL alternate puck line, WNBA alternate handicaps): the same team-side leg as the main spread at another number, graded the same way */
+  const bk=HP_BOOK[key];
+  if(bk&&bk.altSpr&&!(typeof isSoc==='function'&&isSoc(g))) ['home','away'].forEach(sd=>{ const x=M.spread&&M.spread[sd], fd=x&&x.books&&x.books.fanduel; if(!fd||!fd.alts) return;
+    fd.alts.forEach(a=>{ if(a.odds==null||a.line==null||(fd.line!=null&&+a.line===+fd.line)) return; const ln=+a.line, pf=clamp(hpImp(a.odds)*0.96,0.02,0.97), lineH=sd==='home'?ln:-ln;
+      let pm=null; if(cr&&typeof LOGI!=='undefined'&&LOGI[key]){ const ph=logistic((cr.projMargin+lineH)/LOGI[key]); pm=sd==='home'?ph:1-ph; }
+      const p=adjP(clamp(pm==null?pf:0.5*pf+0.5*pm,0.02,0.97),'team'), tok='o:'+g.id+':aspr:'+sd+':'+ln;
+      if(out.some(z=>z.tok===tok)) return;
+      out.push({id:tok,tok:tok,gid:g.id,kind:'spr',label:(sd==='home'?H:A).abbr+' '+sg(ln)+' ('+bk.altSpr+')',price:a.odds,book:'fanduel',bk:'FD',link:a.link||null,nBooks:1,line:ln,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',spec:{k:'spr',side:sd,line:ln},group:g.id+':spr',fdRung:1}); }); });
+  /* team totals ("Anaheim Ducks Total Goals"): FanDuel's own team line and its alternate lines. One team total per parlay (hpCat 'tteam'). The model's chance comes from the
+     team's projected score: the projected total split by the projected margin, spread like a single team's score (about 0.72 of the game total's spread). */
+  if(bk&&bk.teamTot&&e.tt&&!(typeof isSoc==='function'&&isSoc(g))) ['home','away'].forEach(sd=>{ const T=e.tt[sd]; if(!T) return; const nm=(sd==='home'?H:A).abbr;
+    const proj=(cr&&typeof TOTS!=='undefined'&&TOTS[key]&&cr.projTotal!=null&&cr.projMargin!=null)?(cr.projTotal+(sd==='home'?1:-1)*cr.projMargin)/2:null;
+    ['over','under'].forEach(d=>{ const x=T[d], fd=x&&x.books&&x.books.fanduel; if(!fd||fd.odds==null) return;
+      const rows=[{odds:fd.odds,line:fd.line,link:fd.link,main:true}].concat((fd.alts||[]).map(a=>({odds:a.odds,line:a.line,link:a.link})));
+      rows.forEach(r=>{ if(r.odds==null||r.line==null||!isFinite(+r.line)) return; const ln=+r.line, pf=clamp(hpImp(r.odds)*0.96,0.02,0.97);
+        let pm=null; if(proj!=null){ const po=logistic((proj-ln)/(TOTS[key]*0.72)); pm=d==='over'?po:1-po; }
+        const p=adjP(clamp(pm==null?pf:0.5*pf+0.5*pm,0.02,0.97),'team'), tok='o:'+g.id+':tt:'+sd+':'+d+':'+ln;
+        if(out.some(z=>z.tok===tok)) return;
+        out.push({id:tok,tok:tok,gid:g.id,kind:'tt',label:nm+' team total '+(d==='over'?'Over ':'Under ')+ln+(bk.teamTot==='goals'?' goals':''),price:r.odds,book:'fanduel',bk:'FD',link:r.link||null,nBooks:1,line:ln,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
+          spec:{k:'tt',side:sd,dir:d,line:ln},group:g.id+':tt:'+sd,fdRung:r.main?0:1}); }); }); });
   /* FanDuel only: a leg priced at another book, or estimated, is left out */
   const fdo=out.filter(hpIsFd); HP.cache[ck]=fdo; return fdo;
 }
@@ -107,7 +128,7 @@ function hpInWin(g){ if(!g.day) return true; const a=Date.parse(S.date+'T12:00:0
 const HP_SIZES=[[2,0.64],[4,0.58],[8,0.54]];     // legs wanted, and the lowest chance a leg may have to be used
 const HP_MIN_ALL=0.28;                            // a same-game parlay is only built or shown when its all-hit chance is at least this; a leg that would pull it below is left out, so a big parlay may have fewer legs
 /* what kind of bet a leg is, for mixing: a team side (moneyline / spread), the game total, a player over/under, or a stat threshold ("60+ rush yds") */
-const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.floor?'floor':l.kind==='alt'?'alt':'ou';
+const hpCat=l=>(l.kind==='ml'||l.kind==='spr')?'side':l.kind==='tot'?'total':l.kind==='tt'?'tteam':l.floor?'floor':l.kind==='alt'?'alt':'ou';
 const hpIsUnder=l=>!!(l.spec&&(l.spec.dir==='under'||l.spec.dir==='lt'));
 /* picks up to n legs a step at a time. The score is the leg's chance, nudged so the parlay mixes kinds: at most one team side and one game total, no more than
    ~40% unders, a stat type is not repeated more than the size allows, the first leg of each kind (floor legs excepted) gets a bonus, and legs already used in a smaller parlay for the
@@ -123,7 +144,7 @@ function hpPick(legs,n,floor,used,opts){
     for(const l of legs){
       if(l.p<floor||grp[l.group]||out.indexOf(l)>=0) continue;
       if(out.length>=1&&hpAllP(out.concat([l]))<HP_MIN_ALL) continue;       // keep the whole parlay at or above the all-hit minimum
-      const c=hpCat(l); if((c==='side'||c==='total')&&kinds[c]) continue; if(c==='alt'&&(kinds.alt||0)>=maxAlt) continue; if(c==='floor'&&(kinds.floor||0)>=maxFloor) continue;
+      const c=hpCat(l); if((c==='side'||c==='total'||c==='tteam')&&kinds[c]) continue; if(c==='alt'&&(kinds.alt||0)>=maxAlt) continue; if(c==='floor'&&(kinds.floor||0)>=maxFloor) continue;
       if((l.kind==='prop'||l.kind==='alt')&&(per[l.pid]||0)>=maxPer) continue;
       const un=hpIsUnder(l); if(un&&unders>=maxUnder) continue;
       const sk=l.spec&&l.spec.stat; if(sk&&(stats[sk]||0)>=maxStat) continue;
@@ -177,7 +198,7 @@ function hpAllSgp(){
     all.push(s); }); });
   all.sort((a,b)=>b.p*(1+0.04*(Object.keys(b.cats).length-1))-a.p*(1+0.04*(Object.keys(a.cats).length-1))); return all;       // a mix of kinds ranks a little higher
 }
-const HP_CATN={side:'team side',total:'total',ou:'over/under prop',alt:'stat threshold',floor:'floor leg'};
+const HP_CATN={side:'team side',total:'total',tteam:'team total',ou:'over/under prop',alt:'stat threshold',floor:'floor leg'};
 function hpMixTxt(s){ return Object.keys(s.cats).map(k=>s.cats[k]+' '+HP_CATN[k]+(s.cats[k]>1&&k!=='side'?'s':'')).join(' · '); }
 function hpLegRow(l){
   if(l.fdRung) return '<details class="hpleg"><summary><span class="hpl">'+esc(l.label)+'</span> <span class="mono">'+fo(l.price)+'</span> <span class="muted small"><b class="fdtag">FD</b> · '+Math.round(l.p*100)+'%</span></summary>'+

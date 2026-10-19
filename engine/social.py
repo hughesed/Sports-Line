@@ -10,7 +10,7 @@ from espn import SP, SB, curl, pmap, ROOT
 
 STATE = os.path.join(ROOT, "store", "sb_state.json")
 ESPFAM = {"cfb": "nfl", "nba": "wnba", "cbb": "wnba"}           # same parser families as the page (standalone.js)
-COMP = {"pr": ("passYds", "rushYds"), "rr": ("rushYds", "recYds"), "pra": ("pts", "reb", "ast"), "hrr": ("hits", "runs", "rbi")}
+COMP = {"pr": ("passYds", "rushYds"), "rr": ("rushYds", "recYds"), "pra": ("pts", "reb", "ast"), "ptsreb": ("pts", "reb"), "ptsast": ("pts", "ast"), "rebast": ("reb", "ast"), "hrr": ("hits", "runs", "rbi")}
 
 def load_state():
     try:

@@ -29,7 +29,7 @@ DEFAULT_BACK_MIN = float(os.environ.get("ODDS_STARTED_MIN", "30"))
 KEEP_H = 6                  # events that started less than this long ago stay in the file between pulls (live games)
 # SportsGameOdds stat ids -> the stat names used by the battle picker
 STAT = {"points": "pts", "rebounds": "reb", "assists": "ast", "threePointersMade": "fg3", "points+rebounds+assists": "pra",
-        "points+rebounds": "pr", "points+assists": "pa", "rebounds+assists": "ra", "doubleDouble": "dd", "tripleDouble": "td",
+        "points+rebounds": "ptsreb", "points+assists": "ptsast", "rebounds+assists": "rebast", "doubleDouble": "dd", "tripleDouble": "td",
         "passing_yards": "passYds", "passing_touchdowns": "passTD", "rushing_yards": "rushYds", "receiving_yards": "recYds",
         "receiving_receptions": "rec", "batting_hits": "hits", "batting_homeRuns": "hr", "batting_RBI": "rbi", "pitching_strikeouts": "k",
         "passing_attempts": "passAtt", "passing_completions": "comp", "rushing_attempts": "carries",

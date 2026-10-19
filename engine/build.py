@@ -149,7 +149,10 @@ STATS = {
                 ("reb", "Rebounds", lambda g: v(g, "totalRebounds"), ["Total Rebounds"], "Rebounds", 5),
                 ("ast", "Assists", lambda g: v(g, "assists"), ["Total Assists"], "Assists", 3),
                 ("fg3", "3-pointers", lambda g: v(g, "threePointFieldGoalsMade-threePointFieldGoalsAttempted_made"), ["Total 3-Point Field Goals"], "3-Point Field Goals", 1.2),
-                ("pra", "Pts+Reb+Ast", lambda g: v(g, "points") + v(g, "totalRebounds") + v(g, "assists"), ["Total Points, Rebounds, and Assists"], "Points + Assists + Rebounds", 21)],
+                ("pra", "Pts+Reb+Ast", lambda g: v(g, "points") + v(g, "totalRebounds") + v(g, "assists"), ["Total Points, Rebounds, and Assists"], "Points + Assists + Rebounds", 21),
+                ("ptsreb", "Pts+Reb", lambda g: v(g, "points") + v(g, "totalRebounds"), ["Total Points and Rebounds", "Total Points + Rebounds"], None, 17),
+                ("ptsast", "Pts+Ast", lambda g: v(g, "points") + v(g, "assists"), ["Total Points and Assists", "Total Points + Assists"], None, 15),
+                ("rebast", "Reb+Ast", lambda g: v(g, "totalRebounds") + v(g, "assists"), ["Total Rebounds and Assists", "Total Rebounds + Assists"], None, 8)],
     },
     "mlb": {
         "H": [("hits", "Hits", lambda g: v(g, "hits"), ["Total Hits"], "Hits", 0.9),

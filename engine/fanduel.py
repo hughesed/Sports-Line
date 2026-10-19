@@ -9,7 +9,7 @@ import math, re, unicodedata
 KEYLG = {"nfl": "NFL", "cfb": "NCAAF", "nba": "NBA", "cbb": "NCAAB", "mlb": "MLB", "wnba": "WNBA", "nhl": "NHL"}
 BOOK = "fanduel"
 LABEL = {"passYds": "Pass yds", "passTD": "Pass TD", "rushYds": "Rush yds", "recYds": "Rec yds", "rec": "Receptions", "pts": "Points", "ast": "Assists", "reb": "Rebounds",
-         "fg3": "3-pointers", "hits": "Hits", "hr": "Home runs", "rbi": "RBI", "k": "Strikeouts", "pra": "Pts+reb+ast", "pr": "Pts+reb", "pa": "Pts+ast", "ra": "Reb+ast",
+         "fg3": "3-pointers", "hits": "Hits", "hr": "Home runs", "rbi": "RBI", "k": "Strikeouts", "pra": "Pts+reb+ast", "ptsreb": "Pts+reb", "ptsast": "Pts+ast", "rebast": "Reb+ast",
          "passAtt": "Pass att", "comp": "Completions", "carries": "Carries", "sog": "Shots on goal", "saves": "Saves",
          "gls": "Goals", "shots": "Shots", "passes": "Passes", "tkl": "Tackles"}
 POS = {"passYds": "QB", "passTD": "QB", "rushYds": "RB", "recYds": "WR", "rec": "WR", "pts": "", "ast": "", "k": "P", "hits": "B", "hr": "B", "rbi": "B"}

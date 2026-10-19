@@ -83,7 +83,7 @@ function fFromManual(lg,m){
 }
 
 /* ================= practice game simulator ================= */
-const COMP={pr:['passYds','rushYds'],rr:['rushYds','recYds'],pra:['pts','reb','ast'],hrr:['hits','runs','rbi']};
+const COMP={pr:['passYds','rushYds'],rr:['rushYds','recYds'],pra:['pts','reb','ast'],ptsreb:['pts','reb'],ptsast:['pts','ast'],rebast:['reb','ast'],hrr:['hits','runs','rbi']};
 const YDS={passYds:1,rushYds:1,recYds:1};
 const statOf=(pl,k)=>pl.stats.find(s=>s.key===k);
 const muTruth=s=>0.65*s.proj+0.35*(s.season!=null?s.season:s.proj);
