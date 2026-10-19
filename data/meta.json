@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 181,
+ "runNumber": 182,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T20:26:34Z",
- "generatedAtET": "Mon Oct 19, 4:26 PM ET",
+ "generatedAt": "2026-10-19T20:36:38Z",
+ "generatedAtET": "Mon Oct 19, 4:36 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-19T20:26:34Z",
+ "lastRunAt": "2026-10-19T20:36:38Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 16,
   "failedCalls": 0,
-  "seconds": 3.3,
+  "seconds": 5.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,17 +144,16 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 3,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2595,
+  "gamesUploaded": 5,
+  "simPlayersUploaded": 2508,
   "configured": true
  },
  "odds": "kept (odds feed backing off until 21:56Z after 3 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (17): ANA@NYR, COL@PHI, SJ@TOR, CLE@TB, ATL@GS, WSH@SF...",
  "errors": [],
- "requests": 269,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 17.2
+ "requests": 326,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 23.9
 }
