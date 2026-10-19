@@ -7,17 +7,17 @@ on:
     - cron: "3,23,43 16-23,0-4 * * *"   # extra triggers: GitHub drops scheduled runs when busy, the gap check keeps these from over-pulling
   workflow_dispatch:
 
-concurrency:
-  group: line-scout-refresh
-  cancel-in-progress: false
-
 permissions:
   contents: write
+  actions: write
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 6
+    concurrency:
+      group: line-scout-refresh
+      cancel-in-progress: false
 
     env:
       PYTHONUNBUFFERED: "1"
@@ -101,3 +101,31 @@ jobs:
 
           echo "Push failed after 3 attempts."
           exit 1
+
+  # GitHub often skips scheduled runs for hours (it did 10:40-17:00 UTC on 2026-10-19). So every run books the next one itself:
+  # it waits until ~10 min after this run started (30 min from 5 to 16 UTC, the quiet overnight hours) and dispatches refresh.yml again.
+  # Only the newest run keeps the chain going (an older run sees a newer one and stops), so chains never pile up; the cron lines above
+  # stay as a backup that restarts the chain if it ever breaks.
+  next:
+    needs: refresh
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Book the next refresh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+        run: |
+          started=$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq .run_started_at)
+          start_s=$(date -d "$started" +%s)
+          hour=$(date -u +%H)
+          if [ "$hour" -ge 5 ] && [ "$hour" -lt 16 ]; then period=1800; else period=600; fi
+          wait=$(( start_s + period - $(date +%s) ))
+          if [ "$wait" -gt 0 ]; then echo "waiting ${wait}s"; sleep "$wait"; fi
+          newer=$(gh api "repos/$REPO/actions/workflows/refresh.yml/runs?per_page=20" --jq "[.workflow_runs[] | select(.id != $RUN_ID) | select(.created_at > \"$started\")] | length")
+          if [ "$newer" != "0" ]; then echo "a newer run exists ($newer); it keeps the chain going"; exit 0; fi
+          gh workflow run refresh.yml --repo "$REPO" --ref "$REF"
+          echo "next refresh booked"
