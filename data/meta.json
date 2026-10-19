@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 184,
+ "runNumber": 185,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T20:49:47Z",
- "generatedAtET": "Mon Oct 19, 4:49 PM ET",
+ "generatedAt": "2026-10-19T20:55:23Z",
+ "generatedAtET": "Mon Oct 19, 4:55 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-19T20:49:47Z",
+ "lastRunAt": "2026-10-19T20:55:23Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 0.7,
+  "seconds": 0.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,7 +144,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 1,
   "configured": true
  },
  "odds": "kept (odds feed backing off until 21:56Z after 3 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
@@ -154,5 +154,5 @@
  "requests": 269,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 19.0
+ "seconds": 20.1
 }
