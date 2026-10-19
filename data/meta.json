@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 168,
+ "runNumber": 169,
  "deadlineHit": false,
- "generatedAt": "2026-10-19T18:16:09Z",
- "generatedAtET": "Mon Oct 19, 2:16 PM ET",
+ "generatedAt": "2026-10-19T18:26:11Z",
+ "generatedAtET": "Mon Oct 19, 2:26 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-19T18:16:09Z",
+ "lastRunAt": "2026-10-19T18:26:11Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 16,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 2.6,
+  "seconds": 1.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,16 +144,15 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 2,
-  "simPlayersUploaded": 2712,
+  "gamesUploaded": 3,
   "configured": true
  },
- "odds": "error: RuntimeError: no league could be pulled (NFL: HTTPError: HTTP Error 429: Too Many Requests; NCAAF: HTTPError: HTTP Error 429: Too Many Requests; NBA: HTTPError: HTTP Error 429: Too Many Requests; MLB: HTTPError: HTTP Error 429: Too Many Requests; WNBA: skipped (time); NHL: skipped (time); NCAAB: skipped (time); ATP: skipped (time); WTA: sk)",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); NCAAB: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-19T18:56:32Z",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (17): ANA@NYR, COL@PHI, SJ@TOR, CLE@TB, ATL@GS, WSH@SF...",
  "errors": [],
  "requests": 269,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 129.0
+ "seconds": 34.5
 }
