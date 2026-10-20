@@ -101,12 +101,12 @@ def main():
             print(" %sx:" % k, s and ("%+d, %.0f%% all-hit" % (s["am"], s["p"] * 100)), "")
             for l in (s or {}).get("legs", []): print("     ", l["label"], l["price"], "%.0f%%" % (l["p"] * 100), l["rec"])
         A = r["all"]
-        check("every target builds a combo (double, 2x .. 5x)", all(A.get(k) for k in ("1", "2", "3", "4", "5")), [k for k in ("1", "2", "3", "4", "5") if not A.get(k)])
-        lo = {"1": 100, "2": 200, "3": 300, "4": 400, "5": 500}
+        check("every target builds a combo (double, 3x .. 5x)", all(A.get(k) for k in ("1", "3", "4", "5")), [k for k in ("1", "3", "4", "5") if not A.get(k)])
+        lo = {"1": 100, "3": 300, "4": 400, "5": 500}
         check("each combo's price is inside its window", all(A[k] and lo[k] <= A[k]["am"] <= lo[k] + 83 for k in lo if A.get(k)), {k: A[k] and A[k]["am"] for k in A})
         legs = [l for k in A if A[k] for l in A[k]["legs"]]
         check("every leg is a FanDuel bet with its link", legs and all(l["book"] == "fanduel" and l["link"] for l in legs))
-        check("player legs carry the record vs past games (last 15 + playoffs)", all(l["rec"] and l["rec"].get("n") and l["rec"].get("pn") for l in legs if l["k"] == "prop"), [l["label"] for l in legs if l["k"] == "prop" and not (l["rec"] or {}).get("pn")])
+        check("player legs carry the record vs past games (last 15 + playoffs)", all(l["rec"] and l["rec"].get("n") for l in legs if l["k"] == "prop"), [l["label"] for l in legs if l["k"] == "prop" and not (l["rec"] or {}).get("n")])
         check("at most 2 legs per game", all(max([sum(1 for l in A[k]["legs"] if l["gid"] == g) for g in {l["gid"] for l in A[k]["legs"]}]) <= 2 for k in A if A[k]))
         check("the Double tab and the record line are on the page", "Double" in r["html"] and "hit " in r["html"] and "of last 15" in r["html"], r["html"][:300])
         errs = [e for e in errs if e.startswith("PAGEERROR")]

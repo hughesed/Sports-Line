@@ -1213,10 +1213,16 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
 .cxrec{color:var(--ok,#16a34a);font-weight:600}
 .cxsec .plseg{grid-template-columns:repeat(5,1fr)}
 
+.cxstrow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cxref{border:1px solid var(--accent);background:var(--surface);color:var(--accent);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.cxref:active{transform:scale(.97)}
+.cxcust{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 10px}
+.cxcust input{width:64px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
+
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="72cf5d733e">
+<body data-build="461c3c95b2">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -7772,10 +7778,17 @@ try{ if(window.__LS) window.__LS.gold={pick:goldPick,slip:goldSlip,legs:goldLegs
    Always optimized: while none of a recorded combo's games has started, a better combo found on a later data refresh replaces it. Once one of its
    games starts it is locked and graded leg by leg at the finals; a fresh combo from the games still to come can then be recorded (max 3 per target a day).
    Recorded in the tracked-picks ledger (kinds cx2..cx5), so the results show on the next day's report. Practice only. */
-const CX={targets:[1,2,3,4,5],over:83,beam:260,maxLegs:14,pool:90,cache:{},k:2,maxVer:3};
+const CX={targets:[1,3,4,5],over:83,beam:260,maxLegs:14,pool:90,cache:{},k:3,mode:3,custom:10,maxVer:3,skip:{},avoid:{}};
+try{ const v=+localStorage.getItem('ls_cx_custom'); if(v>=2&&v<=100) CX.custom=Math.round(v); }catch(e){}
+const cxMax=100;                                                  // custom target: 2x up to 100x your money
+const cxKs=()=>CX.targets.concat(CX.targets.indexOf(CX.custom)<0?[CX.custom]:[]);
+/* custom targets are graded like the others under kind cx<N>: give the report a name for any of them */
+function cxNameKinds(){ try{ if(typeof KINDN==='undefined') return; const add=kd=>{ if(/^cx\d+$/.test(kd)&&!KINDN[kd]) KINDN[kd]='Combo '+(kd==='cx1'?'double':kd.slice(2)+'x'); };
+  for(let n=2;n<=cxMax;n++) add('cx'+n); }catch(e){} }
+cxNameKinds();
 const cxKind=k=>'cx'+k;
 const cxLab=k=>+k===1?'Double':k+'x';                              // 1 = double your money (+100), like a 2-leg same-game parlay at +113
-const cxLo=k=>100*k, cxHi=k=>100*k+CX.over;                      // American odds window
+const cxLo=k=>100*k, cxHi=k=>100*k+Math.max(CX.over,Math.round(10*k));   // American odds window (wider for big targets: +1000 to +1100 at 10x)
 function cxGames(){ const now=Date.now(); return DATA.games.filter(g=>!g.ghost&&preOK(g)&&(Date.parse(g.iso)-now)<36*3600e3); }
 function cxGameTag(g){ return g?g.teams.away.abbr+' @ '+g.teams.home.abbr:''; }
 function cxPool(){
@@ -7790,13 +7803,15 @@ function cxPool(){
   out.sort((a,b)=>b.r-a.r||b.ps-a.ps);
   return out.slice(0,CX.pool);
 }
+const cxAvoid=(pool,k)=>{ const av=CX.avoid[k]; return av?pool.filter(l=>!av[l.tok||l.id]&&!(l.pid&&av['p:'+l.pid])):pool; };
 const cxSide=l=>l.spec&&(l.spec.k==='ml'||l.spec.k==='spr'||l.spec.k==='dc');
-function cxSearch(pool,k){
+function cxSearch(pool,k,skip){
   const cmin=Math.log(1+k), cmax=Math.log(1+(cxHi(k)/100)), N=pool.length; if(!N) return null;
   const rBest=pool.reduce((m,l)=>Math.max(m,l.r),-99);
   let beam=[{i:-1,ix:[],c:0,v:0,grp:{},ply:{},per:{},side:{},same:0}], best=null;
   const score=s=>s.v+Math.max(0,cmin-s.c)*rBest;                   // optimistic: the rest of the payout bought at the best rate
-  for(let depth=0;depth<CX.maxLegs&&beam.length;depth++){
+  const maxL=Math.max(CX.maxLegs,Math.min(24,Math.ceil(cmin/0.25)+2));
+  for(let depth=0;depth<maxL&&beam.length;depth++){
     const next=[];
     beam.forEach(s=>{ for(let j=s.i+1;j<N;j++){ const l=pool[j]; const c=s.c+l.lc; if(c>cmax+1e-9) continue;
       if(s.grp[l.group]||(l.pid&&s.ply[l.pid])||(s.per[l.gid]||0)>=2) continue;
@@ -7804,7 +7819,7 @@ function cxSearch(pool,k){
       const same=s.same+((s.per[l.gid]||0)>0?1:0);
       const n={i:j,ix:s.ix.concat(j),c:c,v:s.v+l.lv,grp:Object.assign({},s.grp),ply:Object.assign({},s.ply),per:Object.assign({},s.per),side:Object.assign({},s.side),same:same};
       n.grp[l.group]=1; if(l.pid) n.ply[l.pid]=1; n.per[l.gid]=(n.per[l.gid]||0)+1; if(cxSide(l)) n.side[l.gid]=1;
-      if(c>=cmin-1e-9){ const val=n.v+same*Math.log(0.97); if(!best||val>best.val) best={ix:n.ix,val:val,same:same}; }
+      if(c>=cmin-1e-9){ const val=n.v+same*Math.log(0.97); if((!best||val>best.val)&&!(skip&&skip[cxSig(n.ix.map(i=>pool[i]))])) best={ix:n.ix,val:val,same:same}; }
       else next.push(n); } });
     next.sort((a,b)=>score(b)-score(a)); beam=next.slice(0,CX.beam);
     if(best&&beam.length&&score(beam[0])<best.val) break;            // nothing left in the beam can beat the best found
@@ -7814,9 +7829,9 @@ function cxSearch(pool,k){
   return {k:k,legs:legs,dec:dec,am:amerOfDec(dec),pAll:Math.exp(best.val),sports:Array.from(new Set(legs.map(l=>l.lg)))};
 }
 function cxBuildAll(){
-  const ck=CALV+'|'+(typeof hpStamp==='function'?hpStamp():'')+'|'+DATA.asOf+'|'+cxGames().map(g=>g.id).join(',');
+  const ck=JSON.stringify(CX.skip)+JSON.stringify(CX.avoid)+'|'+CX.custom+'|'+CALV+'|'+(typeof hpStamp==='function'?hpStamp():'')+'|'+DATA.asOf+'|'+cxGames().map(g=>g.id).join(',');
   if(CX.cache.key===ck) return CX.cache.val;
-  const pool=cxPool(), val={}; CX.targets.forEach(k=>{ try{ val[k]=cxSearch(pool,k); }catch(e){ val[k]=null; try{ console.error('Line Scout: combo failed',e); }catch(_){} } });
+  const pool=cxPool(), val={}; cxKs().forEach(k=>{ try{ val[k]=cxSearch(cxAvoid(pool,k),k,CX.skip[k]); }catch(e){ val[k]=null; try{ console.error('Line Scout: combo failed',e); }catch(_){} } });
   CX.cache={key:ck,val:val}; return val;
 }
 
@@ -7832,7 +7847,8 @@ function cxToday(k){ return P.calls.filter(c=>c.kind===cxKind(k)&&c.date===TODAY
 function cxFor(k,fresh){
   const mine=cxToday(k), last=mine[mine.length-1]; let changed=false, cur=null;
   if(last&&last.status==='pending'&&!cxStarted(last)){
-    if(fresh&&fresh.pAll>last.pAll+0.002&&cxSig(fresh.legs)!==cxSig(last.legs)){ Object.assign(last,cxRec(fresh),{t2:Date.now()}); changed=true; }
+    const skipped=CX.skip[k]&&CX.skip[k][cxSig(last.legs)];          // the refresh button: this one was passed over, show the next best
+    if(fresh&&cxSig(fresh.legs)!==cxSig(last.legs)&&(skipped||fresh.pAll>last.pAll+0.002)){ Object.assign(last,cxRec(fresh),{t2:Date.now()}); changed=true; }
     cur=last;
   } else if(fresh&&mine.length<CX.maxVer&&!(last&&cxSig(last.legs)===cxSig(fresh.legs))){
     const c=Object.assign({id:'cx:'+TODAY+':'+k+':v'+(mine.length+1),date:TODAY,key:'all',gid:'',multi:true,kind:cxKind(k),t:Date.now(),status:'pending',want:0,ver:mine.length+1},cxRec(fresh));
@@ -7867,36 +7883,39 @@ function cxCard(c,k){
     '<div class="plo"><b>'+fo(c.am)+'</b><span>target +'+cxLo(k)+' to +'+cxHi(k)+'</span></div></div>'+
     '<div class="plstats"><div><b>'+cxPct(c.pAll)+'</b><span>all-hit chance</span><div class="plmeter"><i style="width:'+Math.min(100,Math.round(c.pAll*100))+'%"></i></div></div>'+
     '<div><b>$'+win.toFixed(2)+'</b><span>win on $'+st.toFixed(0)+'</span></div><div><b>'+(done?wn+'/'+c.legs.length:Math.round(100*c.legs.reduce((s,l)=>s+l.p,0)/c.legs.length)+'%')+'</b><span>'+(done?'legs hit':'avg leg')+'</span></div></div>'+
-    '<div>'+cxStatus(c)+'</div><div class="plg">'+c.legs.map(cxLegRow).join('')+'</div>'+
+    '<div class="cxstrow">'+cxStatus(c)+(c.status==='pending'&&!cxStarted(c)?'<button class="cxref" data-act="cx-ref" data-k="'+k+'" aria-label="Different slip" title="Build a different slip">↻ New slip</button>':'')+'</div><div class="plg">'+c.legs.map(cxLegRow).join('')+'</div>'+
     (c.status==='pending'&&!cxStarted(c)?'<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="cx-add" data-k="'+k+'">'+(on?'Remove from slip':'Add to slip')+'</button>'+(fd.url?'<a class="btn" href="'+esc(fd.url)+'" target="_blank" rel="noopener">Open on FanDuel'+(fd.n<c.legs.length?' ('+fd.n+' legs)':'')+'</a>':'')+'</div>':'')+'</div>';
 }
 function cxMini(c,k){ return '<div class="cxmini"><div class="cxmh"><b>'+cxLab(k)+' · '+fo(c.am)+' · '+c.legs.length+' legs</b>'+cxStatus(c)+'</div><div class="plg">'+c.legs.map(cxLegRow).join('')+'</div></div>'; }
 function cxYesterday(){
   const d=new Date(Date.parse(TODAY+'T12:00:00Z')-864e5).toISOString().slice(0,10);
-  const cs=P.calls.filter(c=>c.date===d&&/^cx\d$/.test(c.kind)&&c.status!=='void'); if(!cs.length) return '';
+  const cs=P.calls.filter(c=>c.date===d&&/^cx\d+$/.test(c.kind)&&c.status!=='void'); if(!cs.length) return '';
   const hit=cs.filter(c=>c.status==='hit').length, done=cs.filter(c=>c.status!=='pending').length;
   return '<div class="small cxy"><b>Yesterday:</b> '+hit+' of '+done+' graded combos hit'+(done<cs.length?' ('+(cs.length-done)+' still open)':'')+' · '+cs.map(c=>cxLab(c.kind.slice(2))+' '+(c.status==='hit'?'✓':c.status==='miss'?'✗':'…')).join(' · ')+' <span class="muted">Full legs on yesterday\'s report (calendar).</span></div>';
 }
 function cxBody(){
-  const all=cxBuildAll(); const k=CX.k;
-  const seg='<div class="plseg">'+CX.targets.map(t=>{ const s=all[t]; return '<button class="plseg-b" data-act="cx-k" data-k="'+t+'" aria-pressed="'+(t===k)+'"><b>'+cxLab(t)+'</b><span>'+(s?cxPct(s.pAll):'none')+'</span></button>'; }).join('')+'</div>';
+  const all=cxBuildAll(); const k=CX.k=CX.mode==='c'?CX.custom:CX.mode;
+  const cs=all[CX.custom];
+  const seg='<div class="plseg">'+CX.targets.map(t=>{ const s=all[t]; return '<button class="plseg-b" data-act="cx-k" data-k="'+t+'" aria-pressed="'+(CX.mode===t)+'"><b>'+cxLab(t)+'</b><span>'+(s?cxPct(s.pAll):'none')+'</span></button>'; }).join('')+
+    '<button class="plseg-b" data-act="cx-k" data-k="c" aria-pressed="'+(CX.mode==='c')+'"><b>Custom</b><span>'+CX.custom+'x'+(cs?' · '+cxPct(cs.pAll):'')+'</span></button></div>'+
+    (CX.mode==='c'?'<div class="cxcust"><label class="small">Win <input type="number" inputmode="numeric" min="2" max="'+cxMax+'" step="1" value="'+CX.custom+'" data-in="cx-custom" aria-label="Target multiple"> times your money</label><button class="btn solid" data-act="cx-go">Build</button><span class="small muted">2x to '+cxMax+'x · +'+cxLo(CX.custom)+' to +'+cxHi(CX.custom)+'</span></div>':'');
   const r=cxFor(k,all[k]);
   let body;
   if(r.cur) body=cxCard(r.cur,k);
   else body='<div class="plempty small">'+esc(cxWhyEmpty(k))+'</div>';
   const earlier=r.earlier.length?'<details class="plhow"><summary class="small">Earlier '+cxLab(k)+' combos today ('+r.earlier.length+')</summary>'+r.earlier.map(c=>cxMini(c,k)).join('')+'</details>':'';
   return seg+body+earlier+cxYesterday()+
-    '<div class="plfoot">Combined odds must land from the target to at most 83 points over it (double = +100 to +183, 2x = +200 to +283: win twice the stake). Every leg shows the player\'s record at that number: the last 15 games he played and, early in a season, last season\'s playoffs; preseason games barely count (teams rest players), and that record is part of the leg\'s chance. The app tries every FanDuel leg on the board across all sports and keeps the set with the highest chance that all of them hit, using each leg\'s no-vig FanDuel chance blended with the model and scaled by the graded record. It keeps re-optimizing until the first game of the combo starts, then locks it and grades it at the finals; the result shows on the next day\'s report. Legs are in different games where possible; the price shown is the plain multiply, so FanDuel may quote a little differently. Practice only.</div>';
+    '<div class="plfoot">Combined odds must land from the target to at most 83 points over it (double = +100 to +183, 3x = +300 to +383; custom targets up to 100x get a window of 10% of the target). ↻ New slip builds the next best combo without the players or legs of the slips passed over (it starts over when the board runs out). Every leg shows the player\'s record at that number: the last 15 games he played and, early in a season, last season\'s playoffs; preseason games barely count (teams rest players), and that record is part of the leg\'s chance. The app tries every FanDuel leg on the board across all sports and keeps the set with the highest chance that all of them hit, using each leg\'s no-vig FanDuel chance blended with the model and scaled by the graded record. It keeps re-optimizing until the first game of the combo starts, then locks it and grades it at the finals; the result shows on the next day\'s report. Legs are in different games where possible; the price shown is the plain multiply, so FanDuel may quote a little differently. Practice only.</div>';
 }
 function cxHtml(){
   let inner; try{ inner='<div id="cxbox">'+cxBody()+'</div>'; }catch(e){ try{ console.error('Line Scout: combos failed',e); }catch(_){} return ''; }
-  return '<section class="game hpsec cxsec"><div class="sec">'+hpFold('cx','Combos · double to 5x your money','all sports · highest chance to hit the target',inner,true)+'</div></section>';
+  return '<section class="game hpsec cxsec"><div class="sec">'+hpFold('cx','Combos · double, 3x to 5x, custom up to 100x','all sports · highest chance to hit the target',inner,true)+'</div></section>';
 }
 function cxRepaint(){ const b=document.getElementById('cxbox'); if(!b) return; try{ b.innerHTML=cxBody(); }catch(e){ try{ console.error(e); }catch(_){} } }
 
 /* ---------- past-day report: the combos of that day with every leg ---------- */
 function cxDayHtml(date){
-  const cs=P.calls.filter(c=>c.date===date&&/^cx\d$/.test(c.kind)&&c.status!=='void').sort((a,b)=>a.kind<b.kind?-1:a.kind>b.kind?1:a.t-b.t);
+  const cs=P.calls.filter(c=>c.date===date&&/^cx\d+$/.test(c.kind)&&c.status!=='void').sort((a,b)=>a.kind<b.kind?-1:a.kind>b.kind?1:a.t-b.t);
   if(!cs.length) return '';
   const hit=cs.filter(c=>c.status==='hit').length, done=cs.filter(c=>c.status!=='pending').length;
   return '<section class="game"><div class="sec"><h3>Combos <span class="hint">'+hit+'/'+done+' hit</span></h3>'+cs.map(c=>cxMini(c,+c.kind.slice(2))).join('')+'</div></section>';
@@ -7904,9 +7923,18 @@ function cxDayHtml(date){
 
 /* ---------- events ---------- */
 document.addEventListener('click',function(e){
-  const t=e.target.closest&&e.target.closest('[data-act="cx-k"],[data-act="cx-add"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
-  const k=+t.getAttribute('data-k');
-  if(t.getAttribute('data-act')==='cx-k'){ CX.k=k; cxRepaint(); return; }
+  const t=e.target.closest&&e.target.closest('[data-act="cx-k"],[data-act="cx-add"],[data-act="cx-ref"],[data-act="cx-go"]'); if(!t) return; e.stopPropagation(); e.preventDefault();
+  const act=t.getAttribute('data-act'), dk=t.getAttribute('data-k'), k=+dk;
+  if(act==='cx-k'){ CX.mode=dk==='c'?'c':k; cxRepaint(); return; }
+  if(act==='cx-go'){ cxSetCustom(); return; }
+  if(act==='cx-ref'){ const c=cxToday(k).filter(x=>x.status==='pending'&&!cxStarted(x)).pop(); if(!c) return;
+    /* a new slip leaves out every leg of the slips passed over, so it is a different set, not the same slip with one leg swapped; when the board runs out
+       of legs, it starts over leaving out only the slip on screen */
+    const sk=CX.skip[k]=CX.skip[k]||{}, av=CX.avoid[k]=CX.avoid[k]||{}; sk[cxSig(c.legs)]=1; c.legs.forEach(l=>{ av[l.id]=1; if(l.pid) av['p:'+l.pid]=1; });
+    const pool=cxPool();
+    if(!cxSearch(cxAvoid(pool,k),k,sk)){ CX.avoid[k]={}; c.legs.forEach(l=>{ CX.avoid[k][l.id]=1; if(l.pid) CX.avoid[k]['p:'+l.pid]=1; });
+      if(!cxSearch(cxAvoid(pool,k),k,sk)){ CX.avoid[k]={}; CX.skip[k]={}; CX.skip[k][cxSig(c.legs)]=1; } }
+    CX.cache={}; cxRepaint(); return; }
   const c=cxToday(k).filter(x=>x.status==='pending'&&!cxStarted(x)).pop(); if(!c) return;
   if(c.legs.every(l=>inSlip(l.id))){ S.slip=S.slip.filter(x=>!c.legs.some(l=>l.id===x.id)); S.slipMsg=''; }
   else { const legs=c.legs.map(l=>legFor(l.id)).filter(Boolean);
@@ -7914,7 +7942,10 @@ document.addEventListener('click',function(e){
     else { S.slip=legs; S.betMode='parlay'; S.slipOpen=true; S.slipMsg='Loaded the '+cxLab(k)+' combo ('+legs.length+(legs.length<c.legs.length?' of '+c.legs.length:'')+' legs, '+fo(c.am)+').'; } }
   renderSlip(); syncLegButtons(); cxRepaint();
 },true);
-try{ if(window.__LS) window.__LS.cx={CX:CX,pool:cxPool,search:cxSearch,build:cxBuildAll,forK:cxFor,body:cxBody}; }catch(e){}
+function cxSetCustom(){ const i=document.querySelector('[data-in="cx-custom"]'); if(!i) return; let v=Math.round(+i.value);
+  if(!(v>=2)) v=2; if(v>cxMax) v=cxMax; CX.custom=v; CX.mode='c'; try{ localStorage.setItem('ls_cx_custom',String(v)); }catch(e){} CX.cache={}; cxRepaint(); }
+document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e.target.getAttribute&&e.target.getAttribute('data-in')==='cx-custom'){ e.preventDefault(); cxSetCustom(); } },true);
+try{ if(window.__LS) window.__LS.cx={setCustom:cxSetCustom,CX:CX,pool:cxPool,search:cxSearch,build:cxBuildAll,forK:cxFor,body:cxBody}; }catch(e){}
 
 const $app=document.getElementById('app');
 document.addEventListener('click',function(e){
