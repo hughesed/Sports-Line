@@ -1,0 +1,1211 @@
+{
+ "nhl": {
+  "groups": [
+   [
+    "Centers",
+    6
+   ],
+   [
+    "Left Wings",
+    4
+   ],
+   [
+    "Right Wings",
+    6
+   ],
+   [
+    "Defense",
+    10
+   ],
+   [
+    "Goalies",
+    3
+   ]
+  ],
+  "sample": [
+   [
+    "5149153",
+    "Leo Carlsson",
+    "C"
+   ],
+   [
+    "5831",
+    "Mikael Granlund",
+    "C"
+   ],
+   [
+    "5291946",
+    "Roger McQueen",
+    "C"
+   ],
+   [
+    "4755696",
+    "Nikita Nesterenko",
+    "C"
+   ],
+   [
+    "4233668",
+    "Ryan Poehling",
+    "C"
+   ],
+   [
+    "4996085",
+    "Tim Washe",
+    "C"
+   ],
+   [
+    "5080145",
+    "Cutter Gauthier",
+    "LW"
+   ],
+   [
+    "3648015",
+    "A.J. Greer",
+    "LW"
+   ],
+   [
+    "4968",
+    "Alex Killorn",
+    "LW"
+   ],
+   [
+    "4895214",
+    "Jeff Malott",
+    "LW"
+   ],
+   [
+    "4755684",
+    "Judd Caulfield",
+    "RW"
+   ],
+   [
+    "4697441",
+    "Sam Colangelo",
+    "RW"
+   ],
+   [
+    "5361658",
+    "Nikita Klepov",
+    "RW"
+   ],
+   [
+    "5216858",
+    "Beckett Sennecke",
+    "RW"
+   ],
+   [
+    "3942905",
+    "Troy Terry",
+    "RW"
+   ],
+   [
+    "3527554",
+    "Frank Vatrano",
+    "RW"
+   ],
+   [
+    "4565270",
+    "Drew Helleson",
+    "D"
+   ],
+   [
+    "5103702",
+    "Tyson Hinds",
+    "D"
+   ],
+   [
+    "3025608",
+    "Nick Jensen",
+    "D"
+   ],
+   [
+    "4565262",
+    "Jackson LaCombe",
+    "D"
+   ],
+   [
+    "5080220",
+    "Tristan Luneau",
+    "D"
+   ],
+   [
+    "5080154",
+    "Pavel Mintyukov",
+    "D"
+   ],
+   [
+    "4319916",
+    "Ian Mitchell",
+    "D"
+   ],
+   [
+    "5173614",
+    "Travis Mitchell",
+    "D"
+   ],
+   [
+    "5188523",
+    "Ian Moore",
+    "D"
+   ],
+   [
+    "5080210",
+    "Noah Warren",
+    "D"
+   ],
+   [
+    "4588165",
+    "Lukas Dostal",
+    "G"
+   ],
+   [
+    "3151137",
+    "Ville Husso",
+    "G"
+   ],
+   [
+    "5452947",
+    "Elijah Neuenschwander",
+    "G"
+   ]
+  ],
+  "err": null,
+  "Leo Carlsson C": {
+   "names": [
+    "goals",
+    "assists",
+    "points",
+    "plusMinus",
+    "penaltyMinutes",
+    "shotsTotal",
+    "shootingPct",
+    "powerPlayGoals",
+    "powerPlayAssists",
+    "shortHandedGoals",
+    "shortHandedAssists",
+    "gameWinningGoals",
+    "timeOnIcePerGame",
+    "production"
+   ],
+   "seasonTypes": [
+    [
+     "2026-27 Regular Season",
+     [
+      8
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401892535",
+    "stats": [
+     "0",
+     "0",
+     "0",
+     "-1",
+     "0",
+     "2",
+     "0.0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "15:09",
+     "0:00"
+    ],
+    "type": {
+     "id": "1",
+     "text": "Standard",
+     "abbreviation": "STD",
+     "type": "standard",
+     "slug": "standard"
+    }
+   },
+   "err": null
+  },
+  "Leo Carlsson C?season=2026": {
+   "names": [
+    "goals",
+    "assists",
+    "points",
+    "plusMinus",
+    "penaltyMinutes",
+    "shotsTotal",
+    "shootingPct",
+    "powerPlayGoals",
+    "powerPlayAssists",
+    "shortHandedGoals",
+    "shortHandedAssists",
+    "gameWinningGoals",
+    "timeOnIcePerGame",
+    "production"
+   ],
+   "seasonTypes": [
+    [
+     "2025-26 Postseason",
+     [
+      12
+     ]
+    ],
+    [
+     "2025-26 Regular Season",
+     [
+      8,
+      16,
+      2,
+      5,
+      14,
+      15,
+      10
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871428",
+    "stats": [
+     "0",
+     "1",
+     "1",
+     "0",
+     "0",
+     "0",
+     "0.0",
+     "0",
+     "1",
+     "0",
+     "0",
+     "0",
+     "16:45",
+     "16:45"
+    ],
+    "type": {
+     "id": "15",
+     "text": "Quarterfinal",
+     "abbreviation": "QTR",
+     "type": "quarterfinal",
+     "slug": "quarterfinal"
+    }
+   },
+   "err": null
+  },
+  "Mikael Granlund C": {
+   "names": [
+    "goals",
+    "assists",
+    "points",
+    "plusMinus",
+    "penaltyMinutes",
+    "shotsTotal",
+    "shootingPct",
+    "powerPlayGoals",
+    "powerPlayAssists",
+    "shortHandedGoals",
+    "shortHandedAssists",
+    "gameWinningGoals",
+    "timeOnIcePerGame",
+    "production"
+   ],
+   "seasonTypes": [
+    [
+     "2026-27 Regular Season",
+     [
+      7
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401892535",
+    "stats": [
+     "0",
+     "0",
+     "0",
+     "-2",
+     "0",
+     "2",
+     "0.0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "16:08",
+     "0:00"
+    ],
+    "type": {
+     "id": "1",
+     "text": "Standard",
+     "abbreviation": "STD",
+     "type": "standard",
+     "slug": "standard"
+    }
+   },
+   "err": null
+  },
+  "Mikael Granlund C?season=2026": {
+   "names": [
+    "goals",
+    "assists",
+    "points",
+    "plusMinus",
+    "penaltyMinutes",
+    "shotsTotal",
+    "shootingPct",
+    "powerPlayGoals",
+    "powerPlayAssists",
+    "shortHandedGoals",
+    "shortHandedAssists",
+    "gameWinningGoals",
+    "timeOnIcePerGame",
+    "production"
+   ],
+   "seasonTypes": [
+    [
+     "2025-26 Postseason",
+     [
+      12
+     ]
+    ],
+    [
+     "2025-26 Regular Season",
+     [
+      8,
+      12,
+      2,
+      14,
+      13,
+      1,
+      8
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871428",
+    "stats": [
+     "1",
+     "0",
+     "1",
+     "-2",
+     "2",
+     "4",
+     "25.0",
+     "1",
+     "0",
+     "0",
+     "0",
+     "0",
+     "24:09",
+     "24:09"
+    ],
+    "type": {
+     "id": "15",
+     "text": "Quarterfinal",
+     "abbreviation": "QTR",
+     "type": "quarterfinal",
+     "slug": "quarterfinal"
+    }
+   },
+   "err": null
+  },
+  "Lukas Dostal G": {
+   "names": [
+    "gameStarted",
+    "timeOnIcePerGame",
+    "wins",
+    "losses",
+    "ties",
+    "overtimeLosses",
+    "goalsAgainst",
+    "avgGoalsAgainst",
+    "shotsAgainst",
+    "saves",
+    "savePct",
+    "shutouts"
+   ],
+   "seasonTypes": [
+    [
+     "2026-27 Regular Season",
+     [
+      6
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401892518",
+    "stats": [
+     "1",
+     "59:21",
+     "0",
+     "1",
+     "0",
+     "0",
+     "4",
+     "4.04",
+     "22",
+     "18",
+     ".818",
+     "0"
+    ],
+    "type": {
+     "id": "1",
+     "text": "Standard",
+     "abbreviation": "STD",
+     "type": "standard",
+     "slug": "standard"
+    }
+   },
+   "err": null
+  },
+  "Lukas Dostal G?season=2026": {
+   "names": [
+    "gameStarted",
+    "timeOnIcePerGame",
+    "wins",
+    "losses",
+    "ties",
+    "overtimeLosses",
+    "goalsAgainst",
+    "avgGoalsAgainst",
+    "shotsAgainst",
+    "saves",
+    "savePct",
+    "shutouts"
+   ],
+   "seasonTypes": [
+    [
+     "2025-26 Postseason",
+     [
+      12
+     ]
+    ],
+    [
+     "2025-26 Regular Season",
+     [
+      6,
+      10,
+      4,
+      11,
+      8,
+      9,
+      8
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871428",
+    "stats": [
+     "1",
+     "55:31",
+     "0",
+     "1",
+     "0",
+     "0",
+     "5",
+     "5.40",
+     "21",
+     "16",
+     ".762",
+     "0"
+    ],
+    "type": {
+     "id": "15",
+     "text": "Quarterfinal",
+     "abbreviation": "QTR",
+     "type": "quarterfinal",
+     "slug": "quarterfinal"
+    }
+   },
+   "err": null
+  }
+ },
+ "cfb": {
+  "groups": [
+   [
+    "offense",
+    45
+   ],
+   [
+    "defense",
+    47
+   ],
+   [
+    "specialTeam",
+    8
+   ],
+   [
+    "injuredReserveOrOut",
+    0
+   ],
+   [
+    "suspended",
+    0
+   ],
+   [
+    "practiceSquad",
+    0
+   ]
+  ],
+  "sample": [
+   [
+    "4603185",
+    "Markus Allen",
+    "WR"
+   ],
+   [
+    "5296411",
+    "Stanley Anderson-Lofton",
+    "QB"
+   ],
+   [
+    "5296426",
+    "Garrett Austin",
+    "OL"
+   ],
+   [
+    "5194615",
+    "Brody Benke",
+    "TE"
+   ],
+   [
+    "5296427",
+    "Diego Blattler",
+    "OL"
+   ],
+   [
+    "5306988",
+    "Terrence Brown",
+    "RB"
+   ],
+   [
+    "5296421",
+    "Quentin Butler",
+    "OL"
+   ],
+   [
+    "5291778",
+    "Ziyon Butler",
+    "WR"
+   ],
+   [
+    "5217200",
+    "Neo Clifton",
+    "WR"
+   ],
+   [
+    "5296430",
+    "Landon Collins",
+    "WR"
+   ],
+   [
+    "4565180",
+    "Peter Costelli",
+    "QB"
+   ],
+   [
+    "5232391",
+    "Adrian Crespin",
+    "OL"
+   ],
+   [
+    "5210055",
+    "Brooklen Davis",
+    "RB"
+   ],
+   [
+    "5383055",
+    "Trevaris Edwards",
+    "OL"
+   ],
+   [
+    "4870691",
+    "Santana Fleming",
+    "WR"
+   ],
+   [
+    "5194626",
+    "Roman Gagliano",
+    "QB"
+   ],
+   [
+    "5154671",
+    "Alex Gale",
+    "OL"
+   ],
+   [
+    "5079435",
+    "Tayvion Galloway",
+    "TE"
+   ],
+   [
+    "5304182",
+    "Peter Grandjean",
+    "QB"
+   ],
+   [
+    "5383059",
+    "Jadin Hambrick",
+    "TE"
+   ],
+   [
+    "5222543",
+    "Wilson Hodges",
+    "TE"
+   ],
+   [
+    "5308848",
+    "Tim Jacobs",
+    "OL"
+   ],
+   [
+    "5296423",
+    "Otto Janse Van Rensburg",
+    "OL"
+   ],
+   [
+    "5086628",
+    "AJ Jones",
+    "WR"
+   ],
+   [
+    "5220388",
+    "Ashton Jones",
+    "RB"
+   ],
+   [
+    "5296422",
+    "Roman Jones",
+    "OL"
+   ],
+   [
+    "5220385",
+    "Christopher Kaup",
+    "WR"
+   ],
+   [
+    "5091830",
+    "Cam'ron Lacy",
+    "WR"
+   ],
+   [
+    "5236323",
+    "Kyle Larkin",
+    "OL"
+   ],
+   [
+    "5281489",
+    "Robert Lathon Jr.",
+    "RB"
+   ],
+   [
+    "5447536",
+    "Duece Lawrence",
+    "RB"
+   ],
+   [
+    "5220393",
+    "Sawyer Lovvorn",
+    "TE"
+   ],
+   [
+    "5290574",
+    "Bryson Maddox",
+    "WR"
+   ],
+   [
+    "5203853",
+    "Mason Mallory",
+    "QB"
+   ],
+   [
+    "4685436",
+    "Antonio Martin",
+    "RB"
+   ],
+   [
+    "5383057",
+    "Jack Mohlman",
+    "OL"
+   ],
+   [
+    "5296428",
+    "Zaidyn Moore",
+    "WR"
+   ],
+   [
+    "5153898",
+    "Chris Moreno",
+    "OL"
+   ],
+   [
+    "5033014",
+    "Tyree Patterson",
+    "WR"
+   ],
+   [
+    "5383058",
+    "Koraun Perdue",
+    "TE"
+   ],
+   [
+    "5302790",
+    "Jayden Arenas-Michel",
+    "DT"
+   ],
+   [
+    "5383053",
+    "BJ Ausmer",
+    "LB"
+   ],
+   [
+    "5296431",
+    "Matthew Blomquist",
+    "DE"
+   ],
+   [
+    "5149743",
+    "Justin Bodford",
+    "DT"
+   ],
+   [
+    "5229433",
+    "Troy Booker Jr.",
+    "CB"
+   ],
+   [
+    "5193211",
+    "Aidan Butts",
+    "DE"
+   ],
+   [
+    "4870649",
+    "Kaven Call",
+    "LB"
+   ],
+   [
+    "5296409",
+    "Devan Carlisle",
+    "CB"
+   ],
+   [
+    "5168463",
+    "Jordan Chestnut",
+    "S"
+   ],
+   [
+    "5194618",
+    "Austin Clemons",
+    "LB"
+   ]
+  ],
+  "err": null,
+  "Markus Allen WR": {
+   "names": [
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "longReception",
+    "receivingTouchdowns",
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing"
+   ],
+   "seasonTypes": [
+    [
+     "2026 Regular Season",
+     [
+      5
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871067",
+    "stats": [
+     "1",
+     "36",
+     "36.0",
+     "36",
+     "0",
+     "0",
+     "0",
+     "0.0",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Markus Allen WR?season=2026": {
+   "names": [
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "longReception",
+    "receivingTouchdowns",
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing"
+   ],
+   "seasonTypes": [
+    [
+     "2026 Regular Season",
+     [
+      5
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871067",
+    "stats": [
+     "1",
+     "36",
+     "36.0",
+     "36",
+     "0",
+     "0",
+     "0",
+     "0.0",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Stanley Anderson-Lofton QB": {
+   "names": [
+    "completions",
+    "passingAttempts",
+    "passingYards",
+    "completionPct",
+    "passingTouchdowns",
+    "interceptions",
+    "longPassing",
+    "sacks",
+    "QBRating",
+    "adjQBR",
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing"
+   ],
+   "seasonTypes": [
+    [
+     "2025 Regular Season",
+     [
+      1
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401752820",
+    "stats": [
+     "1",
+     "1",
+     "11",
+     "100.0",
+     "0",
+     "0",
+     "11",
+     "1",
+     "192.4",
+     "59.3",
+     "3",
+     "9",
+     "3.0",
+     "0",
+     "15"
+    ]
+   },
+   "err": null
+  },
+  "Stanley Anderson-Lofton QB?season=2026": {
+   "names": null,
+   "seasonTypes": [],
+   "ev1": null,
+   "err": null
+  },
+  "Terrence Brown RB": {
+   "names": [
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing",
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "receivingTouchdowns",
+    "longReception",
+    "fumbles",
+    "fumblesLost"
+   ],
+   "seasonTypes": [
+    [
+     "2026 Regular Season",
+     [
+      5
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871067",
+    "stats": [
+     "7",
+     "40",
+     "5.7",
+     "0",
+     "28",
+     "6",
+     "26",
+     "4.3",
+     "0",
+     "11",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Terrence Brown RB?season=2026": {
+   "names": [
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing",
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "receivingTouchdowns",
+    "longReception",
+    "fumbles",
+    "fumblesLost"
+   ],
+   "seasonTypes": [
+    [
+     "2026 Regular Season",
+     [
+      5
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871067",
+    "stats": [
+     "7",
+     "40",
+     "5.7",
+     "0",
+     "28",
+     "6",
+     "26",
+     "4.3",
+     "0",
+     "11",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Ziyon Butler WR": {
+   "names": [
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "longReception",
+    "receivingTouchdowns",
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing"
+   ],
+   "seasonTypes": [
+    [
+     "2026 Regular Season",
+     [
+      3
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871067",
+    "stats": [
+     "3",
+     "28",
+     "9.3",
+     "13",
+     "0",
+     "0",
+     "0",
+     "0.0",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Ziyon Butler WR?season=2026": {
+   "names": [
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "longReception",
+    "receivingTouchdowns",
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing"
+   ],
+   "seasonTypes": [
+    [
+     "2026 Regular Season",
+     [
+      3
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871067",
+    "stats": [
+     "3",
+     "28",
+     "9.3",
+     "13",
+     "0",
+     "0",
+     "0",
+     "0.0",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Neo Clifton WR": {
+   "names": [
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "longReception",
+    "receivingTouchdowns",
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing"
+   ],
+   "seasonTypes": [
+    [
+     "2026 Regular Season",
+     [
+      6
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871067",
+    "stats": [
+     "4",
+     "64",
+     "16.0",
+     "18",
+     "2",
+     "0",
+     "0",
+     "0.0",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Neo Clifton WR?season=2026": {
+   "names": [
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "longReception",
+    "receivingTouchdowns",
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing"
+   ],
+   "seasonTypes": [
+    [
+     "2026 Regular Season",
+     [
+      6
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401871067",
+    "stats": [
+     "4",
+     "64",
+     "16.0",
+     "18",
+     "2",
+     "0",
+     "0",
+     "0.0",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Landon Collins WR": {
+   "names": [
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "longReception",
+    "receivingTouchdowns",
+    "rushingAttempts",
+    "rushingYards",
+    "yardsPerRushAttempt",
+    "rushingTouchdowns",
+    "longRushing"
+   ],
+   "seasonTypes": [
+    [
+     "2025 Regular Season",
+     [
+      4
+     ]
+    ]
+   ],
+   "ev1": {
+    "eventId": "401757315",
+    "stats": [
+     "5",
+     "81",
+     "16.2",
+     "48",
+     "1",
+     "0",
+     "0",
+     "0.0",
+     "0",
+     "0"
+    ]
+   },
+   "err": null
+  },
+  "Landon Collins WR?season=2026": {
+   "names": null,
+   "seasonTypes": [],
+   "ev1": null,
+   "err": null
+  }
+ }
+}
