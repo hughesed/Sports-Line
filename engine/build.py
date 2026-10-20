@@ -53,7 +53,7 @@ def load_ratings(lg):
     for g in games if early else reg:
         if g.get("season") is None: continue
         if g["season"] == cur and not g["post"]: wt = 1.0
-        elif early and g["season"] == cur - 1: wt = 0.5 if g["post"] else 0.35
+        elif early and g["season"] == cur - 1: wt = 0.1 if g["post"] else 0.35          # last season: regular season counts, playoffs barely
         elif g["season"] == cur and g["post"]: continue
         else: continue
         for ab, pf, pa in ((g["home"], g["hs"], g["as_"]), (g["away"], g["as_"], g["hs"])):
@@ -353,7 +353,10 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
             real = [g for g in gl if not g.get("pre")]
             last_real = real[-1]["date"] if real else ""
             pre = [g for g in gl if g.get("pre") and (g["date"] or "") > last_real]      # this year's exhibition games (after the last real game)
-            P.append(dict(side=side, tid=tid, p=p, fam=fam, gl=real or gl, pre=pre if real else [], allgl=r[1]))
+            # regular season only for the model and the record: playoff minutes and roles are not a player's normal game (benchings, holdouts,
+            # injuries played through, short rotations). Playoffs are shown for reference only, and used only if he has almost no regular-season games.
+            reg = [g for g in real if not g.get("post")]
+            P.append(dict(side=side, tid=tid, p=p, fam=fam, gl=reg if len(reg) >= 5 else real or gl, postgl=[g for g in real if g.get("post")], pre=pre if real else [], allgl=r[1]))
     # --- injuries impact on team scoring
     # injured players production (for share-based impact)
     def prod_nfl(aid):
@@ -601,7 +604,7 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
             prev = [fn(g) for g in X.get("pre") or []]
             if len(prev) >= 2: base = 0.85 * base + 0.15 * statistics.mean(prev)
             # last season's playoffs (the latest postseason in the log): kept as its own record so the picks can compare
-            lastpost = [g for g in X["gl"] if g.get("post")]
+            lastpost = list(X.get("postgl") or [])
             if lastpost: lastpost = [g for g in lastpost if g.get("season") == lastpost[-1].get("season")][-12:]
             postv = [fn(g) for g in lastpost]
             # player rating vs a typical starter (0-100)

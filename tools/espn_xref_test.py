@@ -58,7 +58,7 @@ check(set(P) == {"Auston Matthews", "Zach Werenski", "Elvis Merzlikins"}, "NHL c
 m = P.get("Auston Matthews", {})
 check(m.get("side") == "away" and m.get("abbr") == "TOR" and m.get("id") == "3114727", "Matthews: team TOR from the ESPN roster, ESPN id for grading")
 sog = next((s for s in m.get("stats", []) if s["key"] == "sog"), {})
-check(sog.get("xref") == "espn" and sog.get("n15") == 15 and len(sog.get("post") or []) == 8, "shots from his ESPN log: last 15 + last season's playoffs (%s, post %s)" % (sog.get("n15"), sog.get("post")))
+check(sog.get("xref") == "espn" and sog.get("n15") == 13 and len(sog.get("post") or []) == 8, "shots from his regular-season ESPN log only (playoffs kept for reference) (%s, post %s)" % (sog.get("n15"), sog.get("post")))
 check(P.get("Elvis Merzlikins", {}).get("side") == "home" and any(s["key"] == "saves" for s in P["Elvis Merzlikins"]["stats"]), "goalie saves for CBJ")
 B = {p["name"]: p for p in gb["players"]}
 check(set(B) == {"Jayson Tatum", "Nic Claxton", "Cade Cunningham"} and sum(1 for p in gb["players"] if p["name"] == "Jayson Tatum") == 1, "NBA card keeps Tatum once, adds Claxton (ESPN spells him Nicolas) and Cunningham")

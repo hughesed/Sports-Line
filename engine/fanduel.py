@@ -166,8 +166,8 @@ def _record_p(st, t):
     rec = _recent(st); post = list(st.get("post") or [])
     h, n = sum(1 for x in rec if x >= t), len(rec)
     hp, np_ = sum(1 for x in post if x >= t), len(post)
-    if n + np_ < 5: return None, h, n, hp, np_
-    return (h + 0.6 * hp + 1) / (n + 0.6 * np_ + 2), h, n, hp, np_
+    if n < 5: return None, h, n, hp, np_
+    return (h + 1) / (n + 2), h, n, hp, np_          # regular season only: playoffs are shown, not counted
 
 def _model_pf(st):
     """chance of reaching t from the projection (Poisson for small counts, normal otherwise), then compared with the record: 60% model, 40% record"""

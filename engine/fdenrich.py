@@ -65,6 +65,9 @@ def _stat_from_logs(lg, key, gl, line):
     rows = [g for g in gl if _played(lg, g, key)]
     real = [g for g in rows if not g.get("pre")]
     if not real: return None
+    postg = [g for g in real if g.get("post")]
+    reg = [g for g in real if not g.get("post")]
+    if len(reg) >= 5: real = reg          # regular season only (playoff roles are not normal games); playoffs shown for reference
     last_real = real[-1]["date"] or ""
     pre = [g for g in rows if g.get("pre") and (g["date"] or "") > last_real]
     vals = [fn(g) for g in real[-10:]]; v15 = [fn(g) for g in real[-15:]]
@@ -75,7 +78,7 @@ def _stat_from_logs(lg, key, gl, line):
     if len(prev) >= 2: base = 0.85 * base + 0.15 * statistics.mean(prev)
     if line and line > 0:                                  # FanDuel's line knows about role changes the old log does not: pull a quarter of the way to it
         base = 0.75 * base + 0.25 * line
-    post = [g for g in real if g.get("post")]
+    post = postg
     if post: post = [g for g in post if g.get("season") == post[-1].get("season")][-12:]
     ln = line if line else (math.floor(statistics.median(vals)) + 0.5)
     sd = max(statistics.pstdev(vals) if n > 1 else ln * 0.5, 0.15 * ln, 0.5)
