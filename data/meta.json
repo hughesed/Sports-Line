@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 226,
+ "runNumber": 227,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T03:51:53Z",
- "generatedAtET": "Mon Oct 19, 11:51 PM ET",
- "today": "2026-10-19",
- "lastRunAt": "2026-10-20T03:51:53Z",
+ "generatedAt": "2026-10-20T04:01:53Z",
+ "generatedAtET": "Tue Oct 20, 12:01 AM ET",
+ "today": "2026-10-20",
+ "lastRunAt": "2026-10-20T04:01:53Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -77,10 +77,10 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 14,
+   "games": 13,
    "playerLevel": 0,
    "teamLevel": 8,
-   "carried": 6,
+   "carried": 5,
    "error": null,
    "newFinals": 0,
    "storeGames": 142,
@@ -104,11 +104,11 @@
   }
  },
  "counts": {
-  "slate": 32,
+  "slate": 31,
   "playerCards": 6,
-  "teamCards": 26,
-  "window": 135,
-  "sched": 77,
+  "teamCards": 25,
+  "window": 136,
+  "sched": 136,
   "pastp": 23,
   "predictions": 259,
   "graded": 183,
@@ -135,7 +135,7 @@
   },
   "calls": 6,
   "failedCalls": 0,
-  "seconds": 2.3,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -154,8 +154,8 @@
  "oddsLive": "kept (odds feed backing off until 06:09Z)",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (22): BOS@DET, MTSU@FIU, MOST@DEL, SJ@MTL, COL@NJ, ANA@NYI...",
  "errors": [],
- "requests": 266,
+ "requests": 276,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 22.9
+ "seconds": 13.2
 }
