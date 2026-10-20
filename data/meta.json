@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 217,
+ "runNumber": 218,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T02:29:05Z",
- "generatedAtET": "Mon Oct 19, 10:29 PM ET",
+ "generatedAt": "2026-10-20T02:39:09Z",
+ "generatedAtET": "Mon Oct 19, 10:39 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-20T02:29:05Z",
+ "lastRunAt": "2026-10-20T02:39:09Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -27,7 +27,7 @@
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 349,
    "lastFinal": "2026-10-20"
   },
@@ -132,7 +132,7 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 4,
   "failedCalls": 0,
   "seconds": 1.5,
   "simTeams": {
@@ -145,16 +145,15 @@
    "nhl": 32
   },
   "gamesUploaded": 2,
-  "simTeamsUploaded": 1110,
   "configured": true
  },
- "firstBasket": "1 new snapshots, 1 graded, wnba 1 graded, nba 0 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 1 graded, nba 0 graded",
  "odds": "kept (odds feed backing off until 06:09Z after 5 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 06:09Z)",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (22): BOS@DET, MTSU@FIU, MOST@DEL, SJ@MTL, COL@NJ, ANA@NYI...",
  "errors": [],
- "requests": 269,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 22.6
+ "requests": 286,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 18.6
 }
