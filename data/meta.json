@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "runNumber": 235,
+ "runNumber": 236,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T06:00:40Z",
- "generatedAtET": "Tue Oct 20, 2:00 AM ET",
+ "generatedAt": "2026-10-20T06:30:39Z",
+ "generatedAtET": "Tue Oct 20, 2:30 AM ET",
  "today": "2026-10-20",
- "lastRunAt": "2026-10-20T06:00:40Z",
+ "lastRunAt": "2026-10-20T06:30:39Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
-   "games": 3,
+   "games": 2,
    "playerLevel": 1,
    "teamLevel": 0,
-   "carried": 2,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 378,
@@ -104,8 +104,8 @@
   }
  },
  "counts": {
-  "slate": 30,
-  "playerCards": 6,
+  "slate": 29,
+  "playerCards": 5,
   "teamCards": 24,
   "window": 136,
   "sched": 136,
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 1.2,
+  "seconds": 0.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,16 +145,16 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 2,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 1 graded, nba 0 graded",
- "odds": "kept (odds feed backing off until 06:09Z after 5 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
- "oddsLive": "kept (odds feed backing off until 06:09Z)",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-20T10:30:49Z",
+ "oddsLive": "kept (odds feed backing off until 10:30Z)",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (22): BOS@DET, MTSU@FIU, MOST@DEL, SJ@MTL, COL@NJ, ANA@NYI...",
  "errors": [],
- "requests": 266,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 21.1
+ "requests": 285,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 23.8
 }
