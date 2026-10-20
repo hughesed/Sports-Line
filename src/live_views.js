@@ -55,7 +55,7 @@ function bkHue(k){ return ({draftkings:'#53d337',fanduel:'#1493ff',betmgm:'#b897
 function stateRow(){ const cur=bkState(); return '<label class="small bkst" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;opacity:.95">Your state <select data-in="bkstate" aria-label="Your state">'+(cur?'':'<option value="" selected>Choose…</option>')+BK_STATES.map(x=>'<option value="'+x[0]+'"'+(cur===x[0]?' selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select><span class="muted">BetMGM and Caesars open your state\'s page</span></label>'; }
 /* the sportsbook links come from the odds file; a book retires a market when its line moves, so an old pull means some picks may come back "no longer available" */
 function fdFresh(){
-  try{ const O=(typeof OD!=='undefined'&&OD.data)||(window.__LSDATA&&window.__LSDATA.odds); const t=O&&Date.parse(O.generatedAt||''); if(!isFinite(t)) return '';
+  try{ const O=(typeof OD!=='undefined'&&OD.data)||(window.__LSDATA&&window.__LSDATA.odds); const t=O?(typeof hpOddsAt==='function'?hpOddsAt(O):Date.parse(O.generatedAt||'')):NaN; if(!isFinite(t)) return '';
     const min=Math.max(0,Math.round((Date.now()-t)/60000)); if(min<45) return '<div class="small muted">Sportsbook lines pulled '+min+' min ago.</div>';
     return '<div class="small warnt" role="status">Sportsbook lines pulled '+(min>=120?Math.floor(min/60)+' h '+(min%60)+' min':min+' min')+' ago. A book retires a market when its line moves, so some picks may come back as "no longer available". The page checks for newer lines every minute.</div>'; }catch(err){ return ''; }
 }

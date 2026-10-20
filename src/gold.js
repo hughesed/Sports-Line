@@ -36,7 +36,7 @@ function goldCal(){
 /* ---------- candidates: every pregame leg of a sport, one entry per bet ---------- */
 function goldGames(key){ const now=Date.now(); return DATA.games.filter(g=>keyOf(g)===key&&preOK(g)&&leagueOK(key)&&(Date.parse(g.iso)-now)<36*3600e3); }
 function goldLegsOf(g){
-  const ck=g.id+'|'+CALV+'|'+((window.__LSDATA&&window.__LSDATA.odds&&window.__LSDATA.odds.generatedAt)||''); if(GPK.cache[ck]) return GPK.cache[ck];
+  const ck=g.id+'|'+CALV+'|'+(typeof hpStamp==='function'?hpStamp():''); if(GPK.cache[ck]) return GPK.cache[ck];
   const seen={}, out=[]; const cal=goldCal();
   const add=l=>{ if(!l||l.price==null||!isFinite(l.price)||!l.spec||l.live) return; if(l.spec.stat&&GOLD_SKIP[l.spec.stat]) return;
     if(l.spec.k==='prop'&&GOLD_YDS[l.spec.stat]&&l.spec.dir==='ge'&&+l.spec.T<10) return;          // "2+ rush yds" is not a pick
@@ -45,7 +45,7 @@ function goldLegsOf(g){
     const key=(l.label||'')+'|'+g.id; if(seen[key]) return; seen[key]=1;
     const p0=l.ps!=null?l.ps:adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),l.spec.k==='prop'?'prop':'team');
     const tok=l.tok||l.id; const book=l.book?(l.book==='est'?'est':l.book):(l.src==='FanDuel'?'fanduel':l.src==='DraftKings'||l.src==='DK'?'draftkings':'est');
-    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0}); };
+    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0,rec:l.rec||null,pFair:l.pFair!=null?l.pFair:null}); };
   /* FanDuel only: hpLegs (home_picks.js) gives the bets FanDuel lists at FanDuel's price (team lines, over/unders, its alternate lines and 1+ markets) */
   try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(typeof hpIsFd!=='function'||hpIsFd(l)) add(l); }); }catch(e){}
   Object.keys(GPK.cache).forEach(k=>{ if(k.indexOf(g.id+'|')===0) delete GPK.cache[k]; });

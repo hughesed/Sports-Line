@@ -1210,11 +1210,13 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
 .rcr.ok{background:var(--over-soft)}.rcr.bad{background:var(--under-soft)}
 .rcm{font-weight:800;text-align:center}.rcr.ok .rcm{color:var(--over)}.rcr.bad .rcm{color:var(--under)}
 .rcl{display:flex;flex-direction:column;min-width:0;line-height:1.3;overflow-wrap:anywhere}
+.cxrec{color:var(--ok,#16a34a);font-weight:600}
+.cxsec .plseg{grid-template-columns:repeat(5,1fr)}
 
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="cac90b5563">
+<body data-build="72cf5d733e">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -2294,7 +2296,7 @@ function bkHue(k){ return ({draftkings:'#53d337',fanduel:'#1493ff',betmgm:'#b897
 function stateRow(){ const cur=bkState(); return '<label class="small bkst" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;opacity:.95">Your state <select data-in="bkstate" aria-label="Your state">'+(cur?'':'<option value="" selected>Choose…</option>')+BK_STATES.map(x=>'<option value="'+x[0]+'"'+(cur===x[0]?' selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select><span class="muted">BetMGM and Caesars open your state\'s page</span></label>'; }
 /* the sportsbook links come from the odds file; a book retires a market when its line moves, so an old pull means some picks may come back "no longer available" */
 function fdFresh(){
-  try{ const O=(typeof OD!=='undefined'&&OD.data)||(window.__LSDATA&&window.__LSDATA.odds); const t=O&&Date.parse(O.generatedAt||''); if(!isFinite(t)) return '';
+  try{ const O=(typeof OD!=='undefined'&&OD.data)||(window.__LSDATA&&window.__LSDATA.odds); const t=O?(typeof hpOddsAt==='function'?hpOddsAt(O):Date.parse(O.generatedAt||'')):NaN; if(!isFinite(t)) return '';
     const min=Math.max(0,Math.round((Date.now()-t)/60000)); if(min<45) return '<div class="small muted">Sportsbook lines pulled '+min+' min ago.</div>';
     return '<div class="small warnt" role="status">Sportsbook lines pulled '+(min>=120?Math.floor(min/60)+' h '+(min%60)+' min':min+' min')+' ago. A book retires a market when its line moves, so some picks may come back as "no longer available". The page checks for newer lines every minute.</div>'; }catch(err){ return ''; }
 }
@@ -3786,8 +3788,8 @@ function linesSrcHtml(g){
 
 /* ================= safe slips, pick of the day, tracked calls, self-check ================= */
 const POTD_P=0.90, POTD_PRICE=-140, MIN_SAFE=0.65, KEEP_DAYS=24, MAX_CALLS=700, MAX_LIVE_PER_GAME=8;
-const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5',cx2:'Combo 2x',cx3:'Combo 3x',cx4:'Combo 4x',cx5:'Combo 5x'};
-const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6','cx2','cx3','cx4','cx5'];
+const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5',cx1:'Combo double',cx2:'Combo 2x',cx3:'Combo 3x',cx4:'Combo 4x',cx5:'Combo 5x'};
+const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6','cx1','cx2','cx3','cx4','cx5'];
 const isStack=c=>!!c&&c.multi===true;
 if(!Array.isArray(P.calls)) P.calls=[];
 
@@ -6550,7 +6552,7 @@ function odBox(g,e){
   const m=e.main||{}, A=g.teams.away, H=g.teams.home, T=m.total||{};
   const row=(side,T1)=>'<div class="odr"><div class="odt">'+esc(T1.abbr)+'</div>'+odCell((m.spread||{})[side])+odCell(side==='away'?T.over:T.under,side==='away'?'O ':'U ')+odCell((m.ml||{})[side])+'</div>';
   const links=e.eventLinks||{}; const lk=['draftkings','fanduel','betmgm','caesars'].filter(k=>links[k]).map(k=>'<a href="'+esc(bkRegion(links[k]))+'" target="_blank" rel="noopener">'+esc(OD_BOOKS[k])+'</a>').join(' · ');
-  const when=OD.data.generatedAt?new Date(OD.data.generatedAt):null;
+  const wt=typeof hpOddsAt==='function'?hpOddsAt(OD.data):Date.parse(OD.data.generatedAt||''); const when=isFinite(wt)?new Date(wt):null;
   return '<div class="odbox" data-od="'+esc(g.id)+'"><div class="odh"><b>Sportsbook lines</b><span class="small muted">best price shown, tap for the book'+(when?' · pulled '+when.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'')+'</span></div>'+
     '<div class="odr odhd"><div class="odt"></div><span>Spread</span><span>Total</span><span>Money</span></div>'+row('away',A)+row('home',H)+(lk?'<div class="small muted">Open at: '+lk+'</div>':'')+
     '<div class="small muted">Practice only. Prices are what the books showed when pulled; they move.</div></div>';
@@ -7027,6 +7029,12 @@ const hpImp=o=>o==null?null:(o<0?(-o)/(-o+100):100/(o+100));
 const hpAm=p=>{ p=clamp(p,0.01,0.99); return p>=0.5?Math.round(-100*p/(1-p)):Math.round(100*(1-p)/p); };
 const hpKey=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
 function hpOdds(){ try{ const O=window.__LSDATA&&window.__LSDATA.odds; return O&&Array.isArray(O.events)?O:null; }catch(e){ return null; } }
+/* when the odds file last changed: the feed's pull (generatedAt) or FanDuel's own pull (fdAt, engine/fdapi.py), whichever is newer */
+function hpStamp(O){ O=O||hpOdds(); return O?((O.generatedAt||'')+'|'+(O.fdAt||'')):''; }
+function hpOddsAt(O){ O=O||hpOdds(); if(!O) return NaN; const a=Date.parse(O.generatedAt||''), b=Date.parse(O.fdAt||''); return Math.max(isFinite(a)?a:-Infinity,isFinite(b)?b:-Infinity); }
+/* the player's record at a number: hits over the last 15 games he played, and in last season's playoffs (engine/build.py st.post) */
+function hpRec(st,T,under){ if(!st) return null; const v=(st.v15||[]).filter(x=>x!=null), vs=v.length?v:(st.vals||[]), po=st.post||[];
+  const ok=x=>under?x<T:x>=T; const r={h:vs.filter(ok).length,n:vs.length}; if(po.length){ r.ph=po.filter(ok).length; r.pn=po.length; } return r.n||r.pn?r:null; }
 /* FanDuel is the main book: its own price and line whenever it lists the outcome; only when it does not, the best price among the other books on their most common line */
 function hpBest(x){
   if(!x||!x.books) return null; const ks=Object.keys(x.books).filter(k=>x.books[k]&&x.books[k].odds!=null); if(!ks.length) return null;
@@ -7067,7 +7075,7 @@ function hpHtBlock(g){
 
 /* ---------- legs for one game, all from the feed ---------- */
 function hpLegs(g){
-  const O=hpOdds(); if(!O) return []; const ck=g.id+'|'+O.generatedAt+'|'+CALV; if(HP.cache[ck]) return HP.cache[ck];
+  const O=hpOdds(); if(!O) return []; const ck=g.id+'|'+hpStamp(O)+'|'+CALV; if(HP.cache[ck]) return HP.cache[ck];
   const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l)); }catch(_){} const fdo=out.filter(hpIsFd); HP.cache[ck]=fdo; return fdo; }
   const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
   const abbrBk=b=>HP_BK[b]||b;
@@ -7092,7 +7100,7 @@ function hpLegs(g){
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
-    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl)}); }); });
+    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under')}); }); });
   /* stat thresholds ("125+ pass yds", "1+ receptions", "2+ pass TD"): ONLY the rungs FanDuel lists (its alternate lines and 1+ markets, put on the player's ladder by the bot,
      engine/fanduel.py), at FanDuel's price, with FanDuel's bet link. The app no longer invents rungs or prices for the builders: a number FanDuel does not offer is not a pick. */
   (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; const av=pl.avail==null?1:pl.avail;
@@ -7101,7 +7109,8 @@ function hpLegs(g){
         const pm=m.p!=null?+m.p:null; const p=adjP(clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97),'prop'), tok='o:'+g.id+':fd:'+pl.id+':'+st.key+':'+T;
         if(out.some(x=>x.tok===tok)) return;
         out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+T+'+ '+lab,price:m.price,book:'fanduel',bk:'FD',link:m.link||null,nBooks:1,line:T-0.5,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
-          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.'}); }); }); });
+          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.',
+          rec:m.n||m.pn?{h:m.hit||0,n:m.n||0,ph:m.ph,pn:m.pn}:hpRec(st,T,false)}); }); }); });
   /* FanDuel's alternate game totals ("Under 7.5" in hockey) */
   if(!(typeof isSoc==='function'&&isSoc(g))) ['over','under'].forEach(d=>{ const x=M.total&&M.total[d], fd=x&&x.books&&x.books.fanduel; if(!fd||!fd.alts) return;
     fd.alts.forEach(a=>{ if(a.odds==null||a.line==null||(fd.line!=null&&+a.line===+fd.line)) return; const ln=+a.line, pf=clamp(hpImp(a.odds)*0.96,0.02,0.97);
@@ -7411,7 +7420,7 @@ function plLeg(g,l,sport){
 }
 function plLegsOf(g){
   plLearnMap();
-  const O=hpOdds(), sport=keyOf(g), ck='L'+g.id+'|'+(O?O.generatedAt:'')+'|'+CALV+'|'+PL.learnV;
+  const O=hpOdds(), sport=keyOf(g), ck='L'+g.id+'|'+(O?hpStamp(O):'')+'|'+CALV+'|'+PL.learnV;
   if(PL.cache[ck]) return PL.cache[ck];
   let base=[]; try{ base=O?hpLegs(g).filter(l=>l.kind==='prop'||l.kind==='alt'):[]; }catch(e){ base=[]; }
   if(!base.some(l=>!l.floor)){ const have={}; base.forEach(l=>{ if(l.spec) have[l.spec.pid+'|'+l.spec.stat+'|'+l.spec.T]=1; });
@@ -7460,7 +7469,7 @@ function plSummarize(sport,sz,legs,extra){
 }
 function plBuildFor(sport,sz){
   plLearnMap();
-  const O=hpOdds(), key='B'+sport+'|'+sz.n+'|'+TODAY+'|'+S.date+'|'+(O?O.generatedAt:'')+'|'+CALV+'|'+PL.learnV;      // S.date: the pool is the selected day and the 3 after it
+  const O=hpOdds(), key='B'+sport+'|'+sz.n+'|'+TODAY+'|'+S.date+'|'+(O?hpStamp(O):'')+'|'+CALV+'|'+PL.learnV;      // S.date: the pool is the selected day and the 3 after it
   if(PL.cache[key]!==undefined) return PL.cache[key];
   Object.keys(PL.cache).forEach(k=>{ if(k.indexOf('B'+sport+'|'+sz.n+'|')===0) delete PL.cache[k]; });
   const pool=plPool(sport), r=plPick(pool,sz);
@@ -7630,7 +7639,7 @@ function goldCal(){
 /* ---------- candidates: every pregame leg of a sport, one entry per bet ---------- */
 function goldGames(key){ const now=Date.now(); return DATA.games.filter(g=>keyOf(g)===key&&preOK(g)&&leagueOK(key)&&(Date.parse(g.iso)-now)<36*3600e3); }
 function goldLegsOf(g){
-  const ck=g.id+'|'+CALV+'|'+((window.__LSDATA&&window.__LSDATA.odds&&window.__LSDATA.odds.generatedAt)||''); if(GPK.cache[ck]) return GPK.cache[ck];
+  const ck=g.id+'|'+CALV+'|'+(typeof hpStamp==='function'?hpStamp():''); if(GPK.cache[ck]) return GPK.cache[ck];
   const seen={}, out=[]; const cal=goldCal();
   const add=l=>{ if(!l||l.price==null||!isFinite(l.price)||!l.spec||l.live) return; if(l.spec.stat&&GOLD_SKIP[l.spec.stat]) return;
     if(l.spec.k==='prop'&&GOLD_YDS[l.spec.stat]&&l.spec.dir==='ge'&&+l.spec.T<10) return;          // "2+ rush yds" is not a pick
@@ -7639,7 +7648,7 @@ function goldLegsOf(g){
     const key=(l.label||'')+'|'+g.id; if(seen[key]) return; seen[key]=1;
     const p0=l.ps!=null?l.ps:adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),l.spec.k==='prop'?'prop':'team');
     const tok=l.tok||l.id; const book=l.book?(l.book==='est'?'est':l.book):(l.src==='FanDuel'?'fanduel':l.src==='DraftKings'||l.src==='DK'?'draftkings':'est');
-    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0}); };
+    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0,rec:l.rec||null,pFair:l.pFair!=null?l.pFair:null}); };
   /* FanDuel only: hpLegs (home_picks.js) gives the bets FanDuel lists at FanDuel's price (team lines, over/unders, its alternate lines and 1+ markets) */
   try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(typeof hpIsFd!=='function'||hpIsFd(l)) add(l); }); }catch(e){}
   Object.keys(GPK.cache).forEach(k=>{ if(k.indexOf(g.id+'|')===0) delete GPK.cache[k]; });
@@ -7763,15 +7772,20 @@ try{ if(window.__LS) window.__LS.gold={pick:goldPick,slip:goldSlip,legs:goldLegs
    Always optimized: while none of a recorded combo's games has started, a better combo found on a later data refresh replaces it. Once one of its
    games starts it is locked and graded leg by leg at the finals; a fresh combo from the games still to come can then be recorded (max 3 per target a day).
    Recorded in the tracked-picks ledger (kinds cx2..cx5), so the results show on the next day's report. Practice only. */
-const CX={targets:[2,3,4,5],over:83,beam:260,maxLegs:14,pool:90,cache:{},k:2,maxVer:3};
+const CX={targets:[1,2,3,4,5],over:83,beam:260,maxLegs:14,pool:90,cache:{},k:2,maxVer:3};
 const cxKind=k=>'cx'+k;
+const cxLab=k=>+k===1?'Double':k+'x';                              // 1 = double your money (+100), like a 2-leg same-game parlay at +113
 const cxLo=k=>100*k, cxHi=k=>100*k+CX.over;                      // American odds window
 function cxGames(){ const now=Date.now(); return DATA.games.filter(g=>!g.ghost&&preOK(g)&&(Date.parse(g.iso)-now)<36*3600e3); }
 function cxGameTag(g){ return g?g.teams.away.abbr+' @ '+g.teams.home.abbr:''; }
 function cxPool(){
   const out=[]; cxGames().forEach(g=>{ let ls=[]; try{ ls=(typeof goldLegsOf==='function')?goldLegsOf(g):[]; }catch(e){ ls=[]; }
-    ls.forEach(l=>{ if(l.est||l.ps<0.5||l.ps>0.97) return; const d=decOf(l.price); if(!(d>=1.04)) return;
-      out.push(Object.assign({},l,{dec:d,lc:Math.log(d),lv:Math.log(l.ps),lg:keyOf(g)})); }); });
+    ls.forEach(l=>{ if(l.est) return;
+      /* team sides and totals: mostly FanDuel's own no-vig chance (70%), the model only nudges it. Player legs keep their chance, which already weighs the player's
+         record at that number (last 15 games, last season's playoffs). So a combo leans on players who keep clearing the number, not on a model hunch about a total. */
+      let ps=l.ps; if(l.spec&&/^(ml|spr|tot|tt|dc)$/.test(l.spec.k)&&l.pFair!=null) ps=0.7*l.pFair+0.3*l.ps;
+      if(ps<0.5||ps>0.97) return; const d=decOf(l.price); if(!(d>=1.04)) return;
+      out.push(Object.assign({},l,{ps:ps,dec:d,lc:Math.log(d),lv:Math.log(ps),lg:keyOf(g)})); }); });
   out.forEach(l=>{ l.r=l.lv/l.lc; });                                // closer to 0 = gives up less chance per unit of payout
   out.sort((a,b)=>b.r-a.r||b.ps-a.ps);
   return out.slice(0,CX.pool);
@@ -7800,7 +7814,7 @@ function cxSearch(pool,k){
   return {k:k,legs:legs,dec:dec,am:amerOfDec(dec),pAll:Math.exp(best.val),sports:Array.from(new Set(legs.map(l=>l.lg)))};
 }
 function cxBuildAll(){
-  const ck=CALV+'|'+((window.__LSDATA&&window.__LSDATA.odds&&window.__LSDATA.odds.generatedAt)||'')+'|'+DATA.asOf+'|'+cxGames().map(g=>g.id).join(',');
+  const ck=CALV+'|'+(typeof hpStamp==='function'?hpStamp():'')+'|'+DATA.asOf+'|'+cxGames().map(g=>g.id).join(',');
   if(CX.cache.key===ck) return CX.cache.val;
   const pool=cxPool(), val={}; CX.targets.forEach(k=>{ try{ val[k]=cxSearch(pool,k); }catch(e){ val[k]=null; try{ console.error('Line Scout: combo failed',e); }catch(_){} } });
   CX.cache={key:ck,val:val}; return val;
@@ -7811,7 +7825,7 @@ const cxStarted=c=>c.legs.some(l=>{ const g=G[l.gid]; return !g||!preOK(g); });
 const cxSig=legs=>legs.map(l=>l.tok||l.id).sort().join('|');
 function cxRec(s){
   return {dec:Math.round(s.dec*100)/100,am:s.am,pAll:Math.round(s.pAll*10000)/10000,
-    legs:s.legs.map(l=>({id:l.tok,gid:l.gid,pid:l.pid,label:l.label,price:l.price,p:Math.round(l.ps*1000)/1000,spec:l.spec,res:null,game:cxGameTag(l.g),lg:l.lg,bkn:l.book,lk:l.book==='fanduel'?(l.link||null):null}))};
+    legs:s.legs.map(l=>({id:l.tok,gid:l.gid,pid:l.pid,label:l.label,price:l.price,p:Math.round(l.ps*1000)/1000,spec:l.spec,res:null,game:cxGameTag(l.g),lg:l.lg,bkn:l.book,lk:l.book==='fanduel'?(l.link||null):null,rec:l.rec||null}))};
 }
 function cxToday(k){ return P.calls.filter(c=>c.kind===cxKind(k)&&c.date===TODAY&&c.status!=='void').sort((a,b)=>a.t-b.t); }
 /* what to show for a target: the optimized combo, written down (or swapped in) so it gets graded */
@@ -7829,11 +7843,19 @@ function cxFor(k,fresh){
 }
 
 /* ---------- display ---------- */
+function cxRecTxt(r){ if(!r) return ''; const a=[]; if(r.n) a.push('hit '+r.h+' of last '+r.n); if(r.pn) a.push('playoffs '+r.ph+'/'+r.pn); return a.join(' · '); }
+function cxWhyEmpty(k){
+  const O=typeof hpOdds==='function'?hpOdds():null, at=typeof hpOddsAt==='function'?hpOddsAt(O):NaN;
+  const nFd=cxGames().reduce((n,g)=>{ let ls=[]; try{ ls=goldLegsOf(g); }catch(e){} return n+ls.length; },0);
+  if(!nFd){ const age=isFinite(at)?Math.round((Date.now()-at)/60000):null;
+    return 'No FanDuel lines are loaded for games still to come'+(age!=null?' (FanDuel last read '+(age>=120?Math.floor(age/60)+' h':age+' min')+' ago)':'')+'. Combos are built only from bets FanDuel lists, at its prices, so this fills in on the next data refresh that reads FanDuel.'; }
+  return 'No set of the '+nFd+' FanDuel legs from games still to come lands between +'+cxLo(k)+' and +'+cxHi(k)+' right now. It fills in as more lines post.';
+}
 const cxPct=x=>x>=0.1?Math.round(x*100)+'%':x>=0.01?(x*100).toFixed(1)+'%':'<1%';
 const cxStake=()=>{ const v=parseFloat(S.stake); return isFinite(v)&&v>0?v:10; };
 function cxLegRow(l){
   const g=G[l.gid], res=l.res==='W'?' win':l.res==='L'?' loss':'', mark=l.res==='W'?'✓':l.res==='L'?'✗':l.res==='V'?'–':'';
-  return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc((LGN[l.lg]||String(l.lg||'').toUpperCase())+' · '+(l.game||cxGameTag(g)))+'</div></div>'+
+  return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc((LGN[l.lg]||String(l.lg||'').toUpperCase())+' · '+(l.game||cxGameTag(g)))+'</div>'+(cxRecTxt(l.rec)?'<div class="plsub cxrec">'+esc(cxRecTxt(l.rec))+'</div>':'')+'</div>'+
     '<div class="plpr mono"><span>'+fo(l.price)+'</span><span class="plbk fd">FD</span></div><div class="plch"><b>'+Math.round(l.p*100)+'%</b></div><span class="cxmk">'+mark+'</span></div>';
 }
 function cxStatus(c){ return c.status==='hit'?'<span class="cxst ok">✓ Hit</span>':c.status==='miss'?'<span class="cxst bad">✗ Missed</span>':c.status==='void'?'<span class="cxst">Void</span>':cxStarted(c)?'<span class="cxst live">Locked · in play</span>':'<span class="cxst">Optimizing until first game</span>'; }
@@ -7841,34 +7863,34 @@ function cxCard(c,k){
   const st=cxStake(), win=st*(c.dec-1), on=c.legs.every(l=>inSlip(l.id)), wn=c.legs.filter(l=>l.res==='W').length, done=c.legs.filter(l=>l.res).length;
   const fd=(typeof plFdUrl==='function')?plFdUrl({legs:c.legs.map(l=>({book:l.bkn,link:l.lk}))}):{url:'',n:0};
   const sports=Array.from(new Set(c.legs.map(l=>LGN[l.lg]||l.lg))).join(', ');
-  return '<div class="plcard cxcard'+(on?' on':'')+'"><div class="plh"><div><div class="plt">'+k+'x your money · '+c.legs.length+' legs</div><div class="pls">'+esc(sports)+'</div></div>'+
+  return '<div class="plcard cxcard'+(on?' on':'')+'"><div class="plh"><div><div class="plt">'+(+k===1?'Double your money':k+'x your money')+' · '+c.legs.length+' legs</div><div class="pls">'+esc(sports)+'</div></div>'+
     '<div class="plo"><b>'+fo(c.am)+'</b><span>target +'+cxLo(k)+' to +'+cxHi(k)+'</span></div></div>'+
     '<div class="plstats"><div><b>'+cxPct(c.pAll)+'</b><span>all-hit chance</span><div class="plmeter"><i style="width:'+Math.min(100,Math.round(c.pAll*100))+'%"></i></div></div>'+
     '<div><b>$'+win.toFixed(2)+'</b><span>win on $'+st.toFixed(0)+'</span></div><div><b>'+(done?wn+'/'+c.legs.length:Math.round(100*c.legs.reduce((s,l)=>s+l.p,0)/c.legs.length)+'%')+'</b><span>'+(done?'legs hit':'avg leg')+'</span></div></div>'+
     '<div>'+cxStatus(c)+'</div><div class="plg">'+c.legs.map(cxLegRow).join('')+'</div>'+
     (c.status==='pending'&&!cxStarted(c)?'<div class="btnrow"><button class="btn'+(on?'':' solid')+'" data-act="cx-add" data-k="'+k+'">'+(on?'Remove from slip':'Add to slip')+'</button>'+(fd.url?'<a class="btn" href="'+esc(fd.url)+'" target="_blank" rel="noopener">Open on FanDuel'+(fd.n<c.legs.length?' ('+fd.n+' legs)':'')+'</a>':'')+'</div>':'')+'</div>';
 }
-function cxMini(c,k){ return '<div class="cxmini"><div class="cxmh"><b>'+k+'x · '+fo(c.am)+' · '+c.legs.length+' legs</b>'+cxStatus(c)+'</div><div class="plg">'+c.legs.map(cxLegRow).join('')+'</div></div>'; }
+function cxMini(c,k){ return '<div class="cxmini"><div class="cxmh"><b>'+cxLab(k)+' · '+fo(c.am)+' · '+c.legs.length+' legs</b>'+cxStatus(c)+'</div><div class="plg">'+c.legs.map(cxLegRow).join('')+'</div></div>'; }
 function cxYesterday(){
   const d=new Date(Date.parse(TODAY+'T12:00:00Z')-864e5).toISOString().slice(0,10);
   const cs=P.calls.filter(c=>c.date===d&&/^cx\d$/.test(c.kind)&&c.status!=='void'); if(!cs.length) return '';
   const hit=cs.filter(c=>c.status==='hit').length, done=cs.filter(c=>c.status!=='pending').length;
-  return '<div class="small cxy"><b>Yesterday:</b> '+hit+' of '+done+' graded combos hit'+(done<cs.length?' ('+(cs.length-done)+' still open)':'')+' · '+cs.map(c=>c.kind.slice(2)+'x '+(c.status==='hit'?'✓':c.status==='miss'?'✗':'…')).join(' · ')+' <span class="muted">Full legs on yesterday\'s report (calendar).</span></div>';
+  return '<div class="small cxy"><b>Yesterday:</b> '+hit+' of '+done+' graded combos hit'+(done<cs.length?' ('+(cs.length-done)+' still open)':'')+' · '+cs.map(c=>cxLab(c.kind.slice(2))+' '+(c.status==='hit'?'✓':c.status==='miss'?'✗':'…')).join(' · ')+' <span class="muted">Full legs on yesterday\'s report (calendar).</span></div>';
 }
 function cxBody(){
   const all=cxBuildAll(); const k=CX.k;
-  const seg='<div class="plseg">'+CX.targets.map(t=>{ const s=all[t]; return '<button class="plseg-b" data-act="cx-k" data-k="'+t+'" aria-pressed="'+(t===k)+'"><b>'+t+'x</b><span>'+(s?cxPct(s.pAll):'none')+'</span></button>'; }).join('')+'</div>';
+  const seg='<div class="plseg">'+CX.targets.map(t=>{ const s=all[t]; return '<button class="plseg-b" data-act="cx-k" data-k="'+t+'" aria-pressed="'+(t===k)+'"><b>'+cxLab(t)+'</b><span>'+(s?cxPct(s.pAll):'none')+'</span></button>'; }).join('')+'</div>';
   const r=cxFor(k,all[k]);
   let body;
   if(r.cur) body=cxCard(r.cur,k);
-  else body='<div class="plempty small">No set of FanDuel legs from games still to come lands between +'+cxLo(k)+' and +'+cxHi(k)+' right now. It fills in as lines post.</div>';
-  const earlier=r.earlier.length?'<details class="plhow"><summary class="small">Earlier '+k+'x combos today ('+r.earlier.length+')</summary>'+r.earlier.map(c=>cxMini(c,k)).join('')+'</details>':'';
+  else body='<div class="plempty small">'+esc(cxWhyEmpty(k))+'</div>';
+  const earlier=r.earlier.length?'<details class="plhow"><summary class="small">Earlier '+cxLab(k)+' combos today ('+r.earlier.length+')</summary>'+r.earlier.map(c=>cxMini(c,k)).join('')+'</details>':'';
   return seg+body+earlier+cxYesterday()+
-    '<div class="plfoot">Combined odds must land from the target to at most 83 points over it (2x = +200 to +283). The app tries every FanDuel leg on the board across all sports and keeps the set with the highest chance that all of them hit, using each leg\'s no-vig FanDuel chance blended with the model and scaled by the graded record. It keeps re-optimizing until the first game of the combo starts, then locks it and grades it at the finals; the result shows on the next day\'s report. Legs are in different games where possible; the price shown is the plain multiply, so FanDuel may quote a little differently. Practice only.</div>';
+    '<div class="plfoot">Combined odds must land from the target to at most 83 points over it (double = +100 to +183, 2x = +200 to +283: win twice the stake). Every leg shows the player\'s record at that number: the last 15 games he played and, early in a season, last season\'s playoffs; preseason games barely count (teams rest players), and that record is part of the leg\'s chance. The app tries every FanDuel leg on the board across all sports and keeps the set with the highest chance that all of them hit, using each leg\'s no-vig FanDuel chance blended with the model and scaled by the graded record. It keeps re-optimizing until the first game of the combo starts, then locks it and grades it at the finals; the result shows on the next day\'s report. Legs are in different games where possible; the price shown is the plain multiply, so FanDuel may quote a little differently. Practice only.</div>';
 }
 function cxHtml(){
   let inner; try{ inner='<div id="cxbox">'+cxBody()+'</div>'; }catch(e){ try{ console.error('Line Scout: combos failed',e); }catch(_){} return ''; }
-  return '<section class="game hpsec cxsec"><div class="sec">'+hpFold('cx','Combos · 2x to 5x your money','all sports · highest chance to hit the target',inner,true)+'</div></section>';
+  return '<section class="game hpsec cxsec"><div class="sec">'+hpFold('cx','Combos · double to 5x your money','all sports · highest chance to hit the target',inner,true)+'</div></section>';
 }
 function cxRepaint(){ const b=document.getElementById('cxbox'); if(!b) return; try{ b.innerHTML=cxBody(); }catch(e){ try{ console.error(e); }catch(_){} } }
 
@@ -7889,7 +7911,7 @@ document.addEventListener('click',function(e){
   if(c.legs.every(l=>inSlip(l.id))){ S.slip=S.slip.filter(x=>!c.legs.some(l=>l.id===x.id)); S.slipMsg=''; }
   else { const legs=c.legs.map(l=>legFor(l.id)).filter(Boolean);
     if(!legs.length){ S.slipMsg='Those legs are no longer posted.'; S.slipOpen=true; }
-    else { S.slip=legs; S.betMode='parlay'; S.slipOpen=true; S.slipMsg='Loaded the '+k+'x combo ('+legs.length+(legs.length<c.legs.length?' of '+c.legs.length:'')+' legs, '+fo(c.am)+').'; } }
+    else { S.slip=legs; S.betMode='parlay'; S.slipOpen=true; S.slipMsg='Loaded the '+cxLab(k)+' combo ('+legs.length+(legs.length<c.legs.length?' of '+c.legs.length:'')+' legs, '+fo(c.am)+').'; } }
   renderSlip(); syncLegButtons(); cxRepaint();
 },true);
 try{ if(window.__LS) window.__LS.cx={CX:CX,pool:cxPool,search:cxSearch,build:cxBuildAll,forK:cxFor,body:cxBody}; }catch(e){}

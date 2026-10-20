@@ -22,3 +22,5 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
 .rcr.ok{background:var(--over-soft)}.rcr.bad{background:var(--under-soft)}
 .rcm{font-weight:800;text-align:center}.rcr.ok .rcm{color:var(--over)}.rcr.bad .rcm{color:var(--under)}
 .rcl{display:flex;flex-direction:column;min-width:0;line-height:1.3;overflow-wrap:anywhere}
+.cxrec{color:var(--ok,#16a34a);font-weight:600}
+.cxsec .plseg{grid-template-columns:repeat(5,1fr)}

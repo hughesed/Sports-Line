@@ -74,7 +74,7 @@ function plLeg(g,l,sport){
 }
 function plLegsOf(g){
   plLearnMap();
-  const O=hpOdds(), sport=keyOf(g), ck='L'+g.id+'|'+(O?O.generatedAt:'')+'|'+CALV+'|'+PL.learnV;
+  const O=hpOdds(), sport=keyOf(g), ck='L'+g.id+'|'+(O?hpStamp(O):'')+'|'+CALV+'|'+PL.learnV;
   if(PL.cache[ck]) return PL.cache[ck];
   let base=[]; try{ base=O?hpLegs(g).filter(l=>l.kind==='prop'||l.kind==='alt'):[]; }catch(e){ base=[]; }
   if(!base.some(l=>!l.floor)){ const have={}; base.forEach(l=>{ if(l.spec) have[l.spec.pid+'|'+l.spec.stat+'|'+l.spec.T]=1; });
@@ -123,7 +123,7 @@ function plSummarize(sport,sz,legs,extra){
 }
 function plBuildFor(sport,sz){
   plLearnMap();
-  const O=hpOdds(), key='B'+sport+'|'+sz.n+'|'+TODAY+'|'+S.date+'|'+(O?O.generatedAt:'')+'|'+CALV+'|'+PL.learnV;      // S.date: the pool is the selected day and the 3 after it
+  const O=hpOdds(), key='B'+sport+'|'+sz.n+'|'+TODAY+'|'+S.date+'|'+(O?hpStamp(O):'')+'|'+CALV+'|'+PL.learnV;      // S.date: the pool is the selected day and the 3 after it
   if(PL.cache[key]!==undefined) return PL.cache[key];
   Object.keys(PL.cache).forEach(k=>{ if(k.indexOf('B'+sport+'|'+sz.n+'|')===0) delete PL.cache[k]; });
   const pool=plPool(sport), r=plPick(pool,sz);

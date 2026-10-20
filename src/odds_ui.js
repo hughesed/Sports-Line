@@ -31,7 +31,7 @@ function odBox(g,e){
   const m=e.main||{}, A=g.teams.away, H=g.teams.home, T=m.total||{};
   const row=(side,T1)=>'<div class="odr"><div class="odt">'+esc(T1.abbr)+'</div>'+odCell((m.spread||{})[side])+odCell(side==='away'?T.over:T.under,side==='away'?'O ':'U ')+odCell((m.ml||{})[side])+'</div>';
   const links=e.eventLinks||{}; const lk=['draftkings','fanduel','betmgm','caesars'].filter(k=>links[k]).map(k=>'<a href="'+esc(bkRegion(links[k]))+'" target="_blank" rel="noopener">'+esc(OD_BOOKS[k])+'</a>').join(' · ');
-  const when=OD.data.generatedAt?new Date(OD.data.generatedAt):null;
+  const wt=typeof hpOddsAt==='function'?hpOddsAt(OD.data):Date.parse(OD.data.generatedAt||''); const when=isFinite(wt)?new Date(wt):null;
   return '<div class="odbox" data-od="'+esc(g.id)+'"><div class="odh"><b>Sportsbook lines</b><span class="small muted">best price shown, tap for the book'+(when?' · pulled '+when.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'')+'</span></div>'+
     '<div class="odr odhd"><div class="odt"></div><span>Spread</span><span>Total</span><span>Money</span></div>'+row('away',A)+row('home',H)+(lk?'<div class="small muted">Open at: '+lk+'</div>':'')+
     '<div class="small muted">Practice only. Prices are what the books showed when pulled; they move.</div></div>';

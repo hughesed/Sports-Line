@@ -1,7 +1,7 @@
 /* ================= safe slips, pick of the day, tracked calls, self-check ================= */
 const POTD_P=0.90, POTD_PRICE=-140, MIN_SAFE=0.65, KEEP_DAYS=24, MAX_CALLS=700, MAX_LIVE_PER_GAME=8;
-const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5',cx2:'Combo 2x',cx3:'Combo 3x',cx4:'Combo 4x',cx5:'Combo 5x'};
-const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6','cx2','cx3','cx4','cx5'];
+const KINDN={safe2:'Safe 2',safe4:'Safe 4',safe8:'Safe 8',potd:'Gold pick',live:'Live calls',pl4:'Stack 4',pl8:'Stack 8',pl12:'Stack 12-15',pl6:'Floor 6',gold3:'Gold 3',gold5:'Gold 5',cx1:'Combo double',cx2:'Combo 2x',cx3:'Combo 3x',cx4:'Combo 4x',cx5:'Combo 5x'};
+const CALL_KINDS=['potd','gold3','gold5','safe2','safe4','safe8','live','pl4','pl8','pl12','pl6','cx1','cx2','cx3','cx4','cx5'];
 const isStack=c=>!!c&&c.multi===true;
 if(!Array.isArray(P.calls)) P.calls=[];
 
