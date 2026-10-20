@@ -187,6 +187,12 @@ def main():
     except Exception as ex:
         fd_direct = f"error: {type(ex).__name__}: {ex}"[:160]
     log(f"  fanduel direct: {fd_direct}")
+    try:      # FanDuel players a card is missing (NHL and college cards have none): their team, ESPN id and game log from ESPN, before FanDuel's prices go on
+        import fdenrich
+        xref_status = fdenrich.enrich(games, read_json(f"{DATA}/odds.json", {}), now, log)
+    except Exception as ex:
+        xref_status = f"error: {type(ex).__name__}: {ex}"[:160]
+    log(f"  espn cross-reference: {xref_status}")
     try:
         import fanduel as FD
         fd_status = FD.apply(games, read_json(f"{DATA}/odds.json", {}), now)
@@ -321,7 +327,7 @@ def main():
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),
-                social=social_info, firstBasket=fb_note, odds=odds_status, oddsLive=live_status, fanduel=fd_status, fanduelDirect=fd_direct, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
+                social=social_info, firstBasket=fb_note, odds=odds_status, oddsLive=live_status, fanduel=fd_status, fanduelDirect=fd_direct, espnXref=xref_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
     write_json(f"{DATA}/slate.json", slate)
     write_json(f"{DATA}/learn.json", learn_out)
     write_json(f"{DATA}/pastp.json", pastp)
