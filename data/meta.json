@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 255,
+ "runNumber": 256,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T14:58:56Z",
- "generatedAtET": "Tue Oct 20, 10:58 AM ET",
+ "generatedAt": "2026-10-20T15:28:16Z",
+ "generatedAtET": "Tue Oct 20, 11:28 AM ET",
  "today": "2026-10-20",
- "lastRunAt": "2026-10-20T14:58:56Z",
+ "lastRunAt": "2026-10-20T15:28:16Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,8 +45,8 @@
   "nba": {
    "status": "ok",
    "games": 8,
-   "playerLevel": 0,
-   "teamLevel": 8,
+   "playerLevel": 8,
+   "teamLevel": 0,
    "carried": 0,
    "error": null,
    "newFinals": 0,
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 29,
-  "playerCards": 5,
-  "teamCards": 24,
+  "playerCards": 13,
+  "teamCards": 16,
   "window": 136,
   "sched": 136,
   "pastp": 23,
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.5,
+  "seconds": 3.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,18 +145,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 6,
+  "gamesUploaded": 21,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2452,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 1 graded, nba 0 graded",
- "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-20T18:59:15Z",
+ "firstBasket": "8 new snapshots, 0 graded, wnba 1 graded, nba 0 graded",
+ "odds": "kept (odds feed backing off until 18:59Z after 8 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (22): BOS@DET, MTSU@FIU, MOST@DEL, SJ@MTL, COL@NJ, ANA@NYI...",
+ "fanduel": "ok: FanDuel lines on 14 cards, 282 player stats, FanDuel-only players on 0 cards; not in the feed (8): ATL@ORL, MIL@WSH, MIN@MIA, CHA@BKN, CHI@TOR, NMSU@SHSU...",
+ "fanduelDirect": "ok: 14 games, 1026 player markets (14 FanDuel games in odds.json, pulled 2026-10-20T15:28:16Z; 3s)",
  "errors": [],
- "requests": 267,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 36.5
+ "requests": 433,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 27.1
 }
