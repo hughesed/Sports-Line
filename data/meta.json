@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 220,
+ "runNumber": 221,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T02:59:10Z",
- "generatedAtET": "Mon Oct 19, 10:59 PM ET",
+ "generatedAt": "2026-10-20T03:09:12Z",
+ "generatedAtET": "Mon Oct 19, 11:09 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-20T02:59:10Z",
+ "lastRunAt": "2026-10-20T03:09:12Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -33,14 +33,14 @@
   },
   "mlb": {
    "status": "ok",
-   "games": 2,
+   "games": 1,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 2,
+   "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2463,
-   "lastFinal": "2026-10-18"
+   "newFinals": 1,
+   "storeGames": 2464,
+   "lastFinal": "2026-10-20"
   },
   "nba": {
    "status": "ok",
@@ -104,24 +104,24 @@
   }
  },
  "counts": {
-  "slate": 33,
-  "playerCards": 7,
+  "slate": 32,
+  "playerCards": 6,
   "teamCards": 26,
   "window": 135,
   "sched": 78,
   "pastp": 23,
   "predictions": 259,
-  "graded": 180,
-  "storeGames": 13729
+  "graded": 181,
+  "storeGames": 13730
  },
  "calibration": {
   "slopes": {
    "cfb": 0.919,
    "nhl": 1.15
   },
-  "graded": 180,
-  "accML": 0.611,
-  "accBook": 0.622
+  "graded": 181,
+  "accML": 0.613,
+  "accBook": 0.624
  },
  "social": {
   "enabled": true,
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 6,
   "failedCalls": 0,
-  "seconds": 2.5,
+  "seconds": 2.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,7 +144,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 2,
+  "gamesUploaded": 0,
   "simTeamsUploaded": 1110,
   "configured": true
  },
@@ -153,8 +153,8 @@
  "oddsLive": "kept (odds feed backing off until 06:09Z)",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (22): BOS@DET, MTSU@FIU, MOST@DEL, SJ@MTL, COL@NJ, ANA@NYI...",
  "errors": [],
- "requests": 267,
+ "requests": 268,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 25.6
+ "seconds": 19.2
 }
