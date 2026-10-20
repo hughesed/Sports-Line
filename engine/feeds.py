@@ -81,6 +81,8 @@ def select_players(lg, team_roster, pidx):
         pick = take(("QB",), 1) + take(("RB", "FB"), 2) + take(("WR",), 3) + take(("TE",), 1)
     elif lg == "wnba":
         pick = [p for s, p in cand][:5]
+    elif lg == "nba":
+        pick = [p for s, p in cand][:8]        # starters and the main bench players the book lists (role players like a shooter or a rebounder are in parlays too)
     elif lg == "mlb":
         pit = [p for s, p in cand if p["pos"] in ("SP", "RP", "P")]
         hit = [p for s, p in cand if p["pos"] not in ("SP", "RP", "P")]

@@ -78,27 +78,27 @@ def num(v):
     except Exception: return None
 
 GL_TTL = 3 * 3600
-def _gl_raw(lg, aid):
-    cache = f"{CACHE}/gl/{lg}_{aid}.json"
-    if os.path.exists(cache) and time.time() - os.path.getmtime(cache) < GL_TTL:
+GL_TTL_OLD = 20 * 3600           # a finished season's log does not change: keep it most of a day
+def _gl_raw(lg, aid, season=None):
+    cache = f"{CACHE}/gl/{lg}_{aid}" + (f"_s{season}" if season else "") + ".json"
+    ttl = GL_TTL_OLD if season else GL_TTL
+    if os.path.exists(cache) and time.time() - os.path.getmtime(cache) < ttl:
         try: return json.load(open(cache))
         except Exception: pass
     sport, l = SP[lg]
-    d = curl(f"https://site.web.api.espn.com/apis/common/v3/sports/{sport}/{l}/athletes/{aid}/gamelog")
+    d = curl(f"https://site.web.api.espn.com/apis/common/v3/sports/{sport}/{l}/athletes/{aid}/gamelog" + (f"?season={season}" if season else ""))
     if d is None: return None
     try: json.dump(d, open(cache + ".tmp", "w")); os.replace(cache + ".tmp", cache)
     except Exception: pass
     return d
 
-def gamelog(lg, aid):
-    """returns (names, games[list oldest->newest of dict(eventId,date,opp,home,result,score,stats{})]) or None"""
-    d = _gl_raw(lg, aid)
-    if d is None: return None
+def _parse_gl(d):
     names = d.get("names") or []
     evmeta = d.get("events") or {}
     games = {}
     for st in d.get("seasonTypes", []):
         stname = st.get("displayName", "")
+        label = (re.match(r"\d{4}(-\d{2})?", stname) or [None])[0] if re.match(r"\d{4}", stname) else None
         for cat in st.get("categories", []):
             for e in cat.get("events", []):
                 eid = e["eventId"]; m = evmeta.get(eid, {})
@@ -112,9 +112,41 @@ def gamelog(lg, aid):
                     row[n] = x if x is not None else v
                 games[eid] = {"eventId": eid, "date": m.get("gameDate"), "opp": (m.get("opponent") or {}).get("abbreviation"),
                               "home": (m.get("atVs") == "vs"), "result": m.get("gameResult"), "score": m.get("score"),
-                              "post": "Post" in stname, "stats": row}
-    gl = sorted(games.values(), key=lambda g: g["date"] or "")
-    return names, gl
+                              "post": "Post" in stname, "pre": "Pre" in stname, "season": label, "stats": row}
+    return names, games
+
+def gamelog(lg, aid):
+    """returns (names, games[list oldest->newest of dict(eventId,date,opp,home,result,score,post,pre,season,stats{})]) or None. ESPN's current season only."""
+    d = _gl_raw(lg, aid)
+    if d is None: return None
+    names, games = _parse_gl(d)
+    return names, sorted(games.values(), key=lambda g: g["date"] or "")
+
+NEED_REAL = {"nfl": 6, "cfb": 6, "wnba": 15, "nba": 15, "cbb": 12, "mlb": 25, "nhl": 15}
+def prior_season_param(label):
+    """ESPN's season= value of the season before the one labelled "2025-26" (-> 2025) or "2026" (-> 2025)"""
+    m = re.match(r"(\d{4})", label or "")
+    return int(m.group(1)) if m and "-" in (label or "") else (int(m.group(1)) - 1 if m else None)
+
+def gamelog_multi(lg, aid):
+    """the current season plus, while it is still short of real games, the season before it (regular season AND postseason).
+    Preseason games stay in the list (pre=True) so the caller can give them little weight: teams do not go all out in exhibition games."""
+    d = _gl_raw(lg, aid)
+    if d is None: return None
+    names, games = _parse_gl(d)
+    labels = sorted({g["season"] for g in games.values() if g["season"]})
+    cur = labels[-1] if labels else None
+    real = sum(1 for g in games.values() if not g["pre"] and g["season"] == cur)
+    if cur and real < NEED_REAL.get(lg, 15):
+        ps = prior_season_param(cur)
+        if ps:
+            d2 = _gl_raw(lg, aid, ps)
+            if d2:
+                n2, g2 = _parse_gl(d2)
+                for eid, g in g2.items():
+                    if eid not in games and not g["pre"]: games[eid] = g      # last season's exhibition games are worth nothing now
+                if not names: names = n2
+    return names, sorted(games.values(), key=lambda g: g["date"] or "")
 
 def prune_cache(max_age_h=24):
     """the scratch cache is restored between runs by the workflow (actions/cache): drop what is old so it never grows"""
@@ -127,6 +159,9 @@ def prune_cache(max_age_h=24):
         pass
     return n
 
-def prefetch_gamelogs(lg, ids, workers=12):
+def prefetch_gamelogs(lg, ids, workers=12, multi=None):
+    """multi = ids whose prior-season log may be needed as well (gamelog_multi): fetched in the same parallel pass"""
     ids = [i for i in dict.fromkeys(str(x) for x in ids if x)]
     pmap(lambda a: _gl_raw(lg, a), ids, workers)
+    if multi:
+        pmap(lambda a: gamelog_multi(lg, a), [i for i in dict.fromkeys(str(x) for x in multi if x)], workers)

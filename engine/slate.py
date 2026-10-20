@@ -9,12 +9,12 @@ import build2 as B2
 PRIORITY = ["nfl", "cfb", "nba", "wnba", "mlb", "nhl", "cbb"]          # who wins a place when the slate is over its cap
 CAPS = dict(nfl=12, cfb=8, nba=8, wnba=6, mlb=8, nhl=8, cbb=6)         # per-league cap
 TOTAL_CAP = 24
-PLAYER_CAP = dict(nfl=10, wnba=6, mlb=8)                         # most events per league that get the (slower) player-level build
+PLAYER_CAP = dict(nfl=10, wnba=6, nba=8, mlb=8)                         # most events per league that get the (slower) player-level build
 HORIZON_H = 48
 HORIZON_LG = dict(nfl=72)      # NFL games are weekly: on Friday the Sunday slate should already be visible
 RETAIN_H = 30            # finished / live games stay on the slate (frozen pre-game card) this long after kickoff, so open practice bets can settle
 RETAIN_CAP = 14          # ...at most this many of them
-PLAYER_LG = ("nfl", "wnba", "mlb")
+PLAYER_LG = ("nfl", "wnba", "nba", "mlb")
 
 def _status(e):
     t = e["competitions"][0]["status"]["type"]
@@ -214,7 +214,7 @@ def _build_league(lg, lst, prev_by_id, prep, now, today, t0, budget_s, log):
                 for inj in player_ctx["league_inj"]:
                     if str(inj["id"]) in {str(x["team"]["id"]) for x in comps}:
                         ids += [B1.athlete_id(i["athlete"]) for i in inj.get("injuries", []) if i.get("athlete")]
-                prefetch_gamelogs(lg, ids)
+                prefetch_gamelogs(lg, ids, multi=[p["id"] for s in picks for p in picks[s]])
                 g = B1.build_game(lg, e, summ, c["core"], pidx, player_ctx["rows"], player_ctx["league_inj"], player_ctx["CX"], picks)
                 pl += 1
             except Exception as ex:

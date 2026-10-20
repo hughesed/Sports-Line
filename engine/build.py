@@ -9,13 +9,13 @@ NOW_UTC = datetime.datetime.now(datetime.timezone.utc)      # refresh.py calls s
 def set_now(dt):
     global NOW_UTC; NOW_UTC = dt
 
-HFA = {"nfl": 1.5, "wnba": 2.5, "mlb": 0.3}          # total home margin shift
-SHRINK_K = {"nfl": 5, "wnba": 0, "mlb": 0}            # pseudo-games toward league average
-RATING_SCALE = {"nfl": 2.5, "wnba": 2.0, "mlb": 25.0} # rating points per 1 point/run of injury impact
-LOGI = {"nfl": 7.9, "wnba": 6.5, "mlb": 2.5}          # logistic scale for win prob from margin
-SPREAD_T = {"nfl": 3.0, "wnba": 2.5, "mlb": 0.5}
-TOTAL_T = {"nfl": 4.0, "wnba": 4.0, "mlb": 0.6}
-ML_T = {"nfl": 0.06, "wnba": 0.05, "mlb": 0.04}
+HFA = {"nfl": 1.5, "wnba": 2.5, "nba": 2.5, "mlb": 0.3}          # total home margin shift
+SHRINK_K = {"nfl": 5, "wnba": 0, "nba": 4, "mlb": 0}            # pseudo-games toward league average
+RATING_SCALE = {"nfl": 2.5, "wnba": 2.0, "nba": 1.8, "mlb": 25.0} # rating points per 1 point/run of injury impact
+LOGI = {"nfl": 7.9, "wnba": 6.5, "nba": 7.0, "mlb": 2.5}          # logistic scale for win prob from margin
+SPREAD_T = {"nfl": 3.0, "wnba": 2.5, "nba": 3.0, "mlb": 0.5}
+TOTAL_T = {"nfl": 4.0, "wnba": 4.0, "nba": 5.0, "mlb": 0.6}
+ML_T = {"nfl": 0.06, "wnba": 0.05, "nba": 0.05, "mlb": 0.04}
 
 def norm(s):
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
@@ -44,16 +44,29 @@ def load_ratings(lg):
     reg = [g for g in games if not g["post"] and g.get("season") is not None]
     if not reg: raise RuntimeError(f"no regular-season games in the store for {lg}")
     cur = max(g["season"] for g in reg)
-    agg = {}
+    ncur = collections.Counter()
     for g in reg:
-        if g["season"] != cur: continue
+        if g["season"] == cur: ncur[g["home"]] += 1; ncur[g["away"]] += 1
+    # early in a season (few games, or some teams not played yet) last season's regular season and playoffs count too, at a weight that fades as games are played
+    early = len(ncur) < 8 or statistics.median(ncur.values()) < 15
+    agg = {}
+    for g in games if early else reg:
+        if g.get("season") is None: continue
+        if g["season"] == cur and not g["post"]: wt = 1.0
+        elif early and g["season"] == cur - 1: wt = 0.5 if g["post"] else 0.35
+        elif g["season"] == cur and g["post"]: continue
+        else: continue
         for ab, pf, pa in ((g["home"], g["hs"], g["as_"]), (g["away"], g["as_"], g["hs"])):
-            r = agg.setdefault(ab, dict(g=0, pf=0.0, pa=0.0, w=0, l=0)); r["g"] += 1; r["pf"] += pf; r["pa"] += pa
-            if pf > pa: r["w"] += 1
-            elif pf < pa: r["l"] += 1
+            r = agg.setdefault(ab, dict(g=0, gw=0.0, pf=0.0, pa=0.0, w=0, l=0))
+            r["gw"] += wt; r["pf"] += wt * pf; r["pa"] += wt * pa
+            if g["season"] == cur and not g["post"]:
+                r["g"] += 1
+                if pf > pa: r["w"] += 1
+                elif pf < pa: r["l"] += 1
     rows = {}
     for ab, r in agg.items():
-        rows[ab] = dict(g=r["g"], pf=r["pf"] / r["g"], pa=r["pa"] / r["g"], w=r["w"], l=r["l"], name=ab)
+        if r["gw"] <= 0: continue
+        rows[ab] = dict(g=r["g"] if r["g"] else round(r["gw"]), pf=r["pf"] / r["gw"], pa=r["pa"] / r["gw"], w=r["w"], l=r["l"], name=ab)
     if len(rows) < 8: raise RuntimeError(f"too few teams with games this season in {lg} ({len(rows)})")
     lgpf = statistics.mean(r["pf"] for r in rows.values())
     lgpa = statistics.mean(r["pa"] for r in rows.values())
@@ -154,6 +167,16 @@ STATS = {
                 ("ptsast", "Pts+Ast", lambda g: v(g, "points") + v(g, "assists"), ["Total Points and Assists", "Total Points + Assists"], None, 15),
                 ("rebast", "Reb+Ast", lambda g: v(g, "totalRebounds") + v(g, "assists"), ["Total Rebounds and Assists", "Total Rebounds + Assists"], None, 8)],
     },
+    "nba": {
+        "ALL": [("pts", "Points", lambda g: v(g, "points"), ["Total Points"], "Points", 15),
+                ("reb", "Rebounds", lambda g: v(g, "totalRebounds"), ["Total Rebounds"], "Rebounds", 6),
+                ("ast", "Assists", lambda g: v(g, "assists"), ["Total Assists"], "Assists", 4),
+                ("fg3", "3-pointers", lambda g: v(g, "threePointFieldGoalsMade-threePointFieldGoalsAttempted_made"), ["Total 3-Point Field Goals"], "3-Point Field Goals", 1.8),
+                ("pra", "Pts+Reb+Ast", lambda g: v(g, "points") + v(g, "totalRebounds") + v(g, "assists"), ["Total Points, Rebounds, and Assists"], "Points + Assists + Rebounds", 25),
+                ("ptsreb", "Pts+Reb", lambda g: v(g, "points") + v(g, "totalRebounds"), ["Total Points and Rebounds", "Total Points + Rebounds"], None, 21),
+                ("ptsast", "Pts+Ast", lambda g: v(g, "points") + v(g, "assists"), ["Total Points and Assists", "Total Points + Assists"], None, 19),
+                ("rebast", "Reb+Ast", lambda g: v(g, "totalRebounds") + v(g, "assists"), ["Total Rebounds and Assists", "Total Assists and Rebounds", "Total Rebounds + Assists"], None, 10)],
+    },
     "mlb": {
         "H": [("hits", "Hits", lambda g: v(g, "hits"), ["Total Hits"], "Hits", 0.9),
               ("tb", "Total bases", lambda g: v(g, "hits") + v(g, "doubles") + 2 * v(g, "triples") + 3 * v(g, "homeRuns"), ["Total Bases"], "Total Bases", 1.5),
@@ -167,12 +190,12 @@ STATS = {
 
 def stat_family(lg, pos):
     if lg == "nfl": return "QB" if pos == "QB" else ("RB" if pos in ("RB", "FB") else "WR")
-    if lg == "wnba": return "ALL"
+    if lg in ("wnba", "nba"): return "ALL"
     return "P" if pos in ("SP", "RP", "P") else "H"
 
 def played(lg, g, fam):
     s = g["stats"]
-    if lg == "wnba": return (s.get("minutes") or 0) > 0
+    if lg in ("wnba", "nba"): return (s.get("minutes") or 0) > 0
     if lg == "mlb": return (s.get("innings") or 0) > 0 if fam == "P" else (s.get("atBats") or 0) + (s.get("walks") or 0) > 0
     return True
 
@@ -322,12 +345,15 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
     for side in ("away", "home"):
         tid = G[side]
         for p in picks[side]:
-            r = gamelog(lg, p["id"])
+            r = gamelog_multi(lg, p["id"])          # this season + last season (regular season and playoffs) while this one is still short
             if not r: print("no game log for", p["name"]); continue
             names, gl = r
             fam = stat_family(lg, p["pos"])
             gl = [g for g in gl if played(lg, g, fam)]
-            P.append(dict(side=side, tid=tid, p=p, fam=fam, gl=gl, allgl=r[1]))
+            real = [g for g in gl if not g.get("pre")]
+            last_real = real[-1]["date"] if real else ""
+            pre = [g for g in gl if g.get("pre") and (g["date"] or "") > last_real]      # this year's exhibition games (after the last real game)
+            P.append(dict(side=side, tid=tid, p=p, fam=fam, gl=real or gl, pre=pre if real else [], allgl=r[1]))
     # --- injuries impact on team scoring
     # injured players production (for share-based impact)
     def prod_nfl(aid):
@@ -370,8 +396,8 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                     offp += 0.4 * w; notes.append(f"{i['name']} ({i['pos']}) {i['label']}: −{0.4*w:.1f} pts (OL starter assumed)")
                 elif i["pos"] in ("DE", "DT", "LB", "CB", "S", "DB", "DL", "EDGE"):
                     defp += 0.45 * w; notes.append(f"{i['name']} ({i['pos']}) {i['label']}: +{0.45*w:.2f} pts allowed")
-            elif lg == "wnba":
-                r = gamelog("wnba", i["id"])
+            elif lg in ("wnba", "nba"):
+                r = gamelog(lg, i["id"])
                 if r:
                     gl = [g for g in r[1] if (g["stats"].get("minutes") or 0) > 0][-10:]
                     if gl:
@@ -384,7 +410,7 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                 if i["pos"] in ("2B", "SS", "3B", "1B", "LF", "CF", "RF", "C", "DH"):
                     imp = 0.12 * w
                     offp += imp; notes.append(f"{i['name']} ({i['pos']}) {i['label']}: −{imp:.2f} runs")
-        cap = {"nfl": 6.0, "wnba": 8.0, "mlb": 0.6}[lg]
+        cap = {"nfl": 6.0, "wnba": 8.0, "nba": 9.0, "mlb": 0.6}[lg]
         offp = min(offp, cap); defp = min(defp, cap / 2)
         t["injImpact"] = dict(off=round(offp, 2), deff=round(defp, 2), notes=notes)
     # --- context factors: rest/workload, contract and trade news, dominant opposing players
@@ -395,9 +421,11 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
         me, op = teams[side], teams[op_side]
         ctx[side] = CF.team_context(lg, CX, me["id"], op["id"], side, me["_tg"], game_dt, me["defRank"], me["offRank"], NT, op["defRank"], op["offRank"], notable,
                                     [i["name"] for i in op["injuries"] if i["kind"] in ("out", "doubtful")], [me["short"], me["name"].split()[-1]])
-    if lg == "wnba":   # heavy recent minutes for the players being tracked
+    if lg in ("wnba", "nba"):   # heavy recent minutes for the players being tracked
         for X in P:
-            ml_ = CF.minutes_load(X["gl"])
+            try: fresh_ = X["gl"] and (datetime.date.fromisoformat(game_dt[:10]) - datetime.date.fromisoformat(X["gl"][-1]["date"][:10])).days <= 21
+            except Exception: fresh_ = False
+            ml_ = CF.minutes_load(X["gl"]) if fresh_ else None          # last season's playoff minutes are not this week's workload
             if ml_:
                 cx = ctx[X["side"]]; cx["items"].append(dict(kind="workload", text=f"{X['p']['name']} has averaged {ml_['last3']} minutes over the last 3 games (season {ml_['season']})", pts=-0.2, src="game logs"))
                 cx["off"] = round(cx["off"] + 0.2 * 0.5, 2); cx["deff"] = round(cx["deff"] + 0.2 * 0.5, 2)
@@ -512,7 +540,7 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                 flags.append(f"Sat out {len(missed)} of the last {len(tg)} team games (rest day or minor injury), back in the latest lineup")
             else:
                 flags.append(f"Back from an absence: missed {len(missed)} of the last {len(tg)} team games, played the latest. Usage may be eased in.")
-                ret_factor = {"nfl": 0.97, "wnba": 0.95, "mlb": 0.98}[lg]
+                ret_factor = {"nfl": 0.97, "wnba": 0.95, "nba": 0.95, "mlb": 0.98}[lg]
         elif tg and missed and tg[-1]["id"] not in ev_played:
             flags.append(f"Did not play the latest team game (missed {len(missed)} of the last {len(tg)})")
         # usage boost from out teammates
@@ -526,8 +554,8 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                 same = (i["pos"] == "RB") == (X["fam"] == "RB")
                 b = (0.8 if same else 0.25) * share * w
                 if b >= 0.01: boost += b; boost_note.append(f"{i['name']} out: +{b*100:.0f}%")
-            elif lg == "wnba":
-                r = gamelog("wnba", i["id"])
+            elif lg in ("wnba", "nba"):
+                r = gamelog(lg, i["id"])
                 if r:
                     gl2 = [g for g in r[1] if (g["stats"].get("minutes") or 0) > 0][-10:]
                     if gl2:
@@ -536,7 +564,7 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                         if b >= 0.01: boost += b; boost_note.append(f"{i['name']} out: +{b*100:.0f}%")
         boost = min(boost, 0.12)
         # opponent defense/offense rating for matchup
-        defs = STATS[lg][X["fam"] if lg == "nfl" else ("ALL" if lg == "wnba" else X["fam"])]
+        defs = STATS[lg][X["fam"] if lg == "nfl" else ("ALL" if lg in ("wnba", "nba") else X["fam"])]
         # 15-game display window (SGP chart). The model still uses only the last 10 games played.
         by_eid = {g["eventId"]: g for g in X["gl"]}
         model_eids = {g["eventId"] for g in X["gl"][-10:]}
@@ -565,10 +593,17 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
             vals15 = [x for x in v15 if x is not None] or vals
             bl, miles = book_lines(pidx, pid, book_names, mile)
             avg = statistics.mean(vals); avg5 = statistics.mean(vals[-5:])
-            allv = [fn(g) for g in X["gl"]]
+            allv = [fn(g) for g in X["gl"][-45:]]           # about a season of real games (two seasons are merged early in a season)
             season = statistics.mean(allv) if allv else avg
             if len(allv) >= 20: base = 0.25 * avg5 + 0.25 * avg + 0.5 * season
             else: base = avg if n < 5 else 0.6 * avg5 + 0.4 * avg
+            # preseason: teams rest starters and cut minutes, so exhibition numbers move the projection only a little (15% at most)
+            prev = [fn(g) for g in X.get("pre") or []]
+            if len(prev) >= 2: base = 0.85 * base + 0.15 * statistics.mean(prev)
+            # last season's playoffs (the latest postseason in the log): kept as its own record so the picks can compare
+            lastpost = [g for g in X["gl"] if g.get("post")]
+            if lastpost: lastpost = [g for g in lastpost if g.get("season") == lastpost[-1].get("season")][-12:]
+            postv = [fn(g) for g in lastpost]
             # player rating vs a typical starter (0-100)
             prate = clamp(50 + 35 * math.log(max(base, 0.05) / ref, 2), 5, 99)
             if lg == "mlb" and X["fam"] == "P":
@@ -644,17 +679,19 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                                   proj=round(proj, 1), season=r1(season), anchorNote=anchor_note, matchup=round(mu, 3), matchupNote=mnote, boost=round(boost, 3), lean=lean,
                                   pOver=round(p_over, 3), overPrice=est_price(p_over), pSafe=(round(p_safe, 3) if p_safe is not None else None),
                                   safePrice=safe_price, safeSrc=safe_src, miles=mlist[:14], prate=round(prate),
-                                  v15=[None if x is None else (round(x, 1) if x != int(x) else int(x)) for x in v15], n15=len(vals15), overHits15=over_hits15, sd=round(sd_adj, 2)))
+                                  v15=[None if x is None else (round(x, 1) if x != int(x) else int(x)) for x in v15], n15=len(vals15), overHits15=over_hits15, sd=round(sd_adj, 2),
+                                  post=[round(x, 1) if x != int(x) else int(x) for x in postv], postSeason=(lastpost[-1].get("season") if lastpost else None),
+                                  pre=[round(x, 1) if x != int(x) else int(x) for x in prev], seasons=sorted({g.get("season") for g in gl if g.get("season")})))
         games_meta = [dict(date=g["date"][:10], opp=g["opp"], home=g["home"], res=g["result"], post=g["post"]) for g in X["gl"][-10:]]
         players_out.append(dict(id=pid, name=p["name"], side=side, abbr=T["abbr"], pos=p["pos"], jersey=p.get("jersey"), status=status, avail=avail,
                                 flags=flags, boostNotes=boost_note, games=games_meta, slots=slots, stats=stats_out, fam=X["fam"], ht=HT.get(pid)))
     # --- basketball: how tall each team's tracked rotation is (inches), used for the height / skill matchup
-    if lg == "wnba":
+    if lg in ("wnba", "nba"):
         for _side in ("away", "home"):
             _hs = sorted([p["ht"] for p in players_out if p["side"] == _side and p.get("ht")], reverse=True)[:8]
             if len(_hs) >= 3: teams[_side]["ht"] = {"avg": round(sum(_hs) / len(_hs), 1), "big": _hs[0], "n": len(_hs)}
     # --- output
-    gout = dict(id=G["event"], lg=lg, league={"nfl": "NFL", "wnba": "WNBA", "mlb": "MLB"}[lg],
+    gout = dict(id=G["event"], lg=lg, league={"nfl": "NFL", "wnba": "WNBA", "nba": "NBA", "mlb": "MLB"}[lg],
                 title=f"{a['name']} at {h['name']}", start=start.strftime("%-I:%M %p ET"), startDate=start.strftime("%a %b %-d"), iso=start.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), day=start.strftime("%Y-%m-%d"),
                 venue=(comp.get("venue") or {}).get("fullName") or "", tv=", ".join(sum([b.get("names", []) for b in comp.get("broadcasts", [])], [])),
                 series=_series(summ),

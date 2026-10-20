@@ -181,6 +181,12 @@ def main():
     try: odds_status = ODDS.refresh(f"{DATA}/odds.json", log, games=games)
     except Exception as ex: odds_status = "error"
     log(f"  odds: {odds_status}")
+    try:      # FanDuel straight from FanDuel's own site JSON: works while the odds feed is rate limited, and replaces its numbers for the same games
+        import fdapi
+        fd_direct = fdapi.refresh(f"{DATA}/fdodds.json", f"{DATA}/odds.json", games, now)
+    except Exception as ex:
+        fd_direct = f"error: {type(ex).__name__}: {ex}"[:160]
+    log(f"  fanduel direct: {fd_direct}")
     try:
         import fanduel as FD
         fd_status = FD.apply(games, read_json(f"{DATA}/odds.json", {}), now)
@@ -315,7 +321,7 @@ def main():
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),
-                social=social_info, firstBasket=fb_note, odds=odds_status, oddsLive=live_status, fanduel=fd_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
+                social=social_info, firstBasket=fb_note, odds=odds_status, oddsLive=live_status, fanduel=fd_status, fanduelDirect=fd_direct, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
     write_json(f"{DATA}/slate.json", slate)
     write_json(f"{DATA}/learn.json", learn_out)
     write_json(f"{DATA}/pastp.json", pastp)

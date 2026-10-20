@@ -125,10 +125,13 @@ def alt_totals(e):
             out.setdefault(side, {})[k] = int(a["odds"])
     return out
 
-def _props_by_player(e):
+def _props_by_player(e, ladders=False):
     """{(pid, stat): {over:{...}, under:{...}, name, team}} using FanDuel only"""
-    by, yn = {}, {}
+    by, yn, lad = {}, {}, {}
     for p in e.get("props") or []:
+        if p.get("type") == "ladder":       # FanDuel's own "X+" markets with no over/under for that stat (FanDuel direct, engine/fdapi.py)
+            if p.get("rungs"): lad[(p["pid"], p["stat"])] = {"name": p.get("name"), "team": p.get("team"), "stat": p["stat"], "rungs": p["rungs"]}
+            continue
         b = (p.get("books") or {}).get(BOOK)
         if p.get("type") == "yn":          # FanDuel's "1+" market (1+ receptions, 1+ shots on goal, anytime goal): the 1 rung of the ladder
             if p.get("side") == "yes" and b and b.get("odds") is not None: yn[(p["pid"], p["stat"])] = {"odds": b["odds"], "link": b.get("link")}
@@ -140,6 +143,7 @@ def _props_by_player(e):
     out = {k: v for k, v in by.items() if v.get("over") and v.get("under") and v["over"]["line"] == v["under"]["line"]}
     for k, v in out.items():
         if k in yn: v["yn"] = yn[k]
+    if ladders: return out, {k: v for k, v in lad.items() if k not in out}
     return out
 
 def fd_rungs(d):
@@ -153,15 +157,46 @@ def fd_rungs(d):
     if d.get("yn") and main_t != 1 and 1 not in out: out[1] = {"t": 1.0, "odds": int(d["yn"]["odds"]), "link": d["yn"].get("link")}
     return [out[t] for t in sorted(out)]
 
+def _recent(st):
+    v = [x for x in (st.get("v15") or []) if x is not None]
+    return v if v else list(st.get("vals") or [])
+
+def _record_p(st, t):
+    """how often the player reached t in his previous games: the last 15 he played, plus last season's playoffs at 60% weight (smoothed, None with too few games)"""
+    rec = _recent(st); post = list(st.get("post") or [])
+    h, n = sum(1 for x in rec if x >= t), len(rec)
+    hp, np_ = sum(1 for x in post if x >= t), len(post)
+    if n + np_ < 5: return None, h, n, hp, np_
+    return (h + 0.6 * hp + 1) / (n + 0.6 * np_ + 2), h, n, hp, np_
+
+def _model_pf(st):
+    """chance of reaching t from the projection (Poisson for small counts, normal otherwise), then compared with the record: 60% model, 40% record"""
+    proj = st.get("proj")
+    sd = st.get("sd") or max(0.15 * (st.get("line") or 1), 0.5)
+    def pf(t):
+        if proj is None: return None
+        if proj < 8:
+            lam = max(proj, 0.05); c, term = 0.0, math.exp(-lam)
+            for k in range(int(t)): c += term; term *= lam / (k + 1)
+            pd = _clamp(1 - c, 0.02, 0.97)
+        else: pd = _clamp(1 - _phi((t - 0.5 - proj) / sd), 0.02, 0.97)
+        pr = _record_p(st, t)[0]
+        return pd if pr is None else _clamp(0.6 * pd + 0.4 * pr, 0.02, 0.97)
+    return pf
+
 def _put_rungs(st, rungs, pfun):
-    """FanDuel rungs into a stat's ladder (miles): each with FanDuel's price and bet link (fd=True); the model's chance in p. Other rungs keep no price (estimates)."""
+    """FanDuel rungs into a stat's ladder (miles): each with FanDuel's price and bet link (fd=True); the model's chance in p, and the player's record at that number
+    (hit / n over the last 15 games played, ph / pn in last season's playoffs). Other rungs keep no price (estimates)."""
     have = {float(m["t"]): m for m in st.get("miles") or [] if m.get("t") is not None}
     for r in rungs:
         m = have.get(r["t"])
         if m is None: m = dict(t=r["t"], hit=0, n=0); have[r["t"]] = m
         m.update(price=r["odds"], link=r.get("link"), fd=True)
-        if m.get("p") is None:
-            pm = pfun(r["t"]); m["p"] = round(pm, 3) if pm is not None else None
+        _, h, n, hp, np_ = _record_p(st, r["t"])
+        if n: m.update(hit=h, n=n)
+        if np_: m.update(ph=hp, pn=np_)
+        pm = pfun(r["t"])
+        if pm is not None or m.get("p") is None: m["p"] = round(pm, 3) if pm is not None else None
     st["miles"] = [have[t] for t in sorted(have)]
 
 def _rungs(line, key):
@@ -223,14 +258,7 @@ def _overlay_stat(st, d):
               fdOver=d["over"].get("link"), fdUnder=d["under"].get("link"))
     # rungs the book listed come from another book: show the model's estimate instead of mixing books; then FanDuel's own ladder goes on with its prices
     for m in st.get("miles") or []: m["price"] = None
-    def pf(t):
-        if proj is None: return None
-        if proj < 8: 
-            lam = max(proj, 0.05); c, term = 0.0, math.exp(-lam)
-            for k in range(int(t)): c += term; term *= lam / (k + 1)
-            return _clamp(1 - c, 0.02, 0.97)
-        return _clamp(1 - _phi((t - 0.5 - proj) / sd), 0.02, 0.97)
-    _put_rungs(st, fd_rungs(d), pf)
+    _put_rungs(st, fd_rungs(d), _model_pf(st))
     if st.get("safeSrc") == "DraftKings" and st.get("pSafe") is not None:
         st["safeSrc"] = "est."; st["safePrice"] = _est_price(st["pSafe"])
 
@@ -250,13 +278,20 @@ def apply(games, odds, now=None):
                 if not e: nomatch.append(tag(g)); continue
                 if _main(g, e): stat["lines"] += 1
                 else: nofd.append(tag(g))
-                by = _props_by_player(e)
+                by, lad = _props_by_player(e, ladders=True)
                 if g.get("players"):
                     names = {_n(p["name"]): p for p in g["players"]}
                     for (pid, key), d in by.items():
                         pl = names.get(_n(d["name"]))
                         st = next((s for s in pl["stats"] if s["key"] == key), None) if pl else None
                         if st: _overlay_stat(st, d); stat["props"] += 1
+                    for (pid, key), d in lad.items():          # "To Record 6+ Rebounds" with no over/under posted: the rungs alone, at FanDuel's prices
+                        pl = names.get(_n(d["name"]))
+                        st = next((s for s in pl["stats"] if s["key"] == key), None) if pl else None
+                        if st:
+                            for m in st.get("miles") or []:
+                                if not m.get("fd"): m["price"] = None
+                            _put_rungs(st, [{"t": float(r["t"]), "odds": int(r["odds"]), "link": r.get("link")} for r in d["rungs"]], _model_pf(st)); stat["props"] += 1
                 elif by:
                     ps = _synth_players(g, e, by)
                     if ps: g["players"] = ps; g["feedProps"] = True; stat["synth"] += 1
