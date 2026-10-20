@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 296,
+ "runNumber": 297,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T22:35:02Z",
- "generatedAtET": "Tue Oct 20, 6:35 PM ET",
+ "generatedAt": "2026-10-20T22:43:39Z",
+ "generatedAtET": "Tue Oct 20, 6:43 PM ET",
  "today": "2026-10-20",
- "lastRunAt": "2026-10-20T22:35:02Z",
+ "lastRunAt": "2026-10-20T22:43:39Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 6.1,
+  "seconds": 3.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,7 +145,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 12,
+  "gamesUploaded": 11,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2482,
   "configured": true
@@ -153,12 +153,12 @@
  "firstBasket": "0 new snapshots, 0 graded, wnba 1 graded, nba 1 graded",
  "odds": "kept (odds feed backing off until 23:10Z after 9 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 23:10Z)",
- "fanduel": "ok: FanDuel lines on 20 cards, 1049 player stats, FanDuel-only players on 0 cards; not in the feed (2): NMSU@SHSU, NE@CHI",
- "fanduelDirect": "ok: 20 games, 1816 player markets (20 FanDuel games in odds.json, pulled 2026-10-20T22:35:02Z; 8s)",
- "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 2 cards {'nba': 1, 'wnba': 5}; 18 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 20 cards, 1039 player stats, FanDuel-only players on 0 cards; not in the feed (2): NMSU@SHSU, NE@CHI",
+ "fanduelDirect": "ok: 20 games, 1819 player markets (20 FanDuel games in odds.json, pulled 2026-10-20T22:43:39Z; 5s)",
+ "espnXref": "ok: 9 FanDuel players added from ESPN rosters on 4 cards {'cfb': 1, 'nba': 3, 'wnba': 5}; 32 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 431,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 40.6
+ "requests": 417,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 35.7
 }
