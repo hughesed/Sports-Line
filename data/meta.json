@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 253,
+ "runNumber": 254,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T14:28:04Z",
- "generatedAtET": "Tue Oct 20, 10:28 AM ET",
+ "generatedAt": "2026-10-20T14:58:07Z",
+ "generatedAtET": "Tue Oct 20, 10:58 AM ET",
  "today": "2026-10-20",
- "lastRunAt": "2026-10-20T14:28:04Z",
+ "lastRunAt": "2026-10-20T14:58:07Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 5.2,
+  "seconds": 6.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,18 +145,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 2,
+  "gamesUploaded": 4,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2452,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 1 graded, nba 0 graded",
- "odds": "kept (odds feed backing off until 14:58Z after 7 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-20T18:58:22Z",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (22): BOS@DET, MTSU@FIU, MOST@DEL, SJ@MTL, COL@NJ, ANA@NYI...",
  "errors": [],
- "requests": 268,
+ "requests": 267,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 27.8
+ "seconds": 34.9
 }
