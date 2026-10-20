@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 212,
+ "runNumber": 213,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T01:38:55Z",
- "generatedAtET": "Mon Oct 19, 9:38 PM ET",
+ "generatedAt": "2026-10-20T01:48:57Z",
+ "generatedAtET": "Mon Oct 19, 9:48 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-20T01:38:55Z",
+ "lastRunAt": "2026-10-20T01:48:57Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -82,8 +82,8 @@
    "teamLevel": 8,
    "carried": 6,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 138,
+   "newFinals": 2,
+   "storeGames": 140,
    "lastFinal": "2026-10-19"
   },
   "tennis": {
@@ -111,17 +111,17 @@
   "sched": 78,
   "pastp": 23,
   "predictions": 258,
-  "graded": 176,
-  "storeGames": 13725
+  "graded": 178,
+  "storeGames": 13727
  },
  "calibration": {
   "slopes": {
    "cfb": 0.919,
    "nhl": 1.15
   },
-  "graded": 176,
-  "accML": 0.614,
-  "accBook": 0.625
+  "graded": 178,
+  "accML": 0.612,
+  "accBook": 0.624
  },
  "social": {
   "enabled": true,
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 3.4,
+  "seconds": 1.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,7 +146,6 @@
   },
   "gamesUploaded": 2,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2428,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 0 graded, nba 0 graded",
@@ -154,8 +153,8 @@
  "oddsLive": "kept (odds feed backing off until 02:05Z)",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (21): BOS@DET, MTSU@FIU, MOST@DEL, SJ@MTL, COL@NJ, ANA@NYI...",
  "errors": [],
- "requests": 267,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 23.7
+ "requests": 250,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 11.9
 }
