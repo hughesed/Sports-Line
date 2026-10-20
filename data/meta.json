@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 215,
+ "runNumber": 216,
  "deadlineHit": false,
- "generatedAt": "2026-10-20T02:09:03Z",
- "generatedAtET": "Mon Oct 19, 10:09 PM ET",
+ "generatedAt": "2026-10-20T02:19:04Z",
+ "generatedAtET": "Mon Oct 19, 10:19 PM ET",
  "today": "2026-10-19",
- "lastRunAt": "2026-10-20T02:09:03Z",
+ "lastRunAt": "2026-10-20T02:19:04Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -82,8 +82,8 @@
    "teamLevel": 8,
    "carried": 6,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 140,
+   "newFinals": 1,
+   "storeGames": 141,
    "lastFinal": "2026-10-19"
   },
   "tennis": {
@@ -111,17 +111,17 @@
   "sched": 78,
   "pastp": 23,
   "predictions": 258,
-  "graded": 178,
-  "storeGames": 13727
+  "graded": 179,
+  "storeGames": 13728
  },
  "calibration": {
   "slopes": {
    "cfb": 0.919,
    "nhl": 1.15
   },
-  "graded": 178,
-  "accML": 0.612,
-  "accBook": 0.624
+  "graded": 179,
+  "accML": 0.615,
+  "accBook": 0.626
  },
  "social": {
   "enabled": true,
@@ -132,9 +132,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 18,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 5.0,
+  "seconds": 2.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -144,18 +144,17 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 2,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2420,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 0 graded, nba 0 graded",
- "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NHL: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-20T06:09:27Z",
+ "odds": "kept (odds feed backing off until 06:09Z after 5 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 06:09Z)",
  "fanduel": "ok: FanDuel lines on 0 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (21): BOS@DET, MTSU@FIU, MOST@DEL, SJ@MTL, COL@NJ, ANA@NYI...",
  "errors": [],
- "requests": 336,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 42.7
+ "requests": 249,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 21.8
 }
