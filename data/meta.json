@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 323,
+ "runNumber": 324,
  "deadlineHit": false,
- "generatedAt": "2026-10-21T02:57:39Z",
- "generatedAtET": "Tue Oct 20, 10:57 PM ET",
+ "generatedAt": "2026-10-21T03:07:42Z",
+ "generatedAtET": "Tue Oct 20, 11:07 PM ET",
  "today": "2026-10-20",
- "lastRunAt": "2026-10-21T02:57:39Z",
+ "lastRunAt": "2026-10-21T03:07:42Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -60,8 +60,8 @@
    "teamLevel": 4,
    "carried": 3,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1470,
+   "newFinals": 1,
+   "storeGames": 1471,
    "lastFinal": "2026-10-20"
   },
   "cbb": {
@@ -82,7 +82,7 @@
    "teamLevel": 0,
    "carried": 11,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 149,
    "lastFinal": "2026-10-21"
   },
@@ -111,18 +111,18 @@
   "sched": 136,
   "pastp": 23,
   "predictions": 270,
-  "graded": 194,
-  "storeGames": 13743
+  "graded": 195,
+  "storeGames": 13744
  },
  "calibration": {
   "slopes": {
-   "cfb": 0.8971,
+   "cfb": 0.8962,
    "nfl": 0.9071,
    "nhl": 1.15
   },
-  "graded": 194,
-  "accML": 0.608,
-  "accBook": 0.613
+  "graded": 195,
+  "accML": 0.605,
+  "accBook": 0.61
  },
  "social": {
   "enabled": true,
@@ -135,7 +135,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 1.6,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -153,11 +153,11 @@
  "odds": "kept (odds feed backing off until 03:11Z after 10 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 03:11Z)",
  "fanduel": "ok: FanDuel lines on 11 cards, 896 player stats, FanDuel-only players on 0 cards; not in the feed (5): NMSU@SHSU, JMU@APP, LIB@KENN, ECU@MEM, NE@CHI",
- "fanduelDirect": "kept (11 FanDuel games in odds.json, pulled 2026-10-21T02:47:37Z; 0s)",
+ "fanduelDirect": "ok: 11 games, 1699 player markets (11 FanDuel games in odds.json, pulled 2026-10-21T03:07:42Z; 5s)",
  "espnXref": "ok: 10 FanDuel players added from ESPN rosters on 6 cards {'nba': 5, 'wnba': 5}; 42 stats from game logs, 1 from FanDuel's price only",
  "errors": [],
- "requests": 453,
+ "requests": 457,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 29.3
+ "seconds": 35.0
 }
