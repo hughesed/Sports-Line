@@ -165,3 +165,50 @@ def prefetch_gamelogs(lg, ids, workers=12, multi=None):
     pmap(lambda a: _gl_raw(lg, a), ids, workers)
     if multi:
         pmap(lambda a: gamelog_multi(lg, a), [i for i in dict.fromkeys(str(x) for x in multi if x)], workers)
+
+# ---------------------------------------------------------------- full games vs partial games
+def _mins(x):
+    if isinstance(x, (int, float)): return float(x)
+    m = re.match(r"\s*(\d+):(\d+)", str(x or ""))
+    return int(m.group(1)) + int(m.group(2)) / 60 if m else 0.0
+
+def usage(lg, g, role=""):
+    """how much a player was on the field in one game, by the stat that measures playing time in his sport and role:
+    basketball minutes, hockey ice time, QB pass + rush attempts, RB carries + receptions, WR/TE receptions + targets, MLB plate appearances / innings.
+    None when the log has no such number (the game is then taken as it is)."""
+    s = g.get("stats") or {}; role = (role or "").upper()
+    if lg in ("nba", "wnba", "cbb"): return _mins(s.get("minutes")) if s.get("minutes") is not None else None
+    if lg == "nhl":
+        if role == "G": return _mins(s.get("timeOnIcePerGame")) if s.get("timeOnIcePerGame") is not None else None
+        return _mins(s.get("timeOnIcePerGame")) if s.get("timeOnIcePerGame") is not None else None
+    if lg in ("nfl", "cfb"):
+        n = lambda k: s.get(k) if isinstance(s.get(k), (int, float)) else 0.0
+        if role == "QB" or n("passingAttempts") >= 5: return n("passingAttempts") + n("rushingAttempts")
+        if role in ("RB", "FB"): return n("rushingAttempts") + n("receptions")
+        if role in ("WR", "TE"):
+            t = n("receivingTargets") or n("targets")
+            return t if t else (n("receptions") if n("receptions") else None)
+        return None
+    if lg == "mlb":
+        n = lambda k: s.get(k) if isinstance(s.get(k), (int, float)) else 0.0
+        if role in ("P", "SP", "RP"): return n("innings")
+        return n("atBats") + n("walks")
+    return None
+
+PART = {"nba": 0.6, "wnba": 0.6, "cbb": 0.6, "nhl": 0.6, "nfl": 0.5, "cfb": 0.5, "mlb": 0.6}
+def full_games(lg, games, role=""):
+    """splits games into (full, partial). A game is partial when the player's playing time (usage()) was under PART of his usual full workload:
+    the most he had in his recent games (subbed in late, a mop-up series, pulled early, came back from injury on a minutes limit).
+    His numbers in partial games say nothing about a full game, so the projection and the record use full games. The usual workload is
+    the second-highest of his last 8 games, or the highest when that came in his last 3 (a new starter)."""
+    us = [(g, usage(lg, g, role)) for g in games]
+    known = [u for _, u in us if u is not None and u > 0]
+    if len(known) < 2: return list(games), []
+    rec8 = known[-8:]; top = sorted(rec8, reverse=True)
+    # his biggest workload sets the bar when it is one of his last 3 games (he just took over the job: a backup QB who started his latest game);
+    # otherwise the second-highest, so one overtime game does not make every normal game look partial
+    ref = top[0] if (len(top) < 3 or max(known[-3:]) == top[0]) else top[1]
+    cut = PART.get(lg, 0.6) * ref
+    full = [g for g, u in us if u is None or u >= cut]
+    part = [g for g, u in us if u is not None and u < cut]
+    return full, part

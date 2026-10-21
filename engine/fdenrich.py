@@ -59,7 +59,7 @@ def _keys(name, weak=True):
 
 def _r(x): return int(x) if x == int(x) else round(x, 1)
 
-def _stat_from_logs(lg, key, gl, line):
+def _stat_from_logs(lg, key, gl, line, role=""):
     fn = FNS.get(lg, {}).get(key)
     if not fn: return None
     rows = [g for g in gl if _played(lg, g, key)]
@@ -68,6 +68,8 @@ def _stat_from_logs(lg, key, gl, line):
     postg = [g for g in real if g.get("post")]
     reg = [g for g in real if not g.get("post")]
     if len(reg) >= 5: real = reg          # regular season only (playoff roles are not normal games); playoffs shown for reference
+    full, part = espn.full_games(lg, real, role)          # full games only: a game where he came in late or played a few minutes says nothing about a full one
+    if full and part: real = full
     last_real = real[-1]["date"] or ""
     pre = [g for g in rows if g.get("pre") and (g["date"] or "") > last_real]
     vals = [fn(g) for g in real[-10:]]; v15 = [fn(g) for g in real[-15:]]
@@ -81,13 +83,13 @@ def _stat_from_logs(lg, key, gl, line):
     post = postg
     if post: post = [g for g in post if g.get("season") == post[-1].get("season")][-12:]
     ln = line if line else (math.floor(statistics.median(vals)) + 0.5)
-    sd = max(statistics.pstdev(vals) if n > 1 else ln * 0.5, 0.15 * ln, 0.5)
+    sd = max(statistics.pstdev(vals) if n > 1 else ln * 0.5, (0.25 if len(full) < 3 and part else 0.15) * ln, 0.5)
     mn, mx = min(v15), max(v15)
     return dict(key=key, label=FD.LABEL.get(key, key), vals=[_r(x) for x in vals], line=ln, lineSrc="FanDuel" if line else "model", prices=[], n=n,
                 avg=round(avg, 1), avg5=round(avg5, 1), mn=_r(mn), mx=_r(mx), safe=None, safeAdj=None, overHits=sum(1 for x in vals if x > ln), streak=0, streakDir=None,
                 hot="steady", hotNote="", grade="–", gradePct=None, proj=round(base, 1), season=round(season, 1), anchorNote="", matchup=0, matchupNote="", boost=0.0,
                 lean="No edge", pOver=None, overPrice=None, pSafe=None, safePrice=None, safeSrc="est.", miles=[], prate=50,
-                v15=[_r(x) for x in v15], n15=len(v15), overHits15=sum(1 for x in v15 if x > ln), sd=round(sd, 2),
+                v15=[_r(x) for x in v15], n15=len(v15), fullN=len(full), partN=len(part), thin=bool(len(full) < 3 and part), overHits15=sum(1 for x in v15 if x > ln), sd=round(sd, 2),
                 post=[_r(fn(g)) for g in post], postSeason=(post[-1].get("season") if post else None), pre=[_r(x) for x in prev],
                 seasons=sorted({g.get("season") for g in real[-15:] if g.get("season")}), xref="espn")
 
@@ -148,7 +150,7 @@ def enrich(games, odds, now, log=print):
                 stats = []
                 for key, d in v["stats"].items():
                     line = d["over"]["line"] if d else None
-                    st = _stat_from_logs(lg, key, gl, line) if gl else None
+                    st = _stat_from_logs(lg, key, gl, line, rp.get("pos") or "") if gl else None
                     if st is None and d: st = FD._synth_stat(key, d); st["xref"] = "fanduel"; feed += 1          # no game log: FanDuel's own price is the chance
                     elif st is not None: logs += 1
                     if st is not None: stats.append(st)

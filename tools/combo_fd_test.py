@@ -75,7 +75,8 @@ def build():
     tpl = next(p for g in sl["games"] for p in (g.get("players") or []) if (g.get("key") or g.get("lg")) == "wnba")
     cards = {}
     for (a, h), pls in GAMES.items():
-        g = next(x for x in sl["games"] if x["teams"]["away"]["abbr"] == a and x["teams"]["home"]["abbr"] == h)
+        g = next((x for x in sl["games"] if x["teams"]["away"]["abbr"] == a and x["teams"]["home"]["abbr"] == h), None)
+        if g is None: print("SKIP: %s @ %s is not on today's slate (this test uses the 2026-10-20 games)" % (a, h)); sys.exit(0)
         g["players"] = [player_card(tpl, nm, side, a if side == "away" else h, sts) for nm, side, sts in pls]
         cards[(a, h)] = g
     fake_feed(cards)

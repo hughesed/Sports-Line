@@ -1222,7 +1222,7 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="e2102b3d3c">
+<body data-build="a2338a95d9">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -7106,7 +7106,7 @@ function hpLegs(g){
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
-    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under')}); }); });
+    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under'),thin:!!st.thin}); }); });
   /* stat thresholds ("125+ pass yds", "1+ receptions", "2+ pass TD"): ONLY the rungs FanDuel lists (its alternate lines and 1+ markets, put on the player's ladder by the bot,
      engine/fanduel.py), at FanDuel's price, with FanDuel's bet link. The app no longer invents rungs or prices for the builders: a number FanDuel does not offer is not a pick. */
   (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; const av=pl.avail==null?1:pl.avail;
@@ -7115,7 +7115,7 @@ function hpLegs(g){
         const pm=m.p!=null?+m.p:null; const p=adjP(clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97),'prop'), tok='o:'+g.id+':fd:'+pl.id+':'+st.key+':'+T;
         if(out.some(x=>x.tok===tok)) return;
         out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+T+'+ '+lab,price:m.price,book:'fanduel',bk:'FD',link:m.link||null,nBooks:1,line:T-0.5,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
-          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.',
+          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.',thin:!!st.thin,
           rec:m.n||m.pn?{h:m.hit||0,n:m.n||0,ph:m.ph,pn:m.pn}:hpRec(st,T,false)}); }); }); });
   /* FanDuel's alternate game totals ("Under 7.5" in hockey) */
   if(!(typeof isSoc==='function'&&isSoc(g))) ['over','under'].forEach(d=>{ const x=M.total&&M.total[d], fd=x&&x.books&&x.books.fanduel; if(!fd||!fd.alts) return;
@@ -7144,6 +7144,8 @@ function hpLegs(g){
         out.push({id:tok,tok:tok,gid:g.id,kind:'tt',label:nm+' team total '+(d==='over'?'Over ':'Under ')+ln+(bk.teamTot==='goals'?' goals':''),price:r.odds,book:'fanduel',bk:'FD',link:r.link||null,nBooks:1,line:ln,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
           spec:{k:'tt',side:sd,dir:d,line:ln},group:g.id+':tt:'+sd,fdRung:r.main?0:1}); }); }); });
   /* FanDuel only: a leg priced at another book, or estimated, is left out */
+  /* thin record: fewer than 3 full games (the rest were partial: subbed in, minutes limit). The chance is pulled halfway back to a coin flip so builders prefer legs with a real record */
+  out.forEach(l=>{ if(l.thin){ l.p=l.ps=clamp(0.5+(l.ps-0.5)*0.5,0.02,0.97); l.why=(l.why?l.why+' ':'')+'Few full games on record: chance held back.'; } });
   const fdo=out.filter(hpIsFd); HP.cache[ck]=fdo; return fdo;
 }
 /* a bet FanDuel lists, at FanDuel's price */
@@ -7654,7 +7656,7 @@ function goldLegsOf(g){
     const key=(l.label||'')+'|'+g.id; if(seen[key]) return; seen[key]=1;
     const p0=l.ps!=null?l.ps:adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),l.spec.k==='prop'?'prop':'team');
     const tok=l.tok||l.id; const book=l.book?(l.book==='est'?'est':l.book):(l.src==='FanDuel'?'fanduel':l.src==='DraftKings'||l.src==='DK'?'draftkings':'est');
-    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0,rec:l.rec||null,pFair:l.pFair!=null?l.pFair:null}); };
+    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0,rec:l.rec||null,thin:!!l.thin,pFair:l.pFair!=null?l.pFair:null}); };
   /* FanDuel only: hpLegs (home_picks.js) gives the bets FanDuel lists at FanDuel's price (team lines, over/unders, its alternate lines and 1+ markets) */
   try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(typeof hpIsFd!=='function'||hpIsFd(l)) add(l); }); }catch(e){}
   Object.keys(GPK.cache).forEach(k=>{ if(k.indexOf(g.id+'|')===0) delete GPK.cache[k]; });
@@ -7793,7 +7795,7 @@ function cxGames(){ const now=Date.now(); return DATA.games.filter(g=>!g.ghost&&
 function cxGameTag(g){ return g?g.teams.away.abbr+' @ '+g.teams.home.abbr:''; }
 function cxPool(){
   const out=[]; cxGames().forEach(g=>{ let ls=[]; try{ ls=(typeof goldLegsOf==='function')?goldLegsOf(g):[]; }catch(e){ ls=[]; }
-    ls.forEach(l=>{ if(l.est) return;
+    ls.forEach(l=>{ if(l.est||l.thin) return;          // never a leg whose player has fewer than 3 full games on record
       /* team sides and totals: mostly FanDuel's own no-vig chance (70%), the model only nudges it. Player legs keep their chance, which already weighs the player's
          record at that number (last 15 games, last season's playoffs). So a combo leans on players who keep clearing the number, not on a model hunch about a total. */
       let ps=l.ps; if(l.spec&&/^(ml|spr|tot|tt|dc)$/.test(l.spec.k)&&l.pFair!=null) ps=0.7*l.pFair+0.3*l.ps;
@@ -7905,7 +7907,7 @@ function cxBody(){
   else body='<div class="plempty small">'+esc(cxWhyEmpty(k))+'</div>';
   const earlier=r.earlier.length?'<details class="plhow"><summary class="small">Earlier '+cxLab(k)+' combos today ('+r.earlier.length+')</summary>'+r.earlier.map(c=>cxMini(c,k)).join('')+'</details>':'';
   return seg+body+earlier+cxYesterday()+
-    '<div class="plfoot">Combined odds must land from the target to at most 83 points over it (double = +100 to +183, 3x = +300 to +383; custom targets up to 100x get a window of 10% of the target). ↻ New slip builds the next best combo without the players or legs of the slips passed over (it starts over when the board runs out). Every leg shows the player\'s record at that number: the last 15 regular-season games he played (early in a season, last season\'s). Playoff games are shown for reference but not counted (playoff roles, benchings and holdouts are not normal games), and preseason barely counts. The app tries every FanDuel leg on the board across all sports and keeps the set with the highest chance that all of them hit, using each leg\'s no-vig FanDuel chance blended with the model and scaled by the graded record. It keeps re-optimizing until the first game of the combo starts, then locks it and grades it at the finals; the result shows on the next day\'s report. Legs are in different games where possible; the price shown is the plain multiply, so FanDuel may quote a little differently. Practice only.</div>';
+    '<div class="plfoot">Combined odds must land from the target to at most 83 points over it (double = +100 to +183, 3x = +300 to +383; custom targets up to 100x get a window of 10% of the target). ↻ New slip builds the next best combo without the players or legs of the slips passed over (it starts over when the board runs out). Every leg shows the player\'s record at that number: the last 15 regular-season games he played in full (early in a season, last season\'s). Games where he only came in for a little while (a QB\'s few throws in relief, a minutes limit) are left out of the record and the projection, and a player with fewer than 3 full games is never a combo leg. Playoff games are shown for reference but not counted (playoff roles, benchings and holdouts are not normal games), and preseason barely counts. The app tries every FanDuel leg on the board across all sports and keeps the set with the highest chance that all of them hit, using each leg\'s no-vig FanDuel chance blended with the model and scaled by the graded record. It keeps re-optimizing until the first game of the combo starts, then locks it and grades it at the finals; the result shows on the next day\'s report. Legs are in different games where possible; the price shown is the plain multiply, so FanDuel may quote a little differently. Practice only.</div>';
 }
 function cxHtml(){
   let inner; try{ inner='<div id="cxbox">'+cxBody()+'</div>'; }catch(e){ try{ console.error('Line Scout: combos failed',e); }catch(_){} return ''; }

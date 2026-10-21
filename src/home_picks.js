@@ -85,7 +85,7 @@ function hpLegs(g){
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
-    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under')}); }); });
+    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under'),thin:!!st.thin}); }); });
   /* stat thresholds ("125+ pass yds", "1+ receptions", "2+ pass TD"): ONLY the rungs FanDuel lists (its alternate lines and 1+ markets, put on the player's ladder by the bot,
      engine/fanduel.py), at FanDuel's price, with FanDuel's bet link. The app no longer invents rungs or prices for the builders: a number FanDuel does not offer is not a pick. */
   (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; const av=pl.avail==null?1:pl.avail;
@@ -94,7 +94,7 @@ function hpLegs(g){
         const pm=m.p!=null?+m.p:null; const p=adjP(clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97),'prop'), tok='o:'+g.id+':fd:'+pl.id+':'+st.key+':'+T;
         if(out.some(x=>x.tok===tok)) return;
         out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+T+'+ '+lab,price:m.price,book:'fanduel',bk:'FD',link:m.link||null,nBooks:1,line:T-0.5,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
-          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.',
+          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.',thin:!!st.thin,
           rec:m.n||m.pn?{h:m.hit||0,n:m.n||0,ph:m.ph,pn:m.pn}:hpRec(st,T,false)}); }); }); });
   /* FanDuel's alternate game totals ("Under 7.5" in hockey) */
   if(!(typeof isSoc==='function'&&isSoc(g))) ['over','under'].forEach(d=>{ const x=M.total&&M.total[d], fd=x&&x.books&&x.books.fanduel; if(!fd||!fd.alts) return;
@@ -123,6 +123,8 @@ function hpLegs(g){
         out.push({id:tok,tok:tok,gid:g.id,kind:'tt',label:nm+' team total '+(d==='over'?'Over ':'Under ')+ln+(bk.teamTot==='goals'?' goals':''),price:r.odds,book:'fanduel',bk:'FD',link:r.link||null,nBooks:1,line:ln,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
           spec:{k:'tt',side:sd,dir:d,line:ln},group:g.id+':tt:'+sd,fdRung:r.main?0:1}); }); }); });
   /* FanDuel only: a leg priced at another book, or estimated, is left out */
+  /* thin record: fewer than 3 full games (the rest were partial: subbed in, minutes limit). The chance is pulled halfway back to a coin flip so builders prefer legs with a real record */
+  out.forEach(l=>{ if(l.thin){ l.p=l.ps=clamp(0.5+(l.ps-0.5)*0.5,0.02,0.97); l.why=(l.why?l.why+' ':'')+'Few full games on record: chance held back.'; } });
   const fdo=out.filter(hpIsFd); HP.cache[ck]=fdo; return fdo;
 }
 /* a bet FanDuel lists, at FanDuel's price */

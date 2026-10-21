@@ -356,7 +356,12 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
             # regular season only for the model and the record: playoff minutes and roles are not a player's normal game (benchings, holdouts,
             # injuries played through, short rotations). Playoffs are shown for reference only, and used only if he has almost no regular-season games.
             reg = [g for g in real if not g.get("post")]
-            P.append(dict(side=side, tid=tid, p=p, fam=fam, gl=reg if len(reg) >= 5 else real or gl, postgl=[g for g in real if g.get("post")], pre=pre if real else [], allgl=r[1]))
+            base_gl = reg if len(reg) >= 5 else real or gl
+            # full games only: a QB who came in for one series, a forward on a minutes limit. Their numbers then say nothing about a full game.
+            role = p.get("pos") or fam
+            full, part = full_games(lg, base_gl, role)
+            if full and part: base_gl = full
+            P.append(dict(side=side, tid=tid, p=p, fam=fam, nfull=len(full), npart=len(part), gl=base_gl, postgl=[g for g in real if g.get("post")], pre=pre if real else [], allgl=r[1]))
     # --- injuries impact on team scoring
     # injured players production (for share-based impact)
     def prod_nfl(aid):
@@ -655,7 +660,7 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
             hc, hcnote = hotcold(vals)
             g_, gpct, gwarn = grade_of(vals)
             sd = statistics.pstdev(vals) if n > 1 else line * 0.5
-            sd_adj = max(sd, 0.15 * line, 0.5)
+            sd_adj = max(sd, (0.25 if (X.get("nfull") or 0) < 3 and X.get("npart") else 0.15) * line, 0.5)
             p_norm = 1 - phi((line - proj) / sd_adj)
             p_emp = (over_hits + 1) / (n + 2)
             p_over = clamp(0.5 * p_emp + 0.5 * p_norm, 0.04, 0.96)
@@ -684,7 +689,8 @@ def build_game(lg, sb, summ, core, pidx, rows, league_inj, CX, picks):
                                   safePrice=safe_price, safeSrc=safe_src, miles=mlist[:14], prate=round(prate),
                                   v15=[None if x is None else (round(x, 1) if x != int(x) else int(x)) for x in v15], n15=len(vals15), overHits15=over_hits15, sd=round(sd_adj, 2),
                                   post=[round(x, 1) if x != int(x) else int(x) for x in postv], postSeason=(lastpost[-1].get("season") if lastpost else None),
-                                  pre=[round(x, 1) if x != int(x) else int(x) for x in prev], seasons=sorted({g.get("season") for g in gl if g.get("season")})))
+                                  pre=[round(x, 1) if x != int(x) else int(x) for x in prev], fullN=X.get("nfull"), partN=X.get("npart"),
+                                  thin=bool((X.get("nfull") or 0) < 3 and X.get("npart")), seasons=sorted({g.get("season") for g in gl if g.get("season")})))
         games_meta = [dict(date=g["date"][:10], opp=g["opp"], home=g["home"], res=g["result"], post=g["post"]) for g in X["gl"][-10:]]
         players_out.append(dict(id=pid, name=p["name"], side=side, abbr=T["abbr"], pos=p["pos"], jersey=p.get("jersey"), status=status, avail=avail,
                                 flags=flags, boostNotes=boost_note, games=games_meta, slots=slots, stats=stats_out, fam=X["fam"], ht=HT.get(pid)))
