@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 381,
+ "runNumber": 382,
  "deadlineHit": false,
- "generatedAt": "2026-10-21T19:36:38Z",
- "generatedAtET": "Wed Oct 21, 3:36 PM ET",
+ "generatedAt": "2026-10-21T19:46:40Z",
+ "generatedAtET": "Wed Oct 21, 3:46 PM ET",
  "today": "2026-10-21",
- "lastRunAt": "2026-10-21T19:36:38Z",
+ "lastRunAt": "2026-10-21T19:46:40Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -79,8 +79,8 @@
    "status": "ok",
    "games": 17,
    "playerLevel": 0,
-   "teamLevel": 5,
-   "carried": 12,
+   "teamLevel": 4,
+   "carried": 13,
    "error": null,
    "newFinals": 0,
    "storeGames": 153,
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 2.6,
+  "seconds": 2.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,7 +145,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 17,
+  "gamesUploaded": 4,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2445,
   "configured": true
@@ -154,11 +154,11 @@
  "odds": "kept (odds feed backing off until 20:06Z after 14 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 20 cards, 1020 player stats, FanDuel-only players on 0 cards; not in the feed (2): NMSU@SHSU, JMU@APP",
- "fanduelDirect": "ok: 20 games, 1925 player markets (20 FanDuel games in odds.json, pulled 2026-10-21T19:36:38Z; 5s)",
- "espnXref": "ok: 19 FanDuel players added from ESPN rosters on 4 cards {'nba': 1, 'wnba': 5, 'nhl': 10, 'nfl': 3}; 44 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
+ "fanduelDirect": "kept (20 FanDuel games in odds.json, pulled 2026-10-21T19:36:38Z; 0s)",
+ "espnXref": "ok: 9 FanDuel players added from ESPN rosters on 3 cards {'nba': 1, 'wnba': 5, 'nfl': 3}; 24 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 495,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 34.3
+ "requests": 454,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 27.4
 }
