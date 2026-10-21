@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 395,
+ "runNumber": 396,
  "deadlineHit": false,
- "generatedAt": "2026-10-21T21:48:30Z",
- "generatedAtET": "Wed Oct 21, 5:48 PM ET",
+ "generatedAt": "2026-10-21T21:58:32Z",
+ "generatedAtET": "Wed Oct 21, 5:58 PM ET",
  "today": "2026-10-21",
- "lastRunAt": "2026-10-21T21:48:30Z",
+ "lastRunAt": "2026-10-21T21:58:32Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 16,
   "failedCalls": 0,
-  "seconds": 6.6,
+  "seconds": 4.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,20 +145,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 11,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 6,
   "simPlayersUploaded": 2376,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 1 graded, nba 3 graded",
  "odds": "kept (odds feed backing off until 00:08Z after 15 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 20 cards, 1076 player stats, FanDuel-only players on 0 cards; not in the feed (2): NMSU@SHSU, JMU@APP",
- "fanduelDirect": "ok: 20 games, 2012 player markets (20 FanDuel games in odds.json, pulled 2026-10-21T21:48:30Z; 8s)",
- "espnXref": "ok: 9 FanDuel players added from ESPN rosters on 3 cards {'nba': 1, 'wnba': 5, 'nfl': 3}; 25 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 20 cards, 1080 player stats, FanDuel-only players on 0 cards; not in the feed (2): NMSU@SHSU, JMU@APP",
+ "fanduelDirect": "ok: 20 games, 2020 player markets (20 FanDuel games in odds.json, pulled 2026-10-21T21:58:32Z; 7s)",
+ "espnXref": "ok: 10 FanDuel players added from ESPN rosters on 4 cards {'nba': 2, 'wnba': 5, 'nfl': 3}; 29 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 454,
+ "requests": 453,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 41.8
+ "seconds": 48.3
 }
