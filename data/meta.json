@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 507,
+ "runNumber": 508,
  "deadlineHit": false,
- "generatedAt": "2026-10-22T22:46:59Z",
- "generatedAtET": "Thu Oct 22, 6:46 PM ET",
+ "generatedAt": "2026-10-22T22:56:58Z",
+ "generatedAtET": "Thu Oct 22, 6:56 PM ET",
  "today": "2026-10-22",
- "lastRunAt": "2026-10-22T22:46:59Z",
+ "lastRunAt": "2026-10-22T22:56:58Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 5.7,
+  "seconds": 5.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,7 +145,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 6,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2310,
   "configured": true
@@ -153,12 +153,12 @@
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 14 graded",
  "odds": "kept (odds feed backing off until 01:10Z after 21 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 7 cards, 421 player stats, FanDuel-only players on 0 cards; not in the feed (17): JMU@APP, LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC...",
- "fanduelDirect": "ok: 7 games, 840 player markets (18 FanDuel games in odds.json, pulled 2026-10-22T22:46:59Z; 4s)",
- "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 3 cards {'nfl': 4, 'nba': 2}; 19 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 7 cards, 437 player stats, FanDuel-only players on 0 cards; not in the feed (17): JMU@APP, LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC...",
+ "fanduelDirect": "ok: 7 games, 864 player markets (18 FanDuel games in odds.json, pulled 2026-10-22T22:56:58Z; 3s)",
+ "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 2 cards {'nfl': 4, 'nba': 3}; 27 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 1075,
+ "requests": 1079,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 49.5
+ "seconds": 45.9
 }
