@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 509,
+ "runNumber": 510,
  "deadlineHit": false,
- "generatedAt": "2026-10-22T23:03:33Z",
- "generatedAtET": "Thu Oct 22, 7:03 PM ET",
+ "generatedAt": "2026-10-22T23:13:40Z",
+ "generatedAtET": "Thu Oct 22, 7:13 PM ET",
  "today": "2026-10-22",
- "lastRunAt": "2026-10-22T23:03:33Z",
+ "lastRunAt": "2026-10-22T23:13:40Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -55,9 +55,9 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 10,
+   "games": 11,
    "playerLevel": 0,
-   "teamLevel": 6,
+   "teamLevel": 7,
    "carried": 4,
    "error": null,
    "newFinals": 0,
@@ -77,10 +77,10 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 2,
+   "games": 1,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 2,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 155,
@@ -105,12 +105,12 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 28,
-  "teamCards": 10,
+  "playerCards": 27,
+  "teamCards": 11,
   "window": 144,
   "sched": 143,
   "pastp": 22,
-  "predictions": 317,
+  "predictions": 318,
   "graded": 215,
   "storeGames": 13764
  },
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.0,
+  "seconds": 5.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,17 +146,19 @@
    "nhl": 32
   },
   "gamesUploaded": 7,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2310,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 14 graded",
  "odds": "kept (odds feed backing off until 01:10Z after 21 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 01:10Z)",
- "fanduel": "ok: FanDuel lines on 5 cards, 318 player stats, FanDuel-only players on 0 cards; not in the feed (17): LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC, BYU@UCF...",
- "fanduelDirect": "ok: 5 games, 636 player markets (17 FanDuel games in odds.json, pulled 2026-10-22T23:03:33Z; 2s)",
+ "fanduel": "ok: FanDuel lines on 5 cards, 318 player stats, FanDuel-only players on 0 cards; not in the feed (18): LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC, BYU@UCF...",
+ "fanduelDirect": "ok: 5 games, 636 player markets (11 FanDuel games in odds.json, pulled 2026-10-22T23:13:40Z; 4s)",
  "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 2 cards {'nfl': 4, 'nba': 3}; 27 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
- "requests": 1077,
+ "requests": 1073,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 32.8
+ "seconds": 47.5
 }
