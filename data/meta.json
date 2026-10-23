@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 556,
+ "runNumber": 557,
  "deadlineHit": false,
- "generatedAt": "2026-10-23T09:57:14Z",
- "generatedAtET": "Fri Oct 23, 5:57 AM ET",
+ "generatedAt": "2026-10-23T10:27:17Z",
+ "generatedAtET": "Fri Oct 23, 6:27 AM ET",
  "today": "2026-10-23",
- "lastRunAt": "2026-10-23T09:57:14Z",
+ "lastRunAt": "2026-10-23T10:27:17Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -149,14 +149,14 @@
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 16 graded",
- "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-23T13:57:45Z",
+ "odds": "kept (odds feed backing off until 13:57Z after 24 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 8 cards, 416 player stats, FanDuel-only players on 0 cards; not in the feed (16): MASS@CONN, PITT@MIA, TA&M@ALA, HOU@UTAH, PIT@NO, CIN@BAL...",
- "fanduelDirect": "ok: 8 games, 799 player markets (9 FanDuel games in odds.json, pulled 2026-10-23T09:57:14Z; 4s)",
+ "fanduelDirect": "ok: 8 games, 799 player markets (9 FanDuel games in odds.json, pulled 2026-10-23T10:27:17Z; 4s)",
  "espnXref": "ok: 1 FanDuel players added from ESPN rosters on 1 cards {'nba': 1}; 4 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
  "errors": [],
  "requests": 1119,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 51.5
+ "seconds": 40.8
 }
