@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 522,
+ "runNumber": 523,
  "deadlineHit": false,
- "generatedAt": "2026-10-23T01:10:20Z",
- "generatedAtET": "Thu Oct 22, 9:10 PM ET",
+ "generatedAt": "2026-10-23T01:20:24Z",
+ "generatedAtET": "Thu Oct 22, 9:20 PM ET",
  "today": "2026-10-22",
- "lastRunAt": "2026-10-23T01:10:20Z",
+ "lastRunAt": "2026-10-23T01:20:24Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -133,7 +133,7 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 16,
+  "calls": 7,
   "failedCalls": 0,
   "seconds": 2.0,
   "simTeams": {
@@ -145,19 +145,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 5,
-  "simPlayersUploaded": 2318,
+  "gamesUploaded": 4,
+  "simTeamsUploaded": 1110,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 14 graded",
- "odds": "kept (odds feed backing off until 01:10Z after 21 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
- "oddsLive": "kept (odds feed backing off until 01:10Z)",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-23T05:20:53Z",
+ "oddsLive": "kept (odds feed backing off until 05:20Z)",
  "fanduel": "ok: FanDuel lines on 4 cards, 328 player stats, FanDuel-only players on 0 cards; not in the feed (20): LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC, BYU@UCF...",
- "fanduelDirect": "ok: 4 games, 645 player markets (6 FanDuel games in odds.json, pulled 2026-10-23T01:10:20Z; 2s)",
+ "fanduelDirect": "ok: 4 games, 645 player markets (6 FanDuel games in odds.json, pulled 2026-10-23T01:20:24Z; 2s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 1 cards {'nba': 3}; 20 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
  "requests": 1050,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 32.9
+ "seconds": 48.1
 }
