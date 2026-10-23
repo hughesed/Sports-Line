@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 532,
+ "runNumber": 533,
  "deadlineHit": false,
- "generatedAt": "2026-10-23T02:48:00Z",
- "generatedAtET": "Thu Oct 22, 10:48 PM ET",
+ "generatedAt": "2026-10-23T02:58:03Z",
+ "generatedAtET": "Thu Oct 22, 10:58 PM ET",
  "today": "2026-10-22",
- "lastRunAt": "2026-10-23T02:48:00Z",
+ "lastRunAt": "2026-10-23T02:58:03Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -82,8 +82,8 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 162,
+   "newFinals": 1,
+   "storeGames": 163,
    "lastFinal": "2026-10-23"
   },
   "tennis": {
@@ -111,8 +111,8 @@
   "sched": 143,
   "pastp": 22,
   "predictions": 322,
-  "graded": 224,
-  "storeGames": 13773
+  "graded": 225,
+  "storeGames": 13774
  },
  "calibration": {
   "slopes": {
@@ -120,9 +120,9 @@
    "nfl": 0.9071,
    "nhl": 1.15
   },
-  "graded": 224,
-  "accML": 0.616,
-  "accBook": 0.616
+  "graded": 225,
+  "accML": 0.618,
+  "accBook": 0.618
  },
  "social": {
   "enabled": true,
@@ -135,7 +135,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 1.6,
+  "seconds": 0.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -153,11 +153,11 @@
  "odds": "kept (odds feed backing off until 05:20Z after 22 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 05:20Z)",
  "fanduel": "ok: FanDuel lines on 4 cards, 318 player stats, FanDuel-only players on 0 cards; not in the feed (20): LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC, BYU@UCF...",
- "fanduelDirect": "kept (5 FanDuel games in odds.json, pulled 2026-10-23T02:37:59Z; 0s)",
+ "fanduelDirect": "ok: 4 games, 611 player markets (5 FanDuel games in odds.json, pulled 2026-10-23T02:58:03Z; 2s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 1 cards {'nba': 3}; 20 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
  "requests": 1031,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 31.6
+ "seconds": 33.0
 }
