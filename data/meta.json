@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 529,
+ "runNumber": 530,
  "deadlineHit": false,
- "generatedAt": "2026-10-23T02:17:54Z",
- "generatedAtET": "Thu Oct 22, 10:17 PM ET",
+ "generatedAt": "2026-10-23T02:27:56Z",
+ "generatedAtET": "Thu Oct 22, 10:27 PM ET",
  "today": "2026-10-22",
- "lastRunAt": "2026-10-23T02:17:54Z",
+ "lastRunAt": "2026-10-23T02:27:56Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -60,7 +60,7 @@
    "teamLevel": 8,
    "carried": 4,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 1473,
    "lastFinal": "2026-10-22"
   },
@@ -82,8 +82,8 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 160,
+   "newFinals": 1,
+   "storeGames": 161,
    "lastFinal": "2026-10-22"
   },
   "tennis": {
@@ -111,8 +111,8 @@
   "sched": 143,
   "pastp": 22,
   "predictions": 322,
-  "graded": 222,
-  "storeGames": 13771
+  "graded": 223,
+  "storeGames": 13772
  },
  "calibration": {
   "slopes": {
@@ -120,9 +120,9 @@
    "nfl": 0.9071,
    "nhl": 1.15
   },
-  "graded": 222,
-  "accML": 0.622,
-  "accBook": 0.622
+  "graded": 223,
+  "accML": 0.619,
+  "accBook": 0.619
  },
  "social": {
   "enabled": true,
@@ -135,7 +135,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 3.0,
+  "seconds": 1.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,7 +145,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 3,
+  "gamesUploaded": 2,
   "simTeamsUploaded": 1110,
   "configured": true
  },
@@ -153,11 +153,11 @@
  "odds": "kept (odds feed backing off until 05:20Z after 22 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 05:20Z)",
  "fanduel": "ok: FanDuel lines on 4 cards, 318 player stats, FanDuel-only players on 0 cards; not in the feed (20): LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC, BYU@UCF...",
- "fanduelDirect": "ok: 4 games, 611 player markets (5 FanDuel games in odds.json, pulled 2026-10-23T02:17:54Z; 3s)",
+ "fanduelDirect": "kept (5 FanDuel games in odds.json, pulled 2026-10-23T02:17:54Z; 0s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 1 cards {'nba': 3}; 20 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
  "requests": 1021,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 40.9
+ "seconds": 33.5
 }
