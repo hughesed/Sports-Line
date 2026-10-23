@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 525,
+ "runNumber": 526,
  "deadlineHit": false,
- "generatedAt": "2026-10-23T01:37:44Z",
- "generatedAtET": "Thu Oct 22, 9:37 PM ET",
+ "generatedAt": "2026-10-23T01:47:46Z",
+ "generatedAtET": "Thu Oct 22, 9:47 PM ET",
  "today": "2026-10-22",
- "lastRunAt": "2026-10-23T01:37:44Z",
+ "lastRunAt": "2026-10-23T01:47:46Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -82,8 +82,8 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 1,
-   "storeGames": 156,
+   "newFinals": 3,
+   "storeGames": 159,
    "lastFinal": "2026-10-22"
   },
   "tennis": {
@@ -111,8 +111,8 @@
   "sched": 143,
   "pastp": 22,
   "predictions": 321,
-  "graded": 216,
-  "storeGames": 13765
+  "graded": 219,
+  "storeGames": 13768
  },
  "calibration": {
   "slopes": {
@@ -120,7 +120,7 @@
    "nfl": 0.9071,
    "nhl": 1.15
   },
-  "graded": 216,
+  "graded": 219,
   "accML": 0.616,
   "accBook": 0.616
  },
@@ -135,7 +135,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 2.0,
+  "seconds": 1.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,7 +145,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 3,
+  "gamesUploaded": 1,
   "simTeamsUploaded": 1110,
   "configured": true
  },
@@ -153,11 +153,11 @@
  "odds": "kept (odds feed backing off until 05:20Z after 22 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 05:20Z)",
  "fanduel": "ok: FanDuel lines on 3 cards, 229 player stats, FanDuel-only players on 0 cards; not in the feed (20): LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC, BYU@UCF...",
- "fanduelDirect": "ok: 3 games, 445 player markets (6 FanDuel games in odds.json, pulled 2026-10-23T01:37:44Z; 2s)",
+ "fanduelDirect": "kept (5 FanDuel games in odds.json, pulled 2026-10-23T01:37:44Z; 0s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 1 cards {'nba': 3}; 20 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 1070,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 44.8
+ "requests": 1053,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 29.3
 }
