@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 514,
+ "runNumber": 515,
  "deadlineHit": false,
- "generatedAt": "2026-10-22T23:53:42Z",
- "generatedAtET": "Thu Oct 22, 7:53 PM ET",
+ "generatedAt": "2026-10-23T00:03:47Z",
+ "generatedAtET": "Thu Oct 22, 8:03 PM ET",
  "today": "2026-10-22",
- "lastRunAt": "2026-10-22T23:53:42Z",
+ "lastRunAt": "2026-10-23T00:03:47Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -76,16 +76,15 @@
    "lastFinal": "2026-04-07"
   },
   "nhl": {
-   "status": "ok",
-   "games": 2,
+   "status": "empty",
+   "games": 0,
    "playerLevel": 0,
-   "teamLevel": 2,
+   "teamLevel": 0,
    "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 155,
-   "lastFinal": "2026-10-21",
-   "note": "book lines only (ESPN had no cards)"
+   "lastFinal": "2026-10-21"
   },
   "tennis": {
    "status": "ok",
@@ -105,9 +104,9 @@
   }
  },
  "counts": {
-  "slate": 40,
+  "slate": 38,
   "playerCards": 26,
-  "teamCards": 14,
+  "teamCards": 12,
   "window": 144,
   "sched": 143,
   "pastp": 22,
@@ -134,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 0.9,
+  "seconds": 5.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +145,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 2,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2310,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 14 graded",
  "odds": "kept (odds feed backing off until 01:10Z after 21 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 01:10Z)",
  "fanduel": "ok: FanDuel lines on 5 cards, 373 player stats, FanDuel-only players on 0 cards; not in the feed (19): LSU@AUB, PITT@MIA, IU@MICH, TA&M@ALA, TENN@SC, BYU@UCF...",
- "fanduelDirect": "ok: 5 games, 735 player markets (9 FanDuel games in odds.json, pulled 2026-10-22T23:53:42Z; 3s)",
+ "fanduelDirect": "ok: 5 games, 735 player markets (7 FanDuel games in odds.json, pulled 2026-10-23T00:03:47Z; 2s)",
  "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 2 cards {'nfl': 4, 'nba': 3}; 27 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 1046,
+ "requests": 1047,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 32.2
+ "seconds": 44.7
 }
