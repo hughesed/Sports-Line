@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 678,
+ "runNumber": 679,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T17:05:18Z",
- "generatedAtET": "Sat Oct 24, 1:05 PM ET",
+ "generatedAt": "2026-10-24T17:15:20Z",
+ "generatedAtET": "Sat Oct 24, 1:15 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T17:05:18Z",
+ "lastRunAt": "2026-10-24T17:15:20Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 8,
-   "playerLevel": 4,
+   "games": 5,
+   "playerLevel": 3,
    "teamLevel": 0,
-   "carried": 4,
+   "carried": 2,
    "error": null,
    "newFinals": 0,
    "storeGames": 2659,
@@ -55,10 +55,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 18,
+   "games": 21,
    "playerLevel": 0,
    "teamLevel": 3,
-   "carried": 15,
+   "carried": 18,
    "error": null,
    "newFinals": 0,
    "storeGames": 1480,
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.2,
+  "seconds": 4.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 19,
+  "gamesUploaded": 10,
   "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2148,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 27 graded",
  "odds": "kept (odds feed backing off until 19:04Z after 31 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 19:04Z)",
- "fanduel": "ok: FanDuel lines on 20 cards, 759 player stats, FanDuel-only players on 0 cards; not in the feed (1): KC@SEA",
- "fanduelDirect": "ok: 20 games, 1575 player markets (24 FanDuel games in odds.json, pulled 2026-10-24T17:05:18Z; 7s)",
- "espnXref": "ok: 22 FanDuel players added from ESPN rosters on 9 cards {'nfl': 22}; 37 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 23 cards, 806 player stats, FanDuel-only players on 0 cards; not in the feed (1): KC@SEA",
+ "fanduelDirect": "kept (24 FanDuel games in odds.json, pulled 2026-10-24T17:05:18Z; 0s)",
+ "espnXref": "ok: 49 FanDuel players added from ESPN rosters on 12 cards {'cfb': 27, 'nfl': 22}; 84 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
  "errors": [],
- "requests": 1096,
+ "requests": 1110,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 48.0
+ "seconds": 40.1
 }
