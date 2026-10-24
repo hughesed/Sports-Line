@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 692,
+ "runNumber": 693,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T19:19:38Z",
- "generatedAtET": "Sat Oct 24, 3:19 PM ET",
+ "generatedAt": "2026-10-24T19:29:41Z",
+ "generatedAtET": "Sat Oct 24, 3:29 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T19:19:38Z",
+ "lastRunAt": "2026-10-24T19:29:41Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,11 +57,11 @@
    "status": "ok",
    "games": 22,
    "playerLevel": 0,
-   "teamLevel": 1,
-   "carried": 21,
+   "teamLevel": 0,
+   "carried": 22,
    "error": null,
    "newFinals": 1,
-   "storeGames": 1481,
+   "storeGames": 1482,
    "lastFinal": "2026-10-24"
   },
   "cbb": {
@@ -113,7 +113,7 @@
   "pastp": 21,
   "predictions": 334,
   "graded": 247,
-  "storeGames": 13803
+  "storeGames": 13804
  },
  "calibration": {
   "slopes": {
@@ -136,7 +136,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 1.3,
+  "seconds": 1.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,7 +146,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 8,
+  "gamesUploaded": 9,
   "simTeamsUploaded": 1110,
   "configured": true
  },
@@ -154,11 +154,11 @@
  "odds": "kept (odds feed backing off until 23:10Z after 32 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 23:10Z)",
  "fanduel": "ok: FanDuel lines on 24 cards, 885 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "ok: 24 games, 1835 player markets (25 FanDuel games in odds.json, pulled 2026-10-24T19:19:38Z; 5s)",
- "espnXref": "ok: 39 FanDuel players added from ESPN rosters on 13 cards {'nba': 10, 'cfb': 8, 'nfl': 21}; 83 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
+ "fanduelDirect": "ok: 24 games, 1835 player markets (25 FanDuel games in odds.json, pulled 2026-10-24T19:29:41Z; 5s)",
+ "espnXref": "ok: 26 FanDuel players added from ESPN rosters on 10 cards {'nba': 5, 'nfl': 21}; 60 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
  "errors": [],
- "requests": 1131,
+ "requests": 1122,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 38.6
+ "seconds": 32.6
 }
