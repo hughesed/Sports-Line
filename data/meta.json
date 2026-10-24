@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 668,
+ "runNumber": 669,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T14:33:35Z",
- "generatedAtET": "Sat Oct 24, 10:33 AM ET",
+ "generatedAt": "2026-10-24T15:03:35Z",
+ "generatedAtET": "Sat Oct 24, 11:03 AM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T14:33:35Z",
+ "lastRunAt": "2026-10-24T15:03:35Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -13,8 +13,8 @@
    "status": "ok",
    "games": 12,
    "playerLevel": 10,
-   "teamLevel": 2,
-   "carried": 0,
+   "teamLevel": 1,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 379,
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 2.5,
+  "seconds": 4.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,18 +145,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 16,
+  "gamesUploaded": 19,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2148,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 27 graded",
- "odds": "kept (odds feed backing off until 14:57Z after 30 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-24T19:04:11Z",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 22 cards, 798 player stats, FanDuel-only players on 0 cards; not in the feed (2): PITT@MIA, KC@SEA",
- "fanduelDirect": "ok: 22 games, 1675 player markets (25 FanDuel games in odds.json, pulled 2026-10-24T14:33:35Z; 8s)",
- "espnXref": "ok: 31 FanDuel players added from ESPN rosters on 10 cards {'nfl': 31}; 62 stats from game logs, 0 from FanDuel's price only; 10 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 22 cards, 797 player stats, FanDuel-only players on 0 cards; not in the feed (2): PITT@MIA, KC@SEA",
+ "fanduelDirect": "ok: 22 games, 1673 player markets (25 FanDuel games in odds.json, pulled 2026-10-24T15:03:35Z; 5s)",
+ "espnXref": "ok: 22 FanDuel players added from ESPN rosters on 8 cards {'nfl': 22}; 36 stats from game logs, 0 from FanDuel's price only; 10 not on either ESPN roster",
  "errors": [],
- "requests": 1125,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 48.0
+ "requests": 1095,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 63.7
 }
