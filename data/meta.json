@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 697,
+ "runNumber": 698,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T20:09:50Z",
- "generatedAtET": "Sat Oct 24, 4:09 PM ET",
+ "generatedAt": "2026-10-24T20:19:52Z",
+ "generatedAtET": "Sat Oct 24, 4:19 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T20:09:50Z",
+ "lastRunAt": "2026-10-24T20:19:52Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 22,
-  "teamCards": 16,
+  "playerCards": 23,
+  "teamCards": 15,
   "window": 160,
   "sched": 142,
   "pastp": 21,
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 4.4,
+  "seconds": 6.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,7 +145,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 17,
+  "gamesUploaded": 14,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2129,
   "configured": true
@@ -153,12 +153,12 @@
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 27 graded",
  "odds": "kept (odds feed backing off until 23:10Z after 32 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 23:10Z)",
- "fanduel": "ok: FanDuel lines on 20 cards, 820 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "ok: 20 games, 1692 player markets (21 FanDuel games in odds.json, pulled 2026-10-24T20:09:50Z; 6s)",
- "espnXref": "ok: 27 FanDuel players added from ESPN rosters on 9 cards {'nfl': 27}; 47 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 21 cards, 838 player stats, FanDuel-only players on 0 cards; not in the feed (3): VT@CLEM, VAN@UK, SYR@UNC",
+ "fanduelDirect": "kept (21 FanDuel games in odds.json, pulled 2026-10-24T20:09:50Z; 0s)",
+ "espnXref": "ok: 32 FanDuel players added from ESPN rosters on 10 cards {'cfb': 10, 'nfl': 22}; 55 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 1118,
+ "requests": 1132,
  "failedRequests": 4,
- "retries": 5,
- "seconds": 61.7
+ "retries": 4,
+ "seconds": 44.0
 }
