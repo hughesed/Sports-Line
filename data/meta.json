@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 717,
+ "runNumber": 718,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T23:18:55Z",
- "generatedAtET": "Sat Oct 24, 7:18 PM ET",
+ "generatedAt": "2026-10-24T23:22:40Z",
+ "generatedAtET": "Sat Oct 24, 7:22 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T23:18:55Z",
+ "lastRunAt": "2026-10-24T23:22:40Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,10 +57,10 @@
    "status": "ok",
    "games": 21,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 19,
+   "teamLevel": 1,
+   "carried": 20,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 1503,
    "lastFinal": "2026-10-24"
   },
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 4.2,
+  "seconds": 6.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,20 +145,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 15,
+  "gamesUploaded": 7,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2129,
+  "simPlayersUploaded": 2137,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 27 graded",
- "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-25T03:19:28Z",
+ "odds": "kept (odds feed backing off until 03:19Z after 33 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 03:19Z)",
  "fanduel": "ok: FanDuel lines on 24 cards, 886 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "ok: 24 games, 1811 player markets (24 FanDuel games in odds.json, pulled 2026-10-24T23:18:55Z; 5s)",
- "espnXref": "ok: 30 FanDuel players added from ESPN rosters on 10 cards {'cfb': 9, 'nba': 1, 'nfl': 20}; 46 stats from game logs, 0 from FanDuel's price only; 9 not on either ESPN roster",
+ "fanduelDirect": "kept (24 FanDuel games in odds.json, pulled 2026-10-24T23:18:55Z; 0s)",
+ "espnXref": "ok: 21 FanDuel players added from ESPN rosters on 9 cards {'nba': 1, 'nfl': 20}; 35 stats from game logs, 0 from FanDuel's price only; 9 not on either ESPN roster",
  "errors": [],
- "requests": 1162,
+ "requests": 1144,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 63.1
+ "seconds": 51.0
 }
