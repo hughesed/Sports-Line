@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 694,
+ "runNumber": 695,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T19:39:51Z",
- "generatedAtET": "Sat Oct 24, 3:39 PM ET",
+ "generatedAt": "2026-10-24T19:49:44Z",
+ "generatedAtET": "Sat Oct 24, 3:49 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T19:39:51Z",
+ "lastRunAt": "2026-10-24T19:49:44Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -27,7 +27,7 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 351,
    "lastFinal": "2026-10-24"
   },
@@ -60,8 +60,8 @@
    "teamLevel": 7,
    "carried": 15,
    "error": null,
-   "newFinals": 4,
-   "storeGames": 1486,
+   "newFinals": 3,
+   "storeGames": 1489,
    "lastFinal": "2026-10-24"
   },
   "cbb": {
@@ -105,24 +105,24 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 20,
-  "teamCards": 18,
+  "playerCards": 23,
+  "teamCards": 15,
   "window": 160,
   "sched": 142,
   "pastp": 21,
-  "predictions": 334,
-  "graded": 249,
-  "storeGames": 13809
+  "predictions": 335,
+  "graded": 252,
+  "storeGames": 13812
  },
  "calibration": {
   "slopes": {
-   "cfb": 0.8769,
+   "cfb": 0.863,
    "nfl": 0.9055,
    "nhl": 1.15
   },
-  "graded": 249,
-  "accML": 0.61,
-  "accBook": 0.61
+  "graded": 252,
+  "accML": 0.611,
+  "accBook": 0.611
  },
  "social": {
   "enabled": true,
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 7.3,
+  "seconds": 1.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,20 +145,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 13,
+  "gamesUploaded": 14,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2130,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 1 graded, wnba 3 graded, nba 27 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 27 graded",
  "odds": "kept (odds feed backing off until 23:10Z after 32 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 23:10Z)",
- "fanduel": "ok: FanDuel lines on 17 cards, 750 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "kept (20 FanDuel games in odds.json, pulled 2026-10-24T19:29:41Z; 0s)",
- "espnXref": "ok: 23 FanDuel players added from ESPN rosters on 9 cards {'nba': 2, 'nfl': 21}; 41 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 21 cards, 834 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 21 games, 1724 player markets (21 FanDuel games in odds.json, pulled 2026-10-24T19:49:44Z; 5s)",
+ "espnXref": "ok: 68 FanDuel players added from ESPN rosters on 14 cards {'cfb': 40, 'nba': 2, 'nfl': 26}; 125 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 1062,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 36.6
+ "requests": 1109,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 31.4
 }
