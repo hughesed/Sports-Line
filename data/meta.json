@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 685,
+ "runNumber": 686,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T18:15:31Z",
- "generatedAtET": "Sat Oct 24, 2:15 PM ET",
+ "generatedAt": "2026-10-24T18:25:35Z",
+ "generatedAtET": "Sat Oct 24, 2:25 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T18:15:31Z",
+ "lastRunAt": "2026-10-24T18:25:35Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -106,8 +106,8 @@
  },
  "counts": {
   "slate": 39,
-  "playerCards": 26,
-  "teamCards": 13,
+  "playerCards": 27,
+  "teamCards": 12,
   "window": 160,
   "sched": 142,
   "pastp": 21,
@@ -136,7 +136,7 @@
   },
   "calls": 4,
   "failedCalls": 0,
-  "seconds": 1.2,
+  "seconds": 2.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 11,
+  "gamesUploaded": 9,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 27 graded",
  "odds": "kept (odds feed backing off until 19:04Z after 31 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 19:04Z)",
- "fanduel": "ok: FanDuel lines on 23 cards, 806 player stats, FanDuel-only players on 0 cards; not in the feed (1): KC@SEA",
- "fanduelDirect": "ok: 23 games, 1680 player markets (24 FanDuel games in odds.json, pulled 2026-10-24T18:15:31Z; 6s)",
- "espnXref": "ok: 21 FanDuel players added from ESPN rosters on 8 cards {'nfl': 21}; 35 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 24 cards, 847 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 24 games, 1762 player markets (25 FanDuel games in odds.json, pulled 2026-10-24T18:25:35Z; 8s)",
+ "espnXref": "ok: 38 FanDuel players added from ESPN rosters on 9 cards {'nfl': 38}; 76 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
  "errors": [],
- "requests": 1102,
+ "requests": 1133,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 55.4
+ "seconds": 43.8
 }
