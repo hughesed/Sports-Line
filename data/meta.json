@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 698,
+ "runNumber": 699,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T20:19:52Z",
- "generatedAtET": "Sat Oct 24, 4:19 PM ET",
+ "generatedAt": "2026-10-24T20:29:54Z",
+ "generatedAtET": "Sat Oct 24, 4:29 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T20:19:52Z",
+ "lastRunAt": "2026-10-24T20:29:54Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,11 +57,11 @@
    "status": "ok",
    "games": 22,
    "playerLevel": 0,
-   "teamLevel": 4,
-   "carried": 18,
+   "teamLevel": 3,
+   "carried": 19,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1489,
+   "newFinals": 2,
+   "storeGames": 1491,
    "lastFinal": "2026-10-24"
   },
   "cbb": {
@@ -105,24 +105,24 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 23,
-  "teamCards": 15,
+  "playerCards": 24,
+  "teamCards": 14,
   "window": 160,
   "sched": 142,
   "pastp": 21,
   "predictions": 338,
-  "graded": 253,
-  "storeGames": 13813
+  "graded": 254,
+  "storeGames": 13815
  },
  "calibration": {
   "slopes": {
-   "cfb": 0.863,
+   "cfb": 0.8622,
    "nfl": 0.9055,
    "nhl": 1.15
   },
-  "graded": 253,
-  "accML": 0.609,
-  "accBook": 0.609
+  "graded": 254,
+  "accML": 0.606,
+  "accBook": 0.606
  },
  "social": {
   "enabled": true,
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 6.3,
+  "seconds": 3.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -147,18 +147,17 @@
   },
   "gamesUploaded": 14,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2129,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 27 graded",
  "odds": "kept (odds feed backing off until 23:10Z after 32 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 23:10Z)",
- "fanduel": "ok: FanDuel lines on 21 cards, 838 player stats, FanDuel-only players on 0 cards; not in the feed (3): VT@CLEM, VAN@UK, SYR@UNC",
- "fanduelDirect": "kept (21 FanDuel games in odds.json, pulled 2026-10-24T20:09:50Z; 0s)",
- "espnXref": "ok: 32 FanDuel players added from ESPN rosters on 10 cards {'cfb': 10, 'nfl': 22}; 55 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 22 cards, 851 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 22 games, 1758 player markets (22 FanDuel games in odds.json, pulled 2026-10-24T20:29:54Z; 8s)",
+ "espnXref": "ok: 29 FanDuel players added from ESPN rosters on 10 cards {'cfb': 7, 'nfl': 22}; 50 stats from game logs, 0 from FanDuel's price only; 9 not on either ESPN roster",
  "errors": [],
- "requests": 1132,
+ "requests": 1130,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 44.0
+ "seconds": 46.9
 }
