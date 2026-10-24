@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 706,
+ "runNumber": 707,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T21:31:14Z",
- "generatedAtET": "Sat Oct 24, 5:31 PM ET",
+ "generatedAt": "2026-10-24T21:41:17Z",
+ "generatedAtET": "Sat Oct 24, 5:41 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T21:31:14Z",
+ "lastRunAt": "2026-10-24T21:41:17Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 26,
-  "teamCards": 12,
+  "playerCards": 22,
+  "teamCards": 16,
   "window": 160,
   "sched": 142,
   "pastp": 21,
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 2.0,
+  "seconds": 2.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,20 +145,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 14,
+  "gamesUploaded": 15,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2129,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 27 graded",
  "odds": "kept (odds feed backing off until 23:10Z after 32 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 23:10Z)",
- "fanduel": "ok: FanDuel lines on 24 cards, 879 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "ok: 24 games, 1807 player markets (24 FanDuel games in odds.json, pulled 2026-10-24T21:31:14Z; 5s)",
- "espnXref": "ok: 54 FanDuel players added from ESPN rosters on 12 cards {'cfb': 34, 'nfl': 20}; 86 stats from game logs, 0 from FanDuel's price only; 10 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 20 cards, 827 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 20 games, 1695 player markets (24 FanDuel games in odds.json, pulled 2026-10-24T21:41:17Z; 5s)",
+ "espnXref": "ok: 20 FanDuel players added from ESPN rosters on 8 cards {'nfl': 20}; 34 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
  "errors": [],
- "requests": 1188,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 40.5
+ "requests": 1120,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 56.6
 }
