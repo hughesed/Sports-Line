@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 673,
+ "runNumber": 674,
  "deadlineHit": false,
- "generatedAt": "2026-10-24T16:23:45Z",
- "generatedAtET": "Sat Oct 24, 12:23 PM ET",
+ "generatedAt": "2026-10-24T16:33:46Z",
+ "generatedAtET": "Sat Oct 24, 12:33 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-24T16:23:45Z",
+ "lastRunAt": "2026-10-24T16:33:46Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,8 +57,8 @@
    "status": "ok",
    "games": 18,
    "playerLevel": 0,
-   "teamLevel": 4,
-   "carried": 14,
+   "teamLevel": 0,
+   "carried": 18,
    "error": null,
    "newFinals": 0,
    "storeGames": 1480,
@@ -136,7 +136,7 @@
   },
   "calls": 4,
   "failedCalls": 0,
-  "seconds": 1.9,
+  "seconds": 1.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 15,
+  "gamesUploaded": 6,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 2 graded, nba 27 graded",
  "odds": "kept (odds feed backing off until 19:04Z after 31 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 19:04Z)",
  "fanduel": "ok: FanDuel lines on 23 cards, 814 player stats, FanDuel-only players on 0 cards; not in the feed (1): KC@SEA",
- "fanduelDirect": "ok: 23 games, 1692 player markets (26 FanDuel games in odds.json, pulled 2026-10-24T16:23:45Z; 7s)",
- "espnXref": "ok: 56 FanDuel players added from ESPN rosters on 12 cards {'cfb': 35, 'nfl': 21}; 98 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
+ "fanduelDirect": "kept (26 FanDuel games in odds.json, pulled 2026-10-24T16:23:45Z; 0s)",
+ "espnXref": "ok: 22 FanDuel players added from ESPN rosters on 9 cards {'nfl': 22}; 37 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
  "errors": [],
- "requests": 1145,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 48.6
+ "requests": 1117,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 41.3
 }
