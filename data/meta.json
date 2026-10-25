@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "runNumber": 785,
+ "runNumber": 786,
  "deadlineHit": false,
- "generatedAt": "2026-10-25T17:38:35Z",
- "generatedAtET": "Sun Oct 25, 1:38 PM ET",
+ "generatedAt": "2026-10-25T17:48:27Z",
+ "generatedAtET": "Sun Oct 25, 1:48 PM ET",
  "today": "2026-10-25",
- "lastRunAt": "2026-10-25T17:38:35Z",
+ "lastRunAt": "2026-10-25T17:48:27Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
    "games": 13,
-   "playerLevel": 5,
+   "playerLevel": 4,
    "teamLevel": 0,
-   "carried": 8,
+   "carried": 9,
    "error": null,
    "newFinals": 0,
    "storeGames": 380,
@@ -79,8 +79,8 @@
    "status": "ok",
    "games": 10,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 7,
+   "teamLevel": 2,
+   "carried": 8,
    "error": null,
    "newFinals": 0,
    "storeGames": 181,
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 7.9,
+  "seconds": 2.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,7 +145,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 13,
+  "gamesUploaded": 11,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2110,
   "configured": true
@@ -154,11 +154,11 @@
  "odds": "kept (odds feed backing off until 20:18Z after 37 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 20:18Z)",
  "fanduel": "ok: FanDuel lines on 16 cards, 824 player stats, FanDuel-only players on 0 cards; not in the feed (6): LAC@OKC, MIL@TB, ATL@GS, DAL@PHI, TOR@CGY, DET@EDM",
- "fanduelDirect": "ok: 16 games, 1505 player markets (16 FanDuel games in odds.json, pulled 2026-10-25T17:38:35Z; 6s)",
- "espnXref": "ok: 21 FanDuel players added from ESPN rosters on 7 cards {'nfl': 13, 'nba': 2, 'nhl': 6}; 34 stats from game logs, 0 from FanDuel's price only",
+ "fanduelDirect": "ok: 16 games, 1505 player markets (16 FanDuel games in odds.json, pulled 2026-10-25T17:48:27Z; 4s)",
+ "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 5 cards {'nfl': 9, 'nba': 2}; 21 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 919,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 49.6
+ "requests": 768,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 39.9
 }
