@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 773,
+ "runNumber": 774,
  "deadlineHit": false,
- "generatedAt": "2026-10-25T14:18:01Z",
- "generatedAtET": "Sun Oct 25, 10:18 AM ET",
+ "generatedAt": "2026-10-25T14:48:03Z",
+ "generatedAtET": "Sun Oct 25, 10:48 AM ET",
  "today": "2026-10-25",
- "lastRunAt": "2026-10-25T14:18:01Z",
+ "lastRunAt": "2026-10-25T14:48:03Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 15,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 4.2,
+  "seconds": 1.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,19 +145,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
-  "simPlayersUploaded": 2120,
+  "gamesUploaded": 19,
+  "simTeamsUploaded": 1110,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 35 graded",
  "odds": "kept (odds feed backing off until 16:15Z after 36 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 16:15Z)",
- "fanduel": "ok: FanDuel lines on 20 cards, 951 player stats, FanDuel-only players on 0 cards; not in the feed (4): LAC@OKC, MIL@TB, ATL@GS, DAL@PHI",
- "fanduelDirect": "kept (22 FanDuel games in odds.json, pulled 2026-10-25T14:14:59Z; 0s)",
- "espnXref": "ok: 18 FanDuel players added from ESPN rosters on 8 cards {'nfl': 18}; 31 stats from game logs, 0 from FanDuel's price only",
+ "fanduel": "ok: FanDuel lines on 20 cards, 972 player stats, FanDuel-only players on 0 cards; not in the feed (4): LAC@OKC, MIL@TB, ATL@GS, DAL@PHI",
+ "fanduelDirect": "ok: 20 games, 1893 player markets (22 FanDuel games in odds.json, pulled 2026-10-25T14:48:03Z; 5s)",
+ "espnXref": "ok: 29 FanDuel players added from ESPN rosters on 9 cards {'nfl': 24, 'nhl': 5}; 52 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 1261,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 64.2
+ "requests": 1277,
+ "failedRequests": 6,
+ "retries": 6,
+ "seconds": 48.7
 }
