@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 730,
+ "runNumber": 731,
  "deadlineHit": false,
- "generatedAt": "2026-10-25T01:16:16Z",
- "generatedAtET": "Sat Oct 24, 9:16 PM ET",
+ "generatedAt": "2026-10-25T01:20:51Z",
+ "generatedAtET": "Sat Oct 24, 9:20 PM ET",
  "today": "2026-10-24",
- "lastRunAt": "2026-10-25T01:16:16Z",
+ "lastRunAt": "2026-10-25T01:20:51Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -55,9 +55,9 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 10,
+   "games": 12,
    "playerLevel": 0,
-   "teamLevel": 2,
+   "teamLevel": 4,
    "carried": 8,
    "error": null,
    "newFinals": 0,
@@ -77,9 +77,9 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 7,
+   "games": 5,
    "playerLevel": 0,
-   "teamLevel": 5,
+   "teamLevel": 3,
    "carried": 2,
    "error": null,
    "newFinals": 0,
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 31,
-  "teamCards": 7,
+  "playerCards": 30,
+  "teamCards": 8,
   "window": 160,
   "sched": 142,
   "pastp": 21,
@@ -135,7 +135,7 @@
   },
   "calls": 4,
   "failedCalls": 0,
-  "seconds": 1.8,
+  "seconds": 1.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,18 +145,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 13,
+  "gamesUploaded": 7,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 28 graded",
  "odds": "kept (odds feed backing off until 03:19Z after 33 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 03:19Z)",
- "fanduel": "ok: FanDuel lines on 17 cards, 611 player stats, FanDuel-only players on 0 cards; not in the feed (1): ATL@GS",
- "fanduelDirect": "ok: 17 games, 1200 player markets (17 FanDuel games in odds.json, pulled 2026-10-25T01:16:16Z; 6s)",
- "espnXref": "ok: 34 FanDuel players added from ESPN rosters on 9 cards {'nhl': 14, 'nfl': 20}; 71 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 16 cards, 574 player stats, FanDuel-only players on 0 cards; not in the feed (1): ATL@GS",
+ "fanduelDirect": "kept (17 FanDuel games in odds.json, pulled 2026-10-25T01:16:16Z; 0s)",
+ "espnXref": "ok: 20 FanDuel players added from ESPN rosters on 8 cards {'nfl': 20}; 34 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
- "requests": 1033,
+ "requests": 1005,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 42.0
+ "seconds": 29.3
 }
