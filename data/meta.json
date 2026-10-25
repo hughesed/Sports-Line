@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 768,
+ "runNumber": 769,
  "deadlineHit": false,
- "generatedAt": "2026-10-25T12:14:50Z",
- "generatedAtET": "Sun Oct 25, 8:14 AM ET",
+ "generatedAt": "2026-10-25T12:44:50Z",
+ "generatedAtET": "Sun Oct 25, 8:44 AM ET",
  "today": "2026-10-25",
- "lastRunAt": "2026-10-25T12:14:50Z",
+ "lastRunAt": "2026-10-25T12:44:50Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 6.2,
+  "seconds": 5.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,20 +145,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 19,
+  "gamesUploaded": 20,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2119,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 35 graded",
- "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NBA: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); NCAAF: skipped (rate limited); NCAAB: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-25T16:15:42Z",
+ "odds": "kept (odds feed backing off until 16:15Z after 36 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 21 cards, 984 player stats, FanDuel-only players on 0 cards; not in the feed (3): LAC@OKC, MIL@TB, ATL@GS",
- "fanduelDirect": "ok: 21 games, 1920 player markets (23 FanDuel games in odds.json, pulled 2026-10-25T12:14:50Z; 6s)",
+ "fanduelDirect": "ok: 21 games, 1920 player markets (23 FanDuel games in odds.json, pulled 2026-10-25T12:44:50Z; 5s)",
  "espnXref": "ok: 21 FanDuel players added from ESPN rosters on 9 cards {'nfl': 20, 'nba': 1}; 42 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
  "requests": 1260,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 80.5
+ "seconds": 56.6
 }
