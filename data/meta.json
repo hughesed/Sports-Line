@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 813,
+ "runNumber": 814,
  "deadlineHit": false,
- "generatedAt": "2026-10-25T21:52:32Z",
- "generatedAtET": "Sun Oct 25, 5:52 PM ET",
+ "generatedAt": "2026-10-25T22:02:34Z",
+ "generatedAtET": "Sun Oct 25, 6:02 PM ET",
  "today": "2026-10-25",
- "lastRunAt": "2026-10-25T21:52:32Z",
+ "lastRunAt": "2026-10-25T22:02:34Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -82,7 +82,7 @@
    "teamLevel": 0,
    "carried": 8,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 182,
    "lastFinal": "2026-10-25"
   },
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 2.7,
+  "seconds": 1.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,19 +145,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 8,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 4,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 35 graded",
  "odds": "kept (odds feed backing off until 00:28Z after 38 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 00:28Z)",
- "fanduel": "ok: FanDuel lines on 16 cards, 815 player stats, FanDuel-only players on 0 cards; not in the feed (1): LAC@OKC",
- "fanduelDirect": "ok: 16 games, 1422 player markets (16 FanDuel games in odds.json, pulled 2026-10-25T21:52:32Z; 5s)",
- "espnXref": "ok: 12 FanDuel players added from ESPN rosters on 4 cards {'nba': 2, 'nfl': 4, 'mlb': 6}; 42 stats from game logs, 0 from FanDuel's price only",
+ "fanduel": "ok: FanDuel lines on 14 cards, 677 player stats, FanDuel-only players on 0 cards; not in the feed (1): LAC@OKC",
+ "fanduelDirect": "ok: 14 games, 1165 player markets (16 FanDuel games in odds.json, pulled 2026-10-25T22:02:34Z; 5s)",
+ "espnXref": "ok: 15 FanDuel players added from ESPN rosters on 5 cards {'nba': 5, 'nfl': 4, 'mlb': 6}; 54 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 573,
+ "requests": 578,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 41.1
+ "seconds": 37.1
 }
