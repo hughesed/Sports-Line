@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 802,
+ "runNumber": 803,
  "deadlineHit": false,
- "generatedAt": "2026-10-25T20:08:12Z",
- "generatedAtET": "Sun Oct 25, 4:08 PM ET",
+ "generatedAt": "2026-10-25T20:18:16Z",
+ "generatedAtET": "Sun Oct 25, 4:18 PM ET",
  "today": "2026-10-25",
- "lastRunAt": "2026-10-25T20:08:12Z",
+ "lastRunAt": "2026-10-25T20:18:16Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,8 +16,8 @@
    "teamLevel": 0,
    "carried": 9,
    "error": null,
-   "newFinals": 1,
-   "storeGames": 384,
+   "newFinals": 2,
+   "storeGames": 386,
    "lastFinal": "2026-10-25"
   },
   "wnba": {
@@ -111,18 +111,18 @@
   "sched": 94,
   "pastp": 21,
   "predictions": 365,
-  "graded": 286,
-  "storeGames": 13873
+  "graded": 288,
+  "storeGames": 13875
  },
  "calibration": {
   "slopes": {
    "cfb": 0.85,
-   "nfl": 0.8897,
+   "nfl": 0.8784,
    "nhl": 1.15
   },
-  "graded": 286,
-  "accML": 0.605,
-  "accBook": 0.605
+  "graded": 288,
+  "accML": 0.604,
+  "accBook": 0.604
  },
  "social": {
   "enabled": true,
@@ -135,7 +135,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.7,
+  "seconds": 7.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,7 +145,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 12,
+  "gamesUploaded": 9,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2119,
   "configured": true
@@ -154,11 +154,11 @@
  "odds": "kept (odds feed backing off until 20:18Z after 37 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 20:18Z)",
  "fanduel": "ok: FanDuel lines on 19 cards, 970 player stats, FanDuel-only players on 0 cards; not in the feed (1): LAC@OKC",
- "fanduelDirect": "ok: 19 games, 1734 player markets (19 FanDuel games in odds.json, pulled 2026-10-25T20:08:12Z; 5s)",
+ "fanduelDirect": "ok: 19 games, 1734 player markets (19 FanDuel games in odds.json, pulled 2026-10-25T20:18:16Z; 7s)",
  "espnXref": "ok: 18 FanDuel players added from ESPN rosters on 6 cards {'nfl': 10, 'nba': 2, 'mlb': 6}; 47 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 783,
+ "requests": 784,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 46.3
+ "seconds": 48.8
 }
