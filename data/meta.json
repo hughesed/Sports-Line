@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 839,
+ "runNumber": 840,
  "deadlineHit": false,
- "generatedAt": "2026-10-26T01:51:39Z",
- "generatedAtET": "Sun Oct 25, 9:51 PM ET",
+ "generatedAt": "2026-10-26T02:01:42Z",
+ "generatedAtET": "Sun Oct 25, 10:01 PM ET",
  "today": "2026-10-25",
- "lastRunAt": "2026-10-26T01:51:39Z",
+ "lastRunAt": "2026-10-26T02:01:42Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -82,8 +82,8 @@
    "teamLevel": 0,
    "carried": 7,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 183,
+   "newFinals": 1,
+   "storeGames": 184,
    "lastFinal": "2026-10-25"
   },
   "tennis": {
@@ -111,8 +111,8 @@
   "sched": 94,
   "pastp": 21,
   "predictions": 372,
-  "graded": 299,
-  "storeGames": 13886
+  "graded": 300,
+  "storeGames": 13887
  },
  "calibration": {
   "slopes": {
@@ -121,9 +121,9 @@
    "nhl": 1.15,
    "nba": 1.1381
   },
-  "graded": 299,
-  "accML": 0.612,
-  "accBook": 0.612
+  "graded": 300,
+  "accML": 0.613,
+  "accBook": 0.613
  },
  "social": {
   "enabled": true,
@@ -136,7 +136,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.5,
+  "seconds": 4.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -154,12 +154,12 @@
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 40 graded",
  "odds": "kept (odds feed backing off until 04:32Z after 39 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 04:32Z)",
- "fanduel": "ok: FanDuel lines on 12 cards, 252 player stats, FanDuel-only players on 0 cards; not in the feed (2): DEL@WKU, SHSU@MOST",
- "fanduelDirect": "ok: 12 games, 397 player markets (12 FanDuel games in odds.json, pulled 2026-10-26T01:51:39Z; 3s)",
+ "fanduel": "ok: FanDuel lines on 11 cards, 219 player stats, FanDuel-only players on 0 cards; not in the feed (2): DEL@WKU, SHSU@MOST",
+ "fanduelDirect": "kept (12 FanDuel games in odds.json, pulled 2026-10-26T01:51:39Z; 0s)",
  "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 1 cards {'mlb': 6}; 24 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 306,
+ "requests": 309,
  "failedRequests": 9,
  "retries": 9,
- "seconds": 34.1
+ "seconds": 29.3
 }
