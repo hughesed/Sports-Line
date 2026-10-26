@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 832,
+ "runNumber": 833,
  "deadlineHit": false,
- "generatedAt": "2026-10-26T00:52:05Z",
- "generatedAtET": "Sun Oct 25, 8:52 PM ET",
+ "generatedAt": "2026-10-26T01:02:06Z",
+ "generatedAtET": "Sun Oct 25, 9:02 PM ET",
  "today": "2026-10-25",
- "lastRunAt": "2026-10-26T00:52:05Z",
+ "lastRunAt": "2026-10-26T01:02:06Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -133,9 +133,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 5.2,
+  "seconds": 0.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -145,20 +145,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 3,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2082,
+  "gamesUploaded": 4,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 37 graded",
  "odds": "kept (odds feed backing off until 04:32Z after 39 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 04:32Z)",
- "fanduel": "ok: FanDuel lines on 12 cards, 326 player stats, FanDuel-only players on 0 cards; not in the feed (3): GS@DEN, DEL@WKU, SHSU@MOST",
- "fanduelDirect": "ok: 12 games, 538 player markets (12 FanDuel games in odds.json, pulled 2026-10-26T00:52:05Z; 3s)",
- "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 2 cards {'nba': 1, 'mlb': 6}; 27 stats from game logs, 0 from FanDuel's price only",
+ "fanduel": "ok: FanDuel lines on 11 cards, 252 player stats, FanDuel-only players on 0 cards; not in the feed (3): GS@DEN, DEL@WKU, SHSU@MOST",
+ "fanduelDirect": "ok: 11 games, 397 player markets (12 FanDuel games in odds.json, pulled 2026-10-26T01:02:06Z; 3s)",
+ "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 1 cards {'mlb': 6}; 24 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 342,
+ "requests": 343,
  "failedRequests": 9,
  "retries": 9,
- "seconds": 37.7
+ "seconds": 23.4
 }
