@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 846,
+ "runNumber": 847,
  "deadlineHit": false,
- "generatedAt": "2026-10-26T03:01:55Z",
- "generatedAtET": "Sun Oct 25, 11:01 PM ET",
+ "generatedAt": "2026-10-26T03:11:56Z",
+ "generatedAtET": "Sun Oct 25, 11:11 PM ET",
  "today": "2026-10-25",
- "lastRunAt": "2026-10-26T03:01:55Z",
+ "lastRunAt": "2026-10-26T03:11:56Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,9 +44,9 @@
   },
   "nba": {
    "status": "ok",
-   "games": 14,
+   "games": 15,
    "playerLevel": 0,
-   "teamLevel": 7,
+   "teamLevel": 8,
    "carried": 7,
    "error": null,
    "newFinals": 0,
@@ -104,13 +104,13 @@
   }
  },
  "counts": {
-  "slate": 29,
+  "slate": 30,
   "playerCards": 20,
-  "teamCards": 9,
+  "teamCards": 10,
   "window": 158,
   "sched": 94,
   "pastp": 21,
-  "predictions": 374,
+  "predictions": 375,
   "graded": 302,
   "storeGames": 13889
  },
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 3.0,
+  "seconds": 1.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 2,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 9,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 3 graded, nba 41 graded",
  "odds": "kept (odds feed backing off until 04:32Z after 39 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 04:32Z)",
- "fanduel": "ok: FanDuel lines on 13 cards, 219 player stats, FanDuel-only players on 0 cards; not in the feed (2): DEL@WKU, SHSU@MOST",
- "fanduelDirect": "kept (13 FanDuel games in odds.json, pulled 2026-10-26T02:51:51Z; 0s)",
+ "fanduel": "ok: FanDuel lines on 14 cards, 219 player stats, FanDuel-only players on 0 cards; not in the feed (2): DEL@WKU, SHSU@MOST",
+ "fanduelDirect": "ok: 14 games, 355 player markets (14 FanDuel games in odds.json, pulled 2026-10-26T03:11:56Z; 4s)",
  "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 1 cards {'mlb': 6}; 24 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 316,
- "failedRequests": 11,
- "retries": 11,
- "seconds": 27.0
+ "requests": 318,
+ "failedRequests": 12,
+ "retries": 12,
+ "seconds": 29.9
 }
