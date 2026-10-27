@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 950,
+ "runNumber": 951,
  "deadlineHit": false,
- "generatedAt": "2026-10-27T03:07:04Z",
- "generatedAtET": "Mon Oct 26, 11:07 PM ET",
+ "generatedAt": "2026-10-27T03:17:04Z",
+ "generatedAtET": "Mon Oct 26, 11:17 PM ET",
  "today": "2026-10-26",
- "lastRunAt": "2026-10-27T03:07:04Z",
+ "lastRunAt": "2026-10-27T03:17:04Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -38,9 +38,9 @@
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2466,
-   "lastFinal": "2026-10-25"
+   "newFinals": 1,
+   "storeGames": 2467,
+   "lastFinal": "2026-10-27"
   },
   "nba": {
    "status": "ok",
@@ -49,7 +49,7 @@
    "teamLevel": 5,
    "carried": 9,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2681,
    "lastFinal": "2026-10-27"
   },
@@ -111,8 +111,8 @@
   "sched": 87,
   "pastp": 20,
   "predictions": 392,
-  "graded": 314,
-  "storeGames": 13901
+  "graded": 315,
+  "storeGames": 13902
  },
  "calibration": {
   "slopes": {
@@ -121,9 +121,9 @@
    "nhl": 1.15,
    "nba": 1.1417
   },
-  "graded": 314,
-  "accML": 0.615,
-  "accBook": 0.615
+  "graded": 315,
+  "accML": 0.613,
+  "accBook": 0.613
  },
  "social": {
   "enabled": true,
@@ -136,7 +136,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 2.2,
+  "seconds": 1.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 1,
+  "gamesUploaded": 3,
   "simTeamsUploaded": 1110,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 1 graded, wnba 4 graded, nba 49 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 49 graded",
  "odds": "kept (odds feed backing off until 05:47Z after 45 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 05:47Z)",
  "fanduel": "ok: FanDuel lines on 13 cards, 234 player stats, FanDuel-only players on 0 cards; not in the feed (5): SHSU@MOST, KENN@MTSU, PHI@IND, JXST@NMSU, CAR@GB",
- "fanduelDirect": "kept (13 FanDuel games in odds.json, pulled 2026-10-27T02:57:01Z; 0s)",
+ "fanduelDirect": "ok: 13 games, 360 player markets (13 FanDuel games in odds.json, pulled 2026-10-27T03:17:04Z; 3s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 257,
+ "requests": 256,
  "failedRequests": 9,
  "retries": 9,
- "seconds": 24.1
+ "seconds": 22.0
 }
