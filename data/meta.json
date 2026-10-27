@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 959,
+ "runNumber": 960,
  "deadlineHit": false,
- "generatedAt": "2026-10-27T04:37:21Z",
- "generatedAtET": "Tue Oct 27, 12:37 AM ET",
+ "generatedAt": "2026-10-27T04:47:23Z",
+ "generatedAtET": "Tue Oct 27, 12:47 AM ET",
  "today": "2026-10-27",
- "lastRunAt": "2026-10-27T04:37:21Z",
+ "lastRunAt": "2026-10-27T04:47:23Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -46,10 +46,10 @@
    "status": "ok",
    "games": 14,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 11,
+   "teamLevel": 1,
+   "carried": 13,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2683,
    "lastFinal": "2026-10-27"
   },
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.9,
+  "seconds": 3.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 1,
   "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2162,
   "configured": true
  },
- "firstBasket": "2 new snapshots, 1 graded, wnba 4 graded, nba 51 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 51 graded",
  "odds": "kept (odds feed backing off until 05:47Z after 45 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 05:47Z)",
  "fanduel": "ok: FanDuel lines on 14 cards, 456 player stats, FanDuel-only players on 0 cards; not in the feed (5): SHSU@MOST, KENN@MTSU, PHI@IND, JXST@NMSU, CAR@GB",
- "fanduelDirect": "ok: 14 games, 757 player markets (14 FanDuel games in odds.json, pulled 2026-10-27T04:37:21Z; 4s)",
- "espnXref": "ok: 25 FanDuel players added from ESPN rosters on 4 cards {'nba': 13, 'mlb': 12}; 137 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
+ "fanduelDirect": "kept (14 FanDuel games in odds.json, pulled 2026-10-27T04:37:21Z; 0s)",
+ "espnXref": "ok: 12 FanDuel players added from ESPN rosters on 1 cards {'mlb': 12}; 47 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 333,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 29.3
+ "requests": 279,
+ "failedRequests": 7,
+ "retries": 7,
+ "seconds": 20.8
 }
