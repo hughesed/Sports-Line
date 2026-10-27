@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 998,
+ "runNumber": 999,
  "deadlineHit": false,
- "generatedAt": "2026-10-27T18:19:35Z",
- "generatedAtET": "Tue Oct 27, 2:19 PM ET",
+ "generatedAt": "2026-10-27T18:29:38Z",
+ "generatedAtET": "Tue Oct 27, 2:29 PM ET",
  "today": "2026-10-27",
- "lastRunAt": "2026-10-27T18:19:35Z",
+ "lastRunAt": "2026-10-27T18:29:38Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 16,
   "failedCalls": 0,
-  "seconds": 2.5,
+  "seconds": 3.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,20 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 1,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 8,
   "simPlayersUploaded": 2212,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 51 graded",
- "odds": "kept (odds feed backing off until 18:25Z after 48 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); NCAAB: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-27T22:30:06Z",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 17 cards, 673 player stats, FanDuel-only players on 0 cards; not in the feed (3): SHSU@MOST, GS@ATL, CAR@GB",
- "fanduelDirect": "kept (17 FanDuel games in odds.json, pulled 2026-10-27T18:09:35Z; 0s)",
+ "fanduelDirect": "ok: 17 games, 1204 player markets (17 FanDuel games in odds.json, pulled 2026-10-27T18:29:38Z; 4s)",
  "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 2 cards {'nba': 1, 'mlb': 6}; 27 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
- "requests": 489,
+ "requests": 481,
  "failedRequests": 3,
  "retries": 3,
- "seconds": 21.7
+ "seconds": 52.1
 }
