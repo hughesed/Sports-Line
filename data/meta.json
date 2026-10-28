@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1105,
+ "runNumber": 1106,
  "deadlineHit": false,
- "generatedAt": "2026-10-28T18:50:06Z",
- "generatedAtET": "Wed Oct 28, 2:50 PM ET",
+ "generatedAt": "2026-10-28T19:00:09Z",
+ "generatedAtET": "Wed Oct 28, 3:00 PM ET",
  "today": "2026-10-28",
- "lastRunAt": "2026-10-28T18:50:06Z",
+ "lastRunAt": "2026-10-28T19:00:09Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 37,
-  "playerCards": 32,
-  "teamCards": 5,
+  "playerCards": 33,
+  "teamCards": 4,
   "window": 176,
   "sched": 143,
   "pastp": 21,
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 16,
   "failedCalls": 0,
-  "seconds": 0.9,
+  "seconds": 3.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 2,
+  "gamesUploaded": 13,
+  "simPlayersUploaded": 2227,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 55 graded",
  "odds": "kept (odds feed backing off until 19:15Z after 54 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 23 cards, 966 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "kept (23 FanDuel games in odds.json, pulled 2026-10-28T18:40:04Z; 0s)",
- "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 5 cards {'nba': 2, 'mlb': 6, 'wnba': 2, 'nfl': 1}; 34 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 23 cards, 993 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 23 games, 1864 player markets (23 FanDuel games in odds.json, pulled 2026-10-28T19:00:09Z; 6s)",
+ "espnXref": "ok: 23 FanDuel players added from ESPN rosters on 7 cards {'nba': 4, 'mlb': 6, 'wnba': 2, 'nhl': 10, 'nfl': 1}; 55 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 563,
+ "requests": 593,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 35.3
+ "seconds": 40.3
 }
