@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1037,
+ "runNumber": 1038,
  "deadlineHit": false,
- "generatedAt": "2026-10-28T00:29:36Z",
- "generatedAtET": "Tue Oct 27, 8:29 PM ET",
+ "generatedAt": "2026-10-28T00:39:38Z",
+ "generatedAtET": "Tue Oct 27, 8:39 PM ET",
  "today": "2026-10-27",
- "lastRunAt": "2026-10-28T00:29:36Z",
+ "lastRunAt": "2026-10-28T00:39:38Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 1.9,
+  "seconds": 2.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 4,
+  "gamesUploaded": 3,
+  "simTeamsUploaded": 1110,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 51 graded",
  "odds": "kept (odds feed backing off until 02:31Z after 50 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 02:31Z)",
  "fanduel": "ok: FanDuel lines on 18 cards, 368 player stats, FanDuel-only players on 0 cards; not in the feed (4): GS@ATL, FAU@UNT, TROY@JMU, CAR@GB",
- "fanduelDirect": "ok: 18 games, 540 player markets (18 FanDuel games in odds.json, pulled 2026-10-28T00:29:36Z; 4s)",
+ "fanduelDirect": "ok: 18 games, 540 player markets (18 FanDuel games in odds.json, pulled 2026-10-28T00:39:38Z; 4s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
- "requests": 324,
- "failedRequests": 11,
- "retries": 11,
- "seconds": 27.2
+ "requests": 381,
+ "failedRequests": 8,
+ "retries": 8,
+ "seconds": 28.9
 }
