@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1107,
+ "runNumber": 1108,
  "deadlineHit": false,
- "generatedAt": "2026-10-28T19:10:11Z",
- "generatedAtET": "Wed Oct 28, 3:10 PM ET",
+ "generatedAt": "2026-10-28T19:20:12Z",
+ "generatedAtET": "Wed Oct 28, 3:20 PM ET",
  "today": "2026-10-28",
- "lastRunAt": "2026-10-28T19:10:11Z",
+ "lastRunAt": "2026-10-28T19:20:12Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.3,
+  "seconds": 4.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 7,
+  "gamesUploaded": 14,
   "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2227,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 55 graded",
- "odds": "kept (odds feed backing off until 19:15Z after 54 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); NCAAB: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-28T23:20:40Z",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 23 cards, 993 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "kept (23 FanDuel games in odds.json, pulled 2026-10-28T19:00:09Z; 0s)",
- "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 5 cards {'nba': 2, 'mlb': 6, 'wnba': 2, 'nfl': 1}; 35 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 23 cards, 991 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 23 games, 1884 player markets (23 FanDuel games in odds.json, pulled 2026-10-28T19:20:12Z; 6s)",
+ "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 5 cards {'nba': 2, 'mlb': 6, 'wnba': 2, 'nfl': 1}; 33 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 571,
+ "requests": 572,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 34.2
+ "seconds": 56.1
 }
