@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1163,
+ "runNumber": 1164,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T04:10:57Z",
- "generatedAtET": "Thu Oct 29, 12:10 AM ET",
+ "generatedAt": "2026-10-29T04:21:00Z",
+ "generatedAtET": "Thu Oct 29, 12:21 AM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-29T04:10:57Z",
+ "lastRunAt": "2026-10-29T04:21:00Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,7 +49,7 @@
    "teamLevel": 3,
    "carried": 8,
    "error": "DEN @ PHX: KeyError: 'pointSpread'",
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2698,
    "lastFinal": "2026-10-29"
   },
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 3,
   "failedCalls": 0,
-  "seconds": 1.0,
+  "seconds": 0.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,21 +146,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 5,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 0,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 1 graded, wnba 4 graded, nba 66 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 66 graded",
  "odds": "kept (odds feed backing off until 07:31Z after 57 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 07:31Z)",
  "fanduel": "ok: FanDuel lines on 15 cards, 184 player stats, FanDuel-only players on 0 cards; not in the feed (3): TULN@CLT, BAY@UCF, KENT@SAC",
- "fanduelDirect": "ok: 15 games, 348 player markets (15 FanDuel games in odds.json, pulled 2026-10-29T04:10:57Z; 3s)",
+ "fanduelDirect": "kept (15 FanDuel games in odds.json, pulled 2026-10-29T04:10:57Z; 0s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'wnba': 2, 'nfl': 1}; 5 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [
   "nba: DEN @ PHX: KeyError: 'pointSpread'"
  ],
- "requests": 262,
+ "requests": 260,
  "failedRequests": 8,
  "retries": 8,
- "seconds": 17.6
+ "seconds": 20.9
 }
