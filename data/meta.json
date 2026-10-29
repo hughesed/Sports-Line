@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1167,
+ "runNumber": 1168,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T04:51:03Z",
- "generatedAtET": "Thu Oct 29, 12:51 AM ET",
+ "generatedAt": "2026-10-29T05:01:06Z",
+ "generatedAtET": "Thu Oct 29, 1:01 AM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-29T04:51:03Z",
+ "lastRunAt": "2026-10-29T05:01:06Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -79,8 +79,8 @@
    "status": "ok",
    "games": 12,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 9,
+   "teamLevel": 2,
+   "carried": 10,
    "error": null,
    "newFinals": 0,
    "storeGames": 204,
@@ -136,7 +136,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.9,
+  "seconds": 6.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,22 +146,22 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 8,
+  "gamesUploaded": 2,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2210,
+  "simPlayersUploaded": 2218,
   "configured": true
  },
- "firstBasket": "1 new snapshots, 0 graded, wnba 4 graded, nba 66 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 66 graded",
  "odds": "kept (odds feed backing off until 07:31Z after 57 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 07:31Z)",
  "fanduel": "ok: FanDuel lines on 15 cards, 306 player stats, FanDuel-only players on 0 cards; not in the feed (3): TULN@CLT, BAY@UCF, KENT@SAC",
- "fanduelDirect": "ok: 15 games, 584 player markets (15 FanDuel games in odds.json, pulled 2026-10-29T04:51:03Z; 4s)",
- "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 3 cards {'wnba': 2, 'nhl': 7, 'nfl': 2}; 14 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
+ "fanduelDirect": "kept (15 FanDuel games in odds.json, pulled 2026-10-29T04:51:03Z; 0s)",
+ "espnXref": "ok: 4 FanDuel players added from ESPN rosters on 2 cards {'wnba': 2, 'nfl': 2}; 7 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [
   "nba: DEN @ PHX: KeyError: 'pointSpread'"
  ],
- "requests": 329,
- "failedRequests": 6,
+ "requests": 312,
+ "failedRequests": 7,
  "retries": 7,
- "seconds": 37.7
+ "seconds": 26.5
 }
