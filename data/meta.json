@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1162,
+ "runNumber": 1163,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T04:00:54Z",
- "generatedAtET": "Thu Oct 29, 12:00 AM ET",
+ "generatedAt": "2026-10-29T04:10:57Z",
+ "generatedAtET": "Thu Oct 29, 12:10 AM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-29T04:00:54Z",
+ "lastRunAt": "2026-10-29T04:10:57Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,8 +49,8 @@
    "teamLevel": 3,
    "carried": 8,
    "error": "DEN @ PHX: KeyError: 'pointSpread'",
-   "newFinals": 0,
-   "storeGames": 2697,
+   "newFinals": 1,
+   "storeGames": 2698,
    "lastFinal": "2026-10-29"
   },
   "cfb": {
@@ -107,12 +107,12 @@
   "slate": 32,
   "playerCards": 22,
   "teamCards": 10,
-  "window": 177,
+  "window": 178,
   "sched": 324,
   "pastp": 21,
   "predictions": 429,
-  "graded": 354,
-  "storeGames": 13941
+  "graded": 355,
+  "storeGames": 13942
  },
  "calibration": {
   "slopes": {
@@ -121,9 +121,9 @@
    "nhl": 1.15,
    "nba": 1.15
   },
-  "graded": 354,
-  "accML": 0.61,
-  "accBook": 0.613
+  "graded": 355,
+  "accML": 0.608,
+  "accBook": 0.611
  },
  "social": {
   "enabled": true,
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 6,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 2.0,
+  "seconds": 1.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,21 +146,21 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 5,
   "simTeamsUploaded": 1110,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 65 graded",
+ "firstBasket": "0 new snapshots, 1 graded, wnba 4 graded, nba 66 graded",
  "odds": "kept (odds feed backing off until 07:31Z after 57 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 07:31Z)",
  "fanduel": "ok: FanDuel lines on 15 cards, 184 player stats, FanDuel-only players on 0 cards; not in the feed (3): TULN@CLT, BAY@UCF, KENT@SAC",
- "fanduelDirect": "kept (15 FanDuel games in odds.json, pulled 2026-10-29T03:50:53Z; 0s)",
+ "fanduelDirect": "ok: 15 games, 348 player markets (15 FanDuel games in odds.json, pulled 2026-10-29T04:10:57Z; 3s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'wnba': 2, 'nfl': 1}; 5 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [
   "nba: DEN @ PHX: KeyError: 'pointSpread'"
  ],
- "requests": 268,
+ "requests": 262,
  "failedRequests": 8,
  "retries": 8,
- "seconds": 18.6
+ "seconds": 17.6
 }
