@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1138,
+ "runNumber": 1139,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T00:12:20Z",
- "generatedAtET": "Wed Oct 28, 8:12 PM ET",
+ "generatedAt": "2026-10-29T00:22:25Z",
+ "generatedAtET": "Wed Oct 28, 8:22 PM ET",
  "today": "2026-10-28",
- "lastRunAt": "2026-10-29T00:12:20Z",
+ "lastRunAt": "2026-10-29T00:22:25Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -136,7 +136,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.5,
+  "seconds": 6.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,7 +146,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 4,
+  "gamesUploaded": 5,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2209,
   "configured": true
@@ -154,12 +154,12 @@
  "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 55 graded",
  "odds": "kept (odds feed backing off until 03:22Z after 56 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 03:22Z)",
- "fanduel": "ok: FanDuel lines on 15 cards, 416 player stats, FanDuel-only players on 0 cards; not in the feed (3): LAL@LAC, TULN@CLT, BAY@UCF",
- "fanduelDirect": "ok: 15 games, 782 player markets (15 FanDuel games in odds.json, pulled 2026-10-29T00:12:20Z; 4s)",
- "espnXref": "ok: 4 FanDuel players added from ESPN rosters on 3 cards {'nba': 1, 'wnba': 2, 'nfl': 1}; 13 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 15 cards, 408 player stats, FanDuel-only players on 0 cards; not in the feed (3): LAL@LAC, TULN@CLT, BAY@UCF",
+ "fanduelDirect": "ok: 15 games, 766 player markets (15 FanDuel games in odds.json, pulled 2026-10-29T00:22:25Z; 6s)",
+ "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'wnba': 2, 'nfl': 1}; 5 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
- "requests": 345,
+ "requests": 338,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 31.9
+ "seconds": 28.3
 }
