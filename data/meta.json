@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1207,
+ "runNumber": 1208,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T18:51:24Z",
- "generatedAtET": "Thu Oct 29, 2:51 PM ET",
+ "generatedAt": "2026-10-29T19:01:30Z",
+ "generatedAtET": "Thu Oct 29, 3:01 PM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-29T18:51:24Z",
+ "lastRunAt": "2026-10-29T19:01:30Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -27,7 +27,7 @@
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 353,
    "lastFinal": "2026-10-29"
   },
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 2.4,
+  "seconds": 7.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 9,
+  "gamesUploaded": 6,
   "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2233,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 1 graded, wnba 5 graded, nba 67 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 67 graded",
  "odds": "kept (odds feed backing off until 20:28Z after 60 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 20:28Z)",
  "fanduel": "ok: FanDuel lines on 8 cards, 337 player stats, FanDuel-only players on 0 cards; not in the feed (16): CHA@WSH, CHI@BOS, DET@BKN, ARIZ@TTU, SMU@SYR, WIS@IOWA...",
- "fanduelDirect": "ok: 8 games, 681 player markets (17 FanDuel games in odds.json, pulled 2026-10-29T18:51:24Z; 3s)",
- "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 3 cards {'nba': 6, 'nfl': 5}; 31 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
+ "fanduelDirect": "kept (17 FanDuel games in odds.json, pulled 2026-10-29T18:51:24Z; 0s)",
+ "espnXref": "ok: 10 FanDuel players added from ESPN rosters on 3 cards {'nba': 5, 'nfl': 5}; 24 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
  "errors": [],
- "requests": 963,
+ "requests": 962,
  "failedRequests": 8,
- "retries": 10,
- "seconds": 65.6
+ "retries": 8,
+ "seconds": 38.9
 }
