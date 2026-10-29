@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1227,
+ "runNumber": 1228,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T22:06:43Z",
- "generatedAtET": "Thu Oct 29, 6:06 PM ET",
+ "generatedAt": "2026-10-29T22:16:45Z",
+ "generatedAtET": "Thu Oct 29, 6:16 PM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-29T22:06:43Z",
+ "lastRunAt": "2026-10-29T22:16:45Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 12,
-   "playerLevel": 3,
+   "playerLevel": 2,
    "teamLevel": 1,
-   "carried": 8,
+   "carried": 9,
    "error": null,
    "newFinals": 0,
    "storeGames": 2699,
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.6,
+  "seconds": 6.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 10,
+  "gamesUploaded": 9,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2232,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 67 graded",
  "odds": "kept (odds feed backing off until 00:32Z after 61 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 00:32Z)",
- "fanduel": "ok: FanDuel lines on 7 cards, 336 player stats, FanDuel-only players on 0 cards; not in the feed (17): ARIZ@TTU, WIS@IOWA, AUB@MISS, FLA@UGA, MINN@IU, UTAH@CIN...",
- "fanduelDirect": "ok: 7 games, 686 player markets (19 FanDuel games in odds.json, pulled 2026-10-29T22:06:43Z; 2s)",
- "espnXref": "ok: 12 FanDuel players added from ESPN rosters on 4 cards {'cfb': 4, 'nba': 3, 'nfl': 5}; 22 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 7 cards, 294 player stats, FanDuel-only players on 0 cards; not in the feed (17): ARIZ@TTU, WIS@IOWA, AUB@MISS, FLA@UGA, MINN@IU, UTAH@CIN...",
+ "fanduelDirect": "ok: 7 games, 604 player markets (19 FanDuel games in odds.json, pulled 2026-10-29T22:16:45Z; 4s)",
+ "espnXref": "ok: 5 FanDuel players added from ESPN rosters on 1 cards {'nfl': 5}; 10 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
- "requests": 1039,
+ "requests": 999,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 46.6
+ "seconds": 41.3
 }
