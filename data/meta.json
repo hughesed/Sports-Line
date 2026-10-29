@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1199,
+ "runNumber": 1200,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T17:31:08Z",
- "generatedAtET": "Thu Oct 29, 1:31 PM ET",
+ "generatedAt": "2026-10-29T17:41:11Z",
+ "generatedAtET": "Thu Oct 29, 1:41 PM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-29T17:31:08Z",
+ "lastRunAt": "2026-10-29T17:41:11Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 1.3,
+  "seconds": 0.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,7 +146,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 5,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 67 graded",
@@ -156,8 +156,8 @@
  "fanduelDirect": "kept (14 FanDuel games in odds.json, pulled 2026-10-29T17:28:06Z; 0s)",
  "espnXref": "ok: 5 FanDuel players added from ESPN rosters on 1 cards {'nfl': 5}; 10 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
  "errors": [],
- "requests": 363,
- "failedRequests": 6,
- "retries": 6,
- "seconds": 17.8
+ "requests": 344,
+ "failedRequests": 9,
+ "retries": 9,
+ "seconds": 16.9
 }
