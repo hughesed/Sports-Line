@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1237,
+ "runNumber": 1238,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T23:47:02Z",
- "generatedAtET": "Thu Oct 29, 7:47 PM ET",
+ "generatedAt": "2026-10-29T23:57:16Z",
+ "generatedAtET": "Thu Oct 29, 7:57 PM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-29T23:47:02Z",
+ "lastRunAt": "2026-10-29T23:57:16Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 2.4,
+  "seconds": 1.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,20 +146,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 4,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2232,
+  "gamesUploaded": 8,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 67 graded",
  "odds": "kept (odds feed backing off until 00:32Z after 61 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 00:32Z)",
- "fanduel": "ok: FanDuel lines on 5 cards, 326 player stats, FanDuel-only players on 0 cards; not in the feed (19): ARIZ@TTU, WIS@IOWA, AUB@MISS, FLA@UGA, MINN@IU, UTAH@CIN...",
- "fanduelDirect": "ok: 5 games, 632 player markets (13 FanDuel games in odds.json, pulled 2026-10-29T23:47:02Z; 2s)",
- "espnXref": "ok: 9 FanDuel players added from ESPN rosters on 3 cards {'nba': 4, 'nfl': 5}; 29 stats from game logs, 0 from FanDuel's price only",
+ "fanduel": "ok: FanDuel lines on 5 cards, 328 player stats, FanDuel-only players on 0 cards; not in the feed (19): ARIZ@TTU, WIS@IOWA, AUB@MISS, FLA@UGA, MINN@IU, UTAH@CIN...",
+ "fanduelDirect": "ok: 5 games, 636 player markets (13 FanDuel games in odds.json, pulled 2026-10-29T23:57:16Z; 2s)",
+ "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 3 cards {'nba': 2, 'nfl': 5}; 18 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
  "requests": 1037,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 34.1
+ "seconds": 41.3
 }
