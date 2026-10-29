@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1203,
+ "runNumber": 1204,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T18:11:15Z",
- "generatedAtET": "Thu Oct 29, 2:11 PM ET",
+ "generatedAt": "2026-10-29T18:21:19Z",
+ "generatedAtET": "Thu Oct 29, 2:21 PM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-29T18:11:15Z",
+ "lastRunAt": "2026-10-29T18:21:19Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 2.5,
+  "seconds": 1.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 7,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 6,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 67 graded",
  "odds": "kept (odds feed backing off until 20:28Z after 60 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 20:28Z)",
  "fanduel": "ok: FanDuel lines on 8 cards, 321 player stats, FanDuel-only players on 0 cards; not in the feed (16): CHA@WSH, CHI@BOS, DET@BKN, ARIZ@TTU, SMU@SYR, WIS@IOWA...",
- "fanduelDirect": "ok: 8 games, 651 player markets (17 FanDuel games in odds.json, pulled 2026-10-29T18:11:15Z; 3s)",
+ "fanduelDirect": "kept (17 FanDuel games in odds.json, pulled 2026-10-29T18:11:15Z; 0s)",
  "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 2 cards {'nba': 2, 'nfl': 5}; 18 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
  "errors": [],
  "requests": 952,
  "failedRequests": 8,
  "retries": 8,
- "seconds": 41.6
+ "seconds": 30.3
 }
