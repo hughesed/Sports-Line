@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1149,
+ "runNumber": 1150,
  "deadlineHit": false,
- "generatedAt": "2026-10-29T01:50:31Z",
- "generatedAtET": "Wed Oct 28, 9:50 PM ET",
+ "generatedAt": "2026-10-29T02:00:37Z",
+ "generatedAtET": "Wed Oct 28, 10:00 PM ET",
  "today": "2026-10-28",
- "lastRunAt": "2026-10-29T01:50:31Z",
+ "lastRunAt": "2026-10-29T02:00:37Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -43,21 +43,21 @@
    "lastFinal": "2026-10-28"
   },
   "nba": {
-   "status": "ok",
-   "games": 13,
-   "playerLevel": 2,
+   "status": "partial",
+   "games": 12,
+   "playerLevel": 1,
    "teamLevel": 2,
    "carried": 9,
-   "error": null,
-   "newFinals": 0,
-   "storeGames": 2690,
+   "error": "DEN @ PHX: KeyError: 'pointSpread'",
+   "newFinals": 1,
+   "storeGames": 2691,
    "lastFinal": "2026-10-28"
   },
   "cfb": {
    "status": "ok",
-   "games": 5,
+   "games": 6,
    "playerLevel": 0,
-   "teamLevel": 2,
+   "teamLevel": 3,
    "carried": 3,
    "error": null,
    "newFinals": 0,
@@ -105,25 +105,25 @@
  },
  "counts": {
   "slate": 32,
-  "playerCards": 24,
-  "teamCards": 8,
+  "playerCards": 23,
+  "teamCards": 9,
   "window": 176,
   "sched": 143,
   "pastp": 21,
   "predictions": 426,
-  "graded": 341,
-  "storeGames": 13928
+  "graded": 342,
+  "storeGames": 13929
  },
  "calibration": {
   "slopes": {
    "cfb": 0.85,
    "nfl": 0.886,
    "nhl": 1.15,
-   "nba": 1.1299
+   "nba": 1.1313
   },
-  "graded": 341,
-  "accML": 0.601,
-  "accBook": 0.604
+  "graded": 342,
+  "accML": 0.602,
+  "accBook": 0.605
  },
  "social": {
   "enabled": true,
@@ -136,7 +136,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 3.4,
+  "seconds": 1.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,21 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 6,
   "simTeamsUploaded": 1110,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 4 graded, nba 58 graded",
+ "firstBasket": "0 new snapshots, 1 graded, wnba 4 graded, nba 59 graded",
  "odds": "kept (odds feed backing off until 03:22Z after 56 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 03:22Z)",
- "fanduel": "ok: FanDuel lines on 14 cards, 199 player stats, FanDuel-only players on 0 cards; not in the feed (3): LAL@LAC, TULN@CLT, BAY@UCF",
- "fanduelDirect": "ok: 14 games, 383 player markets (14 FanDuel games in odds.json, pulled 2026-10-29T01:50:31Z; 5s)",
+ "fanduel": "ok: FanDuel lines on 13 cards, 175 player stats, FanDuel-only players on 0 cards; not in the feed (3): LAL@LAC, TULN@CLT, BAY@UCF",
+ "fanduelDirect": "ok: 13 games, 339 player markets (14 FanDuel games in odds.json, pulled 2026-10-29T02:00:37Z; 3s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'wnba': 2, 'nfl': 1}; 5 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
- "errors": [],
- "requests": 343,
- "failedRequests": 6,
- "retries": 6,
- "seconds": 30.0
+ "errors": [
+  "nba: DEN @ PHX: KeyError: 'pointSpread'"
+ ],
+ "requests": 308,
+ "failedRequests": 7,
+ "retries": 7,
+ "seconds": 22.6
 }
