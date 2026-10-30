@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1261,
+ "runNumber": 1262,
  "deadlineHit": false,
- "generatedAt": "2026-10-30T03:31:37Z",
- "generatedAtET": "Thu Oct 29, 11:31 PM ET",
+ "generatedAt": "2026-10-30T03:41:41Z",
+ "generatedAtET": "Thu Oct 29, 11:41 PM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-30T03:31:37Z",
+ "lastRunAt": "2026-10-30T03:41:41Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,7 +16,7 @@
    "teamLevel": 3,
    "carried": 1,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 393,
    "lastFinal": "2026-10-30"
   },
@@ -60,7 +60,7 @@
    "teamLevel": 8,
    "carried": 2,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 1530,
    "lastFinal": "2026-10-29"
   },
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 18,
   "failedCalls": 0,
-  "seconds": 1.1,
+  "seconds": 6.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 0,
   "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2232,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 69 graded",
  "odds": "kept (odds feed backing off until 04:38Z after 62 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 04:38Z)",
  "fanduel": "ok: FanDuel lines on 4 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (20): ARIZ@TTU, WIS@IOWA, AUB@MISS, FLA@UGA, MINN@IU, UTAH@CIN...",
- "fanduelDirect": "ok: 4 games, 0 player markets (6 FanDuel games in odds.json, pulled 2026-10-30T03:31:37Z; 1s)",
+ "fanduelDirect": "kept (6 FanDuel games in odds.json, pulled 2026-10-30T03:31:37Z; 0s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 951,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 26.2
+ "requests": 929,
+ "failedRequests": 8,
+ "retries": 8,
+ "seconds": 38.3
 }
