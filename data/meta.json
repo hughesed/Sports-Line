@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1287,
+ "runNumber": 1288,
  "deadlineHit": false,
- "generatedAt": "2026-10-30T12:49:17Z",
- "generatedAtET": "Fri Oct 30, 8:49 AM ET",
+ "generatedAt": "2026-10-30T13:19:17Z",
+ "generatedAtET": "Fri Oct 30, 9:19 AM ET",
  "today": "2026-10-30",
- "lastRunAt": "2026-10-30T12:49:17Z",
+ "lastRunAt": "2026-10-30T13:19:17Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -136,7 +136,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 3.3,
+  "seconds": 1.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 8,
+  "gamesUploaded": 9,
   "simTeamsUploaded": 1110,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 70 graded",
- "odds": "kept (odds feed backing off until 12:59Z after 64 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-30T17:19:40Z",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 8 cards, 411 player stats, FanDuel-only players on 0 cards; not in the feed (16): FLA@UGA, UTAH@CIN, MIA@UNC, OSU@USC, ARI@DAL, ATL@TB...",
- "fanduelDirect": "ok: 8 games, 847 player markets (9 FanDuel games in odds.json, pulled 2026-10-30T12:49:17Z; 5s)",
+ "fanduelDirect": "ok: 8 games, 847 player markets (9 FanDuel games in odds.json, pulled 2026-10-30T13:19:17Z; 3s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'nba': 3}; 10 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
  "requests": 1060,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 48.4
+ "seconds": 43.0
 }
