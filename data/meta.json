@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1256,
+ "runNumber": 1257,
  "deadlineHit": false,
- "generatedAt": "2026-10-30T02:41:27Z",
- "generatedAtET": "Thu Oct 29, 10:41 PM ET",
+ "generatedAt": "2026-10-30T02:51:29Z",
+ "generatedAtET": "Thu Oct 29, 10:51 PM ET",
  "today": "2026-10-29",
- "lastRunAt": "2026-10-30T02:41:27Z",
+ "lastRunAt": "2026-10-30T02:51:29Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -82,8 +82,8 @@
    "teamLevel": 0,
    "carried": 3,
    "error": null,
-   "newFinals": 2,
-   "storeGames": 210,
+   "newFinals": 1,
+   "storeGames": 211,
    "lastFinal": "2026-10-30"
   },
   "tennis": {
@@ -111,8 +111,8 @@
   "sched": 324,
   "pastp": 21,
   "predictions": 458,
-  "graded": 366,
-  "storeGames": 13953
+  "graded": 367,
+  "storeGames": 13954
  },
  "calibration": {
   "slopes": {
@@ -121,9 +121,9 @@
    "nhl": 1.15,
    "nba": 1.15
   },
-  "graded": 366,
-  "accML": 0.612,
-  "accBook": 0.615
+  "graded": 367,
+  "accML": 0.61,
+  "accBook": 0.613
  },
  "social": {
   "enabled": true,
@@ -136,7 +136,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.9,
+  "seconds": 5.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -155,11 +155,11 @@
  "odds": "kept (odds feed backing off until 04:38Z after 62 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 04:38Z)",
  "fanduel": "ok: FanDuel lines on 4 cards, 0 player stats, FanDuel-only players on 0 cards; not in the feed (20): ARIZ@TTU, WIS@IOWA, AUB@MISS, FLA@UGA, MINN@IU, UTAH@CIN...",
- "fanduelDirect": "kept (6 FanDuel games in odds.json, pulled 2026-10-30T02:31:24Z; 0s)",
+ "fanduelDirect": "ok: 4 games, 0 player markets (6 FanDuel games in odds.json, pulled 2026-10-30T02:51:29Z; 1s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 923,
+ "requests": 931,
  "failedRequests": 8,
  "retries": 8,
- "seconds": 41.4
+ "seconds": 41.2
 }
