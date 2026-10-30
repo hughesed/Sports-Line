@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1327,
+ "runNumber": 1328,
  "deadlineHit": false,
- "generatedAt": "2026-10-30T21:33:34Z",
- "generatedAtET": "Fri Oct 30, 5:33 PM ET",
+ "generatedAt": "2026-10-30T21:43:37Z",
+ "generatedAtET": "Fri Oct 30, 5:43 PM ET",
  "today": "2026-10-30",
- "lastRunAt": "2026-10-30T21:33:34Z",
+ "lastRunAt": "2026-10-30T21:43:37Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 4,
   "failedCalls": 0,
-  "seconds": 6.6,
+  "seconds": 1.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,20 +146,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 11,
-  "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2214,
+  "gamesUploaded": 5,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 70 graded",
- "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-10-31T01:34:01Z",
+ "odds": "kept (odds feed backing off until 01:34Z after 67 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 11 cards, 465 player stats, FanDuel-only players on 0 cards; not in the feed (13): MIA@UNC, ARI@DAL, ATL@TB, BAL@BUF, CLE@PIT, IND@JAX...",
- "fanduelDirect": "ok: 11 games, 959 player markets (12 FanDuel games in odds.json, pulled 2026-10-30T21:33:34Z; 5s)",
+ "fanduelDirect": "ok: 11 games, 959 player markets (12 FanDuel games in odds.json, pulled 2026-10-30T21:43:37Z; 5s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'nba': 3}; 10 stats from game logs, 0 from FanDuel's price only; 9 not on either ESPN roster",
  "errors": [],
- "requests": 1094,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 54.3
+ "requests": 1075,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 48.4
 }
