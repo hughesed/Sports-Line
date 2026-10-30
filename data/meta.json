@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1339,
+ "runNumber": 1340,
  "deadlineHit": false,
- "generatedAt": "2026-10-30T23:33:56Z",
- "generatedAtET": "Fri Oct 30, 7:33 PM ET",
+ "generatedAt": "2026-10-30T23:43:58Z",
+ "generatedAtET": "Fri Oct 30, 7:43 PM ET",
  "today": "2026-10-30",
- "lastRunAt": "2026-10-30T23:33:56Z",
+ "lastRunAt": "2026-10-30T23:43:58Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 8,
+   "games": 12,
    "playerLevel": 4,
    "teamLevel": 0,
-   "carried": 4,
+   "carried": 8,
    "error": null,
    "newFinals": 0,
    "storeGames": 2702,
@@ -55,9 +55,9 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 11,
+   "games": 12,
    "playerLevel": 0,
-   "teamLevel": 1,
+   "teamLevel": 2,
    "carried": 10,
    "error": null,
    "newFinals": 0,
@@ -104,13 +104,13 @@
   }
  },
  "counts": {
-  "slate": 32,
-  "playerCards": 29,
+  "slate": 37,
+  "playerCards": 34,
   "teamCards": 3,
   "window": 180,
   "sched": 348,
   "pastp": 22,
-  "predictions": 458,
+  "predictions": 462,
   "graded": 372,
   "storeGames": 13962
  },
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.8,
+  "seconds": 6.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,20 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 9,
+  "gamesUploaded": 6,
+  "simTeamsUploaded": 1110,
+  "simPlayersUploaded": 2214,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 70 graded",
+ "firstBasket": "4 new snapshots, 0 graded, wnba 5 graded, nba 70 graded",
  "odds": "kept (odds feed backing off until 01:34Z after 67 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 01:34Z)",
- "fanduel": "ok: FanDuel lines on 6 cards, 86 player stats, FanDuel-only players on 0 cards; not in the feed (13): MIA@UNC, ARI@DAL, ATL@TB, BAL@BUF, CLE@PIT, IND@JAX...",
- "fanduelDirect": "kept (10 FanDuel games in odds.json, pulled 2026-10-30T23:23:55Z; 0s)",
- "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 10 cards, 402 player stats, FanDuel-only players on 0 cards; not in the feed (14): LAC@MIN, MIA@UNC, ARI@DAL, ATL@TB, BAL@BUF, CLE@PIT...",
+ "fanduelDirect": "ok: 10 games, 815 player markets (10 FanDuel games in odds.json, pulled 2026-10-30T23:43:58Z; 5s)",
+ "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 4 cards {'nba': 3, 'cfb': 8}; 33 stats from game logs, 0 from FanDuel's price only; 9 not on either ESPN roster",
  "errors": [],
- "requests": 1094,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 39.7
+ "requests": 1103,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 50.4
 }
