@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1280,
+ "runNumber": 1281,
  "deadlineHit": false,
- "generatedAt": "2026-10-30T09:28:32Z",
- "generatedAtET": "Fri Oct 30, 5:28 AM ET",
+ "generatedAt": "2026-10-30T09:58:31Z",
+ "generatedAtET": "Fri Oct 30, 5:58 AM ET",
  "today": "2026-10-30",
- "lastRunAt": "2026-10-30T09:28:32Z",
+ "lastRunAt": "2026-10-30T09:58:31Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 16,
   "failedCalls": 0,
-  "seconds": 2.3,
+  "seconds": 2.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 7,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 6,
+  "simPlayersUploaded": 2233,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 70 graded",
  "odds": "kept (odds feed backing off until 12:59Z after 64 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 7 cards, 399 player stats, FanDuel-only players on 0 cards; not in the feed (17): ARIZ@TTU, FLA@UGA, UTAH@CIN, MIA@UNC, OSU@USC, ARI@DAL...",
- "fanduelDirect": "ok: 7 games, 809 player markets (8 FanDuel games in odds.json, pulled 2026-10-30T09:28:32Z; 3s)",
+ "fanduelDirect": "ok: 7 games, 809 player markets (8 FanDuel games in odds.json, pulled 2026-10-30T09:58:31Z; 3s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'nba': 3}; 10 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
  "errors": [],
- "requests": 1057,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 47.5
+ "requests": 1086,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 33.3
 }
