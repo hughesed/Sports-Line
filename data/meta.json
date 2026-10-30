@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1318,
+ "runNumber": 1319,
  "deadlineHit": false,
- "generatedAt": "2026-10-30T20:18:26Z",
- "generatedAtET": "Fri Oct 30, 4:18 PM ET",
+ "generatedAt": "2026-10-30T20:19:21Z",
+ "generatedAtET": "Fri Oct 30, 4:19 PM ET",
  "today": "2026-10-30",
- "lastRunAt": "2026-10-30T20:18:26Z",
+ "lastRunAt": "2026-10-30T20:19:21Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 7,
-   "playerLevel": 3,
+   "playerLevel": 4,
    "teamLevel": 0,
-   "carried": 4,
+   "carried": 3,
    "error": null,
    "newFinals": 0,
    "storeGames": 2702,
@@ -136,7 +136,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 7.2,
+  "seconds": 2.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,7 +146,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 7,
+  "gamesUploaded": 11,
   "simTeamsUploaded": 1110,
   "simPlayersUploaded": 2215,
   "configured": true
@@ -155,11 +155,11 @@
  "odds": "kept (odds feed backing off until 21:28Z after 66 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 11 cards, 461 player stats, FanDuel-only players on 0 cards; not in the feed (13): MIA@UNC, ARI@DAL, ATL@TB, BAL@BUF, CLE@PIT, IND@JAX...",
- "fanduelDirect": "ok: 11 games, 956 player markets (12 FanDuel games in odds.json, pulled 2026-10-30T20:18:26Z; 5s)",
+ "fanduelDirect": "ok: 11 games, 958 player markets (12 FanDuel games in odds.json, pulled 2026-10-30T20:19:21Z; 3s)",
  "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 4 cards {'nba': 5, 'cfb': 1}; 27 stats from game logs, 0 from FanDuel's price only; 9 not on either ESPN roster",
  "errors": [],
- "requests": 1044,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 43.1
+ "requests": 1073,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 37.8
 }
