@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1432,
+ "runNumber": 1433,
  "deadlineHit": false,
- "generatedAt": "2026-10-31T21:57:04Z",
- "generatedAtET": "Sat Oct 31, 5:57 PM ET",
+ "generatedAt": "2026-10-31T22:07:06Z",
+ "generatedAtET": "Sat Oct 31, 6:07 PM ET",
  "today": "2026-10-31",
- "lastRunAt": "2026-10-31T21:57:04Z",
+ "lastRunAt": "2026-10-31T22:07:06Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 26,
-  "teamCards": 12,
+  "playerCards": 21,
+  "teamCards": 17,
   "window": 176,
   "sched": 379,
   "pastp": 21,
@@ -136,7 +136,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 2.3,
+  "seconds": 1.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,19 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 9,
+  "gamesUploaded": 18,
   "simTeamsUploaded": 1110,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 81 graded",
  "odds": "kept (odds feed backing off until 22:22Z after 72 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 22:22Z)",
- "fanduel": "ok: FanDuel lines on 23 cards, 878 player stats, FanDuel-only players on 0 cards; not in the feed (1): MIA@UNC",
- "fanduelDirect": "ok: 23 games, 1815 player markets (24 FanDuel games in odds.json, pulled 2026-10-31T21:57:04Z; 5s)",
- "espnXref": "ok: 64 FanDuel players added from ESPN rosters on 14 cards {'cfb': 47, 'nfl': 17}; 115 stats from game logs, 0 from FanDuel's price only; 13 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 17 cards, 713 player stats, FanDuel-only players on 0 cards; not in the feed (1): MIA@UNC",
+ "fanduelDirect": "ok: 17 games, 1458 player markets (24 FanDuel games in odds.json, pulled 2026-10-31T22:07:06Z; 5s)",
+ "espnXref": "ok: 16 FanDuel players added from ESPN rosters on 8 cards {'nfl': 16}; 32 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
- "requests": 1140,
+ "requests": 1082,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 44.2
+ "seconds": 27.2
 }
