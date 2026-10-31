@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1394,
+ "runNumber": 1395,
  "deadlineHit": false,
- "generatedAt": "2026-10-31T15:21:51Z",
- "generatedAtET": "Sat Oct 31, 11:21 AM ET",
+ "generatedAt": "2026-10-31T15:51:53Z",
+ "generatedAtET": "Sat Oct 31, 11:51 AM ET",
  "today": "2026-10-31",
- "lastRunAt": "2026-10-31T15:21:51Z",
+ "lastRunAt": "2026-10-31T15:51:53Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 34,
-  "teamCards": 4,
+  "playerCards": 35,
+  "teamCards": 3,
   "window": 176,
   "sched": 379,
   "pastp": 21,
@@ -134,7 +134,7 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 4,
   "failedCalls": 0,
   "seconds": 1.5,
   "simTeams": {
@@ -146,19 +146,18 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 11,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 16,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 80 graded",
  "odds": "kept (odds feed backing off until 18:22Z after 71 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 20 cards, 718 player stats, FanDuel-only players on 0 cards; not in the feed (4): MIA@UNC, KC@DEN, NE@MIA, PHI@WSH",
- "fanduelDirect": "ok: 20 games, 1502 player markets (21 FanDuel games in odds.json, pulled 2026-10-31T15:21:51Z; 4s)",
- "espnXref": "ok: 18 FanDuel players added from ESPN rosters on 9 cards {'cfb': 2, 'nba': 1, 'nfl': 15}; 40 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 22 cards, 793 player stats, FanDuel-only players on 0 cards; not in the feed (2): MIA@UNC, PHI@WSH",
+ "fanduelDirect": "ok: 22 games, 1655 player markets (23 FanDuel games in odds.json, pulled 2026-10-31T15:51:53Z; 5s)",
+ "espnXref": "ok: 35 FanDuel players added from ESPN rosters on 12 cards {'cfb': 3, 'nba': 1, 'nfl': 31}; 82 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 1063,
+ "requests": 1086,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 26.1
+ "seconds": 41.6
 }
