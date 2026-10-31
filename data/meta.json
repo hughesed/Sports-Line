@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1421,
+ "runNumber": 1422,
  "deadlineHit": false,
- "generatedAt": "2026-10-31T20:06:45Z",
- "generatedAtET": "Sat Oct 31, 4:06 PM ET",
+ "generatedAt": "2026-10-31T20:16:47Z",
+ "generatedAtET": "Sat Oct 31, 4:16 PM ET",
  "today": "2026-10-31",
- "lastRunAt": "2026-10-31T20:06:45Z",
+ "lastRunAt": "2026-10-31T20:16:47Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -60,8 +60,8 @@
    "teamLevel": 5,
    "carried": 16,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1543,
+   "newFinals": 1,
+   "storeGames": 1544,
    "lastFinal": "2026-10-31"
   },
   "cbb": {
@@ -105,14 +105,14 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 22,
-  "teamCards": 16,
+  "playerCards": 23,
+  "teamCards": 15,
   "window": 176,
   "sched": 379,
   "pastp": 21,
-  "predictions": 472,
-  "graded": 390,
-  "storeGames": 13990
+  "predictions": 473,
+  "graded": 391,
+  "storeGames": 13991
  },
  "calibration": {
   "slopes": {
@@ -121,9 +121,9 @@
    "nhl": 1.15,
    "nba": 1.1343
   },
-  "graded": 390,
-  "accML": 0.608,
-  "accBook": 0.61
+  "graded": 391,
+  "accML": 0.609,
+  "accBook": 0.611
  },
  "social": {
   "enabled": true,
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 19,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 4.6,
+  "seconds": 1.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,20 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 12,
+  "gamesUploaded": 11,
   "simTeamsUploaded": 1110,
-  "simPlayersUploaded": 2208,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 5 graded, nba 80 graded",
  "odds": "kept (odds feed backing off until 22:22Z after 72 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 22:22Z)",
- "fanduel": "ok: FanDuel lines on 19 cards, 817 player stats, FanDuel-only players on 0 cards; not in the feed (1): MIA@UNC",
- "fanduelDirect": "ok: 19 games, 1677 player markets (21 FanDuel games in odds.json, pulled 2026-10-31T20:06:45Z; 5s)",
- "espnXref": "ok: 17 FanDuel players added from ESPN rosters on 8 cards {'nfl': 17}; 34 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 19 cards, 813 player stats, FanDuel-only players on 0 cards; not in the feed (2): MIA@UNC, ORST@FRES",
+ "fanduelDirect": "kept (20 FanDuel games in odds.json, pulled 2026-10-31T20:06:45Z; 0s)",
+ "espnXref": "ok: 26 FanDuel players added from ESPN rosters on 9 cards {'cfb': 10, 'nfl': 16}; 47 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
  "errors": [],
- "requests": 1131,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 46.5
+ "requests": 1095,
+ "failedRequests": 4,
+ "retries": 5,
+ "seconds": 38.9
 }
