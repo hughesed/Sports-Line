@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1545,
+ "runNumber": 1546,
  "deadlineHit": false,
- "generatedAt": "2026-11-01T23:42:08Z",
- "generatedAtET": "Sun Nov 1, 6:42 PM ET",
+ "generatedAt": "2026-11-01T23:52:12Z",
+ "generatedAtET": "Sun Nov 1, 6:52 PM ET",
  "today": "2026-11-01",
- "lastRunAt": "2026-11-01T23:42:08Z",
+ "lastRunAt": "2026-11-01T23:52:12Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -110,7 +110,7 @@
   "window": 175,
   "sched": 395,
   "pastp": 20,
-  "predictions": 509,
+  "predictions": 510,
   "graded": 428,
   "storeGames": 14056
  },
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
+  "calls": 7,
   "failedCalls": 0,
-  "seconds": 0.5,
+  "seconds": 3.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 6,
+  "simTeamsUploaded": 1110,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 88 graded",
  "odds": "kept (odds feed backing off until 03:31Z after 79 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 03:31Z)",
- "fanduel": "ok: FanDuel lines on 13 cards, 585 player stats, FanDuel-only players on 0 cards; not in the feed (8): LAC@GS, LIB@HPU, CHSO@USF, BKN@NY, WSH@ORL, GONZ@PUR...",
- "fanduelDirect": "kept (13 FanDuel games in odds.json, pulled 2026-11-01T23:41:07Z; 0s)",
+ "fanduel": "ok: FanDuel lines on 14 cards, 585 player stats, FanDuel-only players on 0 cards; not in the feed (7): LAC@GS, LIB@HPU, CHSO@USF, BKN@NY, WSH@ORL, GONZ@PUR...",
+ "fanduelDirect": "ok: 14 games, 1055 player markets (14 FanDuel games in odds.json, pulled 2026-11-01T23:52:12Z; 5s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'nfl': 3}; 5 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
- "requests": 403,
+ "requests": 402,
  "failedRequests": 10,
  "retries": 10,
- "seconds": 20.0
+ "seconds": 23.9
 }
