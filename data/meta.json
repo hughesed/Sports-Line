@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1496,
+ "runNumber": 1497,
  "deadlineHit": false,
- "generatedAt": "2026-11-01T14:46:58Z",
- "generatedAtET": "Sun Nov 1, 9:46 AM ET",
+ "generatedAt": "2026-11-01T15:17:01Z",
+ "generatedAtET": "Sun Nov 1, 10:17 AM ET",
  "today": "2026-11-01",
- "lastRunAt": "2026-11-01T14:46:58Z",
+ "lastRunAt": "2026-11-01T15:17:01Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 4,
+  "calls": 16,
   "failedCalls": 0,
-  "seconds": 1.9,
+  "seconds": 3.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,19 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 23,
+  "gamesUploaded": 19,
+  "simPlayersUploaded": 2210,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 87 graded",
- "odds": "kept (odds feed backing off until 14:55Z after 76 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
- "oddsLive": "kept (odds feed backing off until 14:55Z)",
- "fanduel": "ok: FanDuel lines on 20 cards, 919 player stats, FanDuel-only players on 0 cards; not in the feed (4): LAC@GS, LIB@HPU, MIA@FLA, GONZ@PUR",
- "fanduelDirect": "ok: 20 games, 1713 player markets (20 FanDuel games in odds.json, pulled 2026-11-01T14:46:58Z; 5s)",
- "espnXref": "ok: 29 FanDuel players added from ESPN rosters on 12 cards {'nfl': 22, 'nhl': 6, 'nba': 1}; 54 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
+ "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NBA: skipped (rate limited); NCAAB: skipped (rate limited); NHL: skipped (rate limited); NCAAF: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-11-01T19:17:23Z",
+ "oddsLive": "kept (odds feed backing off until 19:17Z)",
+ "fanduel": "ok: FanDuel lines on 20 cards, 923 player stats, FanDuel-only players on 0 cards; not in the feed (4): LAC@GS, LIB@HPU, MIA@FLA, GONZ@PUR",
+ "fanduelDirect": "ok: 20 games, 1724 player markets (20 FanDuel games in odds.json, pulled 2026-11-01T15:17:01Z; 4s)",
+ "espnXref": "ok: 27 FanDuel players added from ESPN rosters on 11 cards {'nfl': 25, 'nhl': 1, 'nba': 1}; 51 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 1101,
+ "requests": 1097,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 42.7
+ "seconds": 44.8
 }
