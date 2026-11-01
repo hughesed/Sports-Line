@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1538,
+ "runNumber": 1539,
  "deadlineHit": false,
- "generatedAt": "2026-11-01T22:41:29Z",
- "generatedAtET": "Sun Nov 1, 5:41 PM ET",
+ "generatedAt": "2026-11-01T22:51:28Z",
+ "generatedAtET": "Sun Nov 1, 5:51 PM ET",
  "today": "2026-11-01",
- "lastRunAt": "2026-11-01T22:41:29Z",
+ "lastRunAt": "2026-11-01T22:51:28Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -136,7 +136,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 1.8,
+  "seconds": 5.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -155,11 +155,11 @@
  "odds": "kept (odds feed backing off until 23:24Z after 78 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 23:24Z)",
  "fanduel": "ok: FanDuel lines on 11 cards, 308 player stats, FanDuel-only players on 0 cards; not in the feed (5): LAC@GS, LIB@HPU, CHSO@USF, GONZ@PUR, ARIZ@UCLA",
- "fanduelDirect": "ok: 11 games, 511 player markets (11 FanDuel games in odds.json, pulled 2026-11-01T22:41:29Z; 2s)",
+ "fanduelDirect": "ok: 11 games, 511 player markets (11 FanDuel games in odds.json, pulled 2026-11-01T22:51:28Z; 3s)",
  "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'nfl': 3}; 5 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
  "requests": 380,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 12.3
+ "seconds": 22.8
 }
