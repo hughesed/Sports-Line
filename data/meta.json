@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1632,
+ "runNumber": 1633,
  "deadlineHit": false,
- "generatedAt": "2026-11-02T21:15:22Z",
- "generatedAtET": "Mon Nov 2, 4:15 PM ET",
+ "generatedAt": "2026-11-02T21:25:24Z",
+ "generatedAtET": "Mon Nov 2, 4:25 PM ET",
  "today": "2026-11-02",
- "lastRunAt": "2026-11-02T21:15:22Z",
+ "lastRunAt": "2026-11-02T21:25:24Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -136,7 +136,7 @@
   },
   "calls": 19,
   "failedCalls": 0,
-  "seconds": 3.8,
+  "seconds": 8.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,7 +146,7 @@
    "cbb": 727,
    "nhl": 32
   },
-  "gamesUploaded": 7,
+  "gamesUploaded": 9,
   "simTeamsUploaded": 1111,
   "simPlayersUploaded": 2235,
   "configured": true
@@ -154,12 +154,12 @@
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 91 graded",
  "odds": "kept (odds feed backing off until 23:55Z after 84 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 23:55Z)",
- "fanduel": "ok: FanDuel lines on 21 cards, 869 player stats, FanDuel-only players on 0 cards; not in the feed (3): GONZ@PUR, ARIZ@UCLA, BUFF@M-OH",
- "fanduelDirect": "kept (25 FanDuel games in odds.json, pulled 2026-11-02T21:05:13Z; 0s)",
- "espnXref": "ok: 4 FanDuel players added from ESPN rosters on 3 cards {'nba': 2, 'nfl': 2}; 15 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 21 cards, 872 player stats, FanDuel-only players on 0 cards; not in the feed (3): GONZ@PUR, ARIZ@UCLA, BUFF@M-OH",
+ "fanduelDirect": "ok: 21 games, 1690 player markets (25 FanDuel games in odds.json, pulled 2026-11-02T21:25:24Z; 7s)",
+ "espnXref": "ok: 5 FanDuel players added from ESPN rosters on 3 cards {'nba': 2, 'nfl': 3}; 16 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 555,
+ "requests": 532,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 23.4
+ "seconds": 31.8
 }
