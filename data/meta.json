@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1564,
+ "runNumber": 1565,
  "deadlineHit": false,
- "generatedAt": "2026-11-02T02:43:14Z",
- "generatedAtET": "Sun Nov 1, 9:43 PM ET",
+ "generatedAt": "2026-11-02T02:45:05Z",
+ "generatedAtET": "Sun Nov 1, 9:45 PM ET",
  "today": "2026-11-01",
- "lastRunAt": "2026-11-02T02:43:14Z",
+ "lastRunAt": "2026-11-02T02:45:05Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -134,9 +134,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 3,
   "failedCalls": 0,
-  "seconds": 2.6,
+  "seconds": 1.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,8 +146,7 @@
    "cbb": 726,
    "nhl": 32
   },
-  "gamesUploaded": 1,
-  "simTeamsUploaded": 1110,
+  "gamesUploaded": 0,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 89 graded",
@@ -160,5 +159,5 @@
  "requests": 253,
  "failedRequests": 11,
  "retries": 11,
- "seconds": 19.1
+ "seconds": 15.9
 }
