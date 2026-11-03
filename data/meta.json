@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1692,
+ "runNumber": 1693,
  "deadlineHit": false,
- "generatedAt": "2026-11-03T10:07:55Z",
- "generatedAtET": "Tue Nov 3, 5:07 AM ET",
+ "generatedAt": "2026-11-03T10:37:54Z",
+ "generatedAtET": "Tue Nov 3, 5:37 AM ET",
  "today": "2026-11-03",
- "lastRunAt": "2026-11-03T10:07:55Z",
+ "lastRunAt": "2026-11-03T10:37:54Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,9 +44,9 @@
   },
   "nba": {
    "status": "ok",
-   "games": 7,
+   "games": 8,
    "playerLevel": 0,
-   "teamLevel": 4,
+   "teamLevel": 5,
    "carried": 3,
    "error": null,
    "newFinals": 0,
@@ -66,9 +66,9 @@
   },
   "cbb": {
    "status": "ok",
-   "games": 17,
+   "games": 16,
    "playerLevel": 0,
-   "teamLevel": 6,
+   "teamLevel": 5,
    "carried": 11,
    "error": null,
    "newFinals": 0,
@@ -110,7 +110,7 @@
   "window": 361,
   "sched": 390,
   "pastp": 18,
-  "predictions": 545,
+  "predictions": 546,
   "graded": 467,
   "storeGames": 14268
  },
@@ -136,7 +136,7 @@
   },
   "calls": 4,
   "failedCalls": 0,
-  "seconds": 1.5,
+  "seconds": 1.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,18 +146,18 @@
    "cbb": 743,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 9,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
  "odds": "kept (today's odds budget used: 146 of ~79 events; month 146 of 2200)",
  "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 16 cards, 207 player stats, FanDuel-only players on 0 cards; not in the feed (8): BALL@MASS, TOL@SAC, PHI@DET, CMU@EMU, CHA@BKN, MIN@HOU...",
- "fanduelDirect": "ok: 13 games, 383 player markets (13 FanDuel games in odds.json, pulled 2026-11-03T10:07:55Z; 4s)",
- "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 1 cards {'nhl': 3}; 7 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 15 cards, 207 player stats, FanDuel-only players on 0 cards; not in the feed (9): BALL@MASS, TOL@SAC, PHI@DET, CMU@EMU, CHA@BKN, CLE@OKC...",
+ "fanduelDirect": "ok: 12 games, 381 player markets (13 FanDuel games in odds.json, pulled 2026-11-03T10:37:54Z; 3s)",
+ "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
- "requests": 237,
- "failedRequests": 8,
- "retries": 8,
- "seconds": 18.3
+ "requests": 257,
+ "failedRequests": 7,
+ "retries": 7,
+ "seconds": 14.8
 }
