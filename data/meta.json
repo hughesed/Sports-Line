@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1674,
+ "runNumber": 1675,
  "deadlineHit": false,
- "generatedAt": "2026-11-03T03:56:57Z",
- "generatedAtET": "Mon Nov 2, 10:56 PM ET",
+ "generatedAt": "2026-11-03T03:57:30Z",
+ "generatedAtET": "Mon Nov 2, 10:57 PM ET",
  "today": "2026-11-02",
- "lastRunAt": "2026-11-03T03:56:57Z",
+ "lastRunAt": "2026-11-03T03:57:30Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,8 +71,8 @@
    "teamLevel": 6,
    "carried": 11,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 6442,
+   "newFinals": 2,
+   "storeGames": 6444,
    "lastFinal": "2026-11-03"
   },
   "nhl": {
@@ -112,7 +112,7 @@
   "pastp": 20,
   "predictions": 534,
   "graded": 455,
-  "storeGames": 14218
+  "storeGames": 14220
  },
  "calibration": {
   "slopes": {
@@ -136,7 +136,7 @@
   },
   "calls": 7,
   "failedCalls": 0,
-  "seconds": 2.4,
+  "seconds": 2.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -160,5 +160,5 @@
  "requests": 349,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 19.7
+ "seconds": 18.8
 }
