@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1840,
+ "runNumber": 1841,
  "deadlineHit": false,
- "generatedAt": "2026-11-04T21:24:05Z",
- "generatedAtET": "Wed Nov 4, 4:24 PM ET",
+ "generatedAt": "2026-11-04T21:34:04Z",
+ "generatedAtET": "Wed Nov 4, 4:34 PM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-04T21:24:05Z",
+ "lastRunAt": "2026-11-04T21:34:04Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -79,8 +79,8 @@
    "status": "ok",
    "games": 10,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 7,
+   "teamLevel": 2,
+   "carried": 8,
    "error": null,
    "newFinals": 0,
    "storeGames": 248,
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.1,
+  "seconds": 2.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,18 +148,19 @@
    "cbb": 746,
    "nhl": 32
   },
-  "gamesUploaded": 13,
+  "gamesUploaded": 3,
+  "simTeamsUploaded": 1130,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
  "odds": "kept (today's odds budget used: 156 of ~76 events; month 307 of 2200)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 24 cards, 988 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "ok: 24 games, 1875 player markets (32 FanDuel games in odds.json, pulled 2026-11-04T21:24:05Z; 7s)",
- "espnXref": "ok: 26 FanDuel players added from ESPN rosters on 5 cards {'cfb': 4, 'nba': 2, 'nhl': 16, 'nfl': 4}; 60 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduelDirect": "kept (32 FanDuel games in odds.json, pulled 2026-11-04T21:24:05Z; 0s)",
+ "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 3 cards {'nba': 2, 'nfl': 4}; 18 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 552,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 32.9
+ "requests": 527,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 21.3
 }
