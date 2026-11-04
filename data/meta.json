@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1837,
+ "runNumber": 1838,
  "deadlineHit": false,
- "generatedAt": "2026-11-04T20:53:56Z",
- "generatedAtET": "Wed Nov 4, 3:53 PM ET",
+ "generatedAt": "2026-11-04T21:03:59Z",
+ "generatedAtET": "Wed Nov 4, 4:03 PM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-04T20:53:56Z",
+ "lastRunAt": "2026-11-04T21:03:59Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 21,
-  "teamCards": 17,
+  "playerCards": 22,
+  "teamCards": 16,
   "window": 384,
   "sched": 409,
   "pastp": 17,
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 9,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.3,
+  "seconds": 1.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,19 +148,19 @@
    "cbb": 746,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 15,
   "simTeamsUploaded": 1130,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
  "odds": "kept (today's odds budget used: 156 of ~76 events; month 307 of 2200)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 24 cards, 926 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "kept (32 FanDuel games in odds.json, pulled 2026-11-04T20:43:56Z; 0s)",
- "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 3 cards {'nba': 2, 'nfl': 4}; 18 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 24 cards, 948 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 24 games, 1815 player markets (32 FanDuel games in odds.json, pulled 2026-11-04T21:03:59Z; 5s)",
+ "espnXref": "ok: 18 FanDuel players added from ESPN rosters on 4 cards {'nba': 2, 'nhl': 12, 'nfl': 4}; 40 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 527,
+ "requests": 541,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 20.8
+ "seconds": 26.1
 }
