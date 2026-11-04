@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1765,
+ "runNumber": 1766,
  "deadlineHit": false,
- "generatedAt": "2026-11-04T01:32:06Z",
- "generatedAtET": "Tue Nov 3, 8:32 PM ET",
+ "generatedAt": "2026-11-04T01:38:49Z",
+ "generatedAtET": "Tue Nov 3, 8:38 PM ET",
  "today": "2026-11-03",
- "lastRunAt": "2026-11-04T01:32:06Z",
+ "lastRunAt": "2026-11-04T01:38:49Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 17,
-  "teamCards": 21,
+  "playerCards": 19,
+  "teamCards": 19,
   "window": 361,
   "sched": 390,
   "pastp": 18,
@@ -138,7 +138,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 2.9,
+  "seconds": 2.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,18 +148,18 @@
    "cbb": 743,
    "nhl": 32
   },
-  "gamesUploaded": 9,
+  "gamesUploaded": 14,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
  "odds": "kept (today's odds budget used: 156 of ~76 events; month 307 of 2200)",
  "oddsLive": "kept (today's odds budget used: 156 events)",
- "fanduel": "ok: FanDuel lines on 14 cards, 518 player stats, FanDuel-only players on 0 cards; not in the feed (3): UTSA@FAU, JMU@USM, JAX@BAL",
- "fanduelDirect": "kept (20 FanDuel games in odds.json, pulled 2026-11-04T01:26:26Z; 0s)",
- "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 16 cards, 629 player stats, FanDuel-only players on 0 cards; not in the feed (3): UTSA@FAU, JMU@USM, JAX@BAL",
+ "fanduelDirect": "ok: 16 games, 1146 player markets (20 FanDuel games in odds.json, pulled 2026-11-04T01:38:49Z; 5s)",
+ "espnXref": "ok: 31 FanDuel players added from ESPN rosters on 4 cards {'nba': 7, 'nhl': 24}; 111 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
  "errors": [],
- "requests": 388,
- "failedRequests": 11,
- "retries": 11,
- "seconds": 18.4
+ "requests": 405,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 25.3
 }
