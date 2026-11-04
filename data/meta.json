@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1839,
+ "runNumber": 1840,
  "deadlineHit": false,
- "generatedAt": "2026-11-04T21:14:00Z",
- "generatedAtET": "Wed Nov 4, 4:14 PM ET",
+ "generatedAt": "2026-11-04T21:24:05Z",
+ "generatedAtET": "Wed Nov 4, 4:24 PM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-04T21:14:00Z",
+ "lastRunAt": "2026-11-04T21:24:05Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 22,
-  "teamCards": 16,
+  "playerCards": 23,
+  "teamCards": 15,
   "window": 384,
   "sched": 409,
   "pastp": 17,
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 2.7,
+  "seconds": 3.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,19 +148,18 @@
    "cbb": 746,
    "nhl": 32
   },
-  "gamesUploaded": 3,
-  "simTeamsUploaded": 1130,
+  "gamesUploaded": 13,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
  "odds": "kept (today's odds budget used: 156 of ~76 events; month 307 of 2200)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 24 cards, 948 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "kept (32 FanDuel games in odds.json, pulled 2026-11-04T21:03:59Z; 0s)",
- "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 3 cards {'nba': 2, 'nfl': 4}; 18 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 24 cards, 988 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 24 games, 1875 player markets (32 FanDuel games in odds.json, pulled 2026-11-04T21:24:05Z; 7s)",
+ "espnXref": "ok: 26 FanDuel players added from ESPN rosters on 5 cards {'cfb': 4, 'nba': 2, 'nhl': 16, 'nfl': 4}; 60 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 527,
+ "requests": 552,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 23.8
+ "seconds": 32.9
 }
