@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1818,
+ "runNumber": 1819,
  "deadlineHit": false,
- "generatedAt": "2026-11-04T17:45:30Z",
- "generatedAtET": "Wed Nov 4, 12:45 PM ET",
+ "generatedAt": "2026-11-04T17:55:31Z",
+ "generatedAtET": "Wed Nov 4, 12:55 PM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-04T17:45:30Z",
+ "lastRunAt": "2026-11-04T17:55:31Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 8,
-   "playerLevel": 7,
+   "playerLevel": 8,
    "teamLevel": 0,
-   "carried": 1,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 2738,
@@ -138,7 +138,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 4.5,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,7 +148,7 @@
    "cbb": 746,
    "nhl": 32
   },
-  "gamesUploaded": 14,
+  "gamesUploaded": 6,
   "simTeamsUploaded": 1130,
   "configured": true
  },
@@ -156,11 +156,11 @@
  "odds": "kept (today's odds budget used: 156 of ~76 events; month 307 of 2200)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 17 cards, 861 player stats, FanDuel-only players on 0 cards; not in the feed (7): UTA@MTL, VGK@DET, CHI@TB, STL@NJ, UTSA@FAU, JMU@USM...",
- "fanduelDirect": "ok: 17 games, 1648 player markets (25 FanDuel games in odds.json, pulled 2026-11-04T17:45:30Z; 6s)",
+ "fanduelDirect": "kept (25 FanDuel games in odds.json, pulled 2026-11-04T17:45:30Z; 0s)",
  "espnXref": "ok: 5 FanDuel players added from ESPN rosters on 4 cards {'nba': 5}; 24 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
  "errors": [],
- "requests": 491,
+ "requests": 519,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 35.0
+ "seconds": 21.2
 }
