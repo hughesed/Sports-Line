@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1787,
+ "runNumber": 1788,
  "deadlineHit": false,
- "generatedAt": "2026-11-04T05:29:33Z",
- "generatedAtET": "Wed Nov 4, 12:29 AM ET",
+ "generatedAt": "2026-11-04T05:59:35Z",
+ "generatedAtET": "Wed Nov 4, 12:59 AM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-04T05:29:33Z",
+ "lastRunAt": "2026-11-04T05:59:35Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 6,
    "carried": 11,
    "error": null,
-   "newFinals": 4,
+   "newFinals": 0,
    "storeGames": 6512,
    "lastFinal": "2026-11-04"
   },
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 1.5,
+  "seconds": 2.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,19 +148,18 @@
    "cbb": 746,
    "nhl": 32
   },
-  "gamesUploaded": 10,
-  "simTeamsUploaded": 1130,
+  "gamesUploaded": 6,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
  "odds": "kept (today's odds budget used: 156 of ~76 events; month 307 of 2200)",
  "oddsLive": "kept (today's odds budget used: 156 events)",
- "fanduel": "ok: FanDuel lines on 21 cards, 826 player stats, FanDuel-only players on 0 cards; not in the feed (3): UTSA@FAU, JMU@USM, JAX@BAL",
- "fanduelDirect": "ok: 21 games, 1579 player markets (25 FanDuel games in odds.json, pulled 2026-11-04T05:29:33Z; 4s)",
- "espnXref": "ok: 10 FanDuel players added from ESPN rosters on 3 cards {'nba': 10}; 60 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 21 cards, 849 player stats, FanDuel-only players on 0 cards; not in the feed (3): UTSA@FAU, JMU@USM, JAX@BAL",
+ "fanduelDirect": "ok: 21 games, 1625 player markets (25 FanDuel games in odds.json, pulled 2026-11-04T05:59:35Z; 4s)",
+ "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 3 cards {'nba': 6}; 34 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
  "errors": [],
- "requests": 467,
- "failedRequests": 8,
- "retries": 8,
- "seconds": 24.9
+ "requests": 453,
+ "failedRequests": 7,
+ "retries": 7,
+ "seconds": 27.3
 }
