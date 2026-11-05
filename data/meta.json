@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1919,
+ "runNumber": 1920,
  "deadlineHit": false,
- "generatedAt": "2026-11-05T21:44:01Z",
- "generatedAtET": "Thu Nov 5, 4:44 PM ET",
+ "generatedAt": "2026-11-05T21:49:19Z",
+ "generatedAtET": "Thu Nov 5, 4:49 PM ET",
  "today": "2026-11-05",
- "lastRunAt": "2026-11-05T21:44:01Z",
+ "lastRunAt": "2026-11-05T21:49:19Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -138,7 +138,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.9,
+  "seconds": 1.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,7 +148,7 @@
    "cbb": 750,
    "nhl": 32
   },
-  "gamesUploaded": 7,
+  "gamesUploaded": 4,
   "simTeamsUploaded": 1134,
   "configured": true
  },
@@ -159,8 +159,8 @@
  "fanduelDirect": "kept (23 FanDuel games in odds.json, pulled 2026-11-05T21:37:20Z; 0s)",
  "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 2 cards {'nfl': 5, 'nba': 1}; 14 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
- "requests": 991,
+ "requests": 990,
  "failedRequests": 6,
  "retries": 6,
- "seconds": 28.7
+ "seconds": 21.8
 }
