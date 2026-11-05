@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1859,
+ "runNumber": 1860,
  "deadlineHit": false,
- "generatedAt": "2026-11-05T00:25:54Z",
- "generatedAtET": "Wed Nov 4, 7:25 PM ET",
+ "generatedAt": "2026-11-05T00:35:56Z",
+ "generatedAtET": "Wed Nov 4, 7:35 PM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-05T00:25:54Z",
+ "lastRunAt": "2026-11-05T00:35:56Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -55,9 +55,9 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 7,
+   "games": 8,
    "playerLevel": 0,
-   "teamLevel": 1,
+   "teamLevel": 2,
    "carried": 6,
    "error": null,
    "newFinals": 0,
@@ -66,9 +66,9 @@
   },
   "cbb": {
    "status": "ok",
-   "games": 11,
+   "games": 10,
    "playerLevel": 0,
-   "teamLevel": 3,
+   "teamLevel": 2,
    "carried": 8,
    "error": null,
    "newFinals": 0,
@@ -110,7 +110,7 @@
   "window": 384,
   "sched": 409,
   "pastp": 17,
-  "predictions": 575,
+  "predictions": 576,
   "graded": 488,
   "storeGames": 14309
  },
@@ -138,7 +138,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 4.2,
+  "seconds": 3.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -153,14 +153,14 @@
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
- "odds": "kept (20 min old, pulls every 60 min)",
- "oddsLive": "ok: 7 in-play events (7 live, 7 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 23 cards, 1013 player stats, FanDuel-only players on 0 cards; not in the feed (1): VT@SMU",
- "fanduelDirect": "ok: 23 games, 1918 player markets (27 FanDuel games in odds.json, pulled 2026-11-05T00:25:54Z; 9s)",
- "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 4 cards {'nba': 3, 'nfl': 4}; 17 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "odds": "kept (30 min old, pulls every 60 min)",
+ "oddsLive": "ok: 9 in-play events (9 live, 9 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 16 cards, 642 player stats, FanDuel-only players on 0 cards; not in the feed (2): VT@SMU, USF@ECU",
+ "fanduelDirect": "ok: 16 games, 1210 player markets (25 FanDuel games in odds.json, pulled 2026-11-05T00:35:56Z; 7s)",
+ "espnXref": "ok: 5 FanDuel players added from ESPN rosters on 2 cards {'nba': 1, 'nfl': 4}; 12 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
  "errors": [],
- "requests": 531,
+ "requests": 566,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 49.8
+ "seconds": 54.2
 }
