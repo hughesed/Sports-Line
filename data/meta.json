@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1883,
+ "runNumber": 1884,
  "deadlineHit": false,
- "generatedAt": "2026-11-05T04:13:00Z",
- "generatedAtET": "Wed Nov 4, 11:13 PM ET",
+ "generatedAt": "2026-11-05T04:23:03Z",
+ "generatedAtET": "Wed Nov 4, 11:23 PM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-05T04:13:00Z",
+ "lastRunAt": "2026-11-05T04:23:03Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,7 +49,7 @@
    "teamLevel": 0,
    "carried": 8,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 2747,
    "lastFinal": "2026-11-05"
   },
@@ -71,7 +71,7 @@
    "teamLevel": 6,
    "carried": 4,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 6535,
    "lastFinal": "2026-11-05"
   },
@@ -136,7 +136,7 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 9,
+  "calls": 7,
   "failedCalls": 2,
   "seconds": 2.8,
   "simTeams": {
@@ -148,19 +148,18 @@
    "cbb": 750,
    "nhl": 32
   },
-  "gamesUploaded": 0,
-  "simTeamsUploaded": 1134,
+  "gamesUploaded": 2,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 2 graded, wnba 6 graded, nba 115 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 115 graded",
  "odds": "kept (today's odds budget used: 156 of ~73 events; month 463 of 2200)",
  "oddsLive": "kept (today's odds budget used: 156 events)",
  "fanduel": "ok: FanDuel lines on 16 cards, 310 player stats, FanDuel-only players on 0 cards; not in the feed (6): VT@SMU, USF@ECU, NEB@ILL, CONN@MICH, UNM@NEV, TCU@ARIZ",
- "fanduelDirect": "kept (18 FanDuel games in odds.json, pulled 2026-11-05T04:02:58Z; 0s)",
+ "fanduelDirect": "ok: 16 games, 472 player markets (18 FanDuel games in odds.json, pulled 2026-11-05T04:23:03Z; 5s)",
  "espnXref": "ok: 4 FanDuel players added from ESPN rosters on 1 cards {'nfl': 4}; 8 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
- "requests": 220,
+ "requests": 216,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 17.8
+ "seconds": 18.6
 }
