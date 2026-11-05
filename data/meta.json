@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1880,
+ "runNumber": 1881,
  "deadlineHit": false,
- "generatedAt": "2026-11-05T03:42:54Z",
- "generatedAtET": "Wed Nov 4, 10:42 PM ET",
+ "generatedAt": "2026-11-05T03:52:54Z",
+ "generatedAtET": "Wed Nov 4, 10:52 PM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-05T03:42:54Z",
+ "lastRunAt": "2026-11-05T03:52:54Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -55,24 +55,24 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 8,
+   "games": 7,
    "playerLevel": 0,
-   "teamLevel": 6,
+   "teamLevel": 5,
    "carried": 2,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1584,
+   "newFinals": 1,
+   "storeGames": 1585,
    "lastFinal": "2026-11-05"
   },
   "cbb": {
    "status": "ok",
-   "games": 11,
+   "games": 12,
    "playerLevel": 0,
-   "teamLevel": 7,
+   "teamLevel": 8,
    "carried": 4,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 6531,
+   "newFinals": 1,
+   "storeGames": 6532,
    "lastFinal": "2026-11-05"
   },
   "nhl": {
@@ -110,9 +110,9 @@
   "window": 384,
   "sched": 409,
   "pastp": 17,
-  "predictions": 593,
-  "graded": 502,
-  "storeGames": 14339
+  "predictions": 594,
+  "graded": 503,
+  "storeGames": 14341
  },
  "calibration": {
   "slopes": {
@@ -121,9 +121,9 @@
    "nhl": 1.15,
    "nba": 1.15
   },
-  "graded": 502,
-  "accML": 0.625,
-  "accBook": 0.622
+  "graded": 503,
+  "accML": 0.624,
+  "accBook": 0.62
  },
  "social": {
   "enabled": true,
@@ -138,7 +138,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 4.1,
+  "seconds": 1.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,19 +148,19 @@
    "cbb": 749,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 1,
   "simTeamsUploaded": 1133,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 113 graded",
  "odds": "kept (today's odds budget used: 156 of ~73 events; month 463 of 2200)",
  "oddsLive": "kept (today's odds budget used: 156 events)",
- "fanduel": "ok: FanDuel lines on 17 cards, 310 player stats, FanDuel-only players on 0 cards; not in the feed (6): VT@SMU, USF@ECU, NEB@ILL, CONN@MICH, UNM@NEV, TCU@ARIZ",
- "fanduelDirect": "ok: 17 games, 472 player markets (17 FanDuel games in odds.json, pulled 2026-11-05T03:42:54Z; 4s)",
+ "fanduel": "ok: FanDuel lines on 17 cards, 310 player stats, FanDuel-only players on 0 cards; not in the feed (7): USF@DEP, VT@SMU, USF@ECU, NEB@ILL, CONN@MICH, UNM@NEV...",
+ "fanduelDirect": "kept (17 FanDuel games in odds.json, pulled 2026-11-05T03:42:54Z; 0s)",
  "espnXref": "ok: 4 FanDuel players added from ESPN rosters on 1 cards {'nfl': 4}; 8 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
  "requests": 221,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 19.0
+ "seconds": 10.2
 }
