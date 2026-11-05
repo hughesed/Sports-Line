@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1857,
+ "runNumber": 1858,
  "deadlineHit": false,
- "generatedAt": "2026-11-05T00:05:51Z",
- "generatedAtET": "Wed Nov 4, 7:05 PM ET",
+ "generatedAt": "2026-11-05T00:15:50Z",
+ "generatedAtET": "Wed Nov 4, 7:15 PM ET",
  "today": "2026-11-04",
- "lastRunAt": "2026-11-05T00:05:51Z",
+ "lastRunAt": "2026-11-05T00:15:50Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 8,
+   "games": 10,
    "playerLevel": 8,
    "teamLevel": 0,
-   "carried": 0,
+   "carried": 2,
    "error": null,
    "newFinals": 0,
    "storeGames": 2738,
@@ -66,10 +66,10 @@
   },
   "cbb": {
    "status": "ok",
-   "games": 13,
+   "games": 11,
    "playerLevel": 0,
    "teamLevel": 3,
-   "carried": 10,
+   "carried": 8,
    "error": null,
    "newFinals": 0,
    "storeGames": 6512,
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 24,
-  "teamCards": 14,
+  "playerCards": 26,
+  "teamCards": 12,
   "window": 384,
   "sched": 409,
   "pastp": 17,
@@ -127,16 +127,18 @@
  },
  "social": {
   "enabled": true,
-  "errors": [],
+  "errors": [
+   "battle data upload: RuntimeError: HTTP 500 on /rest/v1/sim_players: ON CONFLICT DO UPDATE command cannot affect row a second time"
+  ],
   "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 3,
-  "failedCalls": 0,
-  "seconds": 1.2,
+  "calls": 10,
+  "failedCalls": 2,
+  "seconds": 1.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -146,17 +148,19 @@
    "cbb": 746,
    "nhl": 32
   },
+  "gamesUploaded": 17,
+  "simTeamsUploaded": 1130,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
- "odds": "ok: 37 events (+9 kept: in play, or leagues not pulled this time); soccer {'UEFA_CHAMPIONS_LEAGUE': 0, 'MLS': 0, 'EPL': 'not on the plan (400), retried after 24 h', 'LA_LIGA': 'not on the plan (400), retried after 24 h', 'BUNDESLIGA': 'skipped (time)', 'IT_SERIE_A': 'skipped (time)', 'FR_LIGUE_1': 'skipped (time)', 'LIGA_MX': 'skipped (time)'}",
- "oddsLive": "ok: 5 in-play events (5 live, 5 with FanDuel lines)",
- "fanduel": "ok: FanDuel lines on 19 cards, 842 player stats, FanDuel-only players on 0 cards; not in the feed (1): VT@SMU",
- "fanduelDirect": "ok: 19 games, 1555 player markets (29 FanDuel games in odds.json, pulled 2026-11-05T00:05:51Z; 6s)",
- "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 4 cards {'nba': 3, 'nfl': 4}; 20 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
+ "firstBasket": "1 new snapshots, 0 graded, wnba 6 graded, nba 106 graded",
+ "odds": "kept (10 min old, pulls every 60 min)",
+ "oddsLive": "kept (10 min old, live pulls every 10 min)",
+ "fanduel": "ok: FanDuel lines on 23 cards, 1013 player stats, FanDuel-only players on 0 cards; not in the feed (1): VT@SMU",
+ "fanduelDirect": "ok: 23 games, 1918 player markets (27 FanDuel games in odds.json, pulled 2026-11-05T00:15:50Z; 5s)",
+ "espnXref": "ok: 8 FanDuel players added from ESPN rosters on 5 cards {'nba': 4, 'nfl': 4}; 24 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
- "requests": 536,
+ "requests": 531,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 155.9
+ "seconds": 30.5
 }
