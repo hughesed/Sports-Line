@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 1966,
+ "runNumber": 1967,
  "deadlineHit": false,
- "generatedAt": "2026-11-06T06:05:10Z",
- "generatedAtET": "Fri Nov 6, 1:05 AM ET",
+ "generatedAt": "2026-11-06T06:35:11Z",
+ "generatedAtET": "Fri Nov 6, 1:35 AM ET",
  "today": "2026-11-06",
- "lastRunAt": "2026-11-06T06:05:10Z",
+ "lastRunAt": "2026-11-06T06:35:11Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,7 +49,7 @@
    "teamLevel": 2,
    "carried": 8,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2754,
    "lastFinal": "2026-11-06"
   },
@@ -71,7 +71,7 @@
    "teamLevel": 0,
    "carried": 3,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 6603,
    "lastFinal": "2026-11-06"
   },
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 28,
-  "teamCards": 10,
+  "playerCards": 29,
+  "teamCards": 9,
   "window": 475,
   "sched": 429,
   "pastp": 15,
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 2.9,
+  "seconds": 1.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,19 +148,18 @@
    "cbb": 757,
    "nhl": 32
   },
-  "gamesUploaded": 5,
-  "simTeamsUploaded": 1141,
+  "gamesUploaded": 4,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 1 graded, wnba 6 graded, nba 122 graded",
+ "firstBasket": "1 new snapshots, 0 graded, wnba 6 graded, nba 122 graded",
  "odds": "kept (today's odds budget used: 143 of ~69 events; month 606 of 2200)",
  "oddsLive": "kept (today's odds budget used: 143 events)",
- "fanduel": "ok: FanDuel lines on 9 cards, 222 player stats, FanDuel-only players on 0 cards; not in the feed (15): ALA@LSU, UGA@MISS, MIA@ND, CIN@ATL, CLE@NO, DAL@IND...",
- "fanduelDirect": "ok: 9 games, 468 player markets (11 FanDuel games in odds.json, pulled 2026-11-06T06:05:10Z; 3s)",
- "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 9 cards, 230 player stats, FanDuel-only players on 0 cards; not in the feed (15): ALA@LSU, UGA@MISS, MIA@ND, CIN@ATL, CLE@NO, DAL@IND...",
+ "fanduelDirect": "ok: 9 games, 484 player markets (11 FanDuel games in odds.json, pulled 2026-11-06T06:35:11Z; 2s)",
+ "espnXref": "ok: 1 FanDuel players added from ESPN rosters on 1 cards {'nba': 1}; 8 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 937,
- "failedRequests": 8,
- "retries": 8,
- "seconds": 37.5
+ "requests": 936,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 27.0
 }
