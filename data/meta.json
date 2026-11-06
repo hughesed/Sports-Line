@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2008,
+ "runNumber": 2009,
  "deadlineHit": false,
- "generatedAt": "2026-11-06T19:52:45Z",
- "generatedAtET": "Fri Nov 6, 2:52 PM ET",
+ "generatedAt": "2026-11-06T19:55:24Z",
+ "generatedAtET": "Fri Nov 6, 2:55 PM ET",
  "today": "2026-11-06",
- "lastRunAt": "2026-11-06T19:52:45Z",
+ "lastRunAt": "2026-11-06T19:55:24Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 2.5,
+  "seconds": 4.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,7 +149,7 @@
    "cbb": 757,
    "nhl": 32
   },
-  "gamesUploaded": 6,
+  "gamesUploaded": 7,
   "simTeamsUploaded": 1141,
   "configured": true
  },
@@ -163,5 +163,5 @@
  "requests": 1058,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 29.1
+ "seconds": 36.2
 }
