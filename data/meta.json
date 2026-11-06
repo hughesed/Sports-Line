@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2010,
+ "runNumber": 2011,
  "deadlineHit": false,
- "generatedAt": "2026-11-06T20:05:25Z",
- "generatedAtET": "Fri Nov 6, 3:05 PM ET",
+ "generatedAt": "2026-11-06T20:15:27Z",
+ "generatedAtET": "Fri Nov 6, 3:15 PM ET",
  "today": "2026-11-06",
- "lastRunAt": "2026-11-06T20:05:25Z",
+ "lastRunAt": "2026-11-06T20:15:27Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.5,
+  "seconds": 2.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -156,11 +156,11 @@
  "odds": "kept (today's odds budget used: 143 of ~69 events; month 606 of 2200)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 11 cards, 461 player stats, FanDuel-only players on 0 cards; not in the feed (13): MIA@ND, CIN@ATL, CLE@NO, DAL@IND, DEN@CAR, DET@MIA...",
- "fanduelDirect": "ok: 11 games, 929 player markets (13 FanDuel games in odds.json, pulled 2026-11-06T20:05:25Z; 5s)",
+ "fanduelDirect": "kept (13 FanDuel games in odds.json, pulled 2026-11-06T20:05:25Z; 0s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
  "errors": [],
- "requests": 1058,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 38.8
+ "requests": 1105,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 36.8
 }
