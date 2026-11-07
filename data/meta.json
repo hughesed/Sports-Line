@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2063,
+ "runNumber": 2064,
  "deadlineHit": false,
- "generatedAt": "2026-11-07T04:30:21Z",
- "generatedAtET": "Fri Nov 6, 11:30 PM ET",
+ "generatedAt": "2026-11-07T04:40:23Z",
+ "generatedAtET": "Fri Nov 6, 11:40 PM ET",
  "today": "2026-11-06",
- "lastRunAt": "2026-11-07T04:30:21Z",
+ "lastRunAt": "2026-11-07T04:40:23Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -60,8 +60,8 @@
    "teamLevel": 1,
    "carried": 11,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1589,
+   "newFinals": 1,
+   "storeGames": 1590,
    "lastFinal": "2026-11-07"
   },
   "cbb": {
@@ -71,7 +71,7 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 3,
+   "newFinals": 0,
    "storeGames": 6669,
    "lastFinal": "2026-11-07"
   },
@@ -111,8 +111,8 @@
   "sched": 429,
   "pastp": 15,
   "predictions": 635,
-  "graded": 547,
-  "storeGames": 14515
+  "graded": 548,
+  "storeGames": 14516
  },
  "calibration": {
   "slopes": {
@@ -121,9 +121,9 @@
    "nhl": 1.15,
    "nba": 1.15
   },
-  "graded": 547,
-  "accML": 0.644,
-  "accBook": 0.638
+  "graded": 548,
+  "accML": 0.642,
+  "accBook": 0.637
  },
  "social": {
   "enabled": true,
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 9,
   "failedCalls": 2,
-  "seconds": 1.4,
+  "seconds": 1.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,7 +148,7 @@
    "cbb": 762,
    "nhl": 32
   },
-  "gamesUploaded": 3,
+  "gamesUploaded": 0,
   "simTeamsUploaded": 1146,
   "configured": true
  },
@@ -156,11 +156,11 @@
  "odds": "kept (today's odds budget used: 140 of ~66 events; month 746 of 2200)",
  "oddsLive": "kept (today's odds budget used: 140 events)",
  "fanduel": "ok: FanDuel lines on 11 cards, 210 player stats, FanDuel-only players on 0 cards; not in the feed (13): MIA@ND, CIN@ATL, CLE@NO, DAL@IND, DEN@CAR, DET@MIA...",
- "fanduelDirect": "ok: 11 games, 462 player markets (14 FanDuel games in odds.json, pulled 2026-11-07T04:30:21Z; 3s)",
+ "fanduelDirect": "kept (14 FanDuel games in odds.json, pulled 2026-11-07T04:30:21Z; 0s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
  "errors": [],
- "requests": 947,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 20.8
+ "requests": 948,
+ "failedRequests": 8,
+ "retries": 8,
+ "seconds": 18.4
 }
