@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2069,
+ "runNumber": 2070,
  "deadlineHit": false,
- "generatedAt": "2026-11-07T06:30:33Z",
- "generatedAtET": "Sat Nov 7, 1:30 AM ET",
+ "generatedAt": "2026-11-07T06:50:50Z",
+ "generatedAtET": "Sat Nov 7, 1:50 AM ET",
  "today": "2026-11-07",
- "lastRunAt": "2026-11-07T06:30:33Z",
+ "lastRunAt": "2026-11-07T06:50:50Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,7 +49,7 @@
    "teamLevel": 2,
    "carried": 10,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2763,
    "lastFinal": "2026-11-07"
   },
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 2.9,
+  "seconds": 3.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,19 +148,18 @@
    "cbb": 762,
    "nhl": 32
   },
-  "gamesUploaded": 6,
-  "simTeamsUploaded": 1146,
+  "gamesUploaded": 4,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 1 graded, wnba 6 graded, nba 131 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 131 graded",
  "odds": "kept (today's odds budget used: 140 of ~66 events; month 746 of 2200)",
  "oddsLive": "kept (today's odds budget used: 140 events)",
  "fanduel": "ok: FanDuel lines on 11 cards, 261 player stats, FanDuel-only players on 0 cards; not in the feed (13): MIA@ND, CIN@ATL, CLE@NO, DAL@IND, DEN@CAR, DET@MIA...",
- "fanduelDirect": "ok: 11 games, 553 player markets (14 FanDuel games in odds.json, pulled 2026-11-07T06:30:33Z; 3s)",
+ "fanduelDirect": "ok: 11 games, 553 player markets (14 FanDuel games in odds.json, pulled 2026-11-07T06:50:50Z; 5s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
  "errors": [],
- "requests": 948,
- "failedRequests": 3,
- "retries": 3,
- "seconds": 35.4
+ "requests": 946,
+ "failedRequests": 7,
+ "retries": 7,
+ "seconds": 35.0
 }
