@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2081,
+ "runNumber": 2082,
  "deadlineHit": false,
- "generatedAt": "2026-11-07T11:39:20Z",
- "generatedAtET": "Sat Nov 7, 6:39 AM ET",
+ "generatedAt": "2026-11-07T12:09:24Z",
+ "generatedAtET": "Sat Nov 7, 7:09 AM ET",
  "today": "2026-11-07",
- "lastRunAt": "2026-11-07T11:39:20Z",
+ "lastRunAt": "2026-11-07T12:09:24Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.4,
+  "seconds": 3.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,18 +148,19 @@
    "cbb": 762,
    "nhl": 32
   },
-  "gamesUploaded": 4,
+  "gamesUploaded": 11,
+  "simTeamsUploaded": 1146,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 131 graded",
  "odds": "kept (today's odds budget used: 140 of ~66 events; month 746 of 2200)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 12 cards, 497 player stats, FanDuel-only players on 0 cards; not in the feed (12): MIA@ND, CLE@NO, DAL@IND, DEN@CAR, DET@MIA, LAR@WSH...",
- "fanduelDirect": "kept (15 FanDuel games in odds.json, pulled 2026-11-07T11:29:24Z; 0s)",
- "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 4 cards {'nba': 4, 'nfl': 2}; 25 stats from game logs, 0 from FanDuel's price only; 11 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 19 cards, 718 player stats, FanDuel-only players on 0 cards; not in the feed (5): MIA@ND, HOU@LAC, LV@SF, ARI@SEA, GB@NE",
+ "fanduelDirect": "ok: 19 games, 1494 player markets (22 FanDuel games in odds.json, pulled 2026-11-07T12:09:24Z; 5s)",
+ "espnXref": "ok: 14 FanDuel players added from ESPN rosters on 7 cards {'nba': 4, 'nfl': 10}; 41 stats from game logs, 0 from FanDuel's price only; 12 not on either ESPN roster",
  "errors": [],
- "requests": 1070,
- "failedRequests": 0,
- "retries": 0,
- "seconds": 23.9
+ "requests": 1073,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 39.7
 }
