@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2211,
+ "runNumber": 2212,
  "deadlineHit": false,
- "generatedAt": "2026-11-08T19:03:07Z",
- "generatedAtET": "Sun Nov 8, 2:03 PM ET",
+ "generatedAt": "2026-11-08T19:13:08Z",
+ "generatedAtET": "Sun Nov 8, 2:13 PM ET",
  "today": "2026-11-08",
- "lastRunAt": "2026-11-08T19:03:07Z",
+ "lastRunAt": "2026-11-08T19:13:08Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 7,
-   "playerLevel": 6,
+   "playerLevel": 7,
    "teamLevel": 0,
-   "carried": 1,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 2770,
@@ -65,13 +65,13 @@
    "lastFinal": "2026-11-08"
   },
   "cbb": {
-   "status": "ok",
-   "games": 10,
+   "status": "partial",
+   "games": 9,
    "playerLevel": 0,
-   "teamLevel": 3,
+   "teamLevel": 2,
    "carried": 7,
-   "error": null,
-   "newFinals": 1,
+   "error": "CAM @ WMU: KeyError: 'pointSpread'",
+   "newFinals": 0,
    "storeGames": 6738,
    "lastFinal": "2026-11-08"
   },
@@ -79,8 +79,8 @@
    "status": "ok",
    "games": 8,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 5,
+   "teamLevel": 2,
+   "carried": 6,
    "error": null,
    "newFinals": 0,
    "storeGames": 278,
@@ -104,9 +104,9 @@
   }
  },
  "counts": {
-  "slate": 38,
+  "slate": 37,
   "playerCards": 26,
-  "teamCards": 12,
+  "teamCards": 11,
   "window": 615,
   "sched": 342,
   "pastp": 14,
@@ -136,9 +136,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.4,
+  "seconds": 3.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -148,19 +148,20 @@
    "cbb": 765,
    "nhl": 32
   },
-  "gamesUploaded": 12,
-  "simTeamsUploaded": 1149,
+  "gamesUploaded": 14,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 138 graded",
  "odds": "kept (today's odds budget used: 138 of ~63 events; month 884 of 2200)",
  "oddsLive": "kept (today's odds budget used: 138 events)",
- "fanduel": "ok: FanDuel lines on 17 cards, 903 player stats, FanDuel-only players on 0 cards; not in the feed (4): NO@LAC, BUF@MIN, PHI@VAN, NYI@SJ",
- "fanduelDirect": "ok: 17 games, 1671 player markets (19 FanDuel games in odds.json, pulled 2026-11-08T19:03:07Z; 5s)",
- "espnXref": "ok: 24 FanDuel players added from ESPN rosters on 9 cards {'nba': 5, 'nfl': 9, 'nhl': 10}; 64 stats from game logs, 0 from FanDuel's price only",
- "errors": [],
- "requests": 841,
+ "fanduel": "ok: FanDuel lines on 17 cards, 903 player stats, FanDuel-only players on 0 cards; not in the feed (3): NO@LAC, BUF@MIN, PHI@VAN",
+ "fanduelDirect": "ok: 17 games, 1671 player markets (19 FanDuel games in odds.json, pulled 2026-11-08T19:13:08Z; 7s)",
+ "espnXref": "ok: 13 FanDuel players added from ESPN rosters on 8 cards {'nba': 4, 'nfl': 9}; 33 stats from game logs, 0 from FanDuel's price only",
+ "errors": [
+  "cbb: CAM @ WMU: KeyError: 'pointSpread'"
+ ],
+ "requests": 863,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 41.4
+ "seconds": 34.3
 }
