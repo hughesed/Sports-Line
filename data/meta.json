@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2269,
+ "runNumber": 2270,
  "deadlineHit": false,
- "generatedAt": "2026-11-09T04:18:41Z",
- "generatedAtET": "Sun Nov 8, 11:18 PM ET",
+ "generatedAt": "2026-11-09T04:28:43Z",
+ "generatedAtET": "Sun Nov 8, 11:28 PM ET",
  "today": "2026-11-08",
- "lastRunAt": "2026-11-09T04:18:41Z",
+ "lastRunAt": "2026-11-09T04:28:43Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -110,7 +110,7 @@
   "window": 615,
   "sched": 342,
   "pastp": 14,
-  "predictions": 695,
+  "predictions": 696,
   "graded": 611,
   "storeGames": 14715
  },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 2.6,
+  "seconds": 2.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,18 @@
    "cbb": 768,
    "nhl": 32
   },
-  "gamesUploaded": 5,
-  "simTeamsUploaded": 1152,
+  "gamesUploaded": 1,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 143 graded",
  "odds": "kept (today's odds budget used: 128 of ~60 events; month 1012 of 2200)",
  "oddsLive": "kept (today's odds budget used: 128 events)",
- "fanduel": "ok: FanDuel lines on 14 cards, 219 player stats, FanDuel-only players on 0 cards; not in the feed (7): WMU@AKR, KENT@BGSU, MSU@DUKE, OHIO@M-OH, BOS@PHI, ILL@TTU...",
- "fanduelDirect": "ok: 14 games, 376 player markets (16 FanDuel games in odds.json, pulled 2026-11-09T04:18:41Z; 2s)",
+ "fanduel": "ok: FanDuel lines on 14 cards, 219 player stats, FanDuel-only players on 0 cards; not in the feed (7): IND@DAL, WMU@AKR, KENT@BGSU, MSU@DUKE, OHIO@M-OH, ILL@TTU...",
+ "fanduelDirect": "kept (16 FanDuel games in odds.json, pulled 2026-11-09T04:18:41Z; 0s)",
  "espnXref": "ok: 4 FanDuel players added from ESPN rosters on 1 cards {'nfl': 4}; 7 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 269,
+ "requests": 267,
  "failedRequests": 12,
  "retries": 12,
- "seconds": 24.1
+ "seconds": 20.6
 }
