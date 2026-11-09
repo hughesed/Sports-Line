@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2258,
+ "runNumber": 2259,
  "deadlineHit": false,
- "generatedAt": "2026-11-09T02:28:22Z",
- "generatedAtET": "Sun Nov 8, 9:28 PM ET",
+ "generatedAt": "2026-11-09T02:38:25Z",
+ "generatedAtET": "Sun Nov 8, 9:38 PM ET",
  "today": "2026-11-08",
- "lastRunAt": "2026-11-09T02:28:22Z",
+ "lastRunAt": "2026-11-09T02:38:25Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,9 +49,9 @@
    "teamLevel": 4,
    "carried": 7,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2772,
-   "lastFinal": "2026-11-08"
+   "newFinals": 1,
+   "storeGames": 2773,
+   "lastFinal": "2026-11-09"
   },
   "cfb": {
    "status": "ok",
@@ -66,13 +66,13 @@
   },
   "cbb": {
    "status": "ok",
-   "games": 13,
+   "games": 10,
    "playerLevel": 0,
-   "teamLevel": 9,
+   "teamLevel": 6,
    "carried": 4,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 6768,
+   "newFinals": 1,
+   "storeGames": 6769,
    "lastFinal": "2026-11-09"
   },
   "nhl": {
@@ -104,15 +104,15 @@
   }
  },
  "counts": {
-  "slate": 35,
+  "slate": 32,
   "playerCards": 15,
-  "teamCards": 20,
+  "teamCards": 17,
   "window": 615,
   "sched": 342,
   "pastp": 14,
   "predictions": 690,
-  "graded": 603,
-  "storeGames": 14706
+  "graded": 604,
+  "storeGames": 14708
  },
  "calibration": {
   "slopes": {
@@ -122,9 +122,9 @@
    "nba": 1.15,
    "cbb": 0.963
   },
-  "graded": 603,
+  "graded": 604,
   "accML": 0.652,
-  "accBook": 0.648
+  "accBook": 0.649
  },
  "social": {
   "enabled": true,
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.3,
+  "seconds": 3.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -150,17 +150,18 @@
    "nhl": 32
   },
   "gamesUploaded": 2,
+  "simTeamsUploaded": 1152,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 140 graded",
+ "firstBasket": "0 new snapshots, 1 graded, wnba 6 graded, nba 141 graded",
  "odds": "kept (today's odds budget used: 128 of ~60 events; month 1012 of 2200)",
  "oddsLive": "kept (today's odds budget used: 128 events)",
- "fanduel": "ok: FanDuel lines on 13 cards, 211 player stats, FanDuel-only players on 0 cards; not in the feed (8): CLE@CHA, APP@AUB, WMU@AKR, KENT@BGSU, MSU@DUKE, OHIO@M-OH...",
- "fanduelDirect": "kept (13 FanDuel games in odds.json, pulled 2026-11-09T02:18:21Z; 0s)",
+ "fanduel": "ok: FanDuel lines on 12 cards, 211 player stats, FanDuel-only players on 0 cards; not in the feed (6): WMU@AKR, KENT@BGSU, MSU@DUKE, OHIO@M-OH, BOS@PHI, ILL@TTU",
+ "fanduelDirect": "ok: 12 games, 363 player markets (14 FanDuel games in odds.json, pulled 2026-11-09T02:38:25Z; 3s)",
  "espnXref": "ok: 4 FanDuel players added from ESPN rosters on 1 cards {'nfl': 4}; 7 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 250,
- "failedRequests": 9,
- "retries": 9,
- "seconds": 12.6
+ "requests": 265,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 26.5
 }
