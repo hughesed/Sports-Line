@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2396,
+ "runNumber": 2397,
  "deadlineHit": false,
- "generatedAt": "2026-11-10T14:25:06Z",
- "generatedAtET": "Tue Nov 10, 9:25 AM ET",
+ "generatedAt": "2026-11-10T14:55:07Z",
+ "generatedAtET": "Tue Nov 10, 9:55 AM ET",
  "today": "2026-11-10",
- "lastRunAt": "2026-11-10T14:25:06Z",
+ "lastRunAt": "2026-11-10T14:55:07Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 1.7,
+  "seconds": 4.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,18 @@
    "cbb": 774,
    "nhl": 32
   },
-  "gamesUploaded": 14,
+  "gamesUploaded": 16,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 153 graded",
  "odds": "kept (today's odds budget used: 137 of ~57 events; month 1149 of 2200)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 19 cards, 687 player stats, FanDuel-only players on 0 cards; not in the feed (5): MSU@DUKE, LAC@PHX, BUFF@BALL, SAC@CMU, WSH@NYG",
- "fanduelDirect": "ok: 17 games, 1256 player markets (17 FanDuel games in odds.json, pulled 2026-11-10T14:25:06Z; 3s)",
- "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 2 cards {'nba': 2}; 6 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 19 cards, 685 player stats, FanDuel-only players on 0 cards; not in the feed (5): MSU@DUKE, LAC@PHX, BUFF@BALL, SAC@CMU, WSH@NYG",
+ "fanduelDirect": "ok: 17 games, 1255 player markets (17 FanDuel games in odds.json, pulled 2026-11-10T14:55:07Z; 5s)",
+ "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 3 cards {'nba': 2, 'nhl': 1}; 7 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
- "requests": 453,
+ "requests": 456,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 15.5
+ "seconds": 29.7
 }
