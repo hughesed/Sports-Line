@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2427,
+ "runNumber": 2428,
  "deadlineHit": false,
- "generatedAt": "2026-11-10T20:54:53Z",
- "generatedAtET": "Tue Nov 10, 3:54 PM ET",
+ "generatedAt": "2026-11-10T21:04:55Z",
+ "generatedAtET": "Tue Nov 10, 4:04 PM ET",
  "today": "2026-11-10",
- "lastRunAt": "2026-11-10T20:54:53Z",
+ "lastRunAt": "2026-11-10T21:04:55Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 9,
-   "playerLevel": 5,
+   "playerLevel": 6,
    "teamLevel": 0,
-   "carried": 4,
+   "carried": 3,
    "error": null,
    "newFinals": 0,
    "storeGames": 2785,
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.5,
+  "seconds": 1.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,19 @@
    "cbb": 774,
    "nhl": 32
   },
-  "gamesUploaded": 3,
+  "gamesUploaded": 12,
+  "simTeamsUploaded": 1158,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 153 graded",
  "odds": "kept (today's odds budget used: 137 of ~57 events; month 1149 of 2200)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 21 cards, 696 player stats, FanDuel-only players on 0 cards; not in the feed (3): MSU@DUKE, LAC@PHX, WSH@NYG",
- "fanduelDirect": "kept (21 FanDuel games in odds.json, pulled 2026-11-10T20:44:48Z; 0s)",
- "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 2 cards {'nba': 2}; 7 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 21 cards, 712 player stats, FanDuel-only players on 0 cards; not in the feed (3): MSU@DUKE, LAC@PHX, WSH@NYG",
+ "fanduelDirect": "ok: 20 games, 1367 player markets (21 FanDuel games in odds.json, pulled 2026-11-10T21:04:55Z; 5s)",
+ "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 3 cards {'nba': 3}; 11 stats from game logs, 0 from FanDuel's price only; 14 not on either ESPN roster",
  "errors": [],
- "requests": 417,
+ "requests": 459,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 27.3
+ "seconds": 23.3
 }
