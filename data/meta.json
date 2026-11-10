@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2382,
+ "runNumber": 2383,
  "deadlineHit": false,
- "generatedAt": "2026-11-10T07:32:18Z",
- "generatedAtET": "Tue Nov 10, 2:32 AM ET",
+ "generatedAt": "2026-11-10T08:02:19Z",
+ "generatedAtET": "Tue Nov 10, 3:02 AM ET",
  "today": "2026-11-10",
- "lastRunAt": "2026-11-10T07:32:18Z",
+ "lastRunAt": "2026-11-10T08:02:19Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 4,
    "carried": 8,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 6823,
    "lastFinal": "2026-11-10"
   },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 5.4,
+  "seconds": 3.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -150,18 +150,17 @@
    "nhl": 32
   },
   "gamesUploaded": 8,
-  "simTeamsUploaded": 1158,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 153 graded",
  "odds": "kept (today's odds budget used: 137 of ~57 events; month 1149 of 2200)",
  "oddsLive": "kept (today's odds budget used: 137 events)",
- "fanduel": "ok: FanDuel lines on 19 cards, 640 player stats, FanDuel-only players on 0 cards; not in the feed (5): MSU@DUKE, LAC@PHX, BUFF@BALL, SAC@CMU, WSH@NYG",
- "fanduelDirect": "ok: 17 games, 1149 player markets (17 FanDuel games in odds.json, pulled 2026-11-10T07:32:18Z; 5s)",
- "espnXref": "ok: 1 FanDuel players added from ESPN rosters on 1 cards {'nba': 1}; 7 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 19 cards, 643 player stats, FanDuel-only players on 0 cards; not in the feed (5): MSU@DUKE, LAC@PHX, BUFF@BALL, SAC@CMU, WSH@NYG",
+ "fanduelDirect": "ok: 17 games, 1155 player markets (17 FanDuel games in odds.json, pulled 2026-11-10T08:02:19Z; 4s)",
+ "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 2 cards {'nba': 2}; 10 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
- "requests": 356,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 24.3
+ "requests": 358,
+ "failedRequests": 6,
+ "retries": 6,
+ "seconds": 29.2
 }
