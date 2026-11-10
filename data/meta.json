@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2345,
- "deadlineHit": false,
- "generatedAt": "2026-11-09T23:55:39Z",
- "generatedAtET": "Mon Nov 9, 6:55 PM ET",
+ "runNumber": 2346,
+ "deadlineHit": true,
+ "generatedAt": "2026-11-10T00:00:23Z",
+ "generatedAtET": "Mon Nov 9, 7:00 PM ET",
  "today": "2026-11-09",
- "lastRunAt": "2026-11-09T23:55:39Z",
+ "lastRunAt": "2026-11-10T00:00:23Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 26,
-  "teamCards": 12,
+  "playerCards": 27,
+  "teamCards": 11,
   "window": 654,
   "sched": 355,
   "pastp": 15,
@@ -128,18 +128,16 @@
  },
  "social": {
   "enabled": true,
-  "errors": [
-   "battle data upload: RuntimeError: HTTP 500 on /rest/v1/sim_players: ON CONFLICT DO UPDATE command cannot affect row a second time"
-  ],
+  "errors": [],
   "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
-  "failedCalls": 2,
-  "seconds": 1.0,
+  "calls": 3,
+  "failedCalls": 0,
+  "seconds": 0.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +147,19 @@
    "cbb": 768,
    "nhl": 32
   },
-  "gamesUploaded": 7,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 145 graded",
- "odds": "kept (today's odds budget used: 128 of ~60 events; month 1012 of 2200)",
- "oddsLive": "kept (today's odds budget used: 128 events)",
- "fanduel": "ok: FanDuel lines on 22 cards, 992 player stats, FanDuel-only players on 0 cards; not in the feed (2): APP@AUB, OHIO@M-OH",
- "fanduelDirect": "kept (24 FanDuel games in odds.json, pulled 2026-11-09T23:53:49Z; 0s)",
- "espnXref": "ok: 9 FanDuel players added from ESPN rosters on 5 cards {'nba': 5, 'nfl': 4}; 28 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
- "errors": [],
- "requests": 537,
+ "odds": "ok: 33 events (+5 kept: in play, or leagues not pulled this time); soccer {'UEFA_CHAMPIONS_LEAGUE': 0, 'MLS': 0, 'EPL': 'HTTPError: HTTP Error 400: Bad Request', 'LA_LIGA': 'HTTPError: HTTP Error 400: Bad Request', 'BUNDESLIGA': 'skipped (time)', 'IT_SERIE_A': 'skipped (time)', 'FR_LIGUE_1': 'skipped (time)', 'LIGA_MX': 'skipped (time)'}",
+ "oddsLive": "ok: 17 in-play events (17 live, 17 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 19 cards, 737 player stats, FanDuel-only players on 0 cards; not in the feed (1): APP@AUB",
+ "fanduelDirect": "ok: 18 games, 1343 player markets (23 FanDuel games in odds.json, pulled 2026-11-10T00:00:23Z; 4s)",
+ "espnXref": "ok: 14 FanDuel players added from ESPN rosters on 4 cards {'nba': 3, 'nfl': 4, 'cfb': 7}; 35 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "errors": [
+  "time limit reached: 3 ESPN requests were skipped to stay inside the run budget; the next run catches up"
+ ],
+ "requests": 540,
  "failedRequests": 4,
  "retries": 4,
- "seconds": 21.1
+ "seconds": 157.6
 }
