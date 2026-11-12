@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2557,
+ "runNumber": 2558,
  "deadlineHit": false,
- "generatedAt": "2026-11-12T03:12:31Z",
- "generatedAtET": "Wed Nov 11, 10:12 PM ET",
+ "generatedAt": "2026-11-12T03:20:33Z",
+ "generatedAtET": "Wed Nov 11, 10:20 PM ET",
  "today": "2026-11-11",
- "lastRunAt": "2026-11-12T03:12:31Z",
+ "lastRunAt": "2026-11-12T03:20:33Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,20 +44,20 @@
   },
   "nba": {
    "status": "ok",
-   "games": 8,
-   "playerLevel": 2,
+   "games": 7,
+   "playerLevel": 1,
    "teamLevel": 3,
    "carried": 3,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2794,
+   "newFinals": 1,
+   "storeGames": 2795,
    "lastFinal": "2026-11-12"
   },
   "cfb": {
    "status": "ok",
-   "games": 4,
+   "games": 8,
    "playerLevel": 0,
-   "teamLevel": 2,
+   "teamLevel": 6,
    "carried": 2,
    "error": null,
    "newFinals": 0,
@@ -66,24 +66,24 @@
   },
   "cbb": {
    "status": "ok",
-   "games": 14,
+   "games": 11,
    "playerLevel": 0,
-   "teamLevel": 6,
+   "teamLevel": 3,
    "carried": 8,
    "error": null,
-   "newFinals": 1,
-   "storeGames": 6941,
+   "newFinals": 4,
+   "storeGames": 6945,
    "lastFinal": "2026-11-12"
   },
   "nhl": {
    "status": "ok",
    "games": 11,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 9,
+   "teamLevel": 1,
+   "carried": 10,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 295,
+   "newFinals": 1,
+   "storeGames": 296,
    "lastFinal": "2026-11-12"
   },
   "tennis": {
@@ -105,14 +105,14 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 18,
-  "teamCards": 20,
+  "playerCards": 17,
+  "teamCards": 21,
   "window": 557,
   "sched": 424,
   "pastp": 15,
-  "predictions": 753,
-  "graded": 664,
-  "storeGames": 14920
+  "predictions": 754,
+  "graded": 666,
+  "storeGames": 14926
  },
  "calibration": {
   "slopes": {
@@ -122,9 +122,9 @@
    "nba": 1.15,
    "cbb": 0.933
   },
-  "graded": 664,
-  "accML": 0.661,
-  "accBook": 0.654
+  "graded": 666,
+  "accML": 0.662,
+  "accBook": 0.655
  },
  "social": {
   "enabled": true,
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 4.9,
+  "seconds": 2.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,19 @@
    "cbb": 785,
    "nhl": 32
   },
-  "gamesUploaded": 10,
+  "gamesUploaded": 14,
   "simTeamsUploaded": 1169,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 162 graded",
+ "firstBasket": "0 new snapshots, 1 graded, wnba 6 graded, nba 163 graded",
  "odds": "kept (today's odds budget used: 103 of ~49 events; month 1371 of 2200)",
  "oddsLive": "kept (today's odds budget used: 103 events)",
- "fanduel": "ok: FanDuel lines on 14 cards, 224 player stats, FanDuel-only players on 0 cards; not in the feed (2): FSU@PITT, ILL@UCLA",
- "fanduelDirect": "ok: 14 games, 377 player markets (14 FanDuel games in odds.json, pulled 2026-11-12T03:12:31Z; 4s)",
- "espnXref": "ok: 14 FanDuel players added from ESPN rosters on 2 cards {'nhl': 11, 'nfl': 3}; 37 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 14 cards, 224 player stats, FanDuel-only players on 0 cards; not in the feed (3): FSU@PITT, ILL@UCLA, HOU@COLO",
+ "fanduelDirect": "ok: 14 games, 377 player markets (14 FanDuel games in odds.json, pulled 2026-11-12T03:20:33Z; 3s)",
+ "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 1 cards {'nfl': 3}; 8 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
- "requests": 338,
+ "requests": 294,
  "failedRequests": 7,
  "retries": 7,
- "seconds": 27.2
+ "seconds": 22.8
 }
