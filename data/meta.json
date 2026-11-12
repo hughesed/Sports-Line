@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2616,
+ "runNumber": 2617,
  "deadlineHit": false,
- "generatedAt": "2026-11-12T20:12:20Z",
- "generatedAtET": "Thu Nov 12, 3:12 PM ET",
+ "generatedAt": "2026-11-12T20:22:23Z",
+ "generatedAtET": "Thu Nov 12, 3:22 PM ET",
  "today": "2026-11-12",
- "lastRunAt": "2026-11-12T20:12:20Z",
+ "lastRunAt": "2026-11-12T20:22:23Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,8 +57,8 @@
    "status": "ok",
    "games": 8,
    "playerLevel": 0,
-   "teamLevel": 6,
-   "carried": 2,
+   "teamLevel": 5,
+   "carried": 3,
    "error": null,
    "newFinals": 0,
    "storeGames": 1649,
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.5,
+  "seconds": 2.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,7 +149,7 @@
    "cbb": 785,
    "nhl": 32
   },
-  "gamesUploaded": 11,
+  "gamesUploaded": 7,
   "simTeamsUploaded": 1169,
   "configured": true
  },
@@ -157,11 +157,11 @@
  "odds": "kept (today's odds budget used: 103 of ~49 events; month 1371 of 2200)",
  "oddsLive": "kept (today's odds budget used: 103 events)",
  "fanduel": "ok: FanDuel lines on 11 cards, 498 player stats, FanDuel-only players on 0 cards; not in the feed (13): DUKE@MIA, WAKE@SMU, NU@OSU, ALA@VAN, TENN@TA&M, NE@DET...",
- "fanduelDirect": "ok: 11 games, 988 player markets (24 FanDuel games in odds.json, pulled 2026-11-12T20:12:20Z; 4s)",
- "espnXref": "ok: 13 FanDuel players added from ESPN rosters on 3 cards {'nba': 1, 'nfl': 3, 'cfb': 9}; 28 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
+ "fanduelDirect": "kept (24 FanDuel games in odds.json, pulled 2026-11-12T20:12:20Z; 0s)",
+ "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 1 cards {'nfl': 3}; 8 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
  "errors": [],
- "requests": 976,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 40.7
+ "requests": 1005,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 29.8
 }
