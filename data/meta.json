@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2643,
+ "runNumber": 2644,
  "deadlineHit": false,
- "generatedAt": "2026-11-13T04:31:22Z",
- "generatedAtET": "Thu Nov 12, 11:31 PM ET",
+ "generatedAt": "2026-11-13T04:41:24Z",
+ "generatedAtET": "Thu Nov 12, 11:41 PM ET",
  "today": "2026-11-12",
- "lastRunAt": "2026-11-13T04:31:22Z",
+ "lastRunAt": "2026-11-13T04:41:24Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,7 +49,7 @@
    "teamLevel": 2,
    "carried": 7,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 2805,
    "lastFinal": "2026-11-13"
   },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.0,
+  "seconds": 2.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,18 @@
    "cbb": 785,
    "nhl": 32
   },
-  "gamesUploaded": 1,
-  "simTeamsUploaded": 1169,
+  "gamesUploaded": 3,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 1 graded, wnba 6 graded, nba 173 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 173 graded",
  "odds": "kept (today's odds budget used: 95 of ~46 events; month 1466 of 2200)",
  "oddsLive": "kept (today's odds budget used: 95 events)",
  "fanduel": "ok: FanDuel lines on 4 cards, 185 player stats, FanDuel-only players on 0 cards; not in the feed (20): DUKE@MIA, WAKE@SMU, TENN@TA&M, BAY@BYU, MIZ@UGA, USC@IU...",
- "fanduelDirect": "ok: 4 games, 369 player markets (6 FanDuel games in odds.json, pulled 2026-11-13T04:31:22Z; 2s)",
+ "fanduelDirect": "kept (6 FanDuel games in odds.json, pulled 2026-11-13T04:31:22Z; 0s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 927,
- "failedRequests": 4,
- "retries": 4,
- "seconds": 33.1
+ "requests": 925,
+ "failedRequests": 6,
+ "retries": 6,
+ "seconds": 31.2
 }
