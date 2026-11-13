@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2646,
+ "runNumber": 2647,
  "deadlineHit": false,
- "generatedAt": "2026-11-13T05:01:30Z",
- "generatedAtET": "Fri Nov 13, 12:01 AM ET",
+ "generatedAt": "2026-11-13T05:31:32Z",
+ "generatedAtET": "Fri Nov 13, 12:31 AM ET",
  "today": "2026-11-13",
- "lastRunAt": "2026-11-13T05:01:30Z",
+ "lastRunAt": "2026-11-13T05:31:32Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,10 +57,10 @@
    "status": "ok",
    "games": 10,
    "playerLevel": 0,
-   "teamLevel": 8,
-   "carried": 2,
+   "teamLevel": 5,
+   "carried": 5,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 1650,
    "lastFinal": "2026-11-13"
   },
@@ -72,7 +72,7 @@
    "carried": 5,
    "error": null,
    "newFinals": 1,
-   "storeGames": 6987,
+   "storeGames": 6988,
    "lastFinal": "2026-11-13"
   },
   "nhl": {
@@ -82,8 +82,8 @@
    "teamLevel": 0,
    "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 309,
+   "newFinals": 1,
+   "storeGames": 310,
    "lastFinal": "2026-11-13"
   },
   "tennis": {
@@ -107,12 +107,12 @@
   "slate": 38,
   "playerCards": 25,
   "teamCards": 13,
-  "window": 558,
+  "window": 560,
   "sched": 421,
   "pastp": 15,
   "predictions": 791,
   "graded": 705,
-  "storeGames": 14996
+  "storeGames": 14998
  },
  "calibration": {
   "slopes": {
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 4.3,
+  "seconds": 3.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,19 @@
    "cbb": 785,
    "nhl": 32
   },
-  "gamesUploaded": 4,
+  "gamesUploaded": 10,
   "simTeamsUploaded": 1169,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 173 graded",
  "odds": "kept (today's odds budget used: 95 of ~46 events; month 1466 of 2200)",
  "oddsLive": "kept (today's odds budget used: 95 events)",
- "fanduel": "ok: FanDuel lines on 7 cards, 252 player stats, FanDuel-only players on 0 cards; not in the feed (17): DUKE@MIA, WAKE@SMU, MIZ@UGA, UTAH@ARIZ, TEX@LSU, NE@DET...",
- "fanduelDirect": "kept (6 FanDuel games in odds.json, pulled 2026-11-13T04:51:35Z; 0s)",
- "espnXref": "ok: 25 FanDuel players added from ESPN rosters on 3 cards {'cfb': 25}; 35 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 7 cards, 255 player stats, FanDuel-only players on 0 cards; not in the feed (17): DUKE@MIA, WAKE@SMU, MIZ@UGA, UTAH@ARIZ, TEX@LSU, NE@DET...",
+ "fanduelDirect": "ok: 7 games, 533 player markets (7 FanDuel games in odds.json, pulled 2026-11-13T05:31:32Z; 2s)",
+ "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 1 cards {'nba': 2}; 8 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
  "errors": [],
- "requests": 959,
- "failedRequests": 6,
- "retries": 6,
- "seconds": 27.4
+ "requests": 925,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 37.3
 }
