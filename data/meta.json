@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2657,
+ "runNumber": 2658,
  "deadlineHit": false,
- "generatedAt": "2026-11-13T09:59:44Z",
- "generatedAtET": "Fri Nov 13, 4:59 AM ET",
+ "generatedAt": "2026-11-13T10:29:46Z",
+ "generatedAtET": "Fri Nov 13, 5:29 AM ET",
  "today": "2026-11-13",
- "lastRunAt": "2026-11-13T09:59:44Z",
+ "lastRunAt": "2026-11-13T10:29:46Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -65,11 +65,11 @@
    "lastFinal": "2026-11-13"
   },
   "cbb": {
-   "status": "ok",
-   "games": 1,
+   "status": "empty",
+   "games": 0,
    "playerLevel": 0,
    "teamLevel": 0,
-   "carried": 1,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 6988,
@@ -104,9 +104,9 @@
   }
  },
  "counts": {
-  "slate": 33,
+  "slate": 32,
   "playerCards": 25,
-  "teamCards": 8,
+  "teamCards": 7,
   "window": 562,
   "sched": 421,
   "pastp": 15,
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 6,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.2,
+  "seconds": 2.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,18 @@
    "cbb": 785,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 7,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 173 graded",
  "odds": "kept (today's odds budget used: 95 of ~46 events; month 1466 of 2200)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 7 cards, 335 player stats, FanDuel-only players on 0 cards; not in the feed (17): DUKE@MIA, WAKE@SMU, MIZ@UGA, UTAH@ARIZ, TEX@LSU, NE@DET...",
- "fanduelDirect": "kept (7 FanDuel games in odds.json, pulled 2026-11-13T09:53:06Z; 0s)",
+ "fanduelDirect": "ok: 7 games, 692 player markets (7 FanDuel games in odds.json, pulled 2026-11-13T10:29:46Z; 3s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
  "errors": [],
- "requests": 1041,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 29.4
+ "requests": 1066,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 25.5
 }
