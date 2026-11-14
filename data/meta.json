@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2786,
+ "runNumber": 2787,
  "deadlineHit": false,
- "generatedAt": "2026-11-14T18:06:14Z",
- "generatedAtET": "Sat Nov 14, 1:06 PM ET",
+ "generatedAt": "2026-11-14T18:16:16Z",
+ "generatedAtET": "Sat Nov 14, 1:16 PM ET",
  "today": "2026-11-14",
- "lastRunAt": "2026-11-14T18:06:14Z",
+ "lastRunAt": "2026-11-14T18:16:16Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,10 +44,10 @@
   },
   "nba": {
    "status": "ok",
-   "games": 6,
+   "games": 5,
    "playerLevel": 4,
    "teamLevel": 0,
-   "carried": 2,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 2814,
@@ -55,10 +55,10 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 19,
+   "games": 21,
    "playerLevel": 0,
    "teamLevel": 3,
-   "carried": 16,
+   "carried": 18,
    "error": null,
    "newFinals": 0,
    "storeGames": 1654,
@@ -77,14 +77,15 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 1,
+   "games": 10,
    "playerLevel": 0,
-   "teamLevel": 0,
-   "carried": 1,
+   "teamLevel": 10,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 313,
-   "lastFinal": "2026-11-14"
+   "lastFinal": "2026-11-14",
+   "note": "book lines only (ESPN had no cards)"
   },
   "tennis": {
    "status": "ok",
@@ -104,9 +105,9 @@
   }
  },
  "counts": {
-  "slate": 38,
-  "playerCards": 25,
-  "teamCards": 13,
+  "slate": 48,
+  "playerCards": 30,
+  "teamCards": 18,
   "window": 548,
   "sched": 434,
   "pastp": 15,
@@ -139,7 +140,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.8,
+  "seconds": 3.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +150,19 @@
    "cbb": 787,
    "nhl": 32
   },
-  "gamesUploaded": 18,
+  "gamesUploaded": 22,
   "simTeamsUploaded": 1171,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 182 graded",
  "odds": "kept (today's odds budget used: 87 of ~43 events; month 1553 of 2200)",
  "oddsLive": "kept (today's odds budget used: 87 events)",
- "fanduel": "ok: FanDuel lines on 20 cards, 714 player stats, FanDuel-only players on 0 cards; not in the feed (1): PIT@CIN",
- "fanduelDirect": "ok: 20 games, 1481 player markets (26 FanDuel games in odds.json, pulled 2026-11-14T18:06:14Z; 5s)",
- "espnXref": "ok: 23 FanDuel players added from ESPN rosters on 10 cards {'nfl': 23}; 49 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 22 cards, 756 player stats, FanDuel-only players on 0 cards; not in the feed (2): LOU@UNC, PIT@CIN",
+ "fanduelDirect": "kept (25 FanDuel games in odds.json, pulled 2026-11-14T18:06:14Z; 0s)",
+ "espnXref": "ok: 45 FanDuel players added from ESPN rosters on 12 cards {'cfb': 22, 'nfl': 23}; 91 stats from game logs, 0 from FanDuel's price only; 9 not on either ESPN roster",
  "errors": [],
- "requests": 1045,
+ "requests": 1073,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 32.1
+ "seconds": 37.0
 }
