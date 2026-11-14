@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2717,
- "deadlineHit": false,
- "generatedAt": "2026-11-13T23:51:07Z",
- "generatedAtET": "Fri Nov 13, 6:51 PM ET",
+ "runNumber": 2718,
+ "deadlineHit": true,
+ "generatedAt": "2026-11-14T00:01:07Z",
+ "generatedAtET": "Fri Nov 13, 7:01 PM ET",
  "today": "2026-11-13",
- "lastRunAt": "2026-11-13T23:51:07Z",
+ "lastRunAt": "2026-11-14T00:01:07Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -77,9 +77,9 @@
   },
   "nhl": {
    "status": "ok",
-   "games": 2,
+   "games": 10,
    "playerLevel": 0,
-   "teamLevel": 2,
+   "teamLevel": 10,
    "carried": 0,
    "error": null,
    "newFinals": 0,
@@ -105,8 +105,8 @@
   }
  },
  "counts": {
-  "slate": 33,
-  "playerCards": 30,
+  "slate": 41,
+  "playerCards": 38,
   "teamCards": 3,
   "window": 562,
   "sched": 421,
@@ -129,18 +129,16 @@
  },
  "social": {
   "enabled": true,
-  "errors": [
-   "battle data upload: RuntimeError: HTTP 500 on /rest/v1/sim_players: ON CONFLICT DO UPDATE command cannot affect row a second time"
-  ],
+  "errors": [],
   "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
-  "failedCalls": 2,
-  "seconds": 4.9,
+  "calls": 3,
+  "failedCalls": 0,
+  "seconds": 1.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -150,19 +148,19 @@
    "cbb": 786,
    "nhl": 32
   },
-  "gamesUploaded": 8,
-  "simTeamsUploaded": 1170,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 173 graded",
- "odds": "kept (today's odds budget used: 95 of ~46 events; month 1466 of 2200)",
- "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 11 cards, 491 player stats, FanDuel-only players on 0 cards; not in the feed (13): DUKE@MIA, NE@DET, BUF@NYJ, CAR@NO, HOU@CLE, JAX@TEN...",
- "fanduelDirect": "pull failed, kept the last one: cfb: HTTP 403; nba: HTTP 403 (11 FanDuel games in odds.json, pulled 2026-11-13T23:41:02Z; 0s)",
- "espnXref": "ok: 1 FanDuel players added from ESPN rosters on 1 cards {'nba': 1}; 4 stats from game logs, 0 from FanDuel's price only; 15 not on either ESPN roster",
- "errors": [],
- "requests": 1061,
+ "odds": "ok: 65 events (+4 kept: in play, or leagues not pulled this time); soccer {'UEFA_CHAMPIONS_LEAGUE': 0, 'MLS': 0, 'EPL': 'HTTPError: HTTP Error 400: Bad Request', 'LA_LIGA': 'skipped (time)', 'BUNDESLIGA': 'skipped (time)', 'IT_SERIE_A': 'skipped (time)', 'FR_LIGUE_1': 'skipped (time)', 'LIGA_MX': 'skipped (time)'}",
+ "oddsLive": "ok: 0 in-play events (0 live, 0 with FanDuel lines)",
+ "fanduel": "ok: FanDuel lines on 8 cards, 309 player stats, FanDuel-only players on 0 cards; not in the feed (13): DUKE@MIA, NE@DET, BUF@NYJ, CAR@NO, HOU@CLE, JAX@TEN...",
+ "fanduelDirect": "ok: 8 games, 659 player markets (10 FanDuel games in odds.json, pulled 2026-11-14T00:01:07Z; 5s)",
+ "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 1 cards {'nba': 2}; 0 stats from game logs, 10 from FanDuel's price only; 14 not on either ESPN roster",
+ "errors": [
+  "time limit reached: 19 ESPN requests were skipped to stay inside the run budget; the next run catches up"
+ ],
+ "requests": 1047,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 109.4
+ "seconds": 165.7
 }
