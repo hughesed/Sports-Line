@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2921,
+ "runNumber": 2922,
  "deadlineHit": false,
- "generatedAt": "2026-11-15T23:14:18Z",
- "generatedAtET": "Sun Nov 15, 6:14 PM ET",
+ "generatedAt": "2026-11-15T23:24:20Z",
+ "generatedAtET": "Sun Nov 15, 6:24 PM ET",
  "today": "2026-11-15",
- "lastRunAt": "2026-11-15T23:14:18Z",
+ "lastRunAt": "2026-11-15T23:24:20Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 7,
    "carried": 6,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 7147,
    "lastFinal": "2026-11-15"
   },
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.8,
+  "seconds": 3.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,19 @@
    "cbb": 792,
    "nhl": 32
   },
-  "gamesUploaded": 7,
+  "gamesUploaded": 6,
   "simTeamsUploaded": 1176,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 188 graded",
  "odds": "kept (today's odds budget used: 94 of ~40 events; month 1647 of 2200)",
  "oddsLive": "kept (today's odds budget used: 94 events)",
- "fanduel": "ok: FanDuel lines on 19 cards, 636 player stats, FanDuel-only players on 0 cards; not in the feed (1): EMU@WMU",
- "fanduelDirect": "ok: 19 games, 1108 player markets (19 FanDuel games in odds.json, pulled 2026-11-15T23:14:18Z; 4s)",
- "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 5 cards {'nba': 6, 'nfl': 5}; 37 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 19 cards, 620 player stats, FanDuel-only players on 0 cards; not in the feed (1): EMU@WMU",
+ "fanduelDirect": "ok: 19 games, 1080 player markets (19 FanDuel games in odds.json, pulled 2026-11-15T23:24:20Z; 4s)",
+ "espnXref": "ok: 9 FanDuel players added from ESPN rosters on 4 cards {'nba': 4, 'nfl': 5}; 25 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
- "requests": 541,
+ "requests": 405,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 20.3
+ "seconds": 27.7
 }
