@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2897,
+ "runNumber": 2898,
  "deadlineHit": false,
- "generatedAt": "2026-11-15T19:30:12Z",
- "generatedAtET": "Sun Nov 15, 2:30 PM ET",
+ "generatedAt": "2026-11-15T19:40:12Z",
+ "generatedAtET": "Sun Nov 15, 2:40 PM ET",
  "today": "2026-11-15",
- "lastRunAt": "2026-11-15T19:30:12Z",
+ "lastRunAt": "2026-11-15T19:40:12Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -54,10 +54,10 @@
    "lastFinal": "2026-11-15"
   },
   "cfb": {
-   "status": "empty",
-   "games": 0,
+   "status": "ok",
+   "games": 1,
    "playerLevel": 0,
-   "teamLevel": 0,
+   "teamLevel": 1,
    "carried": 0,
    "error": null,
    "newFinals": 0,
@@ -66,9 +66,9 @@
   },
   "cbb": {
    "status": "ok",
-   "games": 10,
+   "games": 9,
    "playerLevel": 0,
-   "teamLevel": 4,
+   "teamLevel": 3,
    "carried": 6,
    "error": null,
    "newFinals": 0,
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 5.2,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,18 @@
    "cbb": 791,
    "nhl": 32
   },
-  "gamesUploaded": 19,
-  "simTeamsUploaded": 1175,
+  "gamesUploaded": 12,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 187 graded",
  "odds": "kept (today's odds budget used: 94 of ~40 events; month 1647 of 2200)",
  "oddsLive": "kept (today's odds budget used: 94 events)",
- "fanduel": "ok: FanDuel lines on 18 cards, 996 player stats, FanDuel-only players on 0 cards; not in the feed (2): CHA@LAC, VAN@UTA",
- "fanduelDirect": "ok: 18 games, 1872 player markets (20 FanDuel games in odds.json, pulled 2026-11-15T19:30:12Z; 7s)",
+ "fanduel": "ok: FanDuel lines on 18 cards, 1004 player stats, FanDuel-only players on 0 cards; not in the feed (2): CHA@LAC, VAN@UTA",
+ "fanduelDirect": "ok: 18 games, 1888 player markets (20 FanDuel games in odds.json, pulled 2026-11-15T19:40:12Z; 5s)",
  "espnXref": "ok: 14 FanDuel players added from ESPN rosters on 7 cards {'nfl': 12, 'nba': 2}; 37 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 823,
- "failedRequests": 0,
- "retries": 0,
- "seconds": 42.1
+ "requests": 826,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 27.9
 }
