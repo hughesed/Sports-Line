@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2899,
+ "runNumber": 2900,
  "deadlineHit": false,
- "generatedAt": "2026-11-15T19:50:14Z",
- "generatedAtET": "Sun Nov 15, 2:50 PM ET",
+ "generatedAt": "2026-11-15T20:00:18Z",
+ "generatedAtET": "Sun Nov 15, 3:00 PM ET",
  "today": "2026-11-15",
- "lastRunAt": "2026-11-15T19:50:14Z",
+ "lastRunAt": "2026-11-15T20:00:18Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -54,10 +54,10 @@
    "lastFinal": "2026-11-15"
   },
   "cfb": {
-   "status": "empty",
-   "games": 0,
+   "status": "ok",
+   "games": 1,
    "playerLevel": 0,
-   "teamLevel": 0,
+   "teamLevel": 1,
    "carried": 0,
    "error": null,
    "newFinals": 0,
@@ -66,13 +66,13 @@
   },
   "cbb": {
    "status": "ok",
-   "games": 11,
+   "games": 10,
    "playerLevel": 0,
-   "teamLevel": 4,
+   "teamLevel": 3,
    "carried": 7,
    "error": null,
    "newFinals": 1,
-   "storeGames": 7120,
+   "storeGames": 7121,
    "lastFinal": "2026-11-15"
   },
   "nhl": {
@@ -112,7 +112,7 @@
   "pastp": 15,
   "predictions": 841,
   "graded": 753,
-  "storeGames": 15221
+  "storeGames": 15222
  },
  "calibration": {
   "slopes": {
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.5,
+  "seconds": 5.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,19 @@
    "cbb": 791,
    "nhl": 32
   },
-  "gamesUploaded": 14,
+  "gamesUploaded": 12,
   "simTeamsUploaded": 1175,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 187 graded",
  "odds": "kept (today's odds budget used: 94 of ~40 events; month 1647 of 2200)",
  "oddsLive": "kept (today's odds budget used: 94 events)",
- "fanduel": "ok: FanDuel lines on 18 cards, 1004 player stats, FanDuel-only players on 0 cards; not in the feed (2): CHA@LAC, VAN@UTA",
- "fanduelDirect": "ok: 18 games, 1885 player markets (20 FanDuel games in odds.json, pulled 2026-11-15T19:50:14Z; 5s)",
+ "fanduel": "ok: FanDuel lines on 17 cards, 923 player stats, FanDuel-only players on 0 cards; not in the feed (2): CHA@LAC, VAN@UTA",
+ "fanduelDirect": "ok: 17 games, 1728 player markets (19 FanDuel games in odds.json, pulled 2026-11-15T20:00:18Z; 6s)",
  "espnXref": "ok: 14 FanDuel players added from ESPN rosters on 7 cards {'nfl': 12, 'nba': 2}; 37 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 821,
+ "requests": 830,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 32.8
+ "seconds": 38.5
 }
