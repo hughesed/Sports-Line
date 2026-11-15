@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2917,
+ "runNumber": 2918,
  "deadlineHit": false,
- "generatedAt": "2026-11-15T22:34:10Z",
- "generatedAtET": "Sun Nov 15, 5:34 PM ET",
+ "generatedAt": "2026-11-15T22:44:14Z",
+ "generatedAtET": "Sun Nov 15, 5:44 PM ET",
  "today": "2026-11-15",
- "lastRunAt": "2026-11-15T22:34:10Z",
+ "lastRunAt": "2026-11-15T22:44:14Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 6,
    "carried": 8,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 7142,
    "lastFinal": "2026-11-15"
   },
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.5,
+  "seconds": 4.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,19 @@
    "cbb": 792,
    "nhl": 32
   },
-  "gamesUploaded": 7,
+  "gamesUploaded": 9,
   "simTeamsUploaded": 1176,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 188 graded",
  "odds": "kept (today's odds budget used: 94 of ~40 events; month 1647 of 2200)",
  "oddsLive": "kept (today's odds budget used: 94 events)",
- "fanduel": "ok: FanDuel lines on 20 cards, 779 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "ok: 20 games, 1395 player markets (20 FanDuel games in odds.json, pulled 2026-11-15T22:34:10Z; 4s)",
- "espnXref": "ok: 12 FanDuel players added from ESPN rosters on 5 cards {'nba': 7, 'nfl': 5}; 44 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 20 cards, 785 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 20 games, 1409 player markets (20 FanDuel games in odds.json, pulled 2026-11-15T22:44:14Z; 6s)",
+ "espnXref": "ok: 10 FanDuel players added from ESPN rosters on 4 cards {'nba': 5, 'nfl': 5}; 33 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
- "requests": 481,
- "failedRequests": 0,
- "retries": 0,
- "seconds": 28.0
+ "requests": 482,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 37.1
 }
