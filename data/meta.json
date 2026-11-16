@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2984,
+ "runNumber": 2985,
  "deadlineHit": false,
- "generatedAt": "2026-11-16T16:52:14Z",
- "generatedAtET": "Mon Nov 16, 11:52 AM ET",
+ "generatedAt": "2026-11-16T17:02:17Z",
+ "generatedAtET": "Mon Nov 16, 12:02 PM ET",
  "today": "2026-11-16",
- "lastRunAt": "2026-11-16T16:52:14Z",
+ "lastRunAt": "2026-11-16T17:02:17Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 37,
-  "playerCards": 20,
-  "teamCards": 17,
+  "playerCards": 21,
+  "teamCards": 16,
   "window": 567,
   "sched": 346,
   "pastp": 14,
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 1.5,
+  "seconds": 4.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,18 @@
    "cbb": 793,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 16,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 196 graded",
  "odds": "kept (today's odds budget used: 83 of ~37 events; month 1730 of 2200)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 20 cards, 842 player stats, FanDuel-only players on 0 cards; not in the feed (3): EMU@WMU, BALL@OHIO, M-OH@KENT",
- "fanduelDirect": "kept (20 FanDuel games in odds.json, pulled 2026-11-16T16:42:22Z; 0s)",
- "espnXref": "ok: 4 FanDuel players added from ESPN rosters on 2 cards {'nba': 1, 'nfl': 3}; 11 stats from game logs, 0 from FanDuel's price only",
+ "fanduel": "ok: FanDuel lines on 21 cards, 858 player stats, FanDuel-only players on 0 cards; not in the feed (2): BALL@OHIO, M-OH@KENT",
+ "fanduelDirect": "ok: 21 games, 1628 player markets (21 FanDuel games in odds.json, pulled 2026-11-16T17:02:17Z; 6s)",
+ "espnXref": "ok: 13 FanDuel players added from ESPN rosters on 3 cards {'nba': 1, 'nfl': 3, 'cfb': 9}; 27 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
  "errors": [],
- "requests": 516,
+ "requests": 527,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 19.8
+ "seconds": 35.7
 }
