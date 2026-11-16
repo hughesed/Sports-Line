@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2946,
+ "runNumber": 2947,
  "deadlineHit": false,
- "generatedAt": "2026-11-16T03:22:02Z",
- "generatedAtET": "Sun Nov 15, 10:22 PM ET",
+ "generatedAt": "2026-11-16T03:32:04Z",
+ "generatedAtET": "Sun Nov 15, 10:32 PM ET",
  "today": "2026-11-15",
- "lastRunAt": "2026-11-16T03:22:02Z",
+ "lastRunAt": "2026-11-16T03:32:04Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,8 +49,8 @@
    "teamLevel": 5,
    "carried": 4,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2826,
+   "newFinals": 1,
+   "storeGames": 2827,
    "lastFinal": "2026-11-16"
   },
   "cfb": {
@@ -83,7 +83,7 @@
    "carried": 7,
    "error": null,
    "newFinals": 1,
-   "storeGames": 328,
+   "storeGames": 329,
    "lastFinal": "2026-11-16"
   },
   "tennis": {
@@ -111,8 +111,8 @@
   "sched": 343,
   "pastp": 15,
   "predictions": 868,
-  "graded": 782,
-  "storeGames": 15279
+  "graded": 784,
+  "storeGames": 15281
  },
  "calibration": {
   "slopes": {
@@ -122,9 +122,9 @@
    "nba": 1.15,
    "cbb": 0.932
   },
-  "graded": 782,
-  "accML": 0.674,
-  "accBook": 0.666
+  "graded": 784,
+  "accML": 0.675,
+  "accBook": 0.667
  },
  "social": {
   "enabled": true,
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.0,
+  "seconds": 1.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,19 @@
    "cbb": 793,
    "nhl": 32
   },
-  "gamesUploaded": 4,
+  "gamesUploaded": 6,
   "simTeamsUploaded": 1177,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 194 graded",
+ "firstBasket": "0 new snapshots, 1 graded, wnba 6 graded, nba 195 graded",
  "odds": "kept (today's odds budget used: 83 of ~37 events; month 1730 of 2200)",
  "oddsLive": "kept (today's odds budget used: 83 events)",
- "fanduel": "ok: FanDuel lines on 15 cards, 393 player stats, FanDuel-only players on 0 cards; not in the feed (5): MEM@WSH, PHX@DEN, EMU@WMU, BALL@OHIO, M-OH@KENT",
- "fanduelDirect": "kept (17 FanDuel games in odds.json, pulled 2026-11-16T03:12:01Z; 0s)",
- "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 2 cards {'nba': 4, 'nfl': 3}; 28 stats from game logs, 0 from FanDuel's price only",
+ "fanduel": "ok: FanDuel lines on 17 cards, 393 player stats, FanDuel-only players on 0 cards; not in the feed (3): EMU@WMU, BALL@OHIO, M-OH@KENT",
+ "fanduelDirect": "ok: 17 games, 723 player markets (19 FanDuel games in odds.json, pulled 2026-11-16T03:32:04Z; 2s)",
+ "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 1 cards {'nfl': 3}; 8 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 321,
- "failedRequests": 8,
- "retries": 8,
- "seconds": 24.7
+ "requests": 324,
+ "failedRequests": 6,
+ "retries": 6,
+ "seconds": 24.0
 }
