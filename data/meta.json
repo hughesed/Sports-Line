@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 2958,
+ "runNumber": 2959,
  "deadlineHit": false,
- "generatedAt": "2026-11-16T06:02:26Z",
- "generatedAtET": "Mon Nov 16, 1:02 AM ET",
+ "generatedAt": "2026-11-16T06:32:30Z",
+ "generatedAtET": "Mon Nov 16, 1:32 AM ET",
  "today": "2026-11-16",
- "lastRunAt": "2026-11-16T06:02:26Z",
+ "lastRunAt": "2026-11-16T06:32:30Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,8 +45,8 @@
   "nba": {
    "status": "ok",
    "games": 11,
-   "playerLevel": 3,
-   "teamLevel": 1,
+   "playerLevel": 4,
+   "teamLevel": 0,
    "carried": 7,
    "error": null,
    "newFinals": 0,
@@ -108,7 +108,7 @@
   "playerCards": 20,
   "teamCards": 14,
   "window": 567,
-  "sched": 345,
+  "sched": 346,
   "pastp": 14,
   "predictions": 868,
   "graded": 790,
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.6,
+  "seconds": 4.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,18 @@
    "cbb": 793,
    "nhl": 32
   },
-  "gamesUploaded": 11,
+  "gamesUploaded": 10,
   "configured": true
  },
- "firstBasket": "1 new snapshots, 0 graded, wnba 6 graded, nba 196 graded",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 196 graded",
  "odds": "kept (today's odds budget used: 83 of ~37 events; month 1730 of 2200)",
  "oddsLive": "kept (today's odds budget used: 83 events)",
  "fanduel": "ok: FanDuel lines on 17 cards, 850 player stats, FanDuel-only players on 0 cards; not in the feed (3): EMU@WMU, BALL@OHIO, M-OH@KENT",
- "fanduelDirect": "ok: 17 games, 1627 player markets (19 FanDuel games in odds.json, pulled 2026-11-16T06:02:26Z; 4s)",
- "espnXref": "ok: 23 FanDuel players added from ESPN rosters on 5 cards {'nba': 20, 'nfl': 3}; 138 stats from game logs, 0 from FanDuel's price only",
+ "fanduelDirect": "ok: 17 games, 1627 player markets (19 FanDuel games in odds.json, pulled 2026-11-16T06:32:30Z; 6s)",
+ "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 3 cards {'nba': 4, 'nfl': 3}; 30 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 384,
- "failedRequests": 7,
- "retries": 7,
- "seconds": 27.1
+ "requests": 370,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 26.5
 }
