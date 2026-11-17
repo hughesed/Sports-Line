@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3090,
+ "runNumber": 3091,
  "deadlineHit": false,
- "generatedAt": "2026-11-17T17:37:06Z",
- "generatedAtET": "Tue Nov 17, 12:37 PM ET",
+ "generatedAt": "2026-11-17T17:47:10Z",
+ "generatedAtET": "Tue Nov 17, 12:47 PM ET",
  "today": "2026-11-17",
- "lastRunAt": "2026-11-17T17:37:06Z",
+ "lastRunAt": "2026-11-17T17:47:10Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,8 +71,8 @@
    "teamLevel": 5,
    "carried": 9,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 7193,
+   "newFinals": 1,
+   "storeGames": 7194,
    "lastFinal": "2026-11-17"
   },
   "nhl": {
@@ -112,7 +112,7 @@
   "pastp": 14,
   "predictions": 895,
   "graded": 814,
-  "storeGames": 15331
+  "storeGames": 15332
  },
  "calibration": {
   "slopes": {
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.6,
+  "seconds": 5.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,19 @@
    "cbb": 794,
    "nhl": 32
   },
-  "gamesUploaded": 8,
+  "gamesUploaded": 5,
+  "simTeamsUploaded": 1178,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 204 graded",
  "odds": "kept (today's odds budget used: 77 of ~34 events; month 1807 of 2200)",
  "oddsLive": "kept (today's odds budget used: 77 events)",
  "fanduel": "ok: FanDuel lines on 20 cards, 657 player stats, FanDuel-only players on 0 cards; not in the feed (4): UTAH@LAC, AKR@MASS, CMU@BUFF, IND@HOU",
- "fanduelDirect": "ok: 19 games, 1252 player markets (19 FanDuel games in odds.json, pulled 2026-11-17T17:37:06Z; 10s)",
+ "fanduelDirect": "kept (19 FanDuel games in odds.json, pulled 2026-11-17T17:37:06Z; 0s)",
  "espnXref": "ok: 1 FanDuel players added from ESPN rosters on 1 cards {'nba': 1}; 4 stats from game logs, 0 from FanDuel's price only; 24 not on either ESPN roster",
  "errors": [],
- "requests": 421,
- "failedRequests": 0,
- "retries": 0,
- "seconds": 27.5
+ "requests": 419,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 23.5
 }
