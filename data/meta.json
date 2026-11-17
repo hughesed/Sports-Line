@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3091,
+ "runNumber": 3092,
  "deadlineHit": false,
- "generatedAt": "2026-11-17T17:47:10Z",
- "generatedAtET": "Tue Nov 17, 12:47 PM ET",
+ "generatedAt": "2026-11-17T17:57:13Z",
+ "generatedAtET": "Tue Nov 17, 12:57 PM ET",
  "today": "2026-11-17",
- "lastRunAt": "2026-11-17T17:47:10Z",
+ "lastRunAt": "2026-11-17T17:57:13Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 5,
    "carried": 9,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 7194,
    "lastFinal": "2026-11-17"
   },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 5.3,
+  "seconds": 4.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,18 @@
    "cbb": 794,
    "nhl": 32
   },
-  "gamesUploaded": 5,
-  "simTeamsUploaded": 1178,
+  "gamesUploaded": 8,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 204 graded",
  "odds": "kept (today's odds budget used: 77 of ~34 events; month 1807 of 2200)",
  "oddsLive": "kept (today's odds budget used: 77 events)",
- "fanduel": "ok: FanDuel lines on 20 cards, 657 player stats, FanDuel-only players on 0 cards; not in the feed (4): UTAH@LAC, AKR@MASS, CMU@BUFF, IND@HOU",
- "fanduelDirect": "kept (19 FanDuel games in odds.json, pulled 2026-11-17T17:37:06Z; 0s)",
- "espnXref": "ok: 1 FanDuel players added from ESPN rosters on 1 cards {'nba': 1}; 4 stats from game logs, 0 from FanDuel's price only; 24 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 20 cards, 664 player stats, FanDuel-only players on 0 cards; not in the feed (4): UTAH@LAC, AKR@MASS, CMU@BUFF, IND@HOU",
+ "fanduelDirect": "ok: 19 games, 1264 player markets (19 FanDuel games in odds.json, pulled 2026-11-17T17:57:13Z; 5s)",
+ "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 2 cards {'nba': 2}; 8 stats from game logs, 0 from FanDuel's price only; 24 not on either ESPN roster",
  "errors": [],
- "requests": 419,
+ "requests": 421,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 23.5
+ "seconds": 27.1
 }
