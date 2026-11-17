@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3105,
+ "runNumber": 3106,
  "deadlineHit": false,
- "generatedAt": "2026-11-17T20:07:40Z",
- "generatedAtET": "Tue Nov 17, 3:07 PM ET",
+ "generatedAt": "2026-11-17T20:17:47Z",
+ "generatedAtET": "Tue Nov 17, 3:17 PM ET",
  "today": "2026-11-17",
- "lastRunAt": "2026-11-17T20:07:40Z",
+ "lastRunAt": "2026-11-17T20:17:47Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 1.6,
+  "seconds": 1.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -155,12 +155,12 @@
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 204 graded",
  "odds": "kept (today's odds budget used: 77 of ~34 events; month 1807 of 2200)",
  "oddsLive": "kept (today's odds budget used: 77 events)",
- "fanduel": "ok: FanDuel lines on 22 cards, 665 player stats, FanDuel-only players on 0 cards; not in the feed (2): UTAH@LAC, IND@HOU",
- "fanduelDirect": "ok: 21 games, 1287 player markets (21 FanDuel games in odds.json, pulled 2026-11-17T20:07:40Z; 5s)",
- "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 29 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 22 cards, 685 player stats, FanDuel-only players on 0 cards; not in the feed (2): UTAH@LAC, IND@HOU",
+ "fanduelDirect": "ok: 21 games, 1326 player markets (21 FanDuel games in odds.json, pulled 2026-11-17T20:17:47Z; 3s)",
+ "espnXref": "ok: 1 FanDuel players added from ESPN rosters on 1 cards {'nba': 1}; 8 stats from game logs, 0 from FanDuel's price only; 29 not on either ESPN roster",
  "errors": [],
- "requests": 419,
+ "requests": 421,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 22.8
+ "seconds": 16.4
 }
