@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3188,
+ "runNumber": 3189,
  "deadlineHit": false,
- "generatedAt": "2026-11-18T16:59:50Z",
- "generatedAtET": "Wed Nov 18, 11:59 AM ET",
+ "generatedAt": "2026-11-18T17:09:59Z",
+ "generatedAtET": "Wed Nov 18, 12:09 PM ET",
  "today": "2026-11-18",
- "lastRunAt": "2026-11-18T16:59:50Z",
+ "lastRunAt": "2026-11-18T17:09:59Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -149,19 +149,19 @@
    "cbb": 797,
    "nhl": 32
   },
-  "gamesUploaded": 15,
+  "gamesUploaded": 5,
   "simTeamsUploaded": 1181,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 209 graded",
  "odds": "kept (today's odds budget used: 79 of ~30 events; month 1886 of 2200)",
- "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 14 cards, 829 player stats, FanDuel-only players on 0 cards; not in the feed (10): HOU@FLA, KU@WVU, CONN@ARIZ, LA@TOR, PHI@OTT, STL@PIT...",
- "fanduelDirect": "ok: 14 games, 1533 player markets (20 FanDuel games in odds.json, pulled 2026-11-18T16:59:50Z; 4s)",
+ "oddsLive": "kept (today's odds budget used: 79 events)",
+ "fanduel": "ok: FanDuel lines on 13 cards, 829 player stats, FanDuel-only players on 0 cards; not in the feed (10): HOU@FLA, KU@WVU, CONN@ARIZ, LA@TOR, PHI@OTT, STL@PIT...",
+ "fanduelDirect": "kept (20 FanDuel games in odds.json, pulled 2026-11-18T16:59:50Z; 0s)",
  "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 2 cards {'nba': 2}; 7 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
  "errors": [],
  "requests": 504,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 24.0
+ "seconds": 14.6
 }
