@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3215,
+ "runNumber": 3216,
  "deadlineHit": false,
- "generatedAt": "2026-11-18T22:48:55Z",
- "generatedAtET": "Wed Nov 18, 5:48 PM ET",
+ "generatedAt": "2026-11-18T22:52:43Z",
+ "generatedAtET": "Wed Nov 18, 5:52 PM ET",
  "today": "2026-11-18",
- "lastRunAt": "2026-11-18T22:48:55Z",
+ "lastRunAt": "2026-11-18T22:52:43Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 10,
-   "playerLevel": 8,
+   "playerLevel": 7,
    "teamLevel": 0,
-   "carried": 2,
+   "carried": 3,
    "error": null,
    "newFinals": 0,
    "storeGames": 2841,
@@ -79,8 +79,8 @@
    "status": "ok",
    "games": 10,
    "playerLevel": 0,
-   "teamLevel": 1,
-   "carried": 9,
+   "teamLevel": 0,
+   "carried": 10,
    "error": null,
    "newFinals": 0,
    "storeGames": 345,
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 5.8,
+  "seconds": 2.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,7 +149,7 @@
    "cbb": 797,
    "nhl": 32
   },
-  "gamesUploaded": 9,
+  "gamesUploaded": 5,
   "simTeamsUploaded": 1181,
   "configured": true
  },
@@ -157,11 +157,11 @@
  "odds": "kept (today's odds budget used: 79 of ~30 events; month 1886 of 2200)",
  "oddsLive": "kept (today's odds budget used: 79 events)",
  "fanduel": "ok: FanDuel lines on 22 cards, 1014 player stats, FanDuel-only players on 0 cards; not in the feed (2): KU@WVU, CONN@ARIZ",
- "fanduelDirect": "ok: 22 games, 1875 player markets (27 FanDuel games in odds.json, pulled 2026-11-18T22:48:55Z; 7s)",
- "espnXref": "ok: 16 FanDuel players added from ESPN rosters on 5 cards {'nba': 3, 'nhl': 11, 'nfl': 2}; 22 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
+ "fanduelDirect": "kept (27 FanDuel games in odds.json, pulled 2026-11-18T22:48:55Z; 0s)",
+ "espnXref": "ok: 5 FanDuel players added from ESPN rosters on 4 cards {'nba': 3, 'nfl': 2}; 11 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
  "errors": [],
- "requests": 541,
+ "requests": 489,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 30.3
+ "seconds": 30.9
 }
