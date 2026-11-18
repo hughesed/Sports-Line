@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3139,
+ "runNumber": 3140,
  "deadlineHit": false,
- "generatedAt": "2026-11-18T01:44:44Z",
- "generatedAtET": "Tue Nov 17, 8:44 PM ET",
+ "generatedAt": "2026-11-18T01:54:46Z",
+ "generatedAtET": "Tue Nov 17, 8:54 PM ET",
  "today": "2026-11-17",
- "lastRunAt": "2026-11-18T01:44:44Z",
+ "lastRunAt": "2026-11-18T01:54:46Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -55,9 +55,9 @@
   },
   "cfb": {
    "status": "ok",
-   "games": 6,
+   "games": 3,
    "playerLevel": 0,
-   "teamLevel": 4,
+   "teamLevel": 1,
    "carried": 2,
    "error": null,
    "newFinals": 0,
@@ -65,22 +65,22 @@
    "lastFinal": "2026-11-15"
   },
   "cbb": {
-   "status": "partial",
-   "games": 10,
+   "status": "ok",
+   "games": 12,
    "playerLevel": 0,
-   "teamLevel": 2,
+   "teamLevel": 4,
    "carried": 8,
-   "error": "SHSU @ WYO: KeyError: 'overUnder'",
-   "newFinals": 2,
+   "error": null,
+   "newFinals": 0,
    "storeGames": 7206,
    "lastFinal": "2026-11-18"
   },
   "nhl": {
    "status": "ok",
-   "games": 9,
+   "games": 11,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 7,
+   "teamLevel": 5,
+   "carried": 6,
    "error": null,
    "newFinals": 0,
    "storeGames": 334,
@@ -104,9 +104,9 @@
   }
  },
  "counts": {
-  "slate": 37,
-  "playerCards": 20,
-  "teamCards": 17,
+  "slate": 38,
+  "playerCards": 18,
+  "teamCards": 20,
   "window": 549,
   "sched": 437,
   "pastp": 14,
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.0,
+  "seconds": 1.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,21 +149,19 @@
    "cbb": 795,
    "nhl": 32
   },
-  "gamesUploaded": 13,
+  "gamesUploaded": 16,
   "simTeamsUploaded": 1179,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 204 graded",
  "odds": "kept (today's odds budget used: 79 of ~30 events; month 1886 of 2200)",
  "oddsLive": "kept (today's odds budget used: 79 events)",
- "fanduel": "ok: FanDuel lines on 15 cards, 737 player stats, FanDuel-only players on 0 cards; not in the feed (2): RICE@TEM, IND@HOU",
- "fanduelDirect": "ok: 14 games, 1221 player markets (17 FanDuel games in odds.json, pulled 2026-11-18T01:44:44Z; 4s)",
- "espnXref": "ok: 14 FanDuel players added from ESPN rosters on 1 cards {'nhl': 14}; 35 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
- "errors": [
-  "cbb: SHSU @ WYO: KeyError: 'overUnder'"
- ],
- "requests": 353,
+ "fanduel": "ok: FanDuel lines on 13 cards, 666 player stats, FanDuel-only players on 0 cards; not in the feed (2): RICE@TEM, IND@HOU",
+ "fanduelDirect": "ok: 12 games, 1133 player markets (17 FanDuel games in odds.json, pulled 2026-11-18T01:54:46Z; 3s)",
+ "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 5 not on either ESPN roster",
+ "errors": [],
+ "requests": 327,
  "failedRequests": 8,
  "retries": 8,
- "seconds": 30.6
+ "seconds": 17.3
 }
