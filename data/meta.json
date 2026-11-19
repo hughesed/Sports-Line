@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3253,
+ "runNumber": 3254,
  "deadlineHit": false,
- "generatedAt": "2026-11-19T05:00:32Z",
- "generatedAtET": "Thu Nov 19, 12:00 AM ET",
+ "generatedAt": "2026-11-19T05:30:34Z",
+ "generatedAtET": "Thu Nov 19, 12:30 AM ET",
  "today": "2026-11-19",
- "lastRunAt": "2026-11-19T05:00:32Z",
+ "lastRunAt": "2026-11-19T05:30:34Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -49,8 +49,8 @@
    "teamLevel": 3,
    "carried": 3,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2850,
+   "newFinals": 2,
+   "storeGames": 2852,
    "lastFinal": "2026-11-19"
   },
   "cfb": {
@@ -71,8 +71,8 @@
    "teamLevel": 3,
    "carried": 10,
    "error": "VCU @ SCU: KeyError: 'pointSpread'",
-   "newFinals": 1,
-   "storeGames": 7327,
+   "newFinals": 3,
+   "storeGames": 7330,
    "lastFinal": "2026-11-19"
   },
   "nhl": {
@@ -107,12 +107,12 @@
   "slate": 37,
   "playerCards": 14,
   "teamCards": 23,
-  "window": 544,
+  "window": 549,
   "sched": 392,
   "pastp": 14,
   "predictions": 951,
-  "graded": 862,
-  "storeGames": 15497
+  "graded": 864,
+  "storeGames": 15502
  },
  "calibration": {
   "slopes": {
@@ -122,7 +122,7 @@
    "nba": 1.15,
    "cbb": 0.9072
   },
-  "graded": 862,
+  "graded": 864,
   "accML": 0.668,
   "accBook": 0.661
  },
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 2.4,
+  "seconds": 3.3,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,21 +149,21 @@
    "cbb": 801,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 4,
   "simTeamsUploaded": 1185,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 218 graded",
+ "firstBasket": "0 new snapshots, 2 graded, wnba 6 graded, nba 220 graded",
  "odds": "kept (today's odds budget used: 58 of ~26 events; month 1944 of 2200)",
  "oddsLive": "kept (today's odds budget used: 58 events)",
  "fanduel": "ok: FanDuel lines on 14 cards, 220 player stats, FanDuel-only players on 0 cards; not in the feed (9): FLA@WVU, LAC@SA, HOU@KU, ISU@UCF, CLEM@DUKE, BGSU@TOL...",
- "fanduelDirect": "ok: 14 games, 362 player markets (17 FanDuel games in odds.json, pulled 2026-11-19T05:00:32Z; 2s)",
+ "fanduelDirect": "ok: 14 games, 362 player markets (17 FanDuel games in odds.json, pulled 2026-11-19T05:30:34Z; 3s)",
  "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 1 cards {'nfl': 2}; 4 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [
   "cbb: VCU @ SCU: KeyError: 'pointSpread'"
  ],
- "requests": 271,
- "failedRequests": 6,
- "retries": 6,
- "seconds": 16.8
+ "requests": 274,
+ "failedRequests": 4,
+ "retries": 4,
+ "seconds": 20.7
 }
