@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3227,
+ "runNumber": 3228,
  "deadlineHit": false,
- "generatedAt": "2026-11-19T00:43:07Z",
- "generatedAtET": "Wed Nov 18, 7:43 PM ET",
+ "generatedAt": "2026-11-19T00:53:09Z",
+ "generatedAtET": "Wed Nov 18, 7:53 PM ET",
  "today": "2026-11-18",
- "lastRunAt": "2026-11-19T00:43:07Z",
+ "lastRunAt": "2026-11-19T00:53:09Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -65,22 +65,22 @@
    "lastFinal": "2026-11-18"
   },
   "cbb": {
-   "status": "ok",
-   "games": 10,
+   "status": "partial",
+   "games": 8,
    "playerLevel": 0,
-   "teamLevel": 5,
-   "carried": 5,
-   "error": null,
+   "teamLevel": 4,
+   "carried": 4,
+   "error": "FUR @ RAD: KeyError: 'pointSpread'",
    "newFinals": 0,
    "storeGames": 7264,
    "lastFinal": "2026-11-18"
   },
   "nhl": {
    "status": "ok",
-   "games": 9,
+   "games": 10,
    "playerLevel": 0,
    "teamLevel": 1,
-   "carried": 8,
+   "carried": 9,
    "error": null,
    "newFinals": 0,
    "storeGames": 345,
@@ -104,13 +104,13 @@
   }
  },
  "counts": {
-  "slate": 38,
-  "playerCards": 24,
-  "teamCards": 14,
+  "slate": 37,
+  "playerCards": 25,
+  "teamCards": 12,
   "window": 551,
   "sched": 415,
   "pastp": 14,
-  "predictions": 932,
+  "predictions": 933,
   "graded": 842,
   "storeGames": 15421
  },
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.0,
+  "seconds": 1.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -156,12 +156,14 @@
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 209 graded",
  "odds": "kept (today's odds budget used: 58 of ~26 events; month 1944 of 2200)",
  "oddsLive": "kept (today's odds budget used: 58 events)",
- "fanduel": "ok: FanDuel lines on 15 cards, 718 player stats, FanDuel-only players on 0 cards; not in the feed (3): ISU@UCF, CLEM@DUKE, BGSU@TOL",
- "fanduelDirect": "ok: 15 games, 1356 player markets (18 FanDuel games in odds.json, pulled 2026-11-19T00:43:07Z; 4s)",
- "espnXref": "ok: 18 FanDuel players added from ESPN rosters on 7 cards {'nba': 6, 'nhl': 10, 'nfl': 2}; 54 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
- "errors": [],
- "requests": 462,
+ "fanduel": "ok: FanDuel lines on 16 cards, 763 player stats, FanDuel-only players on 0 cards; not in the feed (3): ISU@UCF, CLEM@DUKE, BGSU@TOL",
+ "fanduelDirect": "ok: 16 games, 1413 player markets (19 FanDuel games in odds.json, pulled 2026-11-19T00:53:09Z; 4s)",
+ "espnXref": "ok: 18 FanDuel players added from ESPN rosters on 7 cards {'nba': 6, 'nhl': 10, 'nfl': 2}; 55 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "errors": [
+  "cbb: FUR @ RAD: KeyError: 'pointSpread'"
+ ],
+ "requests": 461,
  "failedRequests": 3,
  "retries": 3,
- "seconds": 34.2
+ "seconds": 24.6
 }
