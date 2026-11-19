@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3302,
+ "runNumber": 3303,
  "deadlineHit": false,
- "generatedAt": "2026-11-19T20:29:46Z",
- "generatedAtET": "Thu Nov 19, 3:29 PM ET",
+ "generatedAt": "2026-11-19T20:39:48Z",
+ "generatedAtET": "Thu Nov 19, 3:39 PM ET",
  "today": "2026-11-19",
- "lastRunAt": "2026-11-19T20:29:46Z",
+ "lastRunAt": "2026-11-19T20:39:48Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,8 +57,8 @@
    "status": "ok",
    "games": 8,
    "playerLevel": 0,
-   "teamLevel": 6,
-   "carried": 2,
+   "teamLevel": 8,
+   "carried": 0,
    "error": null,
    "newFinals": 0,
    "storeGames": 1715,
@@ -105,12 +105,12 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 22,
-  "teamCards": 16,
+  "playerCards": 20,
+  "teamCards": 18,
   "window": 553,
   "sched": 392,
   "pastp": 14,
-  "predictions": 965,
+  "predictions": 968,
   "graded": 868,
   "storeGames": 15506
  },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 4.8,
+  "seconds": 5.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,19 @@
    "cbb": 801,
    "nhl": 32
   },
-  "gamesUploaded": 8,
+  "gamesUploaded": 11,
+  "simTeamsUploaded": 1185,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 221 graded",
  "odds": "kept (today's odds budget used: 58 of ~26 events; month 1944 of 2200)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 11 cards, 434 player stats, FanDuel-only players on 0 cards; not in the feed (13): LAC@SA, BYU@KU, WAKE@GT, OSU@NEB, HOU@WVU, IOWA@ILL...",
- "fanduelDirect": "kept (21 FanDuel games in odds.json, pulled 2026-11-19T20:19:50Z; 0s)",
- "espnXref": "ok: 5 FanDuel players added from ESPN rosters on 2 cards {'nba': 1, 'nfl': 4}; 11 stats from game logs, 0 from FanDuel's price only; 2 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 9 cards, 402 player stats, FanDuel-only players on 0 cards; not in the feed (15): LAC@SA, BYU@KU, WAKE@GT, OSU@NEB, IOWA@ILL, LSU@TENN...",
+ "fanduelDirect": "ok: 9 games, 766 player markets (21 FanDuel games in odds.json, pulled 2026-11-19T20:39:48Z; 4s)",
+ "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 3 cards {'nba': 2, 'nfl': 4}; 15 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 888,
- "failedRequests": 3,
- "retries": 3,
- "seconds": 28.3
+ "requests": 886,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 31.0
 }
