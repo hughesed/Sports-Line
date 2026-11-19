@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3248,
+ "runNumber": 3249,
  "deadlineHit": false,
- "generatedAt": "2026-11-19T04:10:22Z",
- "generatedAtET": "Wed Nov 18, 11:10 PM ET",
+ "generatedAt": "2026-11-19T04:20:25Z",
+ "generatedAtET": "Wed Nov 18, 11:20 PM ET",
  "today": "2026-11-18",
- "lastRunAt": "2026-11-19T04:10:22Z",
+ "lastRunAt": "2026-11-19T04:20:25Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,8 +71,8 @@
    "teamLevel": 5,
    "carried": 10,
    "error": "VCU @ SCU: KeyError: 'pointSpread'",
-   "newFinals": 5,
-   "storeGames": 7321,
+   "newFinals": 3,
+   "storeGames": 7324,
    "lastFinal": "2026-11-19"
   },
   "nhl": {
@@ -110,9 +110,9 @@
   "window": 551,
   "sched": 416,
   "pastp": 14,
-  "predictions": 944,
+  "predictions": 945,
   "graded": 861,
-  "storeGames": 15491
+  "storeGames": 15494
  },
  "calibration": {
   "slopes": {
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.1,
+  "seconds": 4.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,15 +149,15 @@
    "cbb": 801,
    "nhl": 32
   },
-  "gamesUploaded": 1,
+  "gamesUploaded": 6,
   "simTeamsUploaded": 1185,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 218 graded",
  "odds": "kept (today's odds budget used: 58 of ~26 events; month 1944 of 2200)",
  "oddsLive": "kept (today's odds budget used: 58 events)",
- "fanduel": "ok: FanDuel lines on 13 cards, 221 player stats, FanDuel-only players on 0 cards; not in the feed (8): LAC@SA, SEMO@STMN, ISU@UCF, CLEM@DUKE, BGSU@TOL, ORE@MSU...",
- "fanduelDirect": "kept (13 FanDuel games in odds.json, pulled 2026-11-19T04:00:19Z; 0s)",
+ "fanduel": "ok: FanDuel lines on 14 cards, 220 player stats, FanDuel-only players on 0 cards; not in the feed (8): LAC@SA, SEMO@STMN, ISU@UCF, CLEM@DUKE, BGSU@TOL, ORE@MSU...",
+ "fanduelDirect": "ok: 14 games, 362 player markets (14 FanDuel games in odds.json, pulled 2026-11-19T04:20:25Z; 3s)",
  "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 1 cards {'nfl': 2}; 4 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [
   "cbb: VCU @ SCU: KeyError: 'pointSpread'"
@@ -165,5 +165,5 @@
  "requests": 246,
  "failedRequests": 3,
  "retries": 3,
- "seconds": 17.7
+ "seconds": 18.1
 }
