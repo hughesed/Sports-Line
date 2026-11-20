@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "runNumber": 3396,
+ "runNumber": 3397,
  "deadlineHit": false,
- "generatedAt": "2026-11-20T19:07:20Z",
- "generatedAtET": "Fri Nov 20, 2:07 PM ET",
+ "generatedAt": "2026-11-20T19:17:38Z",
+ "generatedAtET": "Fri Nov 20, 2:17 PM ET",
  "today": "2026-11-20",
- "lastRunAt": "2026-11-20T19:07:20Z",
+ "lastRunAt": "2026-11-20T19:17:38Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
    "games": 12,
-   "playerLevel": 9,
+   "playerLevel": 10,
    "teamLevel": 1,
-   "carried": 2,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 436,
@@ -71,8 +71,8 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 7370,
+   "newFinals": 1,
+   "storeGames": 7371,
    "lastFinal": "2026-11-20"
   },
   "nhl": {
@@ -112,7 +112,7 @@
   "pastp": 14,
   "predictions": 980,
   "graded": 891,
-  "storeGames": 15562
+  "storeGames": 15563
  },
  "calibration": {
   "slopes": {
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.1,
+  "seconds": 6.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,7 +149,7 @@
    "cbb": 802,
    "nhl": 32
   },
-  "gamesUploaded": 14,
+  "gamesUploaded": 8,
   "simTeamsUploaded": 1186,
   "configured": true
  },
@@ -157,11 +157,11 @@
  "odds": "kept (today's odds budget used: 60 of ~23 events; month 2004 of 2200)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 13 cards, 584 player stats, FanDuel-only players on 0 cards; not in the feed (11): ARI@KC, BAL@CAR, MIA@BUF, NO@CHI, TB@DET, TEN@DAL...",
- "fanduelDirect": "ok: 13 games, 1176 player markets (13 FanDuel games in odds.json, pulled 2026-11-20T19:07:20Z; 4s)",
+ "fanduelDirect": "kept (13 FanDuel games in odds.json, pulled 2026-11-20T19:07:20Z; 0s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 9 not on either ESPN roster",
  "errors": [],
- "requests": 1024,
- "failedRequests": 3,
- "retries": 3,
- "seconds": 41.6
+ "requests": 1088,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 27.2
 }
