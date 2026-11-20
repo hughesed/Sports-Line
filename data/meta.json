@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3351,
+ "runNumber": 3352,
  "deadlineHit": false,
- "generatedAt": "2026-11-20T04:13:59Z",
- "generatedAtET": "Thu Nov 19, 11:13 PM ET",
+ "generatedAt": "2026-11-20T04:24:01Z",
+ "generatedAtET": "Thu Nov 19, 11:24 PM ET",
  "today": "2026-11-19",
- "lastRunAt": "2026-11-20T04:13:59Z",
+ "lastRunAt": "2026-11-20T04:24:01Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -16,7 +16,7 @@
    "teamLevel": 1,
    "carried": 1,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 436,
    "lastFinal": "2026-11-20"
   },
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 11,
-   "playerLevel": 0,
+   "playerLevel": 1,
    "teamLevel": 0,
-   "carried": 11,
+   "carried": 10,
    "error": null,
    "newFinals": 0,
    "storeGames": 2857,
@@ -71,7 +71,7 @@
    "teamLevel": 0,
    "carried": 5,
    "error": null,
-   "newFinals": 3,
+   "newFinals": 0,
    "storeGames": 7359,
    "lastFinal": "2026-11-20"
   },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 2.8,
+  "seconds": 1.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,18 @@
    "cbb": 802,
    "nhl": 32
   },
-  "gamesUploaded": 3,
-  "simTeamsUploaded": 1186,
+  "gamesUploaded": 6,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 225 graded",
  "odds": "kept (today's odds budget used: 60 of ~23 events; month 2004 of 2200)",
  "oddsLive": "kept (today's odds budget used: 60 events)",
  "fanduel": "ok: FanDuel lines on 5 cards, 460 player stats, FanDuel-only players on 0 cards; not in the feed (19): OSU@NEB, IOWA@ILL, LSU@TENN, TTU@BAY, IU@WASH, UGA@SC...",
- "fanduelDirect": "kept (8 FanDuel games in odds.json, pulled 2026-11-20T04:04:00Z; 0s)",
- "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only",
+ "fanduelDirect": "ok: 5 games, 914 player markets (8 FanDuel games in odds.json, pulled 2026-11-20T04:24:01Z; 2s)",
+ "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 1 cards {'nba': 2}; 12 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 915,
- "failedRequests": 8,
- "retries": 8,
- "seconds": 32.4
+ "requests": 947,
+ "failedRequests": 7,
+ "retries": 7,
+ "seconds": 20.7
 }
