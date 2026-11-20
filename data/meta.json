@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3348,
+ "runNumber": 3349,
  "deadlineHit": false,
- "generatedAt": "2026-11-20T03:49:15Z",
- "generatedAtET": "Thu Nov 19, 10:49 PM ET",
+ "generatedAt": "2026-11-20T03:53:54Z",
+ "generatedAtET": "Thu Nov 19, 10:53 PM ET",
  "today": "2026-11-19",
- "lastRunAt": "2026-11-20T03:49:15Z",
+ "lastRunAt": "2026-11-20T03:53:54Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -60,9 +60,9 @@
    "teamLevel": 8,
    "carried": 1,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 1715,
-   "lastFinal": "2026-11-19"
+   "newFinals": 1,
+   "storeGames": 1716,
+   "lastFinal": "2026-11-20"
   },
   "cbb": {
    "status": "ok",
@@ -111,19 +111,19 @@
   "sched": 392,
   "pastp": 14,
   "predictions": 980,
-  "graded": 886,
-  "storeGames": 15543
+  "graded": 887,
+  "storeGames": 15544
  },
  "calibration": {
   "slopes": {
-   "cfb": 0.8667,
+   "cfb": 0.85,
    "nfl": 1.1231,
    "nhl": 1.15,
    "nba": 1.15,
    "cbb": 0.9316
   },
-  "graded": 886,
-  "accML": 0.667,
+  "graded": 887,
+  "accML": 0.666,
   "accBook": 0.661
  },
  "social": {
@@ -139,7 +139,7 @@
   },
   "calls": 9,
   "failedCalls": 2,
-  "seconds": 4.2,
+  "seconds": 3.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -160,8 +160,8 @@
  "fanduelDirect": "kept (8 FanDuel games in odds.json, pulled 2026-11-20T03:47:47Z; 0s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 914,
+ "requests": 915,
  "failedRequests": 8,
  "retries": 8,
- "seconds": 17.4
+ "seconds": 29.5
 }
