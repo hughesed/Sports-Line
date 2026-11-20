@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3334,
+ "runNumber": 3335,
  "deadlineHit": false,
- "generatedAt": "2026-11-20T01:37:22Z",
- "generatedAtET": "Thu Nov 19, 8:37 PM ET",
+ "generatedAt": "2026-11-20T01:47:36Z",
+ "generatedAtET": "Thu Nov 19, 8:47 PM ET",
  "today": "2026-11-19",
- "lastRunAt": "2026-11-20T01:37:22Z",
+ "lastRunAt": "2026-11-20T01:47:36Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,9 +71,9 @@
    "teamLevel": 0,
    "carried": 5,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 7335,
-   "lastFinal": "2026-11-19"
+   "newFinals": 2,
+   "storeGames": 7337,
+   "lastFinal": "2026-11-20"
   },
   "nhl": {
    "status": "ok",
@@ -112,7 +112,7 @@
   "pastp": 14,
   "predictions": 979,
   "graded": 869,
-  "storeGames": 15509
+  "storeGames": 15511
  },
  "calibration": {
   "slopes": {
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 2.0,
+  "seconds": 5.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -157,11 +157,11 @@
  "odds": "kept (today's odds budget used: 60 of ~23 events; month 2004 of 2200)",
  "oddsLive": "kept (today's odds budget used: 60 events)",
  "fanduel": "ok: FanDuel lines on 5 cards, 445 player stats, FanDuel-only players on 0 cards; not in the feed (19): WAKE@GT, OSU@NEB, IOWA@ILL, LSU@TENN, TTU@BAY, IU@WASH...",
- "fanduelDirect": "kept (9 FanDuel games in odds.json, pulled 2026-11-20T01:27:23Z; 0s)",
+ "fanduelDirect": "ok: 5 games, 884 player markets (9 FanDuel games in odds.json, pulled 2026-11-20T01:47:36Z; 3s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 911,
- "failedRequests": 6,
- "retries": 6,
- "seconds": 25.0
+ "requests": 931,
+ "failedRequests": 7,
+ "retries": 7,
+ "seconds": 25.2
 }
