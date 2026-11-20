@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3352,
+ "runNumber": 3353,
  "deadlineHit": false,
- "generatedAt": "2026-11-20T04:24:01Z",
- "generatedAtET": "Thu Nov 19, 11:24 PM ET",
+ "generatedAt": "2026-11-20T04:34:05Z",
+ "generatedAtET": "Thu Nov 19, 11:34 PM ET",
  "today": "2026-11-19",
- "lastRunAt": "2026-11-20T04:24:01Z",
+ "lastRunAt": "2026-11-20T04:34:05Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,8 +71,8 @@
    "teamLevel": 0,
    "carried": 5,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 7359,
+   "newFinals": 2,
+   "storeGames": 7361,
    "lastFinal": "2026-11-20"
   },
   "nhl": {
@@ -112,7 +112,7 @@
   "pastp": 14,
   "predictions": 980,
   "graded": 889,
-  "storeGames": 15548
+  "storeGames": 15550
  },
  "calibration": {
   "slopes": {
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.2,
+  "seconds": 4.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,19 @@
    "cbb": 802,
    "nhl": 32
   },
-  "gamesUploaded": 6,
+  "gamesUploaded": 5,
+  "simTeamsUploaded": 1186,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 225 graded",
  "odds": "kept (today's odds budget used: 60 of ~23 events; month 2004 of 2200)",
  "oddsLive": "kept (today's odds budget used: 60 events)",
  "fanduel": "ok: FanDuel lines on 5 cards, 460 player stats, FanDuel-only players on 0 cards; not in the feed (19): OSU@NEB, IOWA@ILL, LSU@TENN, TTU@BAY, IU@WASH, UGA@SC...",
- "fanduelDirect": "ok: 5 games, 914 player markets (8 FanDuel games in odds.json, pulled 2026-11-20T04:24:01Z; 2s)",
+ "fanduelDirect": "kept (8 FanDuel games in odds.json, pulled 2026-11-20T04:24:01Z; 0s)",
  "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 1 cards {'nba': 2}; 12 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 947,
- "failedRequests": 7,
- "retries": 7,
- "seconds": 20.7
+ "requests": 1063,
+ "failedRequests": 6,
+ "retries": 6,
+ "seconds": 28.3
 }
