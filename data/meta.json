@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3338,
+ "runNumber": 3339,
  "deadlineHit": false,
- "generatedAt": "2026-11-20T02:17:29Z",
- "generatedAtET": "Thu Nov 19, 9:17 PM ET",
+ "generatedAt": "2026-11-20T02:27:34Z",
+ "generatedAtET": "Thu Nov 19, 9:27 PM ET",
  "today": "2026-11-19",
- "lastRunAt": "2026-11-20T02:17:29Z",
+ "lastRunAt": "2026-11-20T02:27:34Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -72,7 +72,7 @@
    "carried": 5,
    "error": null,
    "newFinals": 3,
-   "storeGames": 7343,
+   "storeGames": 7346,
    "lastFinal": "2026-11-20"
   },
   "nhl": {
@@ -111,8 +111,8 @@
   "sched": 392,
   "pastp": 14,
   "predictions": 980,
-  "graded": 871,
-  "storeGames": 15517
+  "graded": 872,
+  "storeGames": 15520
  },
  "calibration": {
   "slopes": {
@@ -120,11 +120,11 @@
    "nfl": 1.1231,
    "nhl": 1.15,
    "nba": 1.15,
-   "cbb": 0.9323
+   "cbb": 0.9321
   },
-  "graded": 871,
-  "accML": 0.668,
-  "accBook": 0.661
+  "graded": 872,
+  "accML": 0.669,
+  "accBook": 0.662
  },
  "social": {
   "enabled": true,
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 9,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.7,
+  "seconds": 4.7,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,7 +149,7 @@
    "cbb": 802,
    "nhl": 32
   },
-  "gamesUploaded": 0,
+  "gamesUploaded": 4,
   "simTeamsUploaded": 1186,
   "configured": true
  },
@@ -157,11 +157,11 @@
  "odds": "kept (today's odds budget used: 60 of ~23 events; month 2004 of 2200)",
  "oddsLive": "kept (today's odds budget used: 60 events)",
  "fanduel": "ok: FanDuel lines on 5 cards, 445 player stats, FanDuel-only players on 0 cards; not in the feed (19): OSU@NEB, IOWA@ILL, LSU@TENN, TTU@BAY, IU@WASH, UGA@SC...",
- "fanduelDirect": "kept (9 FanDuel games in odds.json, pulled 2026-11-20T02:07:29Z; 0s)",
+ "fanduelDirect": "ok: 5 games, 884 player markets (9 FanDuel games in odds.json, pulled 2026-11-20T02:27:34Z; 4s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
  "requests": 911,
  "failedRequests": 8,
  "retries": 8,
- "seconds": 17.3
+ "seconds": 31.6
 }
