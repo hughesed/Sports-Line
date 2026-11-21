@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3442,
+ "runNumber": 3443,
  "deadlineHit": false,
- "generatedAt": "2026-11-21T02:33:34Z",
- "generatedAtET": "Fri Nov 20, 9:33 PM ET",
+ "generatedAt": "2026-11-21T02:43:35Z",
+ "generatedAtET": "Fri Nov 20, 9:43 PM ET",
  "today": "2026-11-20",
- "lastRunAt": "2026-11-21T02:33:34Z",
+ "lastRunAt": "2026-11-21T02:43:35Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,8 +45,8 @@
   "nba": {
    "status": "ok",
    "games": 11,
-   "playerLevel": 3,
-   "teamLevel": 0,
+   "playerLevel": 2,
+   "teamLevel": 1,
    "carried": 8,
    "error": null,
    "newFinals": 0,
@@ -60,7 +60,7 @@
    "teamLevel": 0,
    "carried": 14,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 1717,
    "lastFinal": "2026-11-20"
   },
@@ -71,8 +71,8 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 2,
-   "storeGames": 7406,
+   "newFinals": 4,
+   "storeGames": 7410,
    "lastFinal": "2026-11-21"
   },
   "nhl": {
@@ -113,7 +113,7 @@
   "pastp": 14,
   "predictions": 987,
   "graded": 893,
-  "storeGames": 15600
+  "storeGames": 15604
  },
  "calibration": {
   "slopes": {
@@ -140,7 +140,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 4.9,
+  "seconds": 4.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -150,19 +150,19 @@
    "cbb": 803,
    "nhl": 32
   },
-  "gamesUploaded": 6,
+  "gamesUploaded": 7,
   "simTeamsUploaded": 1187,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 226 graded",
  "odds": "kept (today's odds budget used: 69 of ~20 events; month 2073 of 2200)",
  "oddsLive": "kept (today's odds budget used: 69 events)",
- "fanduel": "ok: FanDuel lines on 11 cards, 407 player stats, FanDuel-only players on 0 cards; not in the feed (12): ARI@KC, BAL@CAR, MIA@BUF, NO@CHI, TB@DET, TEN@DAL...",
- "fanduelDirect": "ok: 11 games, 854 player markets (13 FanDuel games in odds.json, pulled 2026-11-21T02:33:34Z; 5s)",
- "espnXref": "ok: 3 FanDuel players added from ESPN rosters on 2 cards {'nba': 3}; 18 stats from game logs, 0 from FanDuel's price only; 13 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 12 cards, 497 player stats, FanDuel-only players on 0 cards; not in the feed (12): ARI@KC, BAL@CAR, MIA@BUF, NO@CHI, TB@DET, TEN@DAL...",
+ "fanduelDirect": "ok: 12 games, 1034 player markets (12 FanDuel games in odds.json, pulled 2026-11-21T02:43:35Z; 5s)",
+ "espnXref": "ok: 15 FanDuel players added from ESPN rosters on 3 cards {'nba': 15}; 108 stats from game logs, 0 from FanDuel's price only; 13 not on either ESPN roster",
  "errors": [],
- "requests": 1018,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 43.4
+ "requests": 1015,
+ "failedRequests": 5,
+ "retries": 5,
+ "seconds": 43.8
 }
