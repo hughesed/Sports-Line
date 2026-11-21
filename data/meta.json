@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3426,
- "deadlineHit": false,
- "generatedAt": "2026-11-20T23:53:09Z",
- "generatedAtET": "Fri Nov 20, 6:53 PM ET",
+ "runNumber": 3427,
+ "deadlineHit": true,
+ "generatedAt": "2026-11-21T00:03:05Z",
+ "generatedAtET": "Fri Nov 20, 7:03 PM ET",
  "today": "2026-11-20",
- "lastRunAt": "2026-11-20T23:53:09Z",
+ "lastRunAt": "2026-11-21T00:03:05Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -128,18 +128,16 @@
  },
  "social": {
   "enabled": true,
-  "errors": [
-   "battle data upload: RuntimeError: HTTP 500 on /rest/v1/sim_players: ON CONFLICT DO UPDATE command cannot affect row a second time"
-  ],
+  "errors": [],
   "pending": 0,
   "finalize_days": 0,
   "battle_tick": {
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
-  "failedCalls": 2,
-  "seconds": 5.7,
+  "calls": 3,
+  "failedCalls": 0,
+  "seconds": 1.5,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +147,19 @@
    "cbb": 802,
    "nhl": 32
   },
-  "gamesUploaded": 12,
-  "simTeamsUploaded": 1186,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 225 graded",
- "odds": "kept (today's odds budget used: 60 of ~23 events; month 2004 of 2200)",
- "oddsLive": "kept (today's odds budget used: 60 events)",
- "fanduel": "ok: FanDuel lines on 13 cards, 609 player stats, FanDuel-only players on 0 cards; not in the feed (11): ARI@KC, BAL@CAR, MIA@BUF, NO@CHI, TB@DET, TEN@DAL...",
- "fanduelDirect": "ok: 13 games, 1233 player markets (13 FanDuel games in odds.json, pulled 2026-11-20T23:53:09Z; 6s)",
- "espnXref": "ok: 5 FanDuel players added from ESPN rosters on 5 cards {'nba': 4, 'cfb': 1}; 17 stats from game logs, 0 from FanDuel's price only; 10 not on either ESPN roster",
- "errors": [],
- "requests": 1110,
+ "odds": "ok: 69 events (+1 kept: in play, or leagues not pulled this time); soccer {'UEFA_CHAMPIONS_LEAGUE': 0, 'MLS': 3, 'EPL': 'HTTPError: HTTP Error 400: Bad Request', 'LA_LIGA': 'HTTPError: HTTP Error 400: Bad Request', 'BUNDESLIGA': 'skipped (time)', 'IT_SERIE_A': 'skipped (time)', 'FR_LIGUE_1': 'skipped (time)', 'LIGA_MX': 'skipped (time)'}",
+ "oddsLive": "kept (today's odds budget used: 69 events)",
+ "fanduel": "ok: FanDuel lines on 12 cards, 511 player stats, FanDuel-only players on 0 cards; not in the feed (11): ARI@KC, BAL@CAR, MIA@BUF, NO@CHI, TB@DET, TEN@DAL...",
+ "fanduelDirect": "ok: 12 games, 1039 player markets (13 FanDuel games in odds.json, pulled 2026-11-21T00:03:05Z; 4s)",
+ "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 10 not on either ESPN roster",
+ "errors": [
+  "time limit reached: 24 ESPN requests were skipped to stay inside the run budget; the next run catches up"
+ ],
+ "requests": 1085,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 34.6
+ "seconds": 155.4
 }
