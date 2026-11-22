@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3578,
+ "runNumber": 3579,
  "deadlineHit": false,
- "generatedAt": "2026-11-22T13:14:46Z",
- "generatedAtET": "Sun Nov 22, 8:14 AM ET",
+ "generatedAt": "2026-11-22T13:44:50Z",
+ "generatedAtET": "Sun Nov 22, 8:44 AM ET",
  "today": "2026-11-22",
- "lastRunAt": "2026-11-22T13:14:46Z",
+ "lastRunAt": "2026-11-22T13:44:50Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.0,
+  "seconds": 4.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,18 @@
    "cbb": 804,
    "nhl": 32
   },
-  "gamesUploaded": 18,
+  "gamesUploaded": 20,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 240 graded",
  "odds": "kept (today's odds budget used: 78 of ~14 events; month 2151 of 2200)",
  "oddsLive": "no games in play",
- "fanduel": "ok: FanDuel lines on 23 cards, 1053 player stats, FanDuel-only players on 0 cards; not in the feed (1): CIN@WSH",
- "fanduelDirect": "ok: 23 games, 2107 player markets (23 FanDuel games in odds.json, pulled 2026-11-22T13:14:46Z; 5s)",
- "espnXref": "ok: 27 FanDuel players added from ESPN rosters on 14 cards {'nfl': 22, 'nba': 4, 'nhl': 1}; 75 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 23 cards, 1050 player stats, FanDuel-only players on 0 cards; not in the feed (1): CIN@WSH",
+ "fanduelDirect": "ok: 23 games, 2100 player markets (23 FanDuel games in odds.json, pulled 2026-11-22T13:44:50Z; 8s)",
+ "espnXref": "ok: 26 FanDuel players added from ESPN rosters on 13 cards {'nfl': 22, 'nba': 4}; 72 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
- "requests": 1125,
+ "requests": 1121,
  "failedRequests": 3,
  "retries": 3,
- "seconds": 42.2
+ "seconds": 43.5
 }
