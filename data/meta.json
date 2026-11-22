@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3532,
+ "runNumber": 3533,
  "deadlineHit": false,
- "generatedAt": "2026-11-22T00:30:22Z",
- "generatedAtET": "Sat Nov 21, 7:30 PM ET",
+ "generatedAt": "2026-11-22T00:40:30Z",
+ "generatedAtET": "Sat Nov 21, 7:40 PM ET",
  "today": "2026-11-21",
- "lastRunAt": "2026-11-22T00:30:22Z",
+ "lastRunAt": "2026-11-22T00:40:30Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 4,
-   "playerLevel": 4,
+   "playerLevel": 3,
    "teamLevel": 0,
-   "carried": 0,
+   "carried": 1,
    "error": null,
    "newFinals": 0,
    "storeGames": 2867,
@@ -60,7 +60,7 @@
    "teamLevel": 2,
    "carried": 20,
    "error": null,
-   "newFinals": 4,
+   "newFinals": 0,
    "storeGames": 1760,
    "lastFinal": "2026-11-21"
   },
@@ -140,7 +140,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.7,
+  "seconds": 5.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -150,19 +150,19 @@
    "cbb": 804,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 10,
   "simTeamsUploaded": 1188,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 235 graded",
  "odds": "kept (today's odds budget used: 78 of ~14 events; month 2151 of 2200)",
  "oddsLive": "kept (today's odds budget used: 78 events)",
- "fanduel": "ok: FanDuel lines on 18 cards, 696 player stats, FanDuel-only players on 0 cards; not in the feed (1): CIN@WSH",
- "fanduelDirect": "ok: 16 games, 1113 player markets (18 FanDuel games in odds.json, pulled 2026-11-22T00:30:22Z; 4s)",
- "espnXref": "ok: 39 FanDuel players added from ESPN rosters on 13 cards {'nba': 1, 'cfb': 17, 'nfl': 21}; 66 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 18 cards, 670 player stats, FanDuel-only players on 0 cards; not in the feed (1): CIN@WSH",
+ "fanduelDirect": "ok: 17 games, 1228 player markets (17 FanDuel games in odds.json, pulled 2026-11-22T00:40:30Z; 6s)",
+ "espnXref": "ok: 21 FanDuel players added from ESPN rosters on 10 cards {'nfl': 21}; 39 stats from game logs, 0 from FanDuel's price only; 6 not on either ESPN roster",
  "errors": [],
- "requests": 1073,
- "failedRequests": 1,
- "retries": 1,
- "seconds": 25.6
+ "requests": 1022,
+ "failedRequests": 3,
+ "retries": 3,
+ "seconds": 31.6
 }
