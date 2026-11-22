@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3603,
+ "runNumber": 3604,
  "deadlineHit": false,
- "generatedAt": "2026-11-22T19:25:34Z",
- "generatedAtET": "Sun Nov 22, 2:25 PM ET",
+ "generatedAt": "2026-11-22T19:35:36Z",
+ "generatedAtET": "Sun Nov 22, 2:35 PM ET",
  "today": "2026-11-22",
- "lastRunAt": "2026-11-22T19:25:34Z",
+ "lastRunAt": "2026-11-22T19:35:36Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 4,
    "carried": 7,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 7486,
    "lastFinal": "2026-11-22"
   },
@@ -105,8 +105,8 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 24,
-  "teamCards": 14,
+  "playerCards": 25,
+  "teamCards": 13,
   "window": 552,
   "sched": 340,
   "pastp": 14,
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 1.6,
+  "seconds": 1.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,18 @@
    "cbb": 804,
    "nhl": 32
   },
-  "gamesUploaded": 16,
-  "simTeamsUploaded": 1188,
+  "gamesUploaded": 14,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 240 graded",
  "odds": "kept (today's odds budget used: 78 of ~14 events; month 2151 of 2200)",
  "oddsLive": "kept (today's odds budget used: 78 events)",
- "fanduel": "ok: FanDuel lines on 20 cards, 864 player stats, FanDuel-only players on 0 cards",
- "fanduelDirect": "ok: 20 games, 1689 player markets (22 FanDuel games in odds.json, pulled 2026-11-22T19:25:34Z; 5s)",
- "espnXref": "ok: 16 FanDuel players added from ESPN rosters on 7 cards {'nfl': 11, 'nba': 5}; 49 stats from game logs, 0 from FanDuel's price only",
+ "fanduel": "ok: FanDuel lines on 21 cards, 886 player stats, FanDuel-only players on 0 cards",
+ "fanduelDirect": "ok: 21 games, 1714 player markets (22 FanDuel games in odds.json, pulled 2026-11-22T19:35:36Z; 5s)",
+ "espnXref": "ok: 20 FanDuel players added from ESPN rosters on 7 cards {'nfl': 11, 'nba': 1, 'nhl': 8}; 49 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 739,
- "failedRequests": 3,
- "retries": 3,
- "seconds": 26.5
+ "requests": 778,
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 34.4
 }
