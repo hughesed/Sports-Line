@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3599,
+ "runNumber": 3600,
  "deadlineHit": false,
- "generatedAt": "2026-11-22T18:45:27Z",
- "generatedAtET": "Sun Nov 22, 1:45 PM ET",
+ "generatedAt": "2026-11-22T18:55:32Z",
+ "generatedAtET": "Sun Nov 22, 1:55 PM ET",
  "today": "2026-11-22",
- "lastRunAt": "2026-11-22T18:45:27Z",
+ "lastRunAt": "2026-11-22T18:55:32Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -79,8 +79,8 @@
    "status": "ok",
    "games": 9,
    "playerLevel": 0,
-   "teamLevel": 3,
-   "carried": 6,
+   "teamLevel": 2,
+   "carried": 7,
    "error": null,
    "newFinals": 0,
    "storeGames": 374,
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 1.7,
+  "seconds": 1.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -150,17 +150,18 @@
    "nhl": 32
   },
   "gamesUploaded": 11,
+  "simTeamsUploaded": 1188,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 240 graded",
  "odds": "kept (today's odds budget used: 78 of ~14 events; month 2151 of 2200)",
  "oddsLive": "kept (today's odds budget used: 78 events)",
- "fanduel": "ok: FanDuel lines on 22 cards, 844 player stats, FanDuel-only players on 0 cards; not in the feed (2): GW@WKU, CIN@WSH",
- "fanduelDirect": "ok: 22 games, 1634 player markets (22 FanDuel games in odds.json, pulled 2026-11-22T18:45:27Z; 5s)",
- "espnXref": "ok: 20 FanDuel players added from ESPN rosters on 8 cards {'nba': 3, 'nfl': 9, 'nhl': 8}; 43 stats from game logs, 0 from FanDuel's price only",
+ "fanduel": "ok: FanDuel lines on 21 cards, 844 player stats, FanDuel-only players on 0 cards; not in the feed (2): GW@WKU, CIN@WSH",
+ "fanduelDirect": "ok: 21 games, 1654 player markets (22 FanDuel games in odds.json, pulled 2026-11-22T18:55:32Z; 4s)",
+ "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 6 cards {'nfl': 9, 'nba': 2}; 27 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 751,
+ "requests": 740,
  "failedRequests": 3,
  "retries": 3,
- "seconds": 31.4
+ "seconds": 19.1
 }
