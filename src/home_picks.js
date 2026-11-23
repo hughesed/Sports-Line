@@ -64,9 +64,13 @@ function hpLegs(g){
   const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l)); }catch(_){} const fdo=out.filter(hpIsFd); HP.cache[ck]=fdo; return fdo; }
   const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
   const abbrBk=b=>HP_BK[b]||b;
+  /* player legs: the prop bot's learned calibration (bot.js botP, from engine/propbot.py) replaces this phone's own one once the bot has enough graded legs */
   const push=(tok,kind,label,x,opp,pModel,spec,group,extra)=>{ const b=hpBest(x); if(!b) return; const pf=hpFair(x,opp,b); if(pf==null) return;
-    const p0=pModel==null?pf:0.5*pf+0.5*pModel; const p=adjP(clamp(p0*((extra&&extra.avail)||1),0.02,0.97),kind==='prop'?'prop':'team');
-    out.push(Object.assign({id:tok,tok:tok,gid:g.id,kind:kind,label:label,price:b.odds,book:b.book,bk:abbrBk(b.book),link:b.link,nBooks:b.n,line:b.line,pFair:pf,pModel:pModel,p:p,ps:p,avail:1,src:abbrBk(b.book),spec:spec,group:group},extra||{})); };
+    const bb=extra&&extra._b; if(bb) delete extra._b;
+    const p0=pModel==null?pf:0.5*pf+0.5*pModel, pb=clamp(p0*((extra&&extra.avail)||1),0.02,0.97);
+    const pq=bb&&typeof botP==='function'?botP(bb.pl,bb.st,bb.dir,pb):null; const p=pq!=null?pq:adjP(pb,kind==='prop'?'prop':'team');
+    const bt=bb&&typeof botTxt==='function'?botTxt(bb.st,pb,pq):''; if(bt&&extra) extra.why=(extra.why?extra.why+'; ':'')+bt;
+    out.push(Object.assign({id:tok,tok:tok,gid:g.id,kind:kind,label:label,price:b.odds,book:b.book,bk:abbrBk(b.book),link:b.link,nBooks:b.n,line:b.line,pFair:pf,pModel:pModel,p:p,ps:p,avail:1,src:abbrBk(b.book),spec:spec,group:group,bot:bt||null},extra||{})); };
   if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l));       // soccer: the 3-way result, double chance, goal ladders (soccer.js) instead of the 2-way lines
   else {
   ['home','away'].forEach(s=>{ const t=s==='home'?H:A, x=M.ml&&M.ml[s], o=M.ml&&M.ml[s==='home'?'away':'home'];
@@ -82,19 +86,21 @@ function hpLegs(g){
   const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
   Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p||!hpPropOk(key,p.stat,side==='under')) return; const o=pair[side==='over'?'under':'over'];
     const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')||!stMain(g,pl)) return;
+    if(typeof botAvoid==='function'&&botAvoid(pl)) return;                 // the bot keeps him out of the picks (questionable, minutes limit, just traded)
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
-    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under'),thin:!!st.thin}); }); });
+    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under'),thin:!!st.thin,_b:{pl:pl,st:st,dir:side==='under'?'u':'o'}}); }); });
   /* stat thresholds ("125+ pass yds", "1+ receptions", "2+ pass TD"): ONLY the rungs FanDuel lists (its alternate lines and 1+ markets, put on the player's ladder by the bot,
      engine/fanduel.py), at FanDuel's price, with FanDuel's bet link. The app no longer invents rungs or prices for the builders: a number FanDuel does not offer is not a pick. */
-  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; const av=pl.avail==null?1:pl.avail;
+  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; if(typeof botAvoid==='function'&&botAvoid(pl)) return; const av=pl.avail==null?1:pl.avail;
     (pl.stats||[]).forEach(st=>{ if(!hpPropOk(key,st.key,false)) return; const lab=String(st.label||st.key).toLowerCase();
       (st.miles||[]).forEach(m=>{ if(!m||!m.fd||m.price==null||m.t==null) return; const T=+m.t, pf=clamp(hpImp(m.price)*0.96,0.02,0.97);      // one-sided price: about 4% of it is the book's margin
-        const pm=m.p!=null?+m.p:null; const p=adjP(clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97),'prop'), tok='o:'+g.id+':fd:'+pl.id+':'+st.key+':'+T;
+        const pm=m.p!=null?+m.p:null, pb=clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97), pq=typeof botP==='function'?botP(pl,st,'o',pb):null;
+        const p=pq!=null?pq:adjP(pb,'prop'), bt=typeof botTxt==='function'?botTxt(st,pb,pq):'', tok='o:'+g.id+':fd:'+pl.id+':'+st.key+':'+T;
         if(out.some(x=>x.tok===tok)) return;
         out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+T+'+ '+lab,price:m.price,book:'fanduel',bk:'FD',link:m.link||null,nBooks:1,line:T-0.5,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
-          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.',thin:!!st.thin,
+          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.'+(bt?' '+bt+'.':''),bot:bt||null,thin:!!st.thin,
           rec:m.n||m.pn?{h:m.hit||0,n:m.n||0,ph:m.ph,pn:m.pn}:hpRec(st,T,false)}); }); }); });
   /* FanDuel's alternate game totals ("Under 7.5" in hockey) */
   if(!(typeof isSoc==='function'&&isSoc(g))) ['over','under'].forEach(d=>{ const x=M.total&&M.total[d], fd=x&&x.books&&x.books.fanduel; if(!fd||!fd.alts) return;

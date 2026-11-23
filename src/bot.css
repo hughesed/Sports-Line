@@ -1,0 +1,16 @@
+/* prop bot (bot.js) */
+.botw{display:flex;flex-direction:column;gap:8px;padding:6px 2px 4px}
+.bott{border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+.botr{display:grid;grid-template-columns:1fr 64px 64px;gap:6px;padding:6px 10px;border-top:1px solid var(--line)}
+.botr:first-child{border-top:0}
+.botr span:not(:first-child){text-align:right}
+.bothd{background:var(--surface2);font-weight:600;color:var(--muted);font-size:12px}
+.botr .ok,.okc{color:var(--over)}
+.botr .bad,.badc{color:var(--under)}
+.botlg{display:flex;flex-wrap:wrap;gap:6px}
+.botchip{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;background:var(--surface2);color:var(--muted)}
+.botchip.on{border-color:var(--accent);color:var(--ink);background:var(--accent-soft)}
+.botsec ul{margin:4px 0 0;padding-left:18px}
+.botsec li{margin:3px 0}
+.botsec summary{cursor:pointer}
+.botsub{display:block;font-size:11px;color:var(--accent);font-weight:500;margin-top:1px}

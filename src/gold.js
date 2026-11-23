@@ -45,7 +45,7 @@ function goldLegsOf(g){
     const key=(l.label||'')+'|'+g.id; if(seen[key]) return; seen[key]=1;
     const p0=l.ps!=null?l.ps:adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),l.spec.k==='prop'?'prop':'team');
     const tok=l.tok||l.id; const book=l.book?(l.book==='est'?'est':l.book):(l.src==='FanDuel'?'fanduel':l.src==='DraftKings'||l.src==='DK'?'draftkings':'est');
-    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0,rec:l.rec||null,thin:!!l.thin,pFair:l.pFair!=null?l.pFair:null}); };
+    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0,rec:l.rec||null,thin:!!l.thin,pFair:l.pFair!=null?l.pFair:null,bot:l.bot||null}); };
   /* FanDuel only: hpLegs (home_picks.js) gives the bets FanDuel lists at FanDuel's price (team lines, over/unders, its alternate lines and 1+ markets) */
   try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(typeof hpIsFd!=='function'||hpIsFd(l)) add(l); }); }catch(e){}
   Object.keys(GPK.cache).forEach(k=>{ if(k.indexOf(g.id+'|')===0) delete GPK.cache[k]; });
@@ -107,14 +107,14 @@ function goldRecord(key){
   return {pick:p.length?p.filter(c=>c.status==='hit').length+'-'+p.filter(c=>c.status!=='hit').length:'',legs:legs.length?legs.filter(l=>l.res==='W').length+'/'+legs.length:''};
 }
 function goldLegLine(l){ const g=l.g||G[l.gid];
-  return '<span class="glleg"><span class="gll">'+esc(l.label)+(g?' <span class="muted small">'+esc(g.teams.away.abbr+' @ '+g.teams.home.abbr)+'</span>':'')+'</span><span class="mono glp">'+fo(l.price)+(l.est?'*':'')+' · '+Math.round(l.ps*100)+'%</span></span>'; }
+  return '<span class="glleg"><span class="gll">'+esc(l.label)+(g?' <span class="muted small">'+esc(g.teams.away.abbr+' @ '+g.teams.home.abbr)+'</span>':'')+(l.bot?'<span class="botsub">'+esc(l.bot)+'</span>':'')+'</span><span class="mono glp">'+fo(l.price)+(l.est?'*':'')+' · '+Math.round(l.ps*100)+'%</span></span>'; }
 function goldSportHtml(key){
   const name=LGN[key]||key.toUpperCase(), r=goldPick(key), rec=goldRecord(key);
   const recT=(rec.pick?'gold picks '+rec.pick:'no graded gold pick yet')+(rec.legs?' · gold legs '+rec.legs:'');
   let h='<div class="gold"><div class="glh"><b>'+esc(name)+'</b><span class="muted small">'+esc(recT)+'</span></div>';
   if(!r) return h+'<div class="small muted">Every '+esc(name)+' game on the board has started.</div></div>';
   if(r.best){ const l=r.best, on=inSlip(l.tok);
-    h+='<button class="glpick'+(on?' on':'')+'" data-act="leg" data-tok="'+esc(l.tok)+'" aria-pressed="'+on+'"><span class="glbadge">GOLD PICK</span><span class="glrow"><span class="gll">'+esc(l.label)+'<span class="muted small"> · '+esc(l.g.teams.away.abbr+' @ '+l.g.teams.home.abbr)+'</span></span><span class="glbig">'+Math.round(l.ps*100)+'%<small class="mono">'+fo(l.price)+(l.est?' est.':'')+'</small></span></span></button>';
+    h+='<button class="glpick'+(on?' on':'')+'" data-act="leg" data-tok="'+esc(l.tok)+'" aria-pressed="'+on+'"><span class="glbadge">GOLD PICK</span><span class="glrow"><span class="gll">'+esc(l.label)+'<span class="muted small"> · '+esc(l.g.teams.away.abbr+' @ '+l.g.teams.home.abbr)+'</span>'+(l.bot?'<span class="botsub">'+esc(l.bot)+'</span>':'')+'</span><span class="glbig">'+Math.round(l.ps*100)+'%<small class="mono">'+fo(l.price)+(l.est?' est.':'')+'</small></span></span></button>';
   } else h+='<div class="small">No leg reaches '+Math.round(GPK.p*100)+'% in '+esc(name)+' right now.'+(r.near?' <span class="muted">Closest: '+esc(r.near.label)+' ('+esc(r.near.g.teams.away.abbr+' @ '+r.near.g.teams.home.abbr)+') '+Math.round(r.near.ps*100)+'%.</span>':'')+'</div>';
   let lastN=0; GPK.sizes.forEach(n=>{ const s=goldSlipFor(key,n); if(!s||s.legs.length<=lastN) return; lastN=s.legs.length; const on=s.legs.every(l=>inSlip(l.tok));
     h+='<details class="glslip"><summary><span><b>Gold '+n+'</b>'+(s.short?' <span class="muted small">('+s.legs.length+' legs)</span>':'')+'</span><span class="mono small">~'+Math.round(s.pAll*100)+'% all hit · '+fo(s.am)+'</span></summary>'+

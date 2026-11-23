@@ -82,7 +82,7 @@ t = rep(t, 'body{background:var(--bg);color:var(--ink);font-family:var(--f-body)
         'body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45;padding-inline:0;padding-block:0 170px}')
 t = rep(t, '.wrap{max-width:760px;margin-inline:auto;display:flex;flex-direction:column;gap:16px}', '.wrap{max-width:760px;margin-inline:auto;display:flex;flex-direction:column;gap:14px;padding-inline:16px;padding-block:14px 0}')
 t = rep(t, 'bottom:calc(76px + env(safe-area-inset-bottom,0px))', 'bottom:calc(150px + env(safe-area-inset-bottom,0px))')
-t = rep(t, '</style>', rd("ui2.css") + "\n" + rd("live3.css") + "\n" + rd("fs.css") + "\n" + rd("picks.css") + "\n" + rd("site.css") + "\n" + rd("social.css") + "\n" + rd("battle.css") + "\n" + rd("battle_anim.css") + "\n" + rd("share.css") + "\n" + rd("shop.css") + "\n" + rd("live_lines.css") + "\n" + rd("stacks.css") + "\n" + rd("combo.css") + "\n</style>")
+t = rep(t, '</style>', rd("ui2.css") + "\n" + rd("live3.css") + "\n" + rd("fs.css") + "\n" + rd("picks.css") + "\n" + rd("site.css") + "\n" + rd("social.css") + "\n" + rd("battle.css") + "\n" + rd("battle_anim.css") + "\n" + rd("share.css") + "\n" + rd("shop.css") + "\n" + rd("live_lines.css") + "\n" + rd("stacks.css") + "\n" + rd("combo.css") + "\n" + rd("bot.css") + "\n</style>")
 t = rep(t, '<div class="wrap" id="app"></div>', '<header class="hd" id="hdr"></header>\n<div class="wrap" id="app"></div>')
 t = rep(t, '<div class="slipbar" id="slip" hidden></div>', '<div class="slipbar" id="slip" hidden></div>\n<nav class="bnav" id="nav" aria-label="Main"></nav>')
 t = cut(t, '/* ================= shell ================= */\nfunction render(){', '/* ================= events')
@@ -130,6 +130,8 @@ OLD_CHIP = """function chipOf(t){ return '<div class="chip" style="background:'+
 NEW_CHIP = """function chipOf(t){ const u=typeof logoUrl==='function'?logoUrl(t.lg,t):''; return '<div class="chip'+(u?' haslogo':'')+'" style="background:'+esc(t.color)+';border-color:'+esc(t.alt)+'">'+(u?'<img alt="" loading="lazy" src="'+esc(u)+'" onerror="this.remove()">':'')+'<span>'+esc(t.abbr.length>3?t.abbr.slice(0,3):t.abbr)+'</span></div>'; }"""
 t = rep(t, OLD_CHIP, NEW_CHIP)
 t = rep(t, "const LEARN=__LEARN__;", "const LEARN=window.__LSDATA.learn;")
+t = rep(t, "  if(st.anchorNote) notes.push('<span class=\"w\">'+esc(st.anchorNote)+'</span>');",
+        "  if(st.anchorNote) notes.push('<span class=\"w\">'+esc(st.anchorNote)+'</span>');\n  if(typeof botNotesFor==='function') botNotesFor(pl,st).forEach(n=>notes.push(n));")
 t = rep(t, "const PASTP=__PASTP__;", "const PASTP=window.__LSDATA.pastp;")
 # accounts / leaderboard / chat / battles (Supabase): the older local versions of these functions are renamed *Local and
 # social.js decides which one runs (no Supabase configured -> the local practice bank exactly as before)
@@ -138,7 +140,7 @@ for fn in ("slipHtml", "calcHtml", "placeCheck", "slipsView"):
     t = t.replace("function " + fn + "(){", "function " + fn + "Local(){", 1)
 assert t.count("function renderBank(){") == 1
 t = t.replace("function renderBank(){", "function renderBankLocal(){", 1)
-sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("battle_fill.js") + "\n" + rd("share.js") + "\n" + rd("shop.js") + "\n" + rd("odds_ui.js") + "\n" + rd("live_lines.js") + "\n" + rd("soccer.js") + "\n" + rd("starters.js") + "\n" + rd("floor.js") + "\n" + rd("home_picks.js") + "\n" + rd("stacks.js") + "\n" + rd("gold.js") + "\n" + rd("combo.js")
+sa = rd("standalone.js") + "\n" + rd("keepcards.js") + "\n" + rd("social.js") + "\n" + rd("battle.js") + "\n" + rd("battle_anim.js") + "\n" + rd("battle_fill.js") + "\n" + rd("share.js") + "\n" + rd("shop.js") + "\n" + rd("odds_ui.js") + "\n" + rd("live_lines.js") + "\n" + rd("soccer.js") + "\n" + rd("starters.js") + "\n" + rd("floor.js") + "\n" + rd("home_picks.js") + "\n" + rd("stacks.js") + "\n" + rd("gold.js") + "\n" + rd("combo.js") + "\n" + rd("bot.js")
 assert t.count("const $app=document.getElementById") == 1
 t = t.replace("const $app=document.getElementById", sa + "\nconst $app=document.getElementById", 1)
 t = rep(t, "if(dbh&&userh) initSocial(dbh,userh); else { FS.conn='nodb'; if(S.view==='live') render(); }", "startPoll();")

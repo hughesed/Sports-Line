@@ -1219,10 +1219,27 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
 .cxcust{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 10px}
 .cxcust input{width:64px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
 
+/* prop bot (bot.js) */
+.botw{display:flex;flex-direction:column;gap:8px;padding:6px 2px 4px}
+.bott{border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+.botr{display:grid;grid-template-columns:1fr 64px 64px;gap:6px;padding:6px 10px;border-top:1px solid var(--line)}
+.botr:first-child{border-top:0}
+.botr span:not(:first-child){text-align:right}
+.bothd{background:var(--surface2);font-weight:600;color:var(--muted);font-size:12px}
+.botr .ok,.okc{color:var(--over)}
+.botr .bad,.badc{color:var(--under)}
+.botlg{display:flex;flex-wrap:wrap;gap:6px}
+.botchip{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;background:var(--surface2);color:var(--muted)}
+.botchip.on{border-color:var(--accent);color:var(--ink);background:var(--accent-soft)}
+.botsec ul{margin:4px 0 0;padding-left:18px}
+.botsec li{margin:3px 0}
+.botsec summary{cursor:pointer}
+.botsub{display:block;font-size:11px;color:var(--accent);font-weight:500;margin-top:1px}
+
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="a2338a95d9">
+<body data-build="8733b2de90">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -1261,10 +1278,11 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
       getJSON('data/learn.json?v='+v,15000),
       getJSON('data/pastp.json?v='+v,8000).catch(function(){ return {}; }),
       getJSON('data/odds.json?v='+v,8000).catch(function(){ return null; }),
-      getJSON('data/firstbasket.json?v='+v,8000).catch(function(){ return null; })
+      getJSON('data/firstbasket.json?v='+v,8000).catch(function(){ return null; }),
+      getJSON('data/propbot.json?v='+v,8000).catch(function(){ return null; })
     ]).then(function(a){
       if(!a[0]||!Array.isArray(a[0].games)||!a[1]||!a[1].leagues) throw new Error('data files are not in the expected format');
-      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{},odds:a[3]||null,fb:a[4]||null};
+      return {meta:meta,slate:a[0],learn:a[1],pastp:a[2]||{},odds:a[3]||null,fb:a[4]||null,bot:a[5]||null};
     });
   }
   function fetchFresh(){ return getJSON('data/meta.json?t='+Date.now()).then(fetchAll); }
@@ -1500,6 +1518,7 @@ function playerCard(g,pl){
   notes.push(esc(st.matchupNote));
   if(st.boost>0) notes.push('Teammate usage boost +'+Math.round(st.boost*100)+'% ('+esc(pl.boostNotes.join(', '))+')');
   if(st.anchorNote) notes.push('<span class="w">'+esc(st.anchorNote)+'</span>');
+  if(typeof botNotesFor==='function') botNotesFor(pl,st).forEach(n=>notes.push(n));
   pl.flags.forEach(f=>notes.push('<span class="w">'+esc(f)+'</span>'));
   if(pl.status.note && kind!=='ok') notes.push('<span class="w">'+esc(pl.status.label)+': '+esc(pl.status.note.length>170?pl.status.note.slice(0,167)+'...':pl.status.note)+'</span>');
   if(st.feed) notes.push('There is no game log for this player in this app. The chance comes from FanDuel\'s no-vig price, and the alternate lines are the model\'s estimate around FanDuel\'s line.');
@@ -3701,7 +3720,7 @@ function render(){
   document.getElementById('hdr').innerHTML='<div class="hd-in"><div class="hd-row"><button class="calbtn" data-act="cal" aria-expanded="'+S.calOpen+'" aria-label="Pick a day">'+IC.cal+'<span>'+esc(dlabel)+'</span></button><h1 class="logo">LINE<b>SCOUT</b></h1>'+hdrAcctHtml()+'</div>'+
     (S.calOpen?calHtml():'')+(showLeague?'<div class="hd-tools"><div class="tabwrap"><div class="slhint"><span>Slide for more sports</span><span>‹ ›</span></div><div class="slline"><div class="slbar" data-for="ltabs" role="slider" aria-label="Slide for more sports"><i id="slthumb"></i></div>'+(S.view==='pre'?'<button class="themebtn" data-act="theme" aria-label="Switch light or dark mode">'+themeLabel()+'</button>':'')+'</div><div class="tabs" id="ltabs" role="group" aria-label="League">'+ltabs+'</div></div></div>':'')+'</div>';
   slFit();
-  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+(typeof goldHtml==='function'?goldHtml():'')+(typeof cxHtml==='function'?cxHtml():'')+hpHomeHtml()+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
+  $app.innerHTML=(S.view==='pre'&&S.date===TODAY?infoBlock()+(typeof goldHtml==='function'?goldHtml():'')+(typeof cxHtml==='function'?cxHtml():'')+hpHomeHtml()+(typeof botHtml==='function'?botHtml():'')+hpFold('track','Track record','',trackRecordHtml(),false):'')+body+
     '<div class="foot"><div>Source: ESPN game logs (up to 15 games shown, last 10 feed the model), standings, results, live play-by-play, injury reports and DraftKings lines. Pregame numbers are a snapshot, so lines and injury news will change before game time.</div>'+
     '<div>Boost types shown are ones sportsbooks have advertised: <a href="https://www.cbssports.com/betting/news/nfl-sportsbook-boosts-promo-codes-for-week-1-best-draftkings-bet365-betmgm-betting-promotions" target="_blank" rel="noopener">CBS Sports</a>, <a href="https://www.actionnetwork.com/education/best-sportsbooks-same-game-parlays" target="_blank" rel="noopener">Action Network</a>, <a href="https://www.oddschecker.com/us/insight/football/nfl/20251020-fanduel-sportsbook-choose-your-own-reward-promotion-2x-25pp-profit-boosts-or-30pp-sgp-profit-boost-on-monday-night-football" target="_blank" rel="noopener">Oddschecker</a>, <a href="https://rg.org/bonuses/parlay-bonuses" target="_blank" rel="noopener">rg.org</a>. They are not live offers.</div>'+
     '<div>Practice money is pretend. Live scores and plays come from ESPN and can lag or contain errors. For information only. Sportsbook buttons may open partner links. Sports betting involves risk, so only stake what you can afford to lose. 21+. Help: 1-800-GAMBLER. This app is not affiliated with any sportsbook.</div></div>';
@@ -7085,9 +7104,13 @@ function hpLegs(g){
   const e=(typeof bkEvent==='function')?bkEvent(g):null; const out=[]; if(!e||!e.main){ try{ if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l)); }catch(_){} const fdo=out.filter(hpIsFd); HP.cache[ck]=fdo; return fdo; }
   const cr=g.crossroads, M=e.main, A=g.teams.away, H=g.teams.home, key=keyOf(g);
   const abbrBk=b=>HP_BK[b]||b;
+  /* player legs: the prop bot's learned calibration (bot.js botP, from engine/propbot.py) replaces this phone's own one once the bot has enough graded legs */
   const push=(tok,kind,label,x,opp,pModel,spec,group,extra)=>{ const b=hpBest(x); if(!b) return; const pf=hpFair(x,opp,b); if(pf==null) return;
-    const p0=pModel==null?pf:0.5*pf+0.5*pModel; const p=adjP(clamp(p0*((extra&&extra.avail)||1),0.02,0.97),kind==='prop'?'prop':'team');
-    out.push(Object.assign({id:tok,tok:tok,gid:g.id,kind:kind,label:label,price:b.odds,book:b.book,bk:abbrBk(b.book),link:b.link,nBooks:b.n,line:b.line,pFair:pf,pModel:pModel,p:p,ps:p,avail:1,src:abbrBk(b.book),spec:spec,group:group},extra||{})); };
+    const bb=extra&&extra._b; if(bb) delete extra._b;
+    const p0=pModel==null?pf:0.5*pf+0.5*pModel, pb=clamp(p0*((extra&&extra.avail)||1),0.02,0.97);
+    const pq=bb&&typeof botP==='function'?botP(bb.pl,bb.st,bb.dir,pb):null; const p=pq!=null?pq:adjP(pb,kind==='prop'?'prop':'team');
+    const bt=bb&&typeof botTxt==='function'?botTxt(bb.st,pb,pq):''; if(bt&&extra) extra.why=(extra.why?extra.why+'; ':'')+bt;
+    out.push(Object.assign({id:tok,tok:tok,gid:g.id,kind:kind,label:label,price:b.odds,book:b.book,bk:abbrBk(b.book),link:b.link,nBooks:b.n,line:b.line,pFair:pf,pModel:pModel,p:p,ps:p,avail:1,src:abbrBk(b.book),spec:spec,group:group,bot:bt||null},extra||{})); };
   if(typeof isSoc==='function'&&isSoc(g)) socTeamLegs(g).forEach(l=>out.push(l));       // soccer: the 3-way result, double chance, goal ladders (soccer.js) instead of the 2-way lines
   else {
   ['home','away'].forEach(s=>{ const t=s==='home'?H:A, x=M.ml&&M.ml[s], o=M.ml&&M.ml[s==='home'?'away':'home'];
@@ -7103,19 +7126,21 @@ function hpLegs(g){
   const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
   Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p||!hpPropOk(key,p.stat,side==='under')) return; const o=pair[side==='over'?'under':'over'];
     const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')||!stMain(g,pl)) return;
+    if(typeof botAvoid==='function'&&botAvoid(pl)) return;                 // the bot keeps him out of the picks (questionable, minutes limit, just traded)
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
-    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under'),thin:!!st.thin}); }); });
+    push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under'),thin:!!st.thin,_b:{pl:pl,st:st,dir:side==='under'?'u':'o'}}); }); });
   /* stat thresholds ("125+ pass yds", "1+ receptions", "2+ pass TD"): ONLY the rungs FanDuel lists (its alternate lines and 1+ markets, put on the player's ladder by the bot,
      engine/fanduel.py), at FanDuel's price, with FanDuel's bet link. The app no longer invents rungs or prices for the builders: a number FanDuel does not offer is not a pick. */
-  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; const av=pl.avail==null?1:pl.avail;
+  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; if(typeof botAvoid==='function'&&botAvoid(pl)) return; const av=pl.avail==null?1:pl.avail;
     (pl.stats||[]).forEach(st=>{ if(!hpPropOk(key,st.key,false)) return; const lab=String(st.label||st.key).toLowerCase();
       (st.miles||[]).forEach(m=>{ if(!m||!m.fd||m.price==null||m.t==null) return; const T=+m.t, pf=clamp(hpImp(m.price)*0.96,0.02,0.97);      // one-sided price: about 4% of it is the book's margin
-        const pm=m.p!=null?+m.p:null; const p=adjP(clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97),'prop'), tok='o:'+g.id+':fd:'+pl.id+':'+st.key+':'+T;
+        const pm=m.p!=null?+m.p:null, pb=clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97), pq=typeof botP==='function'?botP(pl,st,'o',pb):null;
+        const p=pq!=null?pq:adjP(pb,'prop'), bt=typeof botTxt==='function'?botTxt(st,pb,pq):'', tok='o:'+g.id+':fd:'+pl.id+':'+st.key+':'+T;
         if(out.some(x=>x.tok===tok)) return;
         out.push({id:tok,tok:tok,gid:g.id,kind:'alt',label:surname(pl.name)+' '+T+'+ '+lab,price:m.price,book:'fanduel',bk:'FD',link:m.link||null,nBooks:1,line:T-0.5,pFair:pf,pModel:pm,p:p,ps:p,avail:1,src:'FD',
-          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.',thin:!!st.thin,
+          spec:{k:'prop',pid:pl.id,stat:st.key,T:T,dir:'ge'},group:g.id+':'+pl.id+':'+st.key,pid:pl.id,lead:stLead(g,pl),fdRung:1,why:'FanDuel alternate line, at FanDuel\'s price.'+(bt?' '+bt+'.':''),bot:bt||null,thin:!!st.thin,
           rec:m.n||m.pn?{h:m.hit||0,n:m.n||0,ph:m.ph,pn:m.pn}:hpRec(st,T,false)}); }); }); });
   /* FanDuel's alternate game totals ("Under 7.5" in hockey) */
   if(!(typeof isSoc==='function'&&isSoc(g))) ['over','under'].forEach(d=>{ const x=M.total&&M.total[d], fd=x&&x.books&&x.books.fanduel; if(!fd||!fd.alts) return;
@@ -7656,7 +7681,7 @@ function goldLegsOf(g){
     const key=(l.label||'')+'|'+g.id; if(seen[key]) return; seen[key]=1;
     const p0=l.ps!=null?l.ps:adjP(clamp(l.p*(l.avail==null?1:l.avail),0,0.99),l.spec.k==='prop'?'prop':'team');
     const tok=l.tok||l.id; const book=l.book?(l.book==='est'?'est':l.book):(l.src==='FanDuel'?'fanduel':l.src==='DraftKings'||l.src==='DK'?'draftkings':'est');
-    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0,rec:l.rec||null,thin:!!l.thin,pFair:l.pFair!=null?l.pFair:null}); };
+    out.push({tok:tok,id:tok,gid:g.id,g:g,label:l.label,price:l.price,p:clamp(p0*cal.f,0.01,0.99),ps:clamp(p0*cal.f,0.01,0.99),book:book,est:book==='est',spec:l.spec,link:l.link||null,lg:keyOf(g),group:l.group||tok,pid:l.pid||(l.spec&&l.spec.pid)||null,lead:l.lead||0,rec:l.rec||null,thin:!!l.thin,pFair:l.pFair!=null?l.pFair:null,bot:l.bot||null}); };
   /* FanDuel only: hpLegs (home_picks.js) gives the bets FanDuel lists at FanDuel's price (team lines, over/unders, its alternate lines and 1+ markets) */
   try{ if(typeof hpLegs==='function') hpLegs(g).forEach(l=>{ if(typeof hpIsFd!=='function'||hpIsFd(l)) add(l); }); }catch(e){}
   Object.keys(GPK.cache).forEach(k=>{ if(k.indexOf(g.id+'|')===0) delete GPK.cache[k]; });
@@ -7718,14 +7743,14 @@ function goldRecord(key){
   return {pick:p.length?p.filter(c=>c.status==='hit').length+'-'+p.filter(c=>c.status!=='hit').length:'',legs:legs.length?legs.filter(l=>l.res==='W').length+'/'+legs.length:''};
 }
 function goldLegLine(l){ const g=l.g||G[l.gid];
-  return '<span class="glleg"><span class="gll">'+esc(l.label)+(g?' <span class="muted small">'+esc(g.teams.away.abbr+' @ '+g.teams.home.abbr)+'</span>':'')+'</span><span class="mono glp">'+fo(l.price)+(l.est?'*':'')+' · '+Math.round(l.ps*100)+'%</span></span>'; }
+  return '<span class="glleg"><span class="gll">'+esc(l.label)+(g?' <span class="muted small">'+esc(g.teams.away.abbr+' @ '+g.teams.home.abbr)+'</span>':'')+(l.bot?'<span class="botsub">'+esc(l.bot)+'</span>':'')+'</span><span class="mono glp">'+fo(l.price)+(l.est?'*':'')+' · '+Math.round(l.ps*100)+'%</span></span>'; }
 function goldSportHtml(key){
   const name=LGN[key]||key.toUpperCase(), r=goldPick(key), rec=goldRecord(key);
   const recT=(rec.pick?'gold picks '+rec.pick:'no graded gold pick yet')+(rec.legs?' · gold legs '+rec.legs:'');
   let h='<div class="gold"><div class="glh"><b>'+esc(name)+'</b><span class="muted small">'+esc(recT)+'</span></div>';
   if(!r) return h+'<div class="small muted">Every '+esc(name)+' game on the board has started.</div></div>';
   if(r.best){ const l=r.best, on=inSlip(l.tok);
-    h+='<button class="glpick'+(on?' on':'')+'" data-act="leg" data-tok="'+esc(l.tok)+'" aria-pressed="'+on+'"><span class="glbadge">GOLD PICK</span><span class="glrow"><span class="gll">'+esc(l.label)+'<span class="muted small"> · '+esc(l.g.teams.away.abbr+' @ '+l.g.teams.home.abbr)+'</span></span><span class="glbig">'+Math.round(l.ps*100)+'%<small class="mono">'+fo(l.price)+(l.est?' est.':'')+'</small></span></span></button>';
+    h+='<button class="glpick'+(on?' on':'')+'" data-act="leg" data-tok="'+esc(l.tok)+'" aria-pressed="'+on+'"><span class="glbadge">GOLD PICK</span><span class="glrow"><span class="gll">'+esc(l.label)+'<span class="muted small"> · '+esc(l.g.teams.away.abbr+' @ '+l.g.teams.home.abbr)+'</span>'+(l.bot?'<span class="botsub">'+esc(l.bot)+'</span>':'')+'</span><span class="glbig">'+Math.round(l.ps*100)+'%<small class="mono">'+fo(l.price)+(l.est?' est.':'')+'</small></span></span></button>';
   } else h+='<div class="small">No leg reaches '+Math.round(GPK.p*100)+'% in '+esc(name)+' right now.'+(r.near?' <span class="muted">Closest: '+esc(r.near.label)+' ('+esc(r.near.g.teams.away.abbr+' @ '+r.near.g.teams.home.abbr)+') '+Math.round(r.near.ps*100)+'%.</span>':'')+'</div>';
   let lastN=0; GPK.sizes.forEach(n=>{ const s=goldSlipFor(key,n); if(!s||s.legs.length<=lastN) return; lastN=s.legs.length; const on=s.legs.every(l=>inSlip(l.tok));
     h+='<details class="glslip"><summary><span><b>Gold '+n+'</b>'+(s.short?' <span class="muted small">('+s.legs.length+' legs)</span>':'')+'</span><span class="mono small">~'+Math.round(s.pAll*100)+'% all hit · '+fo(s.am)+'</span></summary>'+
@@ -7842,7 +7867,7 @@ const cxStarted=c=>c.legs.some(l=>{ const g=G[l.gid]; return !g||!preOK(g); });
 const cxSig=legs=>legs.map(l=>l.tok||l.id).sort().join('|');
 function cxRec(s){
   return {dec:Math.round(s.dec*100)/100,am:s.am,pAll:Math.round(s.pAll*10000)/10000,
-    legs:s.legs.map(l=>({id:l.tok,gid:l.gid,pid:l.pid,label:l.label,price:l.price,p:Math.round(l.ps*1000)/1000,spec:l.spec,res:null,game:cxGameTag(l.g),lg:l.lg,bkn:l.book,lk:l.book==='fanduel'?(l.link||null):null,rec:l.rec||null}))};
+    legs:s.legs.map(l=>({id:l.tok,gid:l.gid,pid:l.pid,label:l.label,price:l.price,p:Math.round(l.ps*1000)/1000,spec:l.spec,res:null,game:cxGameTag(l.g),lg:l.lg,bkn:l.book,lk:l.book==='fanduel'?(l.link||null):null,rec:l.rec||null,bot:l.bot||null}))};
 }
 function cxToday(k){ return P.calls.filter(c=>c.kind===cxKind(k)&&c.date===TODAY&&c.status!=='void').sort((a,b)=>a.t-b.t); }
 /* what to show for a target: the optimized combo, written down (or swapped in) so it gets graded */
@@ -7873,7 +7898,7 @@ const cxPct=x=>x>=0.1?Math.round(x*100)+'%':x>=0.01?(x*100).toFixed(1)+'%':'<1%'
 const cxStake=()=>{ const v=parseFloat(S.stake); return isFinite(v)&&v>0?v:10; };
 function cxLegRow(l){
   const g=G[l.gid], res=l.res==='W'?' win':l.res==='L'?' loss':'', mark=l.res==='W'?'✓':l.res==='L'?'✗':l.res==='V'?'–':'';
-  return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc((LGN[l.lg]||String(l.lg||'').toUpperCase())+' · '+(l.game||cxGameTag(g)))+'</div>'+(cxRecTxt(l.rec)?'<div class="plsub cxrec">'+esc(cxRecTxt(l.rec))+'</div>':'')+'</div>'+
+  return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc((LGN[l.lg]||String(l.lg||'').toUpperCase())+' · '+(l.game||cxGameTag(g)))+'</div>'+(cxRecTxt(l.rec)?'<div class="plsub cxrec">'+esc(cxRecTxt(l.rec))+'</div>':'')+(l.bot?'<div class="plsub botsub">'+esc(l.bot)+'</div>':'')+'</div>'+
     '<div class="plpr mono"><span>'+fo(l.price)+'</span><span class="plbk fd">FD</span></div><div class="plch"><b>'+Math.round(l.p*100)+'%</b></div><span class="cxmk">'+mark+'</span></div>';
 }
 function cxStatus(c){ return c.status==='hit'?'<span class="cxst ok">✓ Hit</span>':c.status==='miss'?'<span class="cxst bad">✗ Missed</span>':c.status==='void'?'<span class="cxst">Void</span>':cxStarted(c)?'<span class="cxst live">Locked · in play</span>':'<span class="cxst">Optimizing until first game</span>'; }
@@ -7948,6 +7973,79 @@ function cxSetCustom(){ const i=document.querySelector('[data-in="cx-custom"]');
   if(!(v>=2)) v=2; if(v>cxMax) v=cxMax; CX.custom=v; CX.mode='c'; try{ localStorage.setItem('ls_cx_custom',String(v)); }catch(e){} CX.cache={}; cxRepaint(); }
 document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e.target.getAttribute&&e.target.getAttribute('data-in')==='cx-custom'){ e.preventDefault(); cxSetCustom(); } },true);
 try{ if(window.__LS) window.__LS.cx={setCustom:cxSetCustom,CX:CX,pool:cxPool,search:cxSearch,build:cxBuildAll,forK:cxFor,body:cxBody}; }catch(e){}
+
+/* ================= Prop bot (engine/propbot.py): its calibration on every player leg, its notes on each player, its record =================
+   The bot runs in every data refresh. Before a game it reads each player's ESPN game log (rest days, teammates who are out, home / road, day of the week),
+   the injury report and ESPN news (questionable players, minutes limits, rest days, trades), and moves the player's projection by what it finds. Every
+   FanDuel player leg is written down, graded from ESPN's box score after the game, and the misses teach it: how much each pattern should count, how often
+   legs at each chance really land (per league, stat and side, big favourites / underdogs, single players). The calibration is put on each player stat of
+   the card (st.bot.s = slope, st.bot.c = shift per side), so every builder that uses hpLegs (gold picks, combos, same-game parlays, stacks, safe slips)
+   gets the corrected chance. Players the bot flags (pl.bot.avoid) are left out of the builders but stay on the game cards. Practice only. */
+function botData(){ try{ return (window.__LSDATA&&window.__LSDATA.bot)||null; }catch(e){ return null; } }
+function botP(pl,st,dir,p){
+  const b=st&&st.bot; if(!b||b.s==null||!b.c) return null;
+  const q0=clamp(p,0.01,0.99); let q=1/(1+Math.exp(-(Math.log(q0/(1-q0))*b.s+(b.c[dir]||0))));
+  const v=pl&&pl.bot&&pl.bot.vol; if(v) q=0.5+(q-0.5)*(1-v);              // trade talk: a little more doubt either way
+  return clamp(q,0.02,0.97);
+}
+function botAvoid(pl){ return (pl&&pl.bot&&pl.bot.avoid)||null; }
+const BOT_W0={rest:1,mates:1,home:0.5,dow:0.25};
+const BOT_L={rest:'rest days',mates:'teammates out',home:'home/road',dow:'day of week'};
+function botW(){ const B=botData(); return (B&&B.learned&&B.learned.w)||BOT_W0; }
+/* one short line for a leg: the patterns that moved the projection (at their learned weight) and what the track record did to the chance */
+function botTxt(st,p0,p1){
+  const b=st&&st.bot; if(!b) return ''; const parts=[], l=b.l||{}, W=botW();
+  Object.keys(BOT_L).forEach(k=>{ const x=(l[k]||0)*(W[k]!=null?W[k]:BOT_W0[k]); if(Math.abs(x)>=0.02) parts.push(BOT_L[k]+' '+(x>0?'+':'−')+Math.round(Math.abs(Math.exp(x)-1)*100)+'%'); });
+  if(p0!=null&&p1!=null&&Math.abs(p1-p0)>=0.01) parts.push('track record '+(p1>p0?'+':'−')+Math.round(Math.abs(p1-p0)*100)+' pts');
+  return parts.length?'Bot: '+parts.join(', '):'';
+}
+/* notes for the player panel of a game card (template player view) */
+function botNotesFor(pl,st){
+  const out=[], b=pl&&pl.bot; if(!b) return out;
+  if(b.avoid) out.push('<span class="w">Bot: left out of the picks ('+esc(b.avoid)+')</span>');
+  (b.notes||[]).forEach(n=>out.push('Bot: '+esc(n)));
+  if(st&&st.bot&&st.bot.f&&Math.abs(st.bot.f-1)>=0.02&&st.bot.p0!=null) out.push('Bot moved the projection '+(st.bot.f>1?'up ':'down ')+Math.round(Math.abs(st.bot.f-1)*100)+'% (from '+st.bot.p0+'). How much each pattern counts is learned from graded results.');
+  return out;
+}
+const BOT_ST={pts:'pts',reb:'reb',ast:'ast',fg3:'threes',pra:'pts+reb+ast',ptsreb:'pts+reb',ptsast:'pts+ast',rebast:'reb+ast',sog:'shots on goal',saves:'saves',gls:'goals',
+  passYds:'pass yds',passTD:'pass TD',passAtt:'pass att',comp:'completions',rushYds:'rush yds',carries:'carries',recYds:'rec yds',rec:'receptions',rr:'rush+rec yds',pr:'pass+rush yds',
+  hits:'hits',tb:'total bases',runs:'runs',rbi:'RBI',hrr:'hits+runs+RBI',k:'strikeouts',outs:'outs'};
+const botPct=x=>x==null?'–':Math.round(x*100)+'%';
+function botLegName(r){ const ln=r.r==='u'?'Under '+(r.t-0.5):r.t+'+'; return ln+' '+(BOT_ST[r.s]||r.s); }
+function botHtml(){
+  const B=botData(); if(!B) return '';
+  const gr=B.graded||{}, n=gr.n||0, BL=B.byLeague||{}, on=Object.keys(BL).filter(k=>BL[k].on);
+  const sum=n?(n.toLocaleString()+' legs graded'+(on.length?' · correcting '+on.map(k=>k.toUpperCase()).join(', '):' · still collecting')):'collecting its first graded legs';
+  let h='<div class="botw"><div class="small">Runs in every data refresh. Before each game it reads ESPN: each player\'s game log (how his minutes move on back-to-backs, with teammates out, at home or on the road, by day of the week), the injury report and the news (minutes limits, rest days, trades), and moves his projection. After the game it grades every FanDuel player leg from ESPN\'s box score and learns from the misses. Its corrections are already in the chances of the gold picks, combos and parlays above.</div>';
+  // record of what was shown
+  if(B.record&&B.record.length){
+    h+='<div class="bott"><div class="botr bothd"><span>Chance shown</span><span>Legs</span><span>Landed</span></div>'+B.record.map(b=>{ const d=b.got-b.said, cls=Math.abs(d)<0.03?'':d<0?' bad':' ok';
+      return '<div class="botr"><span>'+Math.round(b.lo*100)+'–'+Math.round(Math.min(b.hi,0.97)*100)+'% <span class="muted">(avg '+botPct(b.said)+')</span></span><span class="mono">'+b.n.toLocaleString()+'</span><span class="mono'+cls+'">'+botPct(b.got)+'</span></div>'; }).join('')+'</div>'+
+      '<div class="small muted">Graded '+(gr.days||0)+' game days'+(gr.since?' since '+esc(gr.since.slice(5)):'')+(gr.backfill?' (including '+gr.backfill.toLocaleString()+' legs rebuilt from earlier slates)':'')+'; '+(gr.void||0)+' void (player did not play). '+(B.open||0)+' legs waiting for a final.</div>';
+  } else h+='<div class="small muted">No graded legs yet: '+(B.open||0)+' legs are written down and wait for their games to end.</div>';
+  const lgs=Object.keys(BL); if(lgs.length) h+='<div class="botlg">'+lgs.map(k=>{ const x=BL[k]; return '<span class="botchip'+(x.on?' on':'')+'"><b>'+esc(k.toUpperCase())+'</b> '+x.n.toLocaleString()+' legs · said '+botPct(x.said)+' · landed '+botPct(x.got)+(x.on?' · correcting':' · collecting')+'</span>'; }).join('')+'</div>';
+  const L=B.learned||{};
+  if(L.check) h+='<div class="small">'+(L.check.better?'<b class="okc">Working:</b> ':'<b class="badc">Not better yet:</b> ')+'on the last 3 days ('+L.check.n.toLocaleString()+' legs it had not learned from), its corrected chances scored '+L.check.bot.toFixed(3)+' vs '+L.check.raw.toFixed(3)+' for the plain ones (Brier score, lower is closer to what happened).</div>';
+  if(L.w){ const wn=L.wn||{}; h+='<div class="small"><b>How much each pattern counts now</b> (1.00 = taken at face value, starting values '+Object.keys(BOT_W0).map(k=>BOT_L[k]+' '+BOT_W0[k].toFixed(2)).join(', ')+'): '+Object.keys(BOT_L).map(k=>BOT_L[k]+' <b>'+(L.w[k]!=null?(+L.w[k]).toFixed(2):'–')+'</b>'+(wn[k]?' <span class="muted">('+Math.round(wn[k])+' graded)</span>':'')).join(' · ')+'</div>'; }
+  if(B.lessons&&B.lessons.length) h+='<div class="botsec"><b>What it learned</b><ul>'+B.lessons.slice(0,8).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';
+  if(B.big&&B.big.length) h+='<div class="small"><b>Blowout risk</b>: '+B.big.map(x=>esc(x.lg.toUpperCase()+' '+x.side+' '+(x.r==='o'?'overs':'unders'))+' said '+botPct(x.said)+', landed '+botPct(x.got)+' ('+x.n+')').join(' · ')+'</div>';
+  if(B.players&&B.players.length) h+='<div class="small"><b>Players it corrects on their own</b>: '+B.players.slice(0,8).map(x=>esc(x.n)+' '+(x.shift<0?'down':'up')+' <span class="muted">(said '+botPct(x.said)+', landed '+botPct(x.got)+' in '+x.games+' games)</span>').join(' · ')+'</div>';
+  // today's research
+  const T=B.today||[];
+  if(T.length){
+    const av=T.filter(x=>x.avoid), mv=T.filter(x=>!x.avoid).slice(0,14);
+    h+='<details class="botsec"><summary><b>Today\'s research</b> <span class="muted small">'+(B.info&&B.info.researched||T.length)+' players read · '+av.length+' kept out of the picks</span></summary>'+
+      (av.length?'<div class="small"><b>Kept out of the picks</b><ul>'+av.map(x=>'<li><b>'+esc(x.n)+'</b> '+esc(x.tm||'')+': '+esc(x.avoid)+'</li>').join('')+'</ul></div>':'')+
+      (mv.length?'<div class="small"><b>Projections moved</b><ul>'+mv.map(x=>{ const fs=Object.keys(x.f||{}).slice(0,3).map(k=>(BOT_ST[k]||k)+' '+(x.f[k]>1?'+':'−')+Math.round(Math.abs(x.f[k]-1)*100)+'%').join(', ');
+        return '<li><b>'+esc(x.n)+'</b> '+esc(x.tm||'')+(fs?' <span class="mono">'+esc(fs)+'</span>':'')+(x.notes&&x.notes.length?'<br><span class="muted">'+esc(x.notes.slice(0,2).join(' · '))+'</span>':'')+'</li>'; }).join('')+'</ul></div>':'')+'</details>';
+  }
+  const M=B.misses||[];
+  if(M.length) h+='<details class="botsec"><summary><b>Recent misses</b> <span class="muted small">legs shown at 75%+ that lost, last 2 days</span></summary><ul class="small">'+M.map(r=>'<li><b>'+esc(r.n)+'</b> '+esc(botLegName(r))+' ('+botPct(r.ps)+'): had '+(r.v!=null?r.v:'?')+(r.u!=null&&r.u0?' in '+Math.round(r.u)+' min (usual '+Math.round(r.u0)+')':'')+' · <span class="muted">'+esc(r.why||'')+'</span></li>').join('')+'</ul>'+
+    (B.missWhy&&Object.keys(B.missWhy).length?'<div class="small muted">Misses at 60%+ this week by reason: '+Object.keys(B.missWhy).map(k=>esc(k)+' '+B.missWhy[k]).join(' · ')+'</div>':'')+'</details>';
+  h+='<div class="small muted">Updated '+esc((B.at||'').replace('T',' ').replace('Z',' UTC'))+'. Everything it learns is shrunk toward no change until there is enough evidence, and kept within set bounds. A miss on a player who did not play is a void, as at FanDuel.</div></div>';
+  return '<section class="game hpsec"><div class="sec">'+hpFold('bot','Prop bot',sum,h,false)+'</div></section>';
+}
+try{ if(window.__LS) window.__LS.bot={data:botData,p:botP,avoid:botAvoid,txt:botTxt,notes:botNotesFor,html:botHtml}; }catch(e){}
 
 const $app=document.getElementById('app');
 document.addEventListener('click',function(e){

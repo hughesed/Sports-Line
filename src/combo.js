@@ -69,7 +69,7 @@ const cxStarted=c=>c.legs.some(l=>{ const g=G[l.gid]; return !g||!preOK(g); });
 const cxSig=legs=>legs.map(l=>l.tok||l.id).sort().join('|');
 function cxRec(s){
   return {dec:Math.round(s.dec*100)/100,am:s.am,pAll:Math.round(s.pAll*10000)/10000,
-    legs:s.legs.map(l=>({id:l.tok,gid:l.gid,pid:l.pid,label:l.label,price:l.price,p:Math.round(l.ps*1000)/1000,spec:l.spec,res:null,game:cxGameTag(l.g),lg:l.lg,bkn:l.book,lk:l.book==='fanduel'?(l.link||null):null,rec:l.rec||null}))};
+    legs:s.legs.map(l=>({id:l.tok,gid:l.gid,pid:l.pid,label:l.label,price:l.price,p:Math.round(l.ps*1000)/1000,spec:l.spec,res:null,game:cxGameTag(l.g),lg:l.lg,bkn:l.book,lk:l.book==='fanduel'?(l.link||null):null,rec:l.rec||null,bot:l.bot||null}))};
 }
 function cxToday(k){ return P.calls.filter(c=>c.kind===cxKind(k)&&c.date===TODAY&&c.status!=='void').sort((a,b)=>a.t-b.t); }
 /* what to show for a target: the optimized combo, written down (or swapped in) so it gets graded */
@@ -100,7 +100,7 @@ const cxPct=x=>x>=0.1?Math.round(x*100)+'%':x>=0.01?(x*100).toFixed(1)+'%':'<1%'
 const cxStake=()=>{ const v=parseFloat(S.stake); return isFinite(v)&&v>0?v:10; };
 function cxLegRow(l){
   const g=G[l.gid], res=l.res==='W'?' win':l.res==='L'?' loss':'', mark=l.res==='W'?'✓':l.res==='L'?'✗':l.res==='V'?'–':'';
-  return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc((LGN[l.lg]||String(l.lg||'').toUpperCase())+' · '+(l.game||cxGameTag(g)))+'</div>'+(cxRecTxt(l.rec)?'<div class="plsub cxrec">'+esc(cxRecTxt(l.rec))+'</div>':'')+'</div>'+
+  return '<div class="plr'+res+'"><div class="plw"><div class="plwh">'+esc(l.label)+'</div><div class="plsub">'+esc((LGN[l.lg]||String(l.lg||'').toUpperCase())+' · '+(l.game||cxGameTag(g)))+'</div>'+(cxRecTxt(l.rec)?'<div class="plsub cxrec">'+esc(cxRecTxt(l.rec))+'</div>':'')+(l.bot?'<div class="plsub botsub">'+esc(l.bot)+'</div>':'')+'</div>'+
     '<div class="plpr mono"><span>'+fo(l.price)+'</span><span class="plbk fd">FD</span></div><div class="plch"><b>'+Math.round(l.p*100)+'%</b></div><span class="cxmk">'+mark+'</span></div>';
 }
 function cxStatus(c){ return c.status==='hit'?'<span class="cxst ok">✓ Hit</span>':c.status==='miss'?'<span class="cxst bad">✗ Missed</span>':c.status==='void'?'<span class="cxst">Void</span>':cxStarted(c)?'<span class="cxst live">Locked · in play</span>':'<span class="cxst">Optimizing until first game</span>'; }

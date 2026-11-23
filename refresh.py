@@ -148,6 +148,16 @@ def main():
     B1.LIVE_LEANS.clear(); B1.LIVE_LEANS.update({lg: v.get("leans") or {} for lg, v in live.items() if lg != "_all"})
     log(f"  graded +{ngr}; total graded {live['_all']['n']}; win-chance slopes {slopes or 'none yet (need 40 graded games per league)'}")
 
+    # ---------------------------------------------------------------- prop bot: grade earlier player legs from ESPN box scores, learn from them (engine/propbot.py)
+    pbot, pbot_note = None, None
+    try:
+        import propbot as PBOT
+        pbot = PBOT.PropBot(log=log)
+        pbot.grade(st, now, log)
+        pbot.learn(now, log)
+    except Exception as ex:
+        traceback.print_exc(); pbot_note = f"error: {type(ex).__name__}: {ex}"[:160]; pbot = None
+
     # ---------------------------------------------------------------- 3. slate
     log("3/7 slate")
     games = []
@@ -193,12 +203,18 @@ def main():
     except Exception as ex:
         xref_status = f"error: {type(ex).__name__}: {ex}"[:160]
     log(f"  espn cross-reference: {xref_status}")
+    if pbot is not None:      # before FanDuel's prices go on: rest days, teammates out, home/road, day of week, injury report and news move each player's projection
+        try: pbot.research(games, now, CF.fetch, log)
+        except Exception as ex: traceback.print_exc(); pbot_note = f"research error: {type(ex).__name__}: {ex}"[:160]
     try:
         import fanduel as FD
         fd_status = FD.apply(games, read_json(f"{DATA}/odds.json", {}), now)
     except Exception as ex:
         fd_status = f"error: {type(ex).__name__}: {ex}"[:160]
     log(f"  fanduel: {fd_status}")
+    if pbot is not None:      # after: the learned calibration goes on each player stat, and every FanDuel player leg is written down to be graded
+        try: pbot.snapshot(games, now, log)
+        except Exception as ex: traceback.print_exc(); pbot_note = f"snapshot error: {type(ex).__name__}: {ex}"[:160]
 
     # ---------------------------------------------------------------- 4. learning export
     log("4/7 learning (walk-forward ratings, tuning, blend weights)")
@@ -317,6 +333,16 @@ def main():
     if fbk is not None:
         try: fbk.save(today)
         except Exception as ex: errors.append(f"first basket save: {ex}"[:200])
+    if pbot is not None:
+        try:
+            pb_out = pbot.page(now); pbot.save(now); write_json(f"{DATA}/propbot.json", pb_out)
+            i_ = pb_out.get("info") or {}; gr = pb_out.get("graded") or {}
+            pbot_note = pbot_note or (f"ok: {gr.get('n', 0)} legs graded in {pb_out['keepDays']} days ({i_.get('graded', 0)} this run), {pb_out.get('open', 0)} waiting; "
+                                      f"researched {i_.get('researched', 0)} players, moved {i_.get('adjusted', 0)}, kept out {i_.get('avoid', 0)}; "
+                                      f"calibration on: {', '.join(k for k, v in (pb_out.get('byLeague') or {}).items() if v.get('on')) or 'not yet'}")
+        except Exception as ex:
+            traceback.print_exc(); pbot_note = f"save error: {type(ex).__name__}: {ex}"[:160]
+    log(f"  prop bot: {pbot_note}")
     if espn.STATS["skipped"]:
         errors.append(f"time limit reached: {espn.STATS['skipped']} ESPN requests were skipped to stay inside the run budget; the next run catches up")
     run_no = int(os.environ.get("GITHUB_RUN_NUMBER") or (prev_meta.get("runNumber") or 0) + 1)
@@ -327,7 +353,7 @@ def main():
                 counts=dict(slate=len(games), playerCards=sum(1 for g in games if g["players"]), teamCards=sum(1 for g in games if not g["players"]), window=sum(len(v) for v in learn_out["window"].values()),
                             sched=sum(len(v) for v in learn_out.get("sched", {}).values()), pastp=len(pastp), predictions=len(pred.recs), graded=live["_all"]["n"], storeGames=sum(len(st.games[lg]) for lg in LEAGUES)),
                 calibration=dict(slopes=slopes, graded=live["_all"]["n"], accML=live["_all"].get("accML"), accBook=live["_all"].get("accBook")),
-                social=social_info, firstBasket=fb_note, odds=odds_status, oddsLive=live_status, fanduel=fd_status, fanduelDirect=fd_direct, espnXref=xref_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
+                social=social_info, firstBasket=fb_note, propBot=pbot_note, odds=odds_status, oddsLive=live_status, fanduel=fd_status, fanduelDirect=fd_direct, espnXref=xref_status, errors=errors[:20], requests=espn.STATS["requests"], failedRequests=espn.STATS["fails"], retries=espn.STATS["retries"], seconds=round(time.time() - T0, 1))
     write_json(f"{DATA}/slate.json", slate)
     write_json(f"{DATA}/learn.json", learn_out)
     write_json(f"{DATA}/pastp.json", pastp)
