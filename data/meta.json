@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3729,
+ "runNumber": 3730,
  "deadlineHit": false,
- "generatedAt": "2026-11-23T22:23:14Z",
- "generatedAtET": "Mon Nov 23, 5:23 PM ET",
+ "generatedAt": "2026-11-23T22:33:16Z",
+ "generatedAtET": "Mon Nov 23, 5:33 PM ET",
  "today": "2026-11-23",
- "lastRunAt": "2026-11-23T22:23:14Z",
+ "lastRunAt": "2026-11-23T22:33:16Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.6,
+  "seconds": 2.8,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -150,19 +150,18 @@
    "nhl": 32
   },
   "gamesUploaded": 11,
-  "simTeamsUploaded": 1189,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 247 graded",
- "propBot": "ok: 38188 legs graded in 21 days (0 this run), 3082 waiting; researched 206 players, moved 169, kept out 4; calibration on: cfb, nba, nfl, nhl",
+ "propBot": "ok: 38188 legs graded in 21 days (0 this run), 3109 waiting; researched 207 players, moved 170, kept out 4; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (today's odds budget used: 28 of ~6 events; month 2179 of 2200)",
  "oddsLive": "kept (today's odds budget used: 28 events)",
- "fanduel": "ok: FanDuel lines on 20 cards, 930 player stats, FanDuel-only players on 0 cards; not in the feed (4): M-OH@WMU, GB@LAR, CHI@DET, PHI@DAL",
- "fanduelDirect": "ok: 19 games, 1547 player markets (22 FanDuel games in odds.json, pulled 2026-11-23T22:23:14Z; 4s)",
- "espnXref": "ok: 8 FanDuel players added from ESPN rosters on 3 cards {'nba': 4, 'nfl': 4}; 32 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 20 cards, 941 player stats, FanDuel-only players on 0 cards; not in the feed (4): M-OH@WMU, GB@LAR, CHI@DET, PHI@DAL",
+ "fanduelDirect": "ok: 19 games, 1559 player markets (22 FanDuel games in odds.json, pulled 2026-11-23T22:33:16Z; 5s)",
+ "espnXref": "ok: 7 FanDuel players added from ESPN rosters on 3 cards {'nba': 3, 'nfl': 4}; 19 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
- "requests": 810,
- "failedRequests": 9,
- "retries": 9,
- "seconds": 39.6
+ "requests": 814,
+ "failedRequests": 7,
+ "retries": 7,
+ "seconds": 37.5
 }
