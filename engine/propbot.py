@@ -440,13 +440,15 @@ class PropBot:
             mu = [espn.usage(lg, x, i.get("pos") or "") for x in mreg]; mu = [u for u in mu if u]
             if len(mreg) < 3 or (_mean(mu) or 0) < MATE_MIN.get(lg, 99): continue          # a regular this season, not a player who has been out all year
             first = min(_etd(x["date"]) for x in mreg)
-            miss_dates.append(({_etd(x["date"]) for x in mreg}, first)); names.append(i.get("name")); b_old += bmap.get(FE._n(i.get("name")), 0.0)
+            miss_dates.append(({_etd(x["date"]) for x in mreg}, first, _mean(mu))); names.append(i.get("name")); b_old += bmap.get(FE._n(i.get("name")), 0.0)
         if miss_dates and mine:
-            def missing(x):
+            tot = sum(u for _, _, u in miss_dates)
+            def gone(x):
+                """share of tonight's missing playing time that was also missing in game x (he missed it after joining the team)"""
                 d0 = _etd(x["date"])
-                return any(d0 not in played and d0 >= first for played, first in miss_dates)   # he missed it (and was already with the team)
-            wo = [x for x in mine if missing(x)]; w_ = [x for x in mine if not missing(x)]
-            who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " or " + names[-1]
+                return sum(u for played, first, u in miss_dates if d0 not in played and d0 >= first) / tot
+            wo = [x for x in mine if gone(x) >= 0.5]; w_ = [x for x in mine if gone(x) == 0]   # games like tonight vs games with all of them playing
+            who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
             if len(w_) >= 4 and len(wo) >= 3:                                                   # two games without them is a coincidence, not a pattern
                 wo_set = {x["eventId"] for x in wo}
                 q = 0.25 * _frac(last5, wo_set) + 0.25 * _frac(last10, wo_set) + 0.5 * _frac(last45, wo_set)   # how much of the projection already has them out
@@ -460,7 +462,10 @@ class PropBot:
                     base = q * mwo_s + (1 - q) * mw
                     f = _clamp((mwo_s / base if base > 0 else 1.0) / (1 + min(b_old, 0.12)), 0.88, 1.15)
                     mate_f[st["key"]] = f
-                    if abs(f - 1) >= 0.04: mate_note[st["key"]] = (f, f"Without {who}: {_fmt(mwo)} {st.get('label', st['key']).lower()} in {len(wo)} games vs {_fmt(mw)} with: {(f - 1) * 100:+.0f}%")
+                    if abs(f - 1) >= 0.04:
+                        why_ = f"Without {who}: {_fmt(mwo)} {st.get('label', st['key']).lower()} in {len(wo)} games vs {_fmt(mw)} with"
+                        if b_old >= 0.01 and f < 1.0 and mwo_s <= mw * 1.03: why_ += f", so the usual +{min(b_old, 0.12) * 100:.0f}% teammate-out bump is taken back"
+                        mate_note[st["key"]] = (f, why_ + f": {(f - 1) * 100:+.0f}%")
                 uw = _mean([espn.usage(lg, x, role) or 0 for x in w_]); uwo = _mean([espn.usage(lg, x, role) or 0 for x in wo])
                 if uw and uwo and abs(uwo / uw - 1) >= 0.08:
                     notes.append(f"Without {who} he has played {_fmt(uwo)} {_unit(lg)} ({len(wo)} games) vs {_fmt(uw)} with")
@@ -604,8 +609,10 @@ def _usage_of(s):
                 v = dict(zip(keys, a.get("stats") or []))
                 m = v.get("minutes") if v.get("minutes") not in (None, "", "--") else v.get("timeOnIce")
                 if m in (None, "", "--"): continue
-                try: out[str(a["athlete"]["id"])] = espn._mins(m)
-                except Exception: pass
+                try: out[str(a["athlete"]["id"])] = float(m)                 # basketball: "34"
+                except (TypeError, ValueError):
+                    try: out[str(a["athlete"]["id"])] = espn._mins(m)           # hockey: "18:32"
+                    except Exception: pass
     return out
 
 # ------------------------------------------------------------------------------------------------ fitting

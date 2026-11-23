@@ -72,7 +72,7 @@ LOGS[("nba", "8")] = [dict(x) for x in T_games]          # a second teammate who
 gm = card(rest_days=0, injuries=[dict(id="9", name="Theta Big", pos="C", kind="out", weight=1.0, label="Out"), dict(id="8", name="Iota Wing", pos="F", kind="out", weight=1.0, label="Out")])
 bot.research([gm], NOW, cx_fetch=lambda lg: dict(news=[], trans=[]))
 l2 = next(s for s in gm["players"][0]["stats"] if s["key"] == "pts")["bot"]["l"]
-check("research: two teammates out in the same games are one split, not counted twice", abs(l2.get("mates", 0) - lr.get("mates", 0)) < 0.03 and any("Theta Big or Iota Wing" in n for n in gm["players"][0]["bot"]["notes"]), (l2, lr))
+check("research: two teammates out in the same games are one split, not counted twice", abs(l2.get("mates", 0) - lr.get("mates", 0)) < 0.03 and any("Theta Big and Iota Wing" in n for n in gm["players"][0]["bot"]["notes"]), (l2, lr))
 g3 = card(rest_days=2, injuries=[]); bot.research([g3], NOW, cx_fetch=lambda lg: dict(news=[], trans=[]))
 check("research: no teammate out -> no mates factor", "mates" not in next(s for s in g3["players"][0]["stats"] if s["key"] == "pts")["bot"]["l"])
 check("research: total factor stays inside its bounds", all(PB.F_LO <= s["bot"]["f"] <= PB.F_HI for x in (g, g2, g3) for s in x["players"][0]["stats"]))
@@ -119,7 +119,7 @@ n_open = len(bot.open)
 class St: pass
 store = St(); store.games = {"nba": {"G1": dict(id="G1", date=TIP, home="HOM", away="AWY", hs=118, as_=99)}}
 keys = ["minutes", "points", "rebounds", "assists", "threePointFieldGoalsMade-threePointFieldGoalsAttempted"]
-summ = dict(header=dict(competitions=[dict(status=dict(type=dict(state="post", completed=True)), competitors=[dict(homeAway="home", score="118", team=dict(id="1")), dict(homeAway="away", score="99", team=dict(id="2"))])]),
+summ = dict(header=dict(competitions=[dict(status=dict(type=dict(state="post", completed=True)), competitors=[dict(homeAway="home", score="118", team=dict(id="1")), dict(homeAway="away", score="99", team=dict(id="2"))])]),     # ESPN gives basketball minutes as "22"
             boxscore=dict(players=[dict(team=dict(id="1"), statistics=[dict(keys=keys, athletes=[dict(athlete=dict(id="1", displayName="Alpha Guard"), stats=["22", "21", "4", "5", "2-6"])])])]))
 PB.curl = lambda url, tries=3, timeout=8, memo=False: summ
 n = bot.grade(store, NOW + datetime.timedelta(days=1))
@@ -128,7 +128,9 @@ check("grade: every open leg of the game graded and moved out of the open list",
 check("grade: 21 points -> 20+ hit, 25+ missed, over 23.5 missed, under 23.5 hit", next(r for r in gr if r["t"] == 20 and not r.get("ou") and r["s"] == "pts")["y"] == 1 and
       all(r["y"] == 0 for r in gr if r["s"] == "pts" and r["t"] == 24 and r["r"] == "o") and all(r["y"] == 1 for r in gr if r["s"] == "pts" and r["t"] == 24 and r["r"] == "u"), [(r["s"], r["r"], r["t"], r["y"]) for r in gr])
 miss = [r for r in gr if r["y"] == 0 and r.get("why")]
+check("grade: minutes read from the box score (ESPN's plain \"22\")", all(r.get("u") == 22.0 for r in gr if r["y"] is not None), [r.get("u") for r in gr])
 check("grade: a miss with far fewer minutes than usual in a 19-point win is called a blowout", any(r["why"] == "blowout" for r in miss), [(r["s"], r["t"], r.get("why"), r.get("u"), r.get("u0")) for r in miss])
+check("grade: hockey ice time \"18:30\" reads as 18.5 minutes", PB._usage_of(dict(boxscore=dict(players=[dict(statistics=[dict(keys=["timeOnIce"], athletes=[dict(athlete=dict(id="5"), stats=["18:30"])])])])))["5"] == 18.5)
 dnp = dict(summ); dnp["boxscore"] = dict(players=[dict(team=dict(id="1"), statistics=[dict(keys=keys, athletes=[dict(athlete=dict(id="1", displayName="Alpha Guard"), stats=[], didNotPlay=True)])])])
 bot.rows = []; bot.snapshot([g], NOW); PB.curl = lambda url, tries=3, timeout=8, memo=False: dnp
 bot.grade(store, NOW + datetime.timedelta(days=1))
