@@ -68,6 +68,11 @@ check("research: notes explain both patterns in words", any("back-to-back" in n 
 g2 = card(rest_days=2); bot.research([g2], NOW, cx_fetch=lambda lg: dict(news=[], trans=[]))
 f_b2b = sp["bot"]["f"]; f_rest = next(s for s in g2["players"][0]["stats"] if s["key"] == "pts")["bot"]["f"]
 check("research: the same player rested gets a higher factor than on a back-to-back", f_rest > f_b2b, (f_b2b, f_rest))
+LOGS[("nba", "8")] = [dict(x) for x in T_games]          # a second teammate who missed the very same games
+gm = card(rest_days=0, injuries=[dict(id="9", name="Theta Big", pos="C", kind="out", weight=1.0, label="Out"), dict(id="8", name="Iota Wing", pos="F", kind="out", weight=1.0, label="Out")])
+bot.research([gm], NOW, cx_fetch=lambda lg: dict(news=[], trans=[]))
+l2 = next(s for s in gm["players"][0]["stats"] if s["key"] == "pts")["bot"]["l"]
+check("research: two teammates out in the same games are one split, not counted twice", abs(l2.get("mates", 0) - lr.get("mates", 0)) < 0.03 and any("Theta Big or Iota Wing" in n for n in gm["players"][0]["bot"]["notes"]), (l2, lr))
 g3 = card(rest_days=2, injuries=[]); bot.research([g3], NOW, cx_fetch=lambda lg: dict(news=[], trans=[]))
 check("research: no teammate out -> no mates factor", "mates" not in next(s for s in g3["players"][0]["stats"] if s["key"] == "pts")["bot"]["l"])
 check("research: total factor stays inside its bounds", all(PB.F_LO <= s["bot"]["f"] <= PB.F_HI for x in (g, g2, g3) for s in x["players"][0]["stats"]))

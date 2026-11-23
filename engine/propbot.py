@@ -425,38 +425,45 @@ class PropBot:
         if lg not in ("nfl", "cfb"):          # football's day of the week is its rest (Thursday = short week), already counted
             f_dow, n, raw = day_ratio(aggs, "dow", str(dow), K["dow"]); f_dow = _clamp(f_dow, 0.95, 1.05)
             if abs(f_dow - 1) >= 0.03 and raw is not None: notes.append(f"On {DOW[dow]}s he plays {abs(raw - 1) * 100:.0f}% {'less' if raw < 1 else 'more'} ({n} games)")
-        # ---------- teammates out tonight: what he did without them this season (ball share)
+        # ---------- teammates out tonight: what he did this season in the games they missed (the ball goes to the players left).
+        # Several teammates out at once are one split (games with any of them missing vs games with all of them playing): splitting them one by one
+        # would count the same games again for each.
         cur = seasons[-1] if seasons else None
         mine = [x for x in reg_f if x.get("season") == cur] if cur else []
         last10, last5, last45 = reg_f[-10:], reg_f[-5:], reg_f[-45:]
         outs = [i for i in (g["teams"][side].get("injuries") or []) if i.get("kind") in ("out", "doubtful") and (i.get("weight") or 0) >= 0.5 and i.get("id") and str(i["id"]) != str(pl["id"])]
-        bmap = _boosts(pl); mate_f = collections.defaultdict(lambda: 1.0); mate_n = {}; mate_note = {}
+        bmap = _boosts(pl); mate_f = {}; mate_note = {}
+        miss_dates = []; names = []; b_old = 0.0
         for i in outs[:6]:
             ml = mates.get((lg, str(i["id"]))) or []
             mreg = [x for x in ml if not x.get("pre") and not x.get("post") and x.get("season") == cur]
             mu = [espn.usage(lg, x, i.get("pos") or "") for x in mreg]; mu = [u for u in mu if u]
-            if not mreg or (_mean(mu) or 0) < MATE_MIN.get(lg, 99): continue
-            dates = {_etd(x["date"]) for x in mreg}
-            w_ = [x for x in mine if _etd(x["date"]) in dates]; wo = [x for x in mine if _etd(x["date"]) not in dates]
-            if len(w_) < 4 or len(wo) < 3: continue                          # two games without him is a coincidence, not a pattern
-            wo_set = {x["eventId"] for x in wo}
-            q = 0.25 * _frac(last5, wo_set) + 0.25 * _frac(last10, wo_set) + 0.5 * _frac(last45, wo_set)
-            b_old = bmap.get(FE._n(i.get("name")), 0.0)
-            for st in pl.get("stats") or []:
-                fn = FE.FNS.get(lg, {}).get(st.get("key"))
-                if not fn: continue
-                mw = _mean([fn(x) for x in w_]); mwo = _mean([fn(x) for x in wo])
-                if mw is None or mwo is None or mw <= 0: continue
-                k_eff = K["mates"] * (1 + 1 / max(mw, 0.5))                  # small counts (threes, assists) swing a lot from game to game: they need more games
-                mwo_s = mw + (mwo - mw) * len(wo) / (len(wo) + k_eff)
-                base = q * mwo_s + (1 - q) * mw
-                f = _clamp((mwo_s / base if base > 0 else 1.0) / (1 + b_old), 0.88, 1.15)
-                mate_f[st["key"]] = _clamp(mate_f[st["key"]] * f, 0.85, 1.2); mate_n[st["key"]] = mate_n.get(st["key"], 0) + len(wo)
-                if abs(f - 1) >= 0.04 and (st["key"] not in mate_note or abs(f - 1) > abs(mate_note[st["key"]][0] - 1)):
-                    mate_note[st["key"]] = (f, f"Without {i.get('name')} ({i.get('label') or 'out'}): {_fmt(mwo)} {st.get('label', st['key']).lower()} in {len(wo)} games vs {_fmt(mw)} with: {(f - 1) * 100:+.0f}%")
-            uw = _mean([espn.usage(lg, x, role) or 0 for x in w_]); uwo = _mean([espn.usage(lg, x, role) or 0 for x in wo])
-            if uw and uwo and abs(uwo / uw - 1) >= 0.08:
-                notes.append(f"Without {i.get('name')} he has played {_fmt(uwo)} {_unit(lg)} ({len(wo)} games) vs {_fmt(uw)} with")
+            if len(mreg) < 3 or (_mean(mu) or 0) < MATE_MIN.get(lg, 99): continue          # a regular this season, not a player who has been out all year
+            first = min(_etd(x["date"]) for x in mreg)
+            miss_dates.append(({_etd(x["date"]) for x in mreg}, first)); names.append(i.get("name")); b_old += bmap.get(FE._n(i.get("name")), 0.0)
+        if miss_dates and mine:
+            def missing(x):
+                d0 = _etd(x["date"])
+                return any(d0 not in played and d0 >= first for played, first in miss_dates)   # he missed it (and was already with the team)
+            wo = [x for x in mine if missing(x)]; w_ = [x for x in mine if not missing(x)]
+            who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " or " + names[-1]
+            if len(w_) >= 4 and len(wo) >= 3:                                                   # two games without them is a coincidence, not a pattern
+                wo_set = {x["eventId"] for x in wo}
+                q = 0.25 * _frac(last5, wo_set) + 0.25 * _frac(last10, wo_set) + 0.5 * _frac(last45, wo_set)   # how much of the projection already has them out
+                for st in pl.get("stats") or []:
+                    fn = FE.FNS.get(lg, {}).get(st.get("key"))
+                    if not fn: continue
+                    mw = _mean([fn(x) for x in w_]); mwo = _mean([fn(x) for x in wo])
+                    if mw is None or mwo is None or mw < 1.0: continue                          # a stat he barely records: the ratio is noise
+                    k_eff = K["mates"] * (1 + 1 / mw)                                            # small counts swing a lot from game to game: they need more games
+                    mwo_s = mw + (mwo - mw) * len(wo) / (len(wo) + k_eff)
+                    base = q * mwo_s + (1 - q) * mw
+                    f = _clamp((mwo_s / base if base > 0 else 1.0) / (1 + min(b_old, 0.12)), 0.88, 1.15)
+                    mate_f[st["key"]] = f
+                    if abs(f - 1) >= 0.04: mate_note[st["key"]] = (f, f"Without {who}: {_fmt(mwo)} {st.get('label', st['key']).lower()} in {len(wo)} games vs {_fmt(mw)} with: {(f - 1) * 100:+.0f}%")
+                uw = _mean([espn.usage(lg, x, role) or 0 for x in w_]); uwo = _mean([espn.usage(lg, x, role) or 0 for x in wo])
+                if uw and uwo and abs(uwo / uw - 1) >= 0.08:
+                    notes.append(f"Without {who} he has played {_fmt(uwo)} {_unit(lg)} ({len(wo)} games) vs {_fmt(uw)} with")
         best = sorted(mate_note.values(), key=lambda x: -abs(x[0] - 1))[:2]
         notes += [x[1] for x in best]
         # ---------- scale each stat's projection
@@ -464,7 +471,7 @@ class PropBot:
         for st in pl.get("stats") or []:
             if st.get("proj") is None or st.get("feed"): continue
             key = st.get("key")
-            l = {"rest": math.log(f_rest) if key != "saves" else 0.0, "home": math.log(f_home), "dow": math.log(f_dow), "mates": math.log(mate_f[key]) if key in mate_f else 0.0}
+            l = {"rest": math.log(f_rest) if key != "saves" else 0.0, "home": math.log(f_home), "dow": math.log(f_dow), "mates": math.log(mate_f.get(key, 1.0))}
             F = _clamp(math.exp(sum(W[k] * v for k, v in l.items())), F_LO, F_HI)
             p0 = st["proj"]
             st["bot"] = dict(p0=p0, f=round(F, 3), l={k: round(v, 4) for k, v in l.items() if abs(v) >= 0.0005})
