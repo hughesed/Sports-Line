@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3644,
+ "runNumber": 3645,
  "deadlineHit": false,
- "generatedAt": "2026-11-23T01:53:27Z",
- "generatedAtET": "Sun Nov 22, 8:53 PM ET",
+ "generatedAt": "2026-11-23T01:57:42Z",
+ "generatedAtET": "Sun Nov 22, 8:57 PM ET",
  "today": "2026-11-22",
- "lastRunAt": "2026-11-23T01:53:27Z",
+ "lastRunAt": "2026-11-23T01:57:42Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 6,
    "carried": 5,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 7519,
    "lastFinal": "2026-11-23"
   },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 2.4,
+  "seconds": 3.1,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,18 @@
    "cbb": 804,
    "nhl": 32
   },
-  "gamesUploaded": 2,
-  "simTeamsUploaded": 1188,
+  "gamesUploaded": 6,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 242 graded",
  "odds": "kept (today's odds budget used: 28 of ~6 events; month 2179 of 2200)",
  "oddsLive": "kept (today's odds budget used: 28 events)",
- "fanduel": "ok: FanDuel lines on 15 cards, 537 player stats, FanDuel-only players on 0 cards; not in the feed (9): UCSD@SEA, LUC@SJSU, UTAH@LAL, MIA@TCU, SDSU@ISU, KENT@EMU...",
- "fanduelDirect": "kept (18 FanDuel games in odds.json, pulled 2026-11-23T01:48:02Z; 0s)",
+ "fanduel": "ok: FanDuel lines on 16 cards, 537 player stats, FanDuel-only players on 0 cards; not in the feed (8): UCSD@SEA, LUC@SJSU, MIA@TCU, SDSU@ISU, KENT@EMU, M-OH@WMU...",
+ "fanduelDirect": "ok: 15 games, 751 player markets (19 FanDuel games in odds.json, pulled 2026-11-23T01:57:42Z; 3s)",
  "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 1 cards {'nfl': 2}; 4 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
  "requests": 253,
  "failedRequests": 10,
  "retries": 10,
- "seconds": 20.1
+ "seconds": 23.5
 }
