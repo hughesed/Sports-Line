@@ -1,19 +1,19 @@
 {
  "schema": 1,
- "runNumber": 3645,
+ "runNumber": 3646,
  "deadlineHit": false,
- "generatedAt": "2026-11-23T01:57:42Z",
- "generatedAtET": "Sun Nov 22, 8:57 PM ET",
+ "generatedAt": "2026-11-23T02:07:45Z",
+ "generatedAtET": "Sun Nov 22, 9:07 PM ET",
  "today": "2026-11-22",
- "lastRunAt": "2026-11-23T01:57:42Z",
+ "lastRunAt": "2026-11-23T02:07:45Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
   "nfl": {
    "status": "ok",
    "games": 3,
-   "playerLevel": 1,
-   "teamLevel": 1,
+   "playerLevel": 2,
+   "teamLevel": 0,
    "carried": 1,
    "error": null,
    "newFinals": 0,
@@ -105,12 +105,12 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 21,
-  "teamCards": 17,
+  "playerCards": 22,
+  "teamCards": 16,
   "window": 552,
   "sched": 340,
   "pastp": 14,
-  "predictions": 1054,
+  "predictions": 1055,
   "graded": 960,
   "storeGames": 15818
  },
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.1,
+  "seconds": 2.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,18 +149,18 @@
    "cbb": 804,
    "nhl": 32
   },
-  "gamesUploaded": 6,
+  "gamesUploaded": 5,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 242 graded",
  "odds": "kept (today's odds budget used: 28 of ~6 events; month 2179 of 2200)",
  "oddsLive": "kept (today's odds budget used: 28 events)",
- "fanduel": "ok: FanDuel lines on 16 cards, 537 player stats, FanDuel-only players on 0 cards; not in the feed (8): UCSD@SEA, LUC@SJSU, MIA@TCU, SDSU@ISU, KENT@EMU, M-OH@WMU...",
- "fanduelDirect": "ok: 15 games, 751 player markets (19 FanDuel games in odds.json, pulled 2026-11-23T01:57:42Z; 3s)",
+ "fanduel": "ok: FanDuel lines on 16 cards, 537 player stats, FanDuel-only players on 0 cards; not in the feed (8): UCSD@SEA, LUC@SJSU, WIN@ILL, SDSU@ISU, KENT@EMU, M-OH@WMU...",
+ "fanduelDirect": "ok: 15 games, 751 player markets (19 FanDuel games in odds.json, pulled 2026-11-23T02:07:45Z; 3s)",
  "espnXref": "ok: 2 FanDuel players added from ESPN rosters on 1 cards {'nfl': 2}; 4 stats from game logs, 0 from FanDuel's price only",
  "errors": [],
- "requests": 253,
+ "requests": 313,
  "failedRequests": 10,
  "retries": 10,
- "seconds": 23.5
+ "seconds": 23.9
 }
