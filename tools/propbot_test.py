@@ -95,6 +95,12 @@ talk = [dict(h="Teams calling about trade for Alpha Guard", d="", t="2026-11-22"
 gk = card(); bot.research([gk], NOW, cx_fetch=lambda lg: dict(news=talk, trans=[]))
 check("flags: trade talk widens the doubt (vol) without keeping him out", gk["players"][0]["bot"]["vol"] and gk["players"][0]["bot"]["avoid"] is None, gk["players"][0]["bot"])
 
+LOGS[("nba", "1")] = [dict(x, season="2025-26", date="2026-03-%02dT23:30Z" % (k + 1)) for k, x in enumerate(A_games)]       # has not played this season
+gl = card(); gl["players"][0]["slots"] = [dict(date=(datetime.date(2026, 11, 23) - datetime.timedelta(days=2 * k)).isoformat()) for k in range(6)]
+bot.research([gl], NOW, cx_fetch=lambda lg: dict(news=[], trans=[]))
+check("flags: back after a long absence (team kept playing) keeps him out; no with/without record from another season", "Has not played since" in (gl["players"][0]["bot"]["avoid"] or "") and "mates" not in next(s for s in gl["players"][0]["stats"] if s["key"] == "pts")["bot"]["l"], gl["players"][0]["bot"])
+LOGS[("nba", "1")] = A_games
+
 # ---------------------------------------------------------------- snapshot (after FanDuel's prices)
 g = card(rest_days=0); bot.research([g], NOW, cx_fetch=lambda lg: dict(news=[], trans=[])); fd_on(g)
 bot.open = {}

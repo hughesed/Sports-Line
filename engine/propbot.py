@@ -428,7 +428,12 @@ class PropBot:
         # ---------- teammates out tonight: what he did this season in the games they missed (the ball goes to the players left).
         # Several teammates out at once are one split (games with any of them missing vs games with all of them playing): splitting them one by one
         # would count the same games again for each.
-        cur = seasons[-1] if seasons else None
+        tonight = _etd(g["iso"]); last_d = _etd(reg[-1]["date"]) if reg else None
+        recent_team = [x for x in pl.get("slots") or [] if x.get("date") and 0 <= (tonight - datetime.date.fromisoformat(x["date"][:10])).days <= 21]
+        if last_d and (tonight - last_d).days > 21 and len(recent_team) >= 3 and not avoid:
+            avoid = f"Has not played since {last_d:%b} {last_d.day}: the first games back are often on a minutes limit"
+        # this season's games with his team (a player who has not played this season has no "with / without" record here)
+        cur = seasons[-1] if (seasons and last_d and (tonight - last_d).days <= 30) else None
         mine = [x for x in reg_f if x.get("season") == cur] if cur else []
         last10, last5, last45 = reg_f[-10:], reg_f[-5:], reg_f[-45:]
         outs = [i for i in (g["teams"][side].get("injuries") or []) if i.get("kind") in ("out", "doubtful") and (i.get("weight") or 0) >= 0.5 and i.get("id") and str(i["id"]) != str(pl["id"])]
@@ -436,7 +441,7 @@ class PropBot:
         miss_dates = []; names = []; b_old = 0.0
         for i in outs[:6]:
             ml = mates.get((lg, str(i["id"]))) or []
-            mreg = [x for x in ml if not x.get("pre") and not x.get("post") and x.get("season") == cur]
+            mreg = [x for x in ml if not x.get("pre") and not x.get("post") and x.get("season") == cur and (tonight - _etd(x["date"])).days <= 150]
             mu = [espn.usage(lg, x, i.get("pos") or "") for x in mreg]; mu = [u for u in mu if u]
             if len(mreg) < 3 or (_mean(mu) or 0) < MATE_MIN.get(lg, 99): continue          # a regular this season, not a player who has been out all year
             first = min(_etd(x["date"]) for x in mreg)
