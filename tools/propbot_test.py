@@ -94,6 +94,12 @@ check("new-team rule: joined by trade (league transactions) -> unders only, not 
 done = [dict(h="Hornets acquire Alpha Guard from Suns", d="", t="2026-11-23", ath=[dict(id="1", name="Alpha Guard")])]
 gd = card(); bot.research([gd], NOW, cx_fetch=lambda lg: dict(news=done, trans=[]))
 check("new-team rule: a completed trade in ESPN news -> unders only", "Traded (ESPN news" in (gd["players"][0]["bot"]["under"] or ""), gd["players"][0]["bot"])
+for tx in ("Signed RW Alpha Guard to a contract extension", "Reassigned Alpha Guard to the G League", "Activated Alpha Guard from injured reserve"):
+    ge = card(); bot.research([ge], NOW, cx_fetch=lambda lg, tx=tx: dict(news=[], trans=[dict(date="2026-11-20", desc=tx)]))
+    check("new-team rule: '" + tx + "' is not a move", ge["players"][0]["bot"]["under"] is None, ge["players"][0]["bot"])
+for hd in ("Alpha Guard lands on injured reserve", "Hornets send Alpha Guard to G League affiliate"):
+    ge = card(); bot.research([ge], NOW, cx_fetch=lambda lg, hd=hd: dict(news=[dict(h=hd, d="", t="2026-11-23", ath=[dict(id="1", name="Alpha Guard")])], trans=[]))
+    check("new-team rule: news '" + hd + "' is not a trade", ge["players"][0]["bot"]["under"] is None, ge["players"][0]["bot"])
 rumor = [dict(h="Hornets exploring trade interest in Alpha Guard", d="", t="2026-11-23", ath=[dict(id="1", name="Alpha Guard")])]
 gr_ = card(); bot.research([gr_], NOW, cx_fetch=lambda lg: dict(news=rumor, trans=[]))
 check("new-team rule: trade talk is not a trade (no rule, only more doubt)", gr_["players"][0]["bot"]["under"] is None and gr_["players"][0]["bot"]["vol"], gr_["players"][0]["bot"])

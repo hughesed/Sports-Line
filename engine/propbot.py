@@ -51,7 +51,8 @@ NEWS_AVOID = re.compile(r"minutes? (restriction|limit)|load management|game-time
                         r"not (expected|likely) to play|won't play|will not play|ruled out", re.I)
 NEWS_TRADE = re.compile(r"\btrade[ds]?\b|\btrading\b|trade (talks|request|block|market|rumou?rs?)|acquir|deal(t)? to", re.I)
 # a trade that happened (vs talk about one): the headline says he moved, and none of the rumour words
-TRADE_DONE = re.compile(r"\btraded\b|\bacquir(e|es|ed|ing)\b|\blands?\b|\blanded\b|\bdealt\b|trade sends|sends? .{2,40} to|agree(s|d)? (to|on) (a )?trade|\bswap\b|\bclaim(s|ed)?\b|\bsigns?\b|\bsigned\b", re.I)
+TRADE_DONE = re.compile(r"\btraded\b|\bacquir(e|es|ed|ing)\b|\bdealt\b|trade sends|agree(s|d)? (to|on) (a )?trade|claimed off waivers", re.I)
+NOT_MOVE = re.compile(r"g league|\bahl\b|\becho?l\b|minors|minor league|injured reserve|\bIR\b|assign|recall|option|two-way|extension|re-?sign", re.I)
 TRADE_TALK = re.compile(r"talks?\b|rumou?r|\bcould\b|\bmight\b|interest|explor|linked|eyeing|pursu|monitor|request|wants?\b|\bblock\b|market|considering|available|calling|calls about|react|would|should|\bif\b|\?", re.I)
 # THE NEW-TEAM RULE: a player who has played fewer than this many games for the team he is with now (traded, signed, or moved in the offseason)
 # is not a pick for an over: his numbers come from another team and another role. Builders may use him for unders only.
@@ -401,7 +402,7 @@ class PropBot:
                 h_ = a.get("h") or ""; txt = h_ + " " + (a.get("d") or "")
                 if age <= 1 and NEWS_AVOID.search(txt) and not avoid and not re.search(r"\b(cleared|will play|expected to play|available)\b", txt, re.I):
                     avoid = "ESPN news: " + h_[:90]
-                elif age <= 14 and TRADE_DONE.search(h_) and not TRADE_TALK.search(h_):
+                elif age <= 14 and TRADE_DONE.search(h_) and not TRADE_TALK.search(h_) and not NOT_MOVE.search(h_):
                     try: since = datetime.date.fromisoformat(a["t"])
                     except Exception: continue
                     n_new = sum(1 for x in reg if _etd(x["date"]) >= since)
@@ -411,7 +412,7 @@ class PropBot:
                     vol = max(vol, 0.1); notes.append("Trade talk in ESPN news: " + h_[:90])
             for t in C.get("trans") or []:
                 d = t.get("desc") or ""
-                if last in d.lower() and nm in FE._n(d) and re.search(r"acquired|traded|signed|claimed", d, re.I):
+                if last in d.lower() and nm in FE._n(d) and re.search(r"\b(acquired|traded|claimed)\b", d, re.I) and not NOT_MOVE.search(d):     # a signing is caught by the team check (he played somewhere else); an extension is not a move
                     try: since = datetime.date.fromisoformat(t["date"])
                     except Exception: continue
                     if (now.date() - since).days > 60: continue
