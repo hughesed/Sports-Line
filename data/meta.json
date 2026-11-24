@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3777,
+ "runNumber": 3778,
  "deadlineHit": false,
- "generatedAt": "2026-11-24T07:38:05Z",
- "generatedAtET": "Tue Nov 24, 2:38 AM ET",
+ "generatedAt": "2026-11-24T08:08:04Z",
+ "generatedAtET": "Tue Nov 24, 3:08 AM ET",
  "today": "2026-11-24",
- "lastRunAt": "2026-11-24T07:38:05Z",
+ "lastRunAt": "2026-11-24T08:08:04Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,8 +45,8 @@
   "nba": {
    "status": "ok",
    "games": 7,
-   "playerLevel": 2,
-   "teamLevel": 1,
+   "playerLevel": 3,
+   "teamLevel": 0,
    "carried": 4,
    "error": null,
    "newFinals": 0,
@@ -149,19 +149,19 @@
    "cbb": 809,
    "nhl": 32
   },
-  "gamesUploaded": 5,
+  "gamesUploaded": 3,
   "configured": true
  },
- "firstBasket": "1 new snapshots, 0 graded, wnba 6 graded, nba 257 graded",
- "propBot": "ok: 41370 legs graded in 21 days (0 this run), 1191 waiting; researched 52 players, moved 45, kept out 0; calibration on: cfb, nba, nfl, nhl",
- "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NCAAB: skipped (rate limited); NHL: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-11-24T11:38:27Z",
+ "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 257 graded",
+ "propBot": "ok: 41370 legs graded in 21 days (0 this run), 1210 waiting; researched 52 players, moved 45, kept out 1; calibration on: cfb, nba, nfl, nhl",
+ "odds": "kept (odds feed backing off until 11:38Z after 5 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 11:38Z)",
- "fanduel": "ok: FanDuel lines on 7 cards, 263 player stats, FanDuel-only players on 0 cards; not in the feed (9): TLSA@ILST, SDSU@ISU, M-OH@WMU, TTU@LOU, BAY@ALA, GB@LAR...",
- "fanduelDirect": "ok: 7 games, 526 player markets (7 FanDuel games in odds.json, pulled 2026-11-24T07:38:05Z; 2s)",
- "espnXref": "ok: 13 FanDuel players added from ESPN rosters on 1 cards {'nba': 13}; 80 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 7 cards, 259 player stats, FanDuel-only players on 0 cards; not in the feed (9): TLSA@ILST, SDSU@ISU, M-OH@WMU, TTU@LOU, BAY@ALA, GB@LAR...",
+ "fanduelDirect": "ok: 7 games, 526 player markets (7 FanDuel games in odds.json, pulled 2026-11-24T08:08:04Z; 2s)",
+ "espnXref": "ok: 1 FanDuel players added from ESPN rosters on 1 cards {'nba': 1}; 7 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
- "requests": 553,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 45.0
+ "requests": 540,
+ "failedRequests": 3,
+ "retries": 3,
+ "seconds": 31.0
 }
