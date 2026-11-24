@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3766,
+ "runNumber": 3767,
  "deadlineHit": false,
- "generatedAt": "2026-11-24T04:07:41Z",
- "generatedAtET": "Mon Nov 23, 11:07 PM ET",
+ "generatedAt": "2026-11-24T04:17:42Z",
+ "generatedAtET": "Mon Nov 23, 11:17 PM ET",
  "today": "2026-11-23",
- "lastRunAt": "2026-11-24T04:07:41Z",
+ "lastRunAt": "2026-11-24T04:17:42Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -45,9 +45,9 @@
   "nba": {
    "status": "ok",
    "games": 8,
-   "playerLevel": 0,
+   "playerLevel": 1,
    "teamLevel": 2,
-   "carried": 6,
+   "carried": 5,
    "error": null,
    "newFinals": 0,
    "storeGames": 2887,
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 5.0,
+  "seconds": 1.4,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,20 +149,19 @@
    "cbb": 809,
    "nhl": 32
   },
-  "gamesUploaded": 5,
-  "simTeamsUploaded": 1193,
+  "gamesUploaded": 3,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 255 graded",
- "propBot": "ok: 40622 legs graded in 21 days (0 this run), 1526 waiting; researched 29 players, moved 25, kept out 0; calibration on: cfb, nba, nfl, nhl",
+ "propBot": "ok: 40622 legs graded in 21 days (0 this run), 1538 waiting; researched 29 players, moved 25, kept out 0; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (odds feed backing off until 07:37Z after 4 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 07:37Z)",
  "fanduel": "ok: FanDuel lines on 7 cards, 115 player stats, FanDuel-only players on 0 cards; not in the feed (9): SJSU@UCSD, SDSU@ISU, M-OH@WMU, TTU@LOU, BAY@ALA, GB@LAR...",
- "fanduelDirect": "ok: 7 games, 258 player markets (8 FanDuel games in odds.json, pulled 2026-11-24T04:07:41Z; 3s)",
+ "fanduelDirect": "ok: 7 games, 258 player markets (8 FanDuel games in odds.json, pulled 2026-11-24T04:17:42Z; 2s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 7 not on either ESPN roster",
  "errors": [],
  "requests": 507,
  "failedRequests": 5,
  "retries": 5,
- "seconds": 30.1
+ "seconds": 21.3
 }
