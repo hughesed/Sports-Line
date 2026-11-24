@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3782,
+ "runNumber": 3783,
  "deadlineHit": false,
- "generatedAt": "2026-11-24T10:08:14Z",
- "generatedAtET": "Tue Nov 24, 5:08 AM ET",
+ "generatedAt": "2026-11-24T10:38:17Z",
+ "generatedAtET": "Tue Nov 24, 5:38 AM ET",
  "today": "2026-11-24",
- "lastRunAt": "2026-11-24T10:08:14Z",
+ "lastRunAt": "2026-11-24T10:38:17Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.6,
+  "seconds": 3.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,8 +149,7 @@
    "cbb": 809,
    "nhl": 32
   },
-  "gamesUploaded": 10,
-  "simTeamsUploaded": 1193,
+  "gamesUploaded": 5,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 257 graded",
@@ -158,11 +157,11 @@
  "odds": "kept (odds feed backing off until 11:38Z after 5 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 11:38Z)",
  "fanduel": "ok: FanDuel lines on 7 cards, 269 player stats, FanDuel-only players on 0 cards; not in the feed (13): TLSA@ILST, SDSU@ISU, M-OH@WMU, TTU@LOU, BAY@ALA, MIA@PHI...",
- "fanduelDirect": "ok: 7 games, 542 player markets (7 FanDuel games in odds.json, pulled 2026-11-24T10:08:14Z; 2s)",
+ "fanduelDirect": "ok: 7 games, 542 player markets (7 FanDuel games in odds.json, pulled 2026-11-24T10:38:17Z; 3s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
  "requests": 572,
- "failedRequests": 7,
- "retries": 7,
- "seconds": 31.3
+ "failedRequests": 1,
+ "retries": 1,
+ "seconds": 31.0
 }
