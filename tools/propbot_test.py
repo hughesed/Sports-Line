@@ -90,7 +90,39 @@ go = card(); bot.research([go], NOW, cx_fetch=lambda lg: dict(news=old_news, tra
 check("flags: week-old news does not", go["players"][0]["bot"]["avoid"] is None)
 trans = [dict(date=(last_date - datetime.timedelta(days=1)).isoformat(), desc="Acquired G Alpha Guard from Somewhere in exchange for a pick")]
 gt = card(); bot.research([gt], NOW, cx_fetch=lambda lg: dict(news=[], trans=trans))
-check("flags: traded with fewer than 3 games for the new team keeps him out", "Traded" in (gt["players"][0]["bot"]["avoid"] or ""), gt["players"][0]["bot"])
+check("new-team rule: joined by trade (league transactions) -> unders only, not left out", "unders only" in (gt["players"][0]["bot"]["under"] or "") and gt["players"][0]["bot"]["avoid"] is None, gt["players"][0]["bot"])
+done = [dict(h="Hornets acquire Alpha Guard from Suns", d="", t="2026-11-23", ath=[dict(id="1", name="Alpha Guard")])]
+gd = card(); bot.research([gd], NOW, cx_fetch=lambda lg: dict(news=done, trans=[]))
+check("new-team rule: a completed trade in ESPN news -> unders only", "Traded (ESPN news" in (gd["players"][0]["bot"]["under"] or ""), gd["players"][0]["bot"])
+rumor = [dict(h="Hornets exploring trade interest in Alpha Guard", d="", t="2026-11-23", ath=[dict(id="1", name="Alpha Guard")])]
+gr_ = card(); bot.research([gr_], NOW, cx_fetch=lambda lg: dict(news=rumor, trans=[]))
+check("new-team rule: trade talk is not a trade (no rule, only more doubt)", gr_["players"][0]["bot"]["under"] is None and gr_["players"][0]["bot"]["vol"], gr_["players"][0]["bot"])
+# the store says which side of each game he was on: last season with PHX, this season 7 games with HOM (the Royce O'Neale case)
+class St0: pass
+st0 = St0(); st0.games = {"nba": {}}
+reg0 = []
+for k in range(20):
+    d0 = datetime.date(2026, 2, 1) + datetime.timedelta(days=2 * k); eid = f"L{k}"
+    st0.games["nba"][eid] = dict(id=eid, date=d0.isoformat() + "T00:00Z", home="PHX" if k % 2 else "HOM" if k == 4 else "DEN", away="DEN" if k % 2 else "PHX")
+    reg0.append(dict(eventId=eid, date=d0.isoformat() + "T00:00Z", home=bool(k % 2), opp="HOM" if k == 4 else "DEN", season="2025-26", stats={"minutes": 30, "points": 10}))
+for k in range(7):
+    d0 = datetime.date(2026, 10, 28) + datetime.timedelta(days=3 * k); eid = f"C{k}"
+    st0.games["nba"][eid] = dict(id=eid, date=d0.isoformat() + "T00:00Z", home="HOM" if k % 2 else "BOS", away="BOS" if k % 2 else "HOM")
+    reg0.append(dict(eventId=eid, date=d0.isoformat() + "T00:00Z", home=bool(k % 2), opp="BOS", season="2026-27", stats={"minutes": 24, "points": 9}))
+c0 = card(); p0_ = c0["players"][0]
+nt0 = PB.new_team("nba", p0_, c0, reg0, st0)
+check("new-team rule: 7 games with his new team after last season elsewhere -> flagged, old team named", nt0 and nt0["n"] == 7 and nt0["prev"] == "PHX", nt0)
+only_vs = [x for x in reg0 if x["eventId"] == "L4" or x["eventId"].startswith("C")]
+nt_vs = PB.new_team("nba", p0_, c0, only_vs, st0)
+check("new-team rule: a game against his current team last season counts as the other team", nt_vs and nt_vs["prev"] == "PHX" and nt_vs["n"] == 7, nt_vs)
+reg1 = reg0 + [dict(eventId=f"D{k}", date=(datetime.date(2026, 11, 20) + datetime.timedelta(days=k)).isoformat() + "T00:00Z", home=True, opp="BOS", season="2026-27") for k in range(3)]
+for k in range(3): st0.games["nba"][f"D{k}"] = dict(id=f"D{k}", home="HOM", away="BOS", date="x")
+check("new-team rule: 10 games with the new team -> rule lifted", PB.new_team("nba", p0_, c0, reg1, st0) is None)
+check("new-team rule: every game with the same team -> no rule", PB.new_team("nba", p0_, c0, [x for x in reg0 if x["eventId"].startswith("C")], st0) is None)
+LOGS[("nba", "1")] = reg0; LOGS_SAVE = None
+gnt = card(); bot.research([gnt], NOW, cx_fetch=lambda lg: dict(news=[], trans=[]), store=st0)
+check("new-team rule: research flags him from the store with words the page can show", (gnt["players"][0]["bot"]["under"] or "").startswith("New team: 7 games with HOM (was PHX"), gnt["players"][0]["bot"]["under"])
+LOGS[("nba", "1")] = A_games
 talk = [dict(h="Teams calling about trade for Alpha Guard", d="", t="2026-11-22", ath=[dict(id="1", name="Alpha Guard")])]
 gk = card(); bot.research([gk], NOW, cx_fetch=lambda lg: dict(news=talk, trans=[]))
 check("flags: trade talk widens the doubt (vol) without keeping him out", gk["players"][0]["bot"]["vol"] and gk["players"][0]["bot"]["avoid"] is None, gk["players"][0]["bot"])
@@ -107,6 +139,11 @@ bot.open = {}
 bot.snapshot([g], NOW)
 rows = list(bot.open.values())
 check("snapshot: over/under at FanDuel's line and FanDuel's rungs are written down", any(r.get("ou") and r["r"] == "o" for r in rows) and any(r.get("ou") and r["r"] == "u" for r in rows) and any(not r.get("ou") and r["t"] == 20 for r in rows), [(r["s"], r["r"], r["t"]) for r in rows])
+bot.open = {}; gnt2 = card(rest_days=0); gnt2["players"][0]["bot"] = dict(under="New team"); fd_on(gnt2)
+for x in gnt2["players"][0]["stats"]: x["bot"] = {}
+bot.snapshot([gnt2], NOW)
+check("snapshot: legs of a new-team player are still written down, marked nt (so the rule's record can be checked)", bot.open and all(r.get("nt") == 1 for r in bot.open.values()))
+bot.open = {}; bot.snapshot([g], NOW); rows = list(bot.open.values())
 check("snapshot: only legs between 50% and 97%", all(PB.P_LO <= r["pc"] <= PB.P_HI for r in rows), [r["pc"] for r in rows])
 r20 = next(r for r in rows if r["s"] == "pts" and r["t"] == 20 and not r.get("ou"))
 check("snapshot: chance with and without the research both kept, plus the size of each pattern", r20["pn"] != r20["pc"] and r20.get("l") and r20["sv"] > 0, r20)

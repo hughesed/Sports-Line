@@ -20,13 +20,14 @@ def build():
     for g in sl["games"]:
         if datetime.datetime.fromisoformat(g["iso"].replace("Z", "+00:00")) <= now + datetime.timedelta(minutes=30): continue
         pls = [p for p in g.get("players") or [] if any(m.get("fd") and m.get("price") is not None for s in p["stats"] for m in s.get("miles") or [])]
-        if len(pls) >= 2: pick = (g, pls[0], pls[1]); break
+        if len(pls) >= 3: pick = (g, pls[0], pls[1], pls[2]); break
     if not pick: print("SKIP: no upcoming game with FanDuel player rungs on the slate"); sys.exit(0)
-    g, A, Bp = pick
+    g, A, Bp, Cn = pick
     for p in g["players"]: p.pop("bot", None)
     for s in A["stats"]: s["bot"] = dict(p0=s.get("proj"), f=0.94, l={"rest": -0.0619}, s=0.8, c={"o": -0.3, "u": 0.1})
     A["bot"] = dict(notes=["Tonight is the second night of a back-to-back: on those days he plays 9% less (12 games, min), so -6%"], avoid=None)
     Bp["bot"] = dict(notes=[], avoid="Questionable on the injury report")
+    Cn["bot"] = dict(notes=[], avoid=None, under="New team: 7 games with CHA (was PHX until Apr 12); overs need 10 games with his new team, unders only until then")
     json.dump(sl, open(site + "/data/slate.json", "w"))
     # the page file from synthetic graded legs
     random.seed(3); tmp = os.path.join(site, "_bot"); os.makedirs(tmp + "/store")
@@ -38,10 +39,10 @@ def build():
     bot.learn(now); bot.today_notes = [dict(g=g["id"], lg="nba", n=A["name"], tm=A.get("abbr"), avoid=None, notes=A["bot"]["notes"], f={"pts": 0.94}),
                                       dict(g=g["id"], lg="nba", n=Bp["name"], tm=Bp.get("abbr"), avoid=Bp["bot"]["avoid"], notes=[], f={})]
     json.dump(bot.page(now), open(site + "/data/propbot.json", "w"))
-    return site, g["id"], A, Bp
+    return site, g["id"], A, Bp, Cn
 
 def main():
-    site, gid, A, Bp = build()
+    site, gid, A, Bp, Cn = build()
     with sync_playwright() as p:
         host = Host(site); b, c = browser(p, host); errs = []
         pg = page(c, errs); pg.goto(ORIGIN + "/"); pg.wait_for_timeout(5000)
@@ -56,6 +57,16 @@ def main():
         print("  notes:", [x["bot"] for x in ok])
         check("hpLegs: his legs carry the bot's note (rest days on each, the track record on those it moved)", ok and all(x["bot"] and "rest days" in x["bot"] for x in ok) and any("track record" in x["bot"] for x in ok), [x["bot"] for x in ok])
         check("hpLegs: the flagged player is left out of the builders", r["b"] == 0, r["b"])
+        r2 = pg.evaluate("""([gid,c])=>{ const g=window.__LS.G[gid]; const ls=window.__LS.hp.legs(g).filter(l=>l.pid===c||(l.spec&&l.spec.pid===c));
+          const toks=window.__LS.preToks(g).filter(t=>t.indexOf(':'+c+':')>0), allT=window.__LS.preToks(g).length;
+          return {over:ls.filter(l=>l.spec&&l.spec.dir==='ge').length, under:ls.filter(l=>l.spec&&l.spec.dir==='lt').length, slateOvers:toks.filter(t=>/:(safe|m:)/.test(t)).length,
+                  floor:window.__LS.fl.legs(g).filter(l=>l.pid===c).length, allTokens:allT}; }""", [gid, Cn["id"]])
+        check("new-team rule: no over legs for him in any builder (FanDuel overs, X+ rungs, slate safe/ladder legs, floor legs) while the game still has others", r2["over"] == 0 and r2["slateOvers"] == 0 and r2["floor"] == 0 and r2["allTokens"] > 0, r2)
+        # his game card: Over buttons off, Under on
+        ov = pg.evaluate("""([gid,c])=>{ const g=window.__LS.G[gid], pl=g.players.find(x=>x.id===c); const d=document.createElement('div'); d.innerHTML=window.__LS.playerCard(g,pl);
+          const bs=[...d.querySelectorAll('[data-tok]')], of=re=>bs.filter(b=>re.test(b.getAttribute('data-tok'))).map(b=>b.disabled);
+          return {n:bs.length, over:of(/:over$/), under:of(/:under$/), rungs:of(/:m:/), note:d.textContent.indexOf('unders only')>=0}; }""", [gid, Cn["id"]])
+        check("new-team rule: on his game card the Over and X+ buttons are off, Under stays on, and the card says why", ov["over"] and all(ov["over"]) and all(ov["rungs"]) and not any(ov["under"]) and ov["note"], ov)
         txt = pg.inner_text("#app")
         check("home: the Prop bot section is on the page", "Prop bot" in txt)
         pg.locator('details[data-fold="bot"] > summary').click(); pg.wait_for_timeout(300)

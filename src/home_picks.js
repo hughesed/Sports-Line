@@ -86,14 +86,15 @@ function hpLegs(g){
   const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
   Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p||!hpPropOk(key,p.stat,side==='under')) return; const o=pair[side==='over'?'under':'over'];
     const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')||!stMain(g,pl)) return;
-    if(typeof botAvoid==='function'&&botAvoid(pl)) return;                 // the bot keeps him out of the picks (questionable, minutes limit, just traded)
+    if(typeof botAvoid==='function'&&botAvoid(pl)) return;                 // the bot keeps him out of the picks (questionable, minutes limit, back from a long absence)
+    if(side==='over'&&typeof botOverOK==='function'&&!botOverOK(pl)) return;   // new-team rule: unders only
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
     push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under'),thin:!!st.thin,_b:{pl:pl,st:st,dir:side==='under'?'u':'o'}}); }); });
   /* stat thresholds ("125+ pass yds", "1+ receptions", "2+ pass TD"): ONLY the rungs FanDuel lists (its alternate lines and 1+ markets, put on the player's ladder by the bot,
      engine/fanduel.py), at FanDuel's price, with FanDuel's bet link. The app no longer invents rungs or prices for the builders: a number FanDuel does not offer is not a pick. */
-  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; if(typeof botAvoid==='function'&&botAvoid(pl)) return; const av=pl.avail==null?1:pl.avail;
+  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; if(typeof botOverOK==='function'&&!botOverOK(pl)) return; const av=pl.avail==null?1:pl.avail;      // X+ rungs are overs: not for flagged or new-team players
     (pl.stats||[]).forEach(st=>{ if(!hpPropOk(key,st.key,false)) return; const lab=String(st.label||st.key).toLowerCase();
       (st.miles||[]).forEach(m=>{ if(!m||!m.fd||m.price==null||m.t==null) return; const T=+m.t, pf=clamp(hpImp(m.price)*0.96,0.02,0.97);      // one-sided price: about 4% of it is the book's margin
         const pm=m.p!=null?+m.p:null, pb=clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97), pq=typeof botP==='function'?botP(pl,st,'o',pb):null;

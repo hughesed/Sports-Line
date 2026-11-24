@@ -1239,7 +1239,7 @@ button.kvb.on{outline:2px solid var(--accent);background:var(--accent-soft)}
 </style>
 
 <style>[hidden]{display:none!important}img{max-width:100%}</style></head>
-<body data-build="8733b2de90">
+<body data-build="e6fe350dd8">
 <div id="lsbar" class="lsbar" role="status">Loading data…</div>
 <header class="hd" id="hdr"></header>
 <div class="wrap" id="app"></div>
@@ -1507,12 +1507,13 @@ function playerCard(g,pl){
   const st=pl.stats.find(s=>s.key===sk);
   const kind=pl.status.kind; const bcls={ok:'ok',probable:'ok',questionable:'warn',dtd:'warn',doubtful:'bad',out:'bad',returning:'back'}[kind]||'';
   const dis = pl.avail===0;
+  const ovDis = dis||(typeof botUnder==='function'&&!!botUnder(pl));
   const hc = st.hot==='hot'?'<span class="badge hot" title="'+esc(st.hotNote)+'">Hot streak</span>':st.hot==='cold'?'<span class="badge cold" title="'+esc(st.hotNote)+'">Cold streak</span>':'<span class="badge">Steady</span>';
   const streak = st.streak>=2 ? st.streak+' straight '+(st.streakDir==='over'?'overs':'unders') : 'no run of 2+';
   const tabs = pl.stats.map(s=>'<button data-act="stat" data-key="'+key+'" data-stat="'+s.key+'" aria-pressed="'+(s.key===sk)+'">'+esc(s.label)+'</button>').join('');
   const tOver='p:'+g.id+':'+pl.id+':'+st.key+':over', tUnder='p:'+g.id+':'+pl.id+':'+st.key+':under', tSafe='p:'+g.id+':'+pl.id+':'+st.key+':safe';
   const safeTxt = st.safe==null ? 'None (a zero in the window)' : (st.safeAdj!==st.safe ? st.safeAdj+'+ (raw '+st.safe+'+)' : st.safe+'+')+' · '+st.n15+' of '+st.n15;
-  const alts = visMiles(st).map(m=>legBtn('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t, m.t+'+', legSub('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t)+(m.n?' · '+m.hit+'/'+m.n:''), dis)).join('');
+  const alts = visMiles(st).map(m=>legBtn('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t, m.t+'+', legSub('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t)+(m.n?' · '+m.hit+'/'+m.n:''), ovDis)).join('');
   const bookPrices = st.prices&&st.prices.length ? (st.lineSrc==='FanDuel'?' · FD over/under ':' · DK prices ')+st.prices.map(fo).join(' / ') : '';
   const notes=[];
   notes.push(esc(st.matchupNote));
@@ -1536,7 +1537,7 @@ function playerCard(g,pl){
       '<div class="kv"><div class="k">Last '+st.n15+' vs line</div><div class="v">'+st.overHits15+'/'+st.n15+' over</div><div class="s">'+streak+'</div></div>'+
       '<div class="kv"><div class="k">Projection</div><div class="v">'+st.proj+'</div><div class="s">avg '+st.avg+(st.season!=null&&st.season!==st.avg?' · season '+st.season:'')+' · lean '+esc(st.lean)+'</div></div>'+
     '</div>')+
-    '<div class="btnrow">'+legBtn(tOver,'Over '+st.line,legSub(tOver),dis)+(st.underPrice!=null&&g.lg!=='nhl'?legBtn(tUnder,'Under '+st.line,legSub(tUnder),dis):'')+(st.safeAdj!=null?legBtn(tSafe,'Safe '+st.safeAdj+'+',legSub(tSafe),dis):'')+'</div>'+
+    '<div class="btnrow">'+legBtn(tOver,'Over '+st.line,legSub(tOver),ovDis)+(st.underPrice!=null&&g.lg!=='nhl'?legBtn(tUnder,'Under '+st.line,legSub(tUnder),dis):'')+(st.safeAdj!=null?legBtn(tSafe,'Safe '+st.safeAdj+'+',legSub(tSafe),ovDis):'')+'</div>'+
     (alts?'<div class="small muted">Alternate lines (hit count is for the last '+st.n15+' played)</div><div class="alt">'+alts+'</div>':'')+
     '<div class="pnotes">'+notes.map(x=>'<div>'+x+'</div>').join('')+'</div></div>';
 }
@@ -3854,6 +3855,7 @@ function preToks(g){
   (g.players||[]).forEach(pl=>{
     if(pl.status&&pl.status.kind==='out') return;
     if(typeof stMain==='function'&&!stMain(g,pl)) return;                    // the main players of the game (starters.js), not backups
+    if(typeof botOverOK==='function'&&!botOverOK(pl)) return;               // new-team rule / flagged by the bot: his overs are not picks (his FanDuel unders come from hpLegs below)
     (pl.stats||[]).forEach(st=>{
       if(st.safeAdj!=null&&st.pSafe!=null) out.push('p:'+g.id+':'+pl.id+':'+st.key+':safe');
       (st.miles||[]).forEach(m=>out.push('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t));
@@ -4081,7 +4083,7 @@ function trackRecordHtml(){
   return '<details class="how"><summary>Track record, last 7 days <span class="muted small">'+(n?n+' graded':'building')+'</span></summary><div class="body">'+callsSummaryHtml()+selfCheckHtml()+'</div></details>';
 }
 
-try{ window.__LS={get P(){return P},get S(){return S},get G(){return G},get CAL(){return CAL},get FEED(){return FEED},cands:(gid)=>candidates(G[gid],stateOf(G[gid])),stateOf:(gid)=>stateOf(G[gid]),logLive:(gid)=>logLiveCalls(G[gid],stateOf(G[gid]),candidates(G[gid],stateOf(G[gid])))}; }catch(e){}
+try{ window.__LS={get P(){return P},get S(){return S},get G(){return G},get CAL(){return CAL},get FEED(){return FEED},cands:(gid)=>candidates(G[gid],stateOf(G[gid])),stateOf:(gid)=>stateOf(G[gid]),logLive:(gid)=>logLiveCalls(G[gid],stateOf(G[gid]),candidates(G[gid],stateOf(G[gid]))),preToks:(g)=>preToks(g),playerCard:(g,pl)=>playerCard(g,pl)}; }catch(e){}
 
 /* ===== standalone live feed: ESPN -> compact docs, in the browser (port of feed.py) ===== */
 const ESP={nfl:'football/nfl',wnba:'basketball/wnba',mlb:'baseball/mlb',nba:'basketball/nba',cfb:'football/college-football',cbb:'basketball/mens-college-basketball',nhl:'hockey/nhl',tennis:'tennis/atp',soccer:'soccer'};
@@ -6963,6 +6965,7 @@ function stRungSet(pl,st){
 /* the "solid" and "reach" rungs of one main player's stat, as parlay legs (same shape as the other threshold legs) */
 function stAltLegs(g,pl,st,key){
   if(!st||!stMain(g,pl)||pl.status&&pl.status.kind==='out') return [];
+  if(typeof botOverOK==='function'&&!botOverOK(pl)) return [];              // new-team rule / flagged by the bot: no overs
   const mu=flMu(st); if(mu==null) return [];
   const lineT=st.line!=null?Math.floor(+st.line)+1:null;
   const cand=stRungSet(pl,st).filter(m=>m.t!==lineT&&m.t>=ST.ratioMin*mu&&m.p>=ST.pMin&&m.p<=ST.pMax).sort((a,b)=>b.t-a.t);        // highest number first
@@ -7023,6 +7026,7 @@ function flLegs(g){
   const out=[];
   (g.players||[]).forEach(pl=>{
     if(typeof stMain==='function'&&!stMain(g,pl)) return;                    // floor legs are for the main players of the game too (starters.js), not backups
+    if(typeof botOverOK==='function'&&!botOverOK(pl)) return;                // new-team rule / flagged by the bot: no overs
     (pl.stats||[]).forEach(st=>{
       if(typeof hpPropOk==='function'&&!hpPropOk(keyOf(g),st.key,false)) return;
       const f=flFloorRung(pl,st); if(!f) return;
@@ -7126,14 +7130,15 @@ function hpLegs(g){
   const by={}; (e.props||[]).forEach(p=>{ const k=p.pid+'|'+p.stat; (by[k]=by[k]||{})[p.side]=p; });
   Object.keys(by).forEach(k=>{ const pair=by[k]; ['over','under'].forEach(side=>{ const p=pair[side]; if(!p||!hpPropOk(key,p.stat,side==='under')) return; const o=pair[side==='over'?'under':'over'];
     const pl=(g.players||[]).find(q=>hpKey(q.name)===hpKey(p.name)); if(!pl||(pl.status&&pl.status.kind==='out')||!stMain(g,pl)) return;
-    if(typeof botAvoid==='function'&&botAvoid(pl)) return;                 // the bot keeps him out of the picks (questionable, minutes limit, just traded)
+    if(typeof botAvoid==='function'&&botAvoid(pl)) return;                 // the bot keeps him out of the picks (questionable, minutes limit, back from a long absence)
+    if(side==='over'&&typeof botOverOK==='function'&&!botOverOK(pl)) return;   // new-team rule: unders only
     const st=(pl.stats||[]).find(s=>s.key===p.stat); if(!st) return; const b=hpBest(p); if(!b||b.line==null) return; const line=+b.line, T=Math.floor(line)+1;
     let pm=null; if(st.proj!=null){ const mt=hpMatchup(g,pl,st.key); const mu=st.proj*mt.f; pm=mu<8?poisGE(T,mu):1-phi((T-0.5-mu)/Math.max(0.6,(st.sd||Math.sqrt(mu)))); if(side==='under') pm=1-pm; var why=mt.why; } else var why='';
     const lab=surname(pl.name)+' '+(side==='over'?'Over ':'Under ')+line+' '+String(st.label||st.key).toLowerCase();
     push('o:'+g.id+':pp:'+pl.id+':'+st.key+':'+side,'prop',lab,p,o,pm,{k:'prop',pid:pl.id,stat:st.key,T:T,dir:side==='over'?'ge':'lt'},g.id+':'+pl.id+':'+st.key,{pid:pl.id,avail:pl.avail==null?1:pl.avail,why:why,lead:stLead(g,pl),rec:hpRec(st,T,side==='under'),thin:!!st.thin,_b:{pl:pl,st:st,dir:side==='under'?'u':'o'}}); }); });
   /* stat thresholds ("125+ pass yds", "1+ receptions", "2+ pass TD"): ONLY the rungs FanDuel lists (its alternate lines and 1+ markets, put on the player's ladder by the bot,
      engine/fanduel.py), at FanDuel's price, with FanDuel's bet link. The app no longer invents rungs or prices for the builders: a number FanDuel does not offer is not a pick. */
-  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; if(typeof botAvoid==='function'&&botAvoid(pl)) return; const av=pl.avail==null?1:pl.avail;
+  (g.players||[]).forEach(pl=>{ if(pl.status&&pl.status.kind==='out') return; if(typeof botOverOK==='function'&&!botOverOK(pl)) return; const av=pl.avail==null?1:pl.avail;      // X+ rungs are overs: not for flagged or new-team players
     (pl.stats||[]).forEach(st=>{ if(!hpPropOk(key,st.key,false)) return; const lab=String(st.label||st.key).toLowerCase();
       (st.miles||[]).forEach(m=>{ if(!m||!m.fd||m.price==null||m.t==null) return; const T=+m.t, pf=clamp(hpImp(m.price)*0.96,0.02,0.97);      // one-sided price: about 4% of it is the book's margin
         const pm=m.p!=null?+m.p:null, pb=clamp((pm==null?pf:0.5*pf+0.5*pm)*av,0.02,0.97), pq=typeof botP==='function'?botP(pl,st,'o',pb):null;
@@ -7989,6 +7994,10 @@ function botP(pl,st,dir,p){
   return clamp(q,0.02,0.97);
 }
 function botAvoid(pl){ return (pl&&pl.bot&&pl.bot.avoid)||null; }
+/* THE NEW-TEAM RULE (engine/propbot.py new_team): a player with fewer than 10 games for the team he is with now (traded, signed, moved in the
+   offseason; also any completed trade in ESPN news or the league's transactions) is never an over in the picks. Unders only, until he has 10 games. */
+function botUnder(pl){ return (pl&&pl.bot&&pl.bot.under)||null; }
+function botOverOK(pl){ return !(pl&&pl.bot&&(pl.bot.avoid||pl.bot.under)); }
 const BOT_W0={rest:1,mates:1,home:0.5,dow:0.25};
 const BOT_L={rest:'rest days',mates:'teammates out',home:'home/road',dow:'day of week'};
 function botW(){ const B=botData(); return (B&&B.learned&&B.learned.w)||BOT_W0; }
@@ -8003,6 +8012,7 @@ function botTxt(st,p0,p1){
 function botNotesFor(pl,st){
   const out=[], b=pl&&pl.bot; if(!b) return out;
   if(b.avoid) out.push('<span class="w">Bot: left out of the picks ('+esc(b.avoid)+')</span>');
+  else if(b.under) out.push('<span class="w">Bot rule, unders only: '+esc(b.under)+'. Over buttons are off for him.</span>');
   (b.notes||[]).forEach(n=>out.push('Bot: '+esc(n)));
   if(st&&st.bot&&st.bot.f&&Math.abs(st.bot.f-1)>=0.02&&st.bot.p0!=null) out.push('Bot moved the projection '+(st.bot.f>1?'up ':'down ')+Math.round(Math.abs(st.bot.f-1)*100)+'% (from '+st.bot.p0+'). How much each pattern counts is learned from graded results.');
   return out;
@@ -8024,6 +8034,8 @@ function botHtml(){
       '<div class="small muted">Graded '+(gr.days||0)+' game days'+(gr.since?' since '+esc(gr.since.slice(5)):'')+(gr.backfill?' (including '+gr.backfill.toLocaleString()+' legs rebuilt from earlier slates)':'')+'; '+(gr.void||0)+' void (player did not play). '+(B.open||0)+' legs waiting for a final.</div>';
   } else h+='<div class="small muted">No graded legs yet: '+(B.open||0)+' legs are written down and wait for their games to end.</div>';
   const lgs=Object.keys(BL); if(lgs.length) h+='<div class="botlg">'+lgs.map(k=>{ const x=BL[k]; return '<span class="botchip'+(x.on?' on':'')+'"><b>'+esc(k.toUpperCase())+'</b> '+x.n.toLocaleString()+' legs · said '+botPct(x.said)+' · landed '+botPct(x.got)+(x.on?' · correcting':' · collecting')+'</span>'; }).join('')+'</div>';
+  const NT=B.newTeam; if(NT) h+='<div class="small"><b>Rule: new to the team = unders only.</b> A player with fewer than '+NT.games+' games for the team he is with now (traded, signed or moved in the offseason, or traded in today\'s ESPN news) is never an over in the picks, and the Over buttons on his card are off.'+
+    (NT.overs&&NT.overs.n?' Their overs, written down anyway: said '+botPct(NT.overs.said)+', landed '+botPct(NT.overs.got)+' ('+NT.overs.n+').':'')+(NT.unders&&NT.unders.n?' Their unders: said '+botPct(NT.unders.said)+', landed '+botPct(NT.unders.got)+' ('+NT.unders.n+').':'')+'</div>';
   const L=B.learned||{};
   if(L.check) h+='<div class="small">'+(L.check.better?'<b class="okc">Working:</b> ':'<b class="badc">Not better yet:</b> ')+'on the last 3 days ('+L.check.n.toLocaleString()+' legs it had not learned from), its corrected chances scored '+L.check.bot.toFixed(3)+' vs '+L.check.raw.toFixed(3)+' for the plain ones (Brier score, lower is closer to what happened).</div>';
   if(L.w){ const wn=L.wn||{}; h+='<div class="small"><b>How much each pattern counts now</b> (1.00 = taken at face value, starting values '+Object.keys(BOT_W0).map(k=>BOT_L[k]+' '+BOT_W0[k].toFixed(2)).join(', ')+'): '+Object.keys(BOT_L).map(k=>BOT_L[k]+' <b>'+(L.w[k]!=null?(+L.w[k]).toFixed(2):'–')+'</b>'+(wn[k]?' <span class="muted">('+Math.round(wn[k])+' graded)</span>':'')).join(' · ')+'</div>'; }
@@ -8033,8 +8045,9 @@ function botHtml(){
   // today's research
   const T=B.today||[];
   if(T.length){
-    const av=T.filter(x=>x.avoid), mv=T.filter(x=>!x.avoid).slice(0,14);
-    h+='<details class="botsec"><summary><b>Today\'s research</b> <span class="muted small">'+(B.info&&B.info.researched||T.length)+' players read · '+av.length+' kept out of the picks</span></summary>'+
+    const av=T.filter(x=>x.avoid), un=T.filter(x=>!x.avoid&&x.under), mv=T.filter(x=>!x.avoid&&!x.under).slice(0,14);
+    h+='<details class="botsec"'+(un.length||av.length?' open':'')+'><summary><b>Today\'s research</b> <span class="muted small">'+(B.info&&B.info.researched||T.length)+' players read · '+un.length+' new to their team (unders only) · '+av.length+' kept out</span></summary>'+
+      (un.length?'<div class="small"><b>New to their team: unders only</b><ul>'+un.map(x=>'<li><b>'+esc(x.n)+'</b> '+esc(x.tm||'')+': '+esc(x.under)+'</li>').join('')+'</ul></div>':'')+
       (av.length?'<div class="small"><b>Kept out of the picks</b><ul>'+av.map(x=>'<li><b>'+esc(x.n)+'</b> '+esc(x.tm||'')+': '+esc(x.avoid)+'</li>').join('')+'</ul></div>':'')+
       (mv.length?'<div class="small"><b>Projections moved</b><ul>'+mv.map(x=>{ const fs=Object.keys(x.f||{}).slice(0,3).map(k=>(BOT_ST[k]||k)+' '+(x.f[k]>1?'+':'−')+Math.round(Math.abs(x.f[k]-1)*100)+'%').join(', ');
         return '<li><b>'+esc(x.n)+'</b> '+esc(x.tm||'')+(fs?' <span class="mono">'+esc(fs)+'</span>':'')+(x.notes&&x.notes.length?'<br><span class="muted">'+esc(x.notes.slice(0,2).join(' · '))+'</span>':'')+'</li>'; }).join('')+'</ul></div>':'')+'</details>';
@@ -8045,7 +8058,7 @@ function botHtml(){
   h+='<div class="small muted">Updated '+esc((B.at||'').replace('T',' ').replace('Z',' UTC'))+'. Everything it learns is shrunk toward no change until there is enough evidence, and kept within set bounds. A miss on a player who did not play is a void, as at FanDuel.</div></div>';
   return '<section class="game hpsec"><div class="sec">'+hpFold('bot','Prop bot',sum,h,false)+'</div></section>';
 }
-try{ if(window.__LS) window.__LS.bot={data:botData,p:botP,avoid:botAvoid,txt:botTxt,notes:botNotesFor,html:botHtml}; }catch(e){}
+try{ if(window.__LS) window.__LS.bot={data:botData,p:botP,avoid:botAvoid,under:botUnder,overOK:botOverOK,txt:botTxt,notes:botNotesFor,html:botHtml}; }catch(e){}
 
 const $app=document.getElementById('app');
 document.addEventListener('click',function(e){

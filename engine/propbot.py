@@ -50,6 +50,12 @@ OVER_ONLY = {"nhl": {"pts", "sog", "saves", "ast"}}             # the user's boo
 NEWS_AVOID = re.compile(r"minutes? (restriction|limit)|load management|game-time decision|will (sit|rest)|(sits?|rests?|resting) (out )?(tonight|on the second|the second|on the back)|"
                         r"not (expected|likely) to play|won't play|will not play|ruled out", re.I)
 NEWS_TRADE = re.compile(r"\btrade[ds]?\b|\btrading\b|trade (talks|request|block|market|rumou?rs?)|acquir|deal(t)? to", re.I)
+# a trade that happened (vs talk about one): the headline says he moved, and none of the rumour words
+TRADE_DONE = re.compile(r"\btraded\b|\bacquir(e|es|ed|ing)\b|\blands?\b|\blanded\b|\bdealt\b|trade sends|sends? .{2,40} to|agree(s|d)? (to|on) (a )?trade|\bswap\b|\bclaim(s|ed)?\b|\bsigns?\b|\bsigned\b", re.I)
+TRADE_TALK = re.compile(r"talks?\b|rumou?r|\bcould\b|\bmight\b|interest|explor|linked|eyeing|pursu|monitor|request|wants?\b|\bblock\b|market|considering|available|calling|calls about|react|would|should|\bif\b|\?", re.I)
+# THE NEW-TEAM RULE: a player who has played fewer than this many games for the team he is with now (traded, signed, or moved in the offseason)
+# is not a pick for an over: his numbers come from another team and another role. Builders may use him for unders only.
+NEW_TEAM_GAMES = 10
 MISS_TXT = {"minutes": "minutes cut", "blowout": "blowout, sat late", "short": "just short", "off": "off night", "over": "went over the line"}
 
 def _clamp(x, a, b): return max(a, min(b, x))
@@ -300,9 +306,10 @@ class PropBot:
         return L
 
     # ============================================================ research before FanDuel's prices go on
-    def research(self, games, now, cx_fetch=None, log=None):
+    def research(self, games, now, cx_fetch=None, log=None, store=None):
         log = log or self.log
-        W = self.weights(); n_pl = n_adj = n_avoid = 0; targets = []
+        self.store = store
+        W = self.weights(); n_pl = n_adj = n_avoid = n_under = 0; targets = []
         for g in games:
             lg = g.get("key") or g.get("lg")
             if lg not in RESEARCH or not g.get("players"): continue
@@ -364,11 +371,11 @@ class PropBot:
                     try: CX[lg] = cx_fetch(lg) if cx_fetch else None
                     except Exception: CX[lg] = None
                 ok = self._research_player(g, lg, pl, logs.get((lg, str(pl["id"]))) or [], mates, CX.get(lg), W, now)
-                n_pl += 1; n_adj += ok[0]; n_avoid += ok[1]
+                n_pl += 1; n_adj += ok[0]; n_avoid += ok[1]; n_under += ok[2]
             except Exception as ex:
                 log(f"  prop bot: research failed for {pl.get('name')}: {type(ex).__name__}: {ex}"[:200])
-        self.info.update(researched=n_pl, adjusted=n_adj, avoid=n_avoid)
-        log(f"  prop bot research: {n_pl} players, {n_adj} projections moved, {n_avoid} kept out of the picks")
+        self.info.update(researched=n_pl, adjusted=n_adj, avoid=n_avoid, under=n_under)
+        log(f"  prop bot research: {n_pl} players, {n_adj} projections moved, {n_avoid} kept out of the picks, {n_under} new to their team (unders only)")
         return n_pl
 
     def _research_player(self, g, lg, pl, reg, mates, C, W, now):
@@ -378,6 +385,12 @@ class PropBot:
         st_ = pl.get("status") or {}
         if st_.get("kind") in ("questionable", "dtd", "doubtful") and "expected to play" not in (st_.get("note") or "").lower():
             avoid = f"{st_.get('label') or 'Questionable'} on the injury report"
+        # ---------- new team: games for the team he is with now (from the store: which side of each game in his log he was on), then trades in the news
+        under = None
+        nt = new_team(lg, pl, g, reg, getattr(self, "store", None))
+        if nt:
+            under = (f"New team: {nt['n']} game{'s' if nt['n'] != 1 else ''} with {nt['team']}" + (f" (was {nt['prev']} until {nt['since']:%b} {nt['since'].day})" if nt.get("prev") else "") +
+                     f"; overs need {NEW_TEAM_GAMES} games with his new team, unders only until then")
         if C:
             nm = FE._n(pl["name"]); last = pl["name"].split()[-1].lower()
             for a in C.get("news") or []:
@@ -385,20 +398,26 @@ class PropBot:
                 except Exception: continue
                 tagged = any(str(x.get("id")) == str(pl["id"]) for x in a.get("ath") or []) or nm in FE._n(a.get("h") or "")
                 if not tagged or len(a.get("ath") or []) > 3: continue          # a round-up of many players says little about this one
-                txt = (a.get("h") or "") + " " + (a.get("d") or "")
+                h_ = a.get("h") or ""; txt = h_ + " " + (a.get("d") or "")
                 if age <= 1 and NEWS_AVOID.search(txt) and not avoid and not re.search(r"\b(cleared|will play|expected to play|available)\b", txt, re.I):
-                    avoid = "ESPN news: " + (a.get("h") or "")[:90]
-                elif age <= 10 and NEWS_TRADE.search(a.get("h") or ""):
-                    vol = max(vol, 0.1); notes.append("Trade talk in ESPN news: " + (a.get("h") or "")[:90])
+                    avoid = "ESPN news: " + h_[:90]
+                elif age <= 14 and TRADE_DONE.search(h_) and not TRADE_TALK.search(h_):
+                    try: since = datetime.date.fromisoformat(a["t"])
+                    except Exception: continue
+                    n_new = sum(1 for x in reg if _etd(x["date"]) >= since)
+                    if n_new < NEW_TEAM_GAMES and not under:
+                        under = f"Traded (ESPN news {since:%b} {since.day}: {h_[:80]}): {n_new} game{'s' if n_new != 1 else ''} since; unders only until {NEW_TEAM_GAMES}"
+                elif age <= 10 and NEWS_TRADE.search(h_):
+                    vol = max(vol, 0.1); notes.append("Trade talk in ESPN news: " + h_[:90])
             for t in C.get("trans") or []:
                 d = t.get("desc") or ""
-                if last in d.lower() and nm in FE._n(d) and re.search(r"acquired|traded", d, re.I):
+                if last in d.lower() and nm in FE._n(d) and re.search(r"acquired|traded|signed|claimed", d, re.I):
                     try: since = datetime.date.fromisoformat(t["date"])
                     except Exception: continue
-                    if (now.date() - since).days > 30: continue
+                    if (now.date() - since).days > 60: continue
                     n_new = sum(1 for x in reg if _etd(x["date"]) >= since)
-                    if n_new < 3 and not avoid: avoid = f"Traded on {t['date'][5:]}: {n_new} game{'s' if n_new != 1 else ''} with the new team"
-                    else: notes.append(f"Joined by trade on {t['date'][5:]} ({n_new} games since)"); vol = max(vol, 0.05)
+                    if n_new < NEW_TEAM_GAMES and not under:
+                        under = f"Joined on {since:%b} {since.day} ({t.get('ab') or 'new team'}): {n_new} game{'s' if n_new != 1 else ''} since; unders only until {NEW_TEAM_GAMES}"
         # ---------- playing-time patterns by the kind of day (this season and last season, full games only)
         full, part = espn.full_games(lg, reg, role) if reg else ([], [])
         reg_f = full if (full and part) else reg
@@ -487,11 +506,11 @@ class PropBot:
             st["bot"] = dict(p0=p0, f=round(F, 3), l={k: round(v, 4) for k, v in l.items() if abs(v) >= 0.0005})
             if abs(F - 1) >= 0.005:
                 st["proj"] = round(p0 * F, 2); moved = 1
-        pl["bot"] = dict(notes=notes[:6], avoid=avoid, vol=vol or None, u0=_r3(u0), rest=rg)
-        if moved or avoid or notes:
-            self.today_notes.append(dict(g=g["id"], lg=lg, n=pl["name"], tm=pl.get("abbr"), avoid=avoid, notes=notes[:4],
+        pl["bot"] = dict(notes=notes[:6], avoid=avoid, under=under, vol=vol or None, u0=_r3(u0), rest=rg)
+        if moved or avoid or under or notes:
+            self.today_notes.append(dict(g=g["id"], lg=lg, n=pl["name"], tm=pl.get("abbr"), avoid=avoid, under=under, notes=notes[:4],
                                          f={st["key"]: st["bot"]["f"] for st in pl.get("stats") or [] if st.get("bot") and abs(st["bot"]["f"] - 1) >= 0.02}))
-        return moved, 1 if avoid else 0
+        return moved, 1 if avoid else 0, 1 if (under and not avoid) else 0
 
     # ============================================================ after FanDuel's prices: put the calibration on the cards, write down the legs
     def snapshot(self, games, now, log=None):
@@ -533,10 +552,11 @@ class PropBot:
                         if b.get("l"): row["l"] = b["l"]
                         if pb.get("u0"): row["u0"] = pb["u0"]
                         if pb.get("avoid"): row["av"] = 1
+                        if pb.get("under"): row["nt"] = 1
                         if leg.get("ou"): row["ou"] = 1
                         o = self.open.get(k)
                         if o is not None:          # the latest pregame numbers count, but tiny moves are not worth a rewrite
-                            if abs((o.get("ps") or 0) - row["ps"]) < 0.01 and o.get("pr") == row["pr"] and o.get("av") == row.get("av") and o.get("l") == row.get("l"): continue
+                            if abs((o.get("ps") or 0) - row["ps"]) < 0.01 and o.get("pr") == row["pr"] and o.get("av") == row.get("av") and o.get("nt") == row.get("nt") and o.get("l") == row.get("l"): continue
                             n_upd += 1
                         else: n_new += 1
                         self.open[k] = row
@@ -575,7 +595,10 @@ class PropBot:
                          for r in recent[:15]]
         wk = [r for r in R if r["d"] >= (today - datetime.timedelta(days=7)).isoformat() and r["y"] == 0 and (r.get("ps") or 0) >= 0.6 and r.get("why")]
         out["missWhy"] = dict(collections.Counter(MISS_TXT.get(r["why"], r["why"]) for r in wk).most_common())
-        self.today_notes.sort(key=lambda x: (x["avoid"] is None, -max([abs(v - 1) for v in x["f"].values()] or [0])))
+        nt = [r for r in R if r.get("nt")]
+        out["newTeam"] = dict(games=NEW_TEAM_GAMES, overs=dict(n=sum(1 for r in nt if r["r"] == "o"), got=_r3(_mean([r["y"] for r in nt if r["r"] == "o"])), said=_r3(_mean([r["ps"] for r in nt if r["r"] == "o"]))),
+                              unders=dict(n=sum(1 for r in nt if r["r"] == "u"), got=_r3(_mean([r["y"] for r in nt if r["r"] == "u"])), said=_r3(_mean([r["ps"] for r in nt if r["r"] == "u"]))))
+        self.today_notes.sort(key=lambda x: (x["avoid"] is None, not x.get("under"), -max([abs(v - 1) for v in x["f"].values()] or [0])))
         out["today"] = self.today_notes[:60]
         return out
 
@@ -600,6 +623,30 @@ class PropBot:
         tmp = self.state_f + ".tmp"
         with open(tmp, "w") as f: json.dump(st, f, separators=(",", ":"))
         os.replace(tmp, self.state_f)
+
+def new_team(lg, pl, g, reg, store):
+    """the new-team rule. reg = his regular-season games (this season, plus last season while this one is short). The store knows both teams of
+    each game, his log says home or away and who the opponent was, so each game gets the team he played for. Returns None when he has
+    NEW_TEAM_GAMES+ games for the team on tonight's card since he last played for anyone else (or nothing to go on), else
+    dict(n=games with this team, team, prev=the team before, since=his last game for it)."""
+    team = ((g.get("teams") or {}).get(pl.get("side")) or {}).get("abbr") or pl.get("abbr")
+    games = ((store.games.get(lg) or {}) if store is not None else {})
+    if not team or not games or not reg: return None
+    hist = []
+    for x in reg:
+        row = games.get(str(x.get("eventId")))
+        if not row: continue
+        both = (row.get("home"), row.get("away"))
+        if team in both and x.get("opp") != team: mine = team                       # he cannot play against his own team
+        else: mine = row["home"] if x.get("home") else row["away"]
+        hist.append((_etd(x["date"]), mine))
+    if not hist: return None
+    others = [(d, t) for d, t in hist if t != team]
+    if not others: return None
+    since, prev = max(others)
+    n = sum(1 for d, t in hist if t == team and d > since)
+    if n >= NEW_TEAM_GAMES: return None
+    return dict(n=n, team=team, prev=prev, since=since)
 
 def _unit(lg): return {"nba": "min", "wnba": "min", "nhl": "min of ice time", "nfl": "touches/targets", "cfb": "touches/targets"}.get(lg, "")
 def _frac(xs, wo_set): return (sum(1 for x in xs if x["eventId"] in wo_set) / len(xs)) if xs else 0.0

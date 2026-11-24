@@ -65,6 +65,7 @@ function stRungSet(pl,st){
 /* the "solid" and "reach" rungs of one main player's stat, as parlay legs (same shape as the other threshold legs) */
 function stAltLegs(g,pl,st,key){
   if(!st||!stMain(g,pl)||pl.status&&pl.status.kind==='out') return [];
+  if(typeof botOverOK==='function'&&!botOverOK(pl)) return [];              // new-team rule / flagged by the bot: no overs
   const mu=flMu(st); if(mu==null) return [];
   const lineT=st.line!=null?Math.floor(+st.line)+1:null;
   const cand=stRungSet(pl,st).filter(m=>m.t!==lineT&&m.t>=ST.ratioMin*mu&&m.p>=ST.pMin&&m.p<=ST.pMax).sort((a,b)=>b.t-a.t);        // highest number first

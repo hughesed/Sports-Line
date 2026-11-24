@@ -13,6 +13,10 @@ function botP(pl,st,dir,p){
   return clamp(q,0.02,0.97);
 }
 function botAvoid(pl){ return (pl&&pl.bot&&pl.bot.avoid)||null; }
+/* THE NEW-TEAM RULE (engine/propbot.py new_team): a player with fewer than 10 games for the team he is with now (traded, signed, moved in the
+   offseason; also any completed trade in ESPN news or the league's transactions) is never an over in the picks. Unders only, until he has 10 games. */
+function botUnder(pl){ return (pl&&pl.bot&&pl.bot.under)||null; }
+function botOverOK(pl){ return !(pl&&pl.bot&&(pl.bot.avoid||pl.bot.under)); }
 const BOT_W0={rest:1,mates:1,home:0.5,dow:0.25};
 const BOT_L={rest:'rest days',mates:'teammates out',home:'home/road',dow:'day of week'};
 function botW(){ const B=botData(); return (B&&B.learned&&B.learned.w)||BOT_W0; }
@@ -27,6 +31,7 @@ function botTxt(st,p0,p1){
 function botNotesFor(pl,st){
   const out=[], b=pl&&pl.bot; if(!b) return out;
   if(b.avoid) out.push('<span class="w">Bot: left out of the picks ('+esc(b.avoid)+')</span>');
+  else if(b.under) out.push('<span class="w">Bot rule, unders only: '+esc(b.under)+'. Over buttons are off for him.</span>');
   (b.notes||[]).forEach(n=>out.push('Bot: '+esc(n)));
   if(st&&st.bot&&st.bot.f&&Math.abs(st.bot.f-1)>=0.02&&st.bot.p0!=null) out.push('Bot moved the projection '+(st.bot.f>1?'up ':'down ')+Math.round(Math.abs(st.bot.f-1)*100)+'% (from '+st.bot.p0+'). How much each pattern counts is learned from graded results.');
   return out;
@@ -48,6 +53,8 @@ function botHtml(){
       '<div class="small muted">Graded '+(gr.days||0)+' game days'+(gr.since?' since '+esc(gr.since.slice(5)):'')+(gr.backfill?' (including '+gr.backfill.toLocaleString()+' legs rebuilt from earlier slates)':'')+'; '+(gr.void||0)+' void (player did not play). '+(B.open||0)+' legs waiting for a final.</div>';
   } else h+='<div class="small muted">No graded legs yet: '+(B.open||0)+' legs are written down and wait for their games to end.</div>';
   const lgs=Object.keys(BL); if(lgs.length) h+='<div class="botlg">'+lgs.map(k=>{ const x=BL[k]; return '<span class="botchip'+(x.on?' on':'')+'"><b>'+esc(k.toUpperCase())+'</b> '+x.n.toLocaleString()+' legs · said '+botPct(x.said)+' · landed '+botPct(x.got)+(x.on?' · correcting':' · collecting')+'</span>'; }).join('')+'</div>';
+  const NT=B.newTeam; if(NT) h+='<div class="small"><b>Rule: new to the team = unders only.</b> A player with fewer than '+NT.games+' games for the team he is with now (traded, signed or moved in the offseason, or traded in today\'s ESPN news) is never an over in the picks, and the Over buttons on his card are off.'+
+    (NT.overs&&NT.overs.n?' Their overs, written down anyway: said '+botPct(NT.overs.said)+', landed '+botPct(NT.overs.got)+' ('+NT.overs.n+').':'')+(NT.unders&&NT.unders.n?' Their unders: said '+botPct(NT.unders.said)+', landed '+botPct(NT.unders.got)+' ('+NT.unders.n+').':'')+'</div>';
   const L=B.learned||{};
   if(L.check) h+='<div class="small">'+(L.check.better?'<b class="okc">Working:</b> ':'<b class="badc">Not better yet:</b> ')+'on the last 3 days ('+L.check.n.toLocaleString()+' legs it had not learned from), its corrected chances scored '+L.check.bot.toFixed(3)+' vs '+L.check.raw.toFixed(3)+' for the plain ones (Brier score, lower is closer to what happened).</div>';
   if(L.w){ const wn=L.wn||{}; h+='<div class="small"><b>How much each pattern counts now</b> (1.00 = taken at face value, starting values '+Object.keys(BOT_W0).map(k=>BOT_L[k]+' '+BOT_W0[k].toFixed(2)).join(', ')+'): '+Object.keys(BOT_L).map(k=>BOT_L[k]+' <b>'+(L.w[k]!=null?(+L.w[k]).toFixed(2):'–')+'</b>'+(wn[k]?' <span class="muted">('+Math.round(wn[k])+' graded)</span>':'')).join(' · ')+'</div>'; }
@@ -57,8 +64,9 @@ function botHtml(){
   // today's research
   const T=B.today||[];
   if(T.length){
-    const av=T.filter(x=>x.avoid), mv=T.filter(x=>!x.avoid).slice(0,14);
-    h+='<details class="botsec"><summary><b>Today\'s research</b> <span class="muted small">'+(B.info&&B.info.researched||T.length)+' players read · '+av.length+' kept out of the picks</span></summary>'+
+    const av=T.filter(x=>x.avoid), un=T.filter(x=>!x.avoid&&x.under), mv=T.filter(x=>!x.avoid&&!x.under).slice(0,14);
+    h+='<details class="botsec"'+(un.length||av.length?' open':'')+'><summary><b>Today\'s research</b> <span class="muted small">'+(B.info&&B.info.researched||T.length)+' players read · '+un.length+' new to their team (unders only) · '+av.length+' kept out</span></summary>'+
+      (un.length?'<div class="small"><b>New to their team: unders only</b><ul>'+un.map(x=>'<li><b>'+esc(x.n)+'</b> '+esc(x.tm||'')+': '+esc(x.under)+'</li>').join('')+'</ul></div>':'')+
       (av.length?'<div class="small"><b>Kept out of the picks</b><ul>'+av.map(x=>'<li><b>'+esc(x.n)+'</b> '+esc(x.tm||'')+': '+esc(x.avoid)+'</li>').join('')+'</ul></div>':'')+
       (mv.length?'<div class="small"><b>Projections moved</b><ul>'+mv.map(x=>{ const fs=Object.keys(x.f||{}).slice(0,3).map(k=>(BOT_ST[k]||k)+' '+(x.f[k]>1?'+':'−')+Math.round(Math.abs(x.f[k]-1)*100)+'%').join(', ');
         return '<li><b>'+esc(x.n)+'</b> '+esc(x.tm||'')+(fs?' <span class="mono">'+esc(fs)+'</span>':'')+(x.notes&&x.notes.length?'<br><span class="muted">'+esc(x.notes.slice(0,2).join(' · '))+'</span>':'')+'</li>'; }).join('')+'</ul></div>':'')+'</details>';
@@ -69,4 +77,4 @@ function botHtml(){
   h+='<div class="small muted">Updated '+esc((B.at||'').replace('T',' ').replace('Z',' UTC'))+'. Everything it learns is shrunk toward no change until there is enough evidence, and kept within set bounds. A miss on a player who did not play is a void, as at FanDuel.</div></div>';
   return '<section class="game hpsec"><div class="sec">'+hpFold('bot','Prop bot',sum,h,false)+'</div></section>';
 }
-try{ if(window.__LS) window.__LS.bot={data:botData,p:botP,avoid:botAvoid,txt:botTxt,notes:botNotesFor,html:botHtml}; }catch(e){}
+try{ if(window.__LS) window.__LS.bot={data:botData,p:botP,avoid:botAvoid,under:botUnder,overOK:botOverOK,txt:botTxt,notes:botNotesFor,html:botHtml}; }catch(e){}

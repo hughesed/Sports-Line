@@ -204,7 +204,7 @@ def main():
         xref_status = f"error: {type(ex).__name__}: {ex}"[:160]
     log(f"  espn cross-reference: {xref_status}")
     if pbot is not None:      # before FanDuel's prices go on: rest days, teammates out, home/road, day of week, injury report and news move each player's projection
-        try: pbot.research(games, now, CF.fetch, log)
+        try: pbot.research(games, now, CF.fetch, log, store=st)
         except Exception as ex: traceback.print_exc(); pbot_note = f"research error: {type(ex).__name__}: {ex}"[:160]
     try:
         import fanduel as FD

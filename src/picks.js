@@ -41,6 +41,7 @@ function preToks(g){
   (g.players||[]).forEach(pl=>{
     if(pl.status&&pl.status.kind==='out') return;
     if(typeof stMain==='function'&&!stMain(g,pl)) return;                    // the main players of the game (starters.js), not backups
+    if(typeof botOverOK==='function'&&!botOverOK(pl)) return;               // new-team rule / flagged by the bot: his overs are not picks (his FanDuel unders come from hpLegs below)
     (pl.stats||[]).forEach(st=>{
       if(st.safeAdj!=null&&st.pSafe!=null) out.push('p:'+g.id+':'+pl.id+':'+st.key+':safe');
       (st.miles||[]).forEach(m=>out.push('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t));
@@ -268,4 +269,4 @@ function trackRecordHtml(){
   return '<details class="how"><summary>Track record, last 7 days <span class="muted small">'+(n?n+' graded':'building')+'</span></summary><div class="body">'+callsSummaryHtml()+selfCheckHtml()+'</div></details>';
 }
 
-try{ window.__LS={get P(){return P},get S(){return S},get G(){return G},get CAL(){return CAL},get FEED(){return FEED},cands:(gid)=>candidates(G[gid],stateOf(G[gid])),stateOf:(gid)=>stateOf(G[gid]),logLive:(gid)=>logLiveCalls(G[gid],stateOf(G[gid]),candidates(G[gid],stateOf(G[gid])))}; }catch(e){}
+try{ window.__LS={get P(){return P},get S(){return S},get G(){return G},get CAL(){return CAL},get FEED(){return FEED},cands:(gid)=>candidates(G[gid],stateOf(G[gid])),stateOf:(gid)=>stateOf(G[gid]),logLive:(gid)=>logLiveCalls(G[gid],stateOf(G[gid]),candidates(G[gid],stateOf(G[gid]))),preToks:(g)=>preToks(g),playerCard:(g,pl)=>playerCard(g,pl)}; }catch(e){}

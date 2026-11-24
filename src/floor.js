@@ -45,6 +45,7 @@ function flLegs(g){
   const out=[];
   (g.players||[]).forEach(pl=>{
     if(typeof stMain==='function'&&!stMain(g,pl)) return;                    // floor legs are for the main players of the game too (starters.js), not backups
+    if(typeof botOverOK==='function'&&!botOverOK(pl)) return;                // new-team rule / flagged by the bot: no overs
     (pl.stats||[]).forEach(st=>{
       if(typeof hpPropOk==='function'&&!hpPropOk(keyOf(g),st.key,false)) return;
       const f=flFloorRung(pl,st); if(!f) return;

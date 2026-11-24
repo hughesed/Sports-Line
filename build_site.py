@@ -132,6 +132,11 @@ t = rep(t, OLD_CHIP, NEW_CHIP)
 t = rep(t, "const LEARN=__LEARN__;", "const LEARN=window.__LSDATA.learn;")
 t = rep(t, "  if(st.anchorNote) notes.push('<span class=\"w\">'+esc(st.anchorNote)+'</span>');",
         "  if(st.anchorNote) notes.push('<span class=\"w\">'+esc(st.anchorNote)+'</span>');\n  if(typeof botNotesFor==='function') botNotesFor(pl,st).forEach(n=>notes.push(n));")
+# new-team rule (bot.js botUnder): his Over, X+ and Safe buttons are off; Under stays
+t = rep(t, "  const dis = pl.avail===0;\n", "  const dis = pl.avail===0;\n  const ovDis = dis||(typeof botUnder==='function'&&!!botUnder(pl));\n")
+t = rep(t, "legSub('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t)+(m.n?' · '+m.hit+'/'+m.n:''), dis)).join('');", "legSub('p:'+g.id+':'+pl.id+':'+st.key+':m:'+m.t)+(m.n?' · '+m.hit+'/'+m.n:''), ovDis)).join('');")
+t = rep(t, "legBtn(tOver,'Over '+st.line,legSub(tOver),dis)", "legBtn(tOver,'Over '+st.line,legSub(tOver),ovDis)")
+t = rep(t, "legBtn(tSafe,'Safe '+st.safeAdj+'+',legSub(tSafe),dis)", "legBtn(tSafe,'Safe '+st.safeAdj+'+',legSub(tSafe),ovDis)")
 t = rep(t, "const PASTP=__PASTP__;", "const PASTP=window.__LSDATA.pastp;")
 # accounts / leaderboard / chat / battles (Supabase): the older local versions of these functions are renamed *Local and
 # social.js decides which one runs (no Supabase configured -> the local practice bank exactly as before)
