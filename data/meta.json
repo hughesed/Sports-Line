@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3917,
+ "runNumber": 3918,
  "deadlineHit": false,
- "generatedAt": "2026-11-26T02:53:59Z",
- "generatedAtET": "Wed Nov 25, 9:53 PM ET",
+ "generatedAt": "2026-11-26T03:03:58Z",
+ "generatedAtET": "Wed Nov 25, 10:03 PM ET",
  "today": "2026-11-25",
- "lastRunAt": "2026-11-26T02:53:59Z",
+ "lastRunAt": "2026-11-26T03:03:58Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -44,13 +44,13 @@
   },
   "nba": {
    "status": "ok",
-   "games": 7,
-   "playerLevel": 4,
+   "games": 5,
+   "playerLevel": 2,
    "teamLevel": 0,
    "carried": 3,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 2894,
+   "newFinals": 1,
+   "storeGames": 2895,
    "lastFinal": "2026-11-26"
   },
   "cfb": {
@@ -66,24 +66,24 @@
   },
   "cbb": {
    "status": "ok",
-   "games": 11,
+   "games": 15,
    "playerLevel": 0,
-   "teamLevel": 5,
-   "carried": 6,
+   "teamLevel": 8,
+   "carried": 7,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 7715,
    "lastFinal": "2026-11-26"
   },
   "nhl": {
    "status": "ok",
-   "games": 7,
+   "games": 5,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 5,
+   "teamLevel": 1,
+   "carried": 4,
    "error": null,
    "newFinals": 2,
-   "storeGames": 393,
+   "storeGames": 395,
    "lastFinal": "2026-11-26"
   },
   "tennis": {
@@ -105,26 +105,26 @@
  },
  "counts": {
   "slate": 38,
-  "playerCards": 18,
-  "teamCards": 20,
+  "playerCards": 15,
+  "teamCards": 23,
   "window": 571,
   "sched": 434,
   "pastp": 13,
-  "predictions": 1126,
-  "graded": 1035,
-  "storeGames": 16055
+  "predictions": 1130,
+  "graded": 1038,
+  "storeGames": 16058
  },
  "calibration": {
   "slopes": {
    "cfb": 0.878,
    "nfl": 1.1179,
    "nhl": 1.15,
-   "nba": 1.1268,
+   "nba": 1.1269,
    "cbb": 0.9215
   },
-  "graded": 1035,
-  "accML": 0.666,
-  "accBook": 0.661
+  "graded": 1038,
+  "accML": 0.667,
+  "accBook": 0.662
  },
  "social": {
   "enabled": true,
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 3.5,
+  "seconds": 4.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,20 +149,20 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 10,
+  "gamesUploaded": 8,
   "simTeamsUploaded": 1201,
   "configured": true
  },
- "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 262 graded",
- "propBot": "ok: 42741 legs graded in 21 days (64 this run), 3226 waiting; researched 96 players, moved 67, kept out 0; calibration on: cfb, nba, nfl, nhl",
+ "firstBasket": "0 new snapshots, 1 graded, wnba 6 graded, nba 263 graded",
+ "propBot": "ok: 43107 legs graded in 21 days (366 this run), 2836 waiting; researched 59 players, moved 38, kept out 0; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (odds feed backing off until 03:46Z after 13 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 03:46Z)",
- "fanduel": "ok: FanDuel lines on 9 cards, 333 player stats, FanDuel-only players on 0 cards; not in the feed (11): WASH@VCU, GCU@COLO, STAN@SLU, MSST@MISS, NEB@IOWA, DEN@PIT...",
- "fanduelDirect": "ok: 9 games, 659 player markets (9 FanDuel games in odds.json, pulled 2026-11-26T02:53:59Z; 2s)",
- "espnXref": "ok: 13 FanDuel players added from ESPN rosters on 5 cards {'nba': 2, 'nfl': 11}; 25 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 7 cards, 134 player stats, FanDuel-only players on 0 cards; not in the feed (13): GCU@COLO, STAN@SLU, TENN@ISU, MIA@MICH, BAY@GONZ, MSST@MISS...",
+ "fanduelDirect": "ok: 7 games, 296 player markets (10 FanDuel games in odds.json, pulled 2026-11-26T03:03:58Z; 3s)",
+ "espnXref": "ok: 11 FanDuel players added from ESPN rosters on 3 cards {'nfl': 11}; 20 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
  "errors": [],
- "requests": 607,
- "failedRequests": 5,
- "retries": 5,
- "seconds": 25.4
+ "requests": 532,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 33.9
 }
