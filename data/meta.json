@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3934,
+ "runNumber": 3935,
  "deadlineHit": false,
- "generatedAt": "2026-11-26T06:47:31Z",
- "generatedAtET": "Thu Nov 26, 1:47 AM ET",
+ "generatedAt": "2026-11-26T07:17:34Z",
+ "generatedAtET": "Thu Nov 26, 2:17 AM ET",
  "today": "2026-11-26",
- "lastRunAt": "2026-11-26T06:47:31Z",
+ "lastRunAt": "2026-11-26T07:17:34Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 4.0,
+  "seconds": 2.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,7 +149,7 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 2,
+  "gamesUploaded": 1,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
@@ -157,11 +157,11 @@
  "odds": "kept (odds feed backing off until 07:54Z after 14 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 07:54Z)",
  "fanduel": "ok: FanDuel lines on 6 cards, 134 player stats, FanDuel-only players on 0 cards; not in the feed (17): TENN@ISU, MIA@MICH, LOU@SJU, BAY@GONZ, MSST@MISS, NEB@IOWA...",
- "fanduelDirect": "kept (7 FanDuel games in odds.json, pulled 2026-11-26T06:34:25Z; 0s)",
- "espnXref": "ok: 10 FanDuel players added from ESPN rosters on 3 cards {'nfl': 10}; 19 stats from game logs, 0 from FanDuel's price only; 1 not on either ESPN roster",
+ "fanduelDirect": "ok: 6 games, 308 player markets (7 FanDuel games in odds.json, pulled 2026-11-26T07:17:34Z; 2s)",
+ "espnXref": "ok: 10 FanDuel players added from ESPN rosters on 3 cards {'nfl': 10}; 19 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
- "requests": 485,
+ "requests": 487,
  "failedRequests": 7,
  "retries": 7,
- "seconds": 25.7
+ "seconds": 27.1
 }
