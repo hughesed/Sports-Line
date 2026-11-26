@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3978,
+ "runNumber": 3979,
  "deadlineHit": false,
- "generatedAt": "2026-11-26T20:10:55Z",
- "generatedAtET": "Thu Nov 26, 3:10 PM ET",
+ "generatedAt": "2026-11-26T20:20:57Z",
+ "generatedAtET": "Thu Nov 26, 3:20 PM ET",
  "today": "2026-11-26",
- "lastRunAt": "2026-11-26T20:10:55Z",
+ "lastRunAt": "2026-11-26T20:20:57Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 4.4,
+  "seconds": 5.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,20 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 6,
+  "gamesUploaded": 3,
+  "simTeamsUploaded": 1201,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
- "propBot": "ok: 42350 legs graded in 21 days (0 this run), 2325 waiting; researched 132 players, moved 75, kept out 0; calibration on: cfb, nba, nfl, nhl",
+ "propBot": "ok: 42350 legs graded in 21 days (0 this run), 2329 waiting; researched 132 players, moved 75, kept out 0; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (odds feed backing off until 20:40Z after 17 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 20:40Z)",
  "fanduel": "ok: FanDuel lines on 14 cards, 477 player stats, FanDuel-only players on 0 cards; not in the feed (10): LOU@UK, ND@SYR, MICH@OSU, LSU@ARK, ATL@MIN, BAL@HOU...",
- "fanduelDirect": "ok: 14 games, 1005 player markets (27 FanDuel games in odds.json, pulled 2026-11-26T20:10:55Z; 5s)",
+ "fanduelDirect": "ok: 14 games, 1005 player markets (27 FanDuel games in odds.json, pulled 2026-11-26T20:20:57Z; 5s)",
  "espnXref": "ok: 12 FanDuel players added from ESPN rosters on 3 cards {'nfl': 12}; 23 stats from game logs, 0 from FanDuel's price only; 8 not on either ESPN roster",
  "errors": [],
  "requests": 950,
  "failedRequests": 6,
  "retries": 6,
- "seconds": 34.6
+ "seconds": 46.3
 }
