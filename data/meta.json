@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3960,
+ "runNumber": 3961,
  "deadlineHit": false,
- "generatedAt": "2026-11-26T17:10:19Z",
- "generatedAtET": "Thu Nov 26, 12:10 PM ET",
+ "generatedAt": "2026-11-26T17:20:21Z",
+ "generatedAtET": "Thu Nov 26, 12:20 PM ET",
  "today": "2026-11-26",
- "lastRunAt": "2026-11-26T17:10:19Z",
+ "lastRunAt": "2026-11-26T17:20:21Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 3.5,
+  "seconds": 2.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,20 +149,19 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 3,
-  "simTeamsUploaded": 1201,
+  "gamesUploaded": 2,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
- "propBot": "ok: 42350 legs graded in 21 days (0 this run), 1386 waiting; researched 90 players, moved 39, kept out 0; calibration on: cfb, nba, nfl, nhl",
+ "propBot": "ok: 42350 legs graded in 21 days (0 this run), 1388 waiting; researched 90 players, moved 39, kept out 0; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (odds feed backing off until 20:40Z after 17 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 13 cards, 202 player stats, FanDuel-only players on 0 cards; not in the feed (11): MIA@NY, TEX@TA&M, PHI@IND, ATL@BOS, WVU@UTAH, LAL@SA...",
- "fanduelDirect": "ok: 13 games, 446 player markets (19 FanDuel games in odds.json, pulled 2026-11-26T17:10:19Z; 2s)",
+ "fanduelDirect": "ok: 13 games, 446 player markets (19 FanDuel games in odds.json, pulled 2026-11-26T17:20:21Z; 2s)",
  "espnXref": "ok: 15 FanDuel players added from ESPN rosters on 4 cards {'nfl': 15}; 29 stats from game logs, 0 from FanDuel's price only; 3 not on either ESPN roster",
  "errors": [],
  "requests": 500,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 33.8
+ "seconds": 29.2
 }
