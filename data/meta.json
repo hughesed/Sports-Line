@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 3935,
+ "runNumber": 3936,
  "deadlineHit": false,
- "generatedAt": "2026-11-26T07:17:34Z",
- "generatedAtET": "Thu Nov 26, 2:17 AM ET",
+ "generatedAt": "2026-11-26T07:47:37Z",
+ "generatedAtET": "Thu Nov 26, 2:47 AM ET",
  "today": "2026-11-26",
- "lastRunAt": "2026-11-26T07:17:34Z",
+ "lastRunAt": "2026-11-26T07:47:37Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,8 +71,8 @@
    "teamLevel": 6,
    "carried": 9,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 7725,
+   "newFinals": 1,
+   "storeGames": 7726,
    "lastFinal": "2026-11-26"
   },
   "nhl": {
@@ -112,7 +112,7 @@
   "pastp": 14,
   "predictions": 1138,
   "graded": 1054,
-  "storeGames": 16081
+  "storeGames": 16082
  },
  "calibration": {
   "slopes": {
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 7,
+  "calls": 10,
   "failedCalls": 2,
-  "seconds": 2.6,
+  "seconds": 5.2,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,7 +149,8 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 1,
+  "gamesUploaded": 7,
+  "simTeamsUploaded": 1201,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
@@ -157,11 +158,11 @@
  "odds": "kept (odds feed backing off until 07:54Z after 14 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 07:54Z)",
  "fanduel": "ok: FanDuel lines on 6 cards, 134 player stats, FanDuel-only players on 0 cards; not in the feed (17): TENN@ISU, MIA@MICH, LOU@SJU, BAY@GONZ, MSST@MISS, NEB@IOWA...",
- "fanduelDirect": "ok: 6 games, 308 player markets (7 FanDuel games in odds.json, pulled 2026-11-26T07:17:34Z; 2s)",
+ "fanduelDirect": "ok: 6 games, 308 player markets (7 FanDuel games in odds.json, pulled 2026-11-26T07:47:37Z; 3s)",
  "espnXref": "ok: 10 FanDuel players added from ESPN rosters on 3 cards {'nfl': 10}; 19 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
  "requests": 487,
  "failedRequests": 7,
  "retries": 7,
- "seconds": 27.1
+ "seconds": 31.7
 }
