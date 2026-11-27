@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 4084,
+ "runNumber": 4085,
  "deadlineHit": false,
- "generatedAt": "2026-11-27T22:26:48Z",
- "generatedAtET": "Fri Nov 27, 5:26 PM ET",
+ "generatedAt": "2026-11-27T22:36:48Z",
+ "generatedAtET": "Fri Nov 27, 5:36 PM ET",
  "today": "2026-11-27",
- "lastRunAt": "2026-11-27T22:26:48Z",
+ "lastRunAt": "2026-11-27T22:36:48Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 7768,
    "lastFinal": "2026-11-27"
   },
@@ -82,8 +82,8 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 0,
-   "storeGames": 405,
+   "newFinals": 1,
+   "storeGames": 406,
    "lastFinal": "2026-11-27"
   },
   "tennis": {
@@ -112,7 +112,7 @@
   "pastp": 16,
   "predictions": 1176,
   "graded": 1075,
-  "storeGames": 16137
+  "storeGames": 16138
  },
  "calibration": {
   "slopes": {
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 5.5,
+  "seconds": 1.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,20 +149,20 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 11,
+  "gamesUploaded": 8,
   "simTeamsUploaded": 1201,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
- "propBot": "ok: 42333 legs graded in 21 days (0 this run), 3863 waiting; researched 175 players, moved 141, kept out 4; calibration on: cfb, nba, nfl, nhl",
+ "propBot": "ok: 42333 legs graded in 21 days (0 this run), 3864 waiting; researched 175 players, moved 141, kept out 4; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (odds feed backing off until 22:56Z after 23 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 22:56Z)",
  "fanduel": "ok: FanDuel lines on 14 cards, 706 player stats, FanDuel-only players on 0 cards; not in the feed (10): ATL@MIN, BAL@HOU, NO@CIN, NYG@IND, NYJ@MIA, TEN@JAX...",
- "fanduelDirect": "ok: 14 games, 1419 player markets (15 FanDuel games in odds.json, pulled 2026-11-27T22:26:48Z; 6s)",
+ "fanduelDirect": "ok: 14 games, 1419 player markets (15 FanDuel games in odds.json, pulled 2026-11-27T22:36:48Z; 4s)",
  "espnXref": "ok: 0 FanDuel players added from ESPN rosters on 0 cards {}; 0 stats from game logs, 0 from FanDuel's price only; 13 not on either ESPN roster",
  "errors": [],
- "requests": 1095,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 49.3
+ "requests": 1096,
+ "failedRequests": 0,
+ "retries": 0,
+ "seconds": 30.0
 }
