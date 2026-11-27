@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 4036,
+ "runNumber": 4037,
  "deadlineHit": false,
- "generatedAt": "2026-11-27T07:05:17Z",
- "generatedAtET": "Fri Nov 27, 2:05 AM ET",
+ "generatedAt": "2026-11-27T07:35:17Z",
+ "generatedAtET": "Fri Nov 27, 2:35 AM ET",
  "today": "2026-11-27",
- "lastRunAt": "2026-11-27T07:05:17Z",
+ "lastRunAt": "2026-11-27T07:35:17Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -71,7 +71,7 @@
    "teamLevel": 0,
    "carried": 6,
    "error": null,
-   "newFinals": 2,
+   "newFinals": 0,
    "storeGames": 7749,
    "lastFinal": "2026-11-27"
   },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 5.8,
+  "seconds": 2.6,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,20 +149,19 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 7,
-  "simTeamsUploaded": 1201,
+  "gamesUploaded": 8,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
- "propBot": "ok: 42017 legs graded in 21 days (0 this run), 2967 waiting; researched 168 players, moved 125, kept out 2; calibration on: cfb, nba, nfl, nhl",
+ "propBot": "ok: 42017 legs graded in 21 days (0 this run), 2969 waiting; researched 168 players, moved 125, kept out 2; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (odds feed backing off until 08:45Z after 20 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
- "oddsLive": "kept (odds feed backing off until 08:45Z)",
+ "oddsLive": "no games in play",
  "fanduel": "ok: FanDuel lines on 14 cards, 634 player stats, FanDuel-only players on 0 cards; not in the feed (10): ATL@MIN, BAL@HOU, NO@CIN, NYG@IND, NYJ@MIA, TEN@JAX...",
- "fanduelDirect": "ok: 14 games, 1333 player markets (23 FanDuel games in odds.json, pulled 2026-11-27T07:05:17Z; 6s)",
+ "fanduelDirect": "ok: 14 games, 1333 player markets (23 FanDuel games in odds.json, pulled 2026-11-27T07:35:17Z; 4s)",
  "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 1 cards {'nfl': 6}; 11 stats from game logs, 0 from FanDuel's price only; 16 not on either ESPN roster",
  "errors": [],
- "requests": 1124,
- "failedRequests": 2,
- "retries": 2,
- "seconds": 54.8
+ "requests": 1120,
+ "failedRequests": 0,
+ "retries": 0,
+ "seconds": 44.4
 }
