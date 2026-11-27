@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 4033,
+ "runNumber": 4034,
  "deadlineHit": false,
- "generatedAt": "2026-11-27T05:35:13Z",
- "generatedAtET": "Fri Nov 27, 12:35 AM ET",
+ "generatedAt": "2026-11-27T06:05:10Z",
+ "generatedAtET": "Fri Nov 27, 1:05 AM ET",
  "today": "2026-11-27",
- "lastRunAt": "2026-11-27T05:35:13Z",
+ "lastRunAt": "2026-11-27T06:05:10Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -57,8 +57,8 @@
    "status": "ok",
    "games": 9,
    "playerLevel": 0,
-   "teamLevel": 2,
-   "carried": 7,
+   "teamLevel": 0,
+   "carried": 9,
    "error": null,
    "newFinals": 0,
    "storeGames": 1783,
@@ -71,7 +71,7 @@
    "teamLevel": 0,
    "carried": 6,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 7747,
    "lastFinal": "2026-11-27"
   },
@@ -137,9 +137,9 @@
    "settled": 0,
    "cancelled": 0
   },
-  "calls": 10,
+  "calls": 7,
   "failedCalls": 2,
-  "seconds": 5.7,
+  "seconds": 3.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,20 +149,19 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 14,
-  "simTeamsUploaded": 1201,
+  "gamesUploaded": 7,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
- "propBot": "ok: 42017 legs graded in 21 days (0 this run), 2951 waiting; researched 168 players, moved 125, kept out 2; calibration on: cfb, nba, nfl, nhl",
+ "propBot": "ok: 42017 legs graded in 21 days (0 this run), 2957 waiting; researched 168 players, moved 125, kept out 2; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (odds feed backing off until 08:45Z after 20 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 08:45Z)",
  "fanduel": "ok: FanDuel lines on 14 cards, 634 player stats, FanDuel-only players on 0 cards; not in the feed (10): ATL@MIN, BAL@HOU, NO@CIN, NYG@IND, NYJ@MIA, TEN@JAX...",
- "fanduelDirect": "ok: 14 games, 1333 player markets (23 FanDuel games in odds.json, pulled 2026-11-27T05:35:13Z; 6s)",
- "espnXref": "ok: 41 FanDuel players added from ESPN rosters on 6 cards {'cfb': 35, 'nfl': 6}; 76 stats from game logs, 0 from FanDuel's price only; 16 not on either ESPN roster",
+ "fanduelDirect": "ok: 14 games, 1333 player markets (23 FanDuel games in odds.json, pulled 2026-11-27T06:05:10Z; 4s)",
+ "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 1 cards {'nfl': 6}; 11 stats from game logs, 0 from FanDuel's price only; 16 not on either ESPN roster",
  "errors": [],
- "requests": 1155,
- "failedRequests": 0,
- "retries": 0,
- "seconds": 46.0
+ "requests": 1120,
+ "failedRequests": 2,
+ "retries": 2,
+ "seconds": 45.0
 }
