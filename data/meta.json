@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 4030,
+ "runNumber": 4031,
  "deadlineHit": false,
- "generatedAt": "2026-11-27T04:45:06Z",
- "generatedAtET": "Thu Nov 26, 11:45 PM ET",
+ "generatedAt": "2026-11-27T04:55:13Z",
+ "generatedAtET": "Thu Nov 26, 11:55 PM ET",
  "today": "2026-11-26",
- "lastRunAt": "2026-11-27T04:45:06Z",
+ "lastRunAt": "2026-11-27T04:55:13Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -139,7 +139,7 @@
   },
   "calls": 7,
   "failedCalls": 2,
-  "seconds": 4.1,
+  "seconds": 3.9,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,19 +149,19 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 2,
+  "gamesUploaded": 5,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
- "propBot": "ok: 42914 legs graded in 21 days (0 this run), 2569 waiting; researched 101 players, moved 80, kept out 2; calibration on: cfb, nba, nfl, nhl",
- "odds": "error: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"} (NFL: RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit exceeded\"}; NCAAF: skipped (rate limited); NBA: skipped (rate limited); NCAAB: skipped (rate limited); MLB: skipped (rate limited); WNBA: skipped (rate limited); NHL: skipped (rate limited); ATP: skipped (rate limited); WTA: skipped (ra); next try 2026-11-27T08:45:39Z",
+ "propBot": "ok: 42914 legs graded in 21 days (0 this run), 2575 waiting; researched 101 players, moved 80, kept out 2; calibration on: cfb, nba, nfl, nhl",
+ "odds": "kept (odds feed backing off until 08:45Z after 20 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 08:45Z)",
- "fanduel": "ok: FanDuel lines on 8 cards, 498 player stats, FanDuel-only players on 0 cards; not in the feed (16): GT@UGA, DUKE@WAKE, USC@UCLA, OU@MIZ, AUB@ALA, WASH@ORE...",
- "fanduelDirect": "kept (21 FanDuel games in odds.json, pulled 2026-11-27T04:35:04Z; 0s)",
- "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 1 cards {'nfl': 6}; 12 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
+ "fanduel": "ok: FanDuel lines on 8 cards, 497 player stats, FanDuel-only players on 0 cards; not in the feed (16): GT@UGA, DUKE@WAKE, USC@UCLA, OU@MIZ, AUB@ALA, WASH@ORE...",
+ "fanduelDirect": "ok: 8 games, 1004 player markets (21 FanDuel games in odds.json, pulled 2026-11-27T04:55:13Z; 4s)",
+ "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 1 cards {'nfl': 6}; 11 stats from game logs, 0 from FanDuel's price only; 4 not on either ESPN roster",
  "errors": [],
  "requests": 1038,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 53.4
+ "seconds": 38.7
 }
