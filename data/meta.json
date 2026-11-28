@@ -1,11 +1,11 @@
 {
  "schema": 1,
- "runNumber": 4102,
+ "runNumber": 4103,
  "deadlineHit": false,
- "generatedAt": "2026-11-28T01:16:56Z",
- "generatedAtET": "Fri Nov 27, 8:16 PM ET",
+ "generatedAt": "2026-11-28T01:26:57Z",
+ "generatedAtET": "Fri Nov 27, 8:26 PM ET",
  "today": "2026-11-27",
- "lastRunAt": "2026-11-28T01:16:56Z",
+ "lastRunAt": "2026-11-28T01:26:57Z",
  "lastRunError": null,
  "ok": true,
  "leagues": {
@@ -82,7 +82,7 @@
    "teamLevel": 0,
    "carried": 0,
    "error": null,
-   "newFinals": 1,
+   "newFinals": 0,
    "storeGames": 413,
    "lastFinal": "2026-11-27"
   },
@@ -139,7 +139,7 @@
   },
   "calls": 10,
   "failedCalls": 2,
-  "seconds": 5.2,
+  "seconds": 2.0,
   "simTeams": {
    "nfl": 32,
    "nba": 30,
@@ -149,20 +149,20 @@
    "cbb": 817,
    "nhl": 32
   },
-  "gamesUploaded": 9,
+  "gamesUploaded": 5,
   "simTeamsUploaded": 1201,
   "configured": true
  },
  "firstBasket": "0 new snapshots, 0 graded, wnba 6 graded, nba 269 graded",
- "propBot": "ok: 42797 legs graded in 21 days (0 this run), 4128 waiting; researched 162 players, moved 127, kept out 2; calibration on: cfb, nba, nfl, nhl",
+ "propBot": "ok: 42797 legs graded in 21 days (0 this run), 4134 waiting; researched 162 players, moved 127, kept out 2; calibration on: cfb, nba, nfl, nhl",
  "odds": "kept (odds feed backing off until 02:57Z after 24 failed pull(s): RateLimited: HTTP 429 {\"success\":false,\"error\":\"Rate limit e)",
  "oddsLive": "kept (odds feed backing off until 02:57Z)",
  "fanduel": "ok: FanDuel lines on 12 cards, 510 player stats, FanDuel-only players on 0 cards; not in the feed (12): NO@LAC, ATL@MIN, BAL@HOU, NO@CIN, NYG@IND, NYJ@MIA...",
- "fanduelDirect": "ok: 12 games, 1048 player markets (12 FanDuel games in odds.json, pulled 2026-11-28T01:16:56Z; 6s)",
+ "fanduelDirect": "ok: 12 games, 1048 player markets (12 FanDuel games in odds.json, pulled 2026-11-28T01:26:57Z; 4s)",
  "espnXref": "ok: 6 FanDuel players added from ESPN rosters on 3 cards {'nba': 6}; 28 stats from game logs, 0 from FanDuel's price only; 10 not on either ESPN roster",
  "errors": [],
- "requests": 1149,
+ "requests": 1137,
  "failedRequests": 2,
  "retries": 2,
- "seconds": 42.6
+ "seconds": 32.0
 }
